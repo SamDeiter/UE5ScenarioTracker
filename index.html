@@ -25,28 +25,26 @@
                     <div id="countdown-timer" class="text-3xl font-bold text-blue-300">30:00</div>
                 </div>
 
-                <!-- Debug Mode Toggle -->
-                <div class="flex items-center space-x-2 pl-4 border-l border-gray-700">
+                <!-- Debug Mode Toggle Container (Hidden by default, activated by CTRL+SHIFT+DELETE) -->
+                <div id="debug-controls-container" class="flex items-center space-x-2 pl-4 border-l border-gray-700 hidden">
                     <input type="checkbox" id="debug-toggle" class="form-checkbox h-4 w-4 text-blue-500 bg-gray-700 border-gray-600 rounded focus:ring-blue-500">
                     <label for="debug-toggle" class="text-sm font-medium text-gray-300">Debug Mode</label>
                 </div>
                 
-                <button id="restart-btn" class="text-sm bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-200 ease-in-out hidden">
-                    Reset All Scenarios
-                </button>
+                <!-- Debug Dropdown Menu (Visible only when Debug Mode is ON) -->
+                <div id="debug-dropdown" class="absolute top-16 right-8 w-64 p-4 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-50 space-y-3 hidden">
+                    <h4 class="text-lg font-semibold text-red-400 border-b border-gray-700 pb-2">Admin Tools</h4>
+                    
+                    <!-- 1. Hard Reset (ONLY KEEPING THIS) -->
+                    <div class="pt-3">
+                        <button id="hard-reset-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all duration-200">
+                            Clear Cache & Restart
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <!-- Key Lookup (Visible only in Debug Mode) - MOVED TO FULL WIDTH -->
-        <div id="key-lookup-container" class="w-full max-w-7xl mb-4 p-4 bg-gray-800 rounded-lg shadow-inner border border-gray-700 hidden">
-            <h4 class="text-lg font-semibold text-gray-300 mb-2">Load Test Key (Debug Only)</h4>
-            <div class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
-                <input type="text" id="test-key-input" placeholder="Paste test key here..." class="flex-grow p-2 rounded-lg bg-gray-700 border border-gray-600 text-sm text-yellow-300 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500">
-                <button id="load-key-btn" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-200">
-                    Load Path
-                </button>
-            </div>
-        </div>
 
         <!-- Main Jira-style Grid -->
         <div id="jira-board" class="w-full max-w-7xl grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow min-h-[70vh]">
@@ -92,21 +90,8 @@
     </main>
 
     <!-- 'Time's Up' Screen / FINAL ASSESSMENT MODAL -->
-    <!-- This MUST be outside the main game-container to overlay everything. -->
     <div id="times-up-screen" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 p-8 flex items-center justify-center z-50">
-        <!-- Inner Modal Card Structure -->
-        <div class="w-full max-w-3xl p-8 bg-gray-800 rounded-xl shadow-2xl text-center transform scale-100">
-            <!-- Content will be dynamically injected here by showAssessmentModal -->
-            <!-- Placeholder for structure, actual content is overwritten: -->
-            <h2 id="modal-title" class="text-5xl font-bold text-red-500 mb-6"></h2>
-            <p id="modal-message" class="text-xl text-gray-300 mb-8"></p>
-            <button
-                id="restart-timer-btn"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md transition-all duration-200 ease-in-out transform hover:scale-105"
-            >
-                Try Again
-            </button>
-        </div>
+        <!-- Content will be dynamically injected here by showAssessmentModal -->
     </div>
 
 

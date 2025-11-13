@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gray-900 text-gray-200 font-sans antialiased min-h-screen flex flex-col">
+<body class="bg-gray-900 text-gray-200 font-sans antialiased min-h-screen flex flex-col unselectable">
 
     <!-- Main Game -->
     <main id="game-container" class="flex-grow p-4 md:p-8 flex flex-col items-center">
@@ -35,7 +35,7 @@
                 <div id="debug-dropdown" class="absolute top-16 right-8 w-64 p-4 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-50 space-y-3 hidden">
                     <h4 class="text-lg font-semibold text-red-400 border-b border-gray-700 pb-2">Admin Tools</h4>
                     
-                    <!-- 1. Hard Reset (ONLY KEEPING THIS) -->
+                    <!-- Hard Reset Button -->
                     <div class="pt-3">
                         <button id="hard-reset-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all duration-200">
                             Clear Cache & Restart

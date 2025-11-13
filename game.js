@@ -12,12 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
         passwordModalVisible: false // Tracks if the password input is currently shown
     };
 
-    // --- DOM ELEMENT CACHE (Declared as 'let' for later assignment) ---
-    // Auditing/Key loading elements removed.
+    // --- DOM ELEMENT CACHE ---
+    // Note: Removed unused variables related to audit features and hard reset UI.
     let headerControls, backlogList, ticketViewColumn, ticketPlaceholder, 
         ticketContent, ticketTitle, ticketDescription, ticketStepContent,
         debugToggle, countdownTimer, jiraBoard, timesUpScreen, 
-        restartTimerBtn, debugDropdown; 
+        debugDropdown; 
     
     let timerContainer; // Parent container for the countdown timer
 
@@ -34,6 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	// --- ENCODING UTILITIES (Restored for Test Key Generation) ---
     /**
      * Encodes a string to a Unicode-safe Base64 string.
+     * @param {string} str - The string to encode.
+     * @returns {string} The Base64 encoded string.
      */
     function base64EncodeUnicode(str) {
         const utf8Bytes = encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
@@ -47,6 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     /**
      * Converts total seconds into MM:SS format for display.
+     * @param {number} totalSeconds - Total seconds remaining.
+     * @returns {string} Formatted time string (MM:SS).
      */
     function formatTime(totalSeconds) {
         const minutes = Math.floor(totalSeconds / 60);
@@ -77,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- TIMER LOGIC ---
     
     /**
-     * Updates the main timer display, applies visual cues (pulse-red), and handles expiry.
+     * Updates the main timer display, applies visual cues, and handles expiry.
      */
     function updateMainTimerDisplay() {
         // 1. Update Display
@@ -106,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Starts the main 30-minute countdown timer.
-     * Loads time from storage or resets to default.
      */
     function startMainTimer(isInitialStart = false) {
         // Load time state
@@ -179,8 +182,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update internal logic based on new mode
         if (isDebugMode) {
             pauseMainTimer();
+            // Allow copying/inspection in debug mode
+            document.body.classList.remove('unselectable');
         } else {
             resumeMainTimer();
+            // Re-enable security when exiting debug mode
+            document.body.classList.add('unselectable');
         }
         
         // Update the visual status of the hidden toggle (for consistency)
@@ -353,9 +360,9 @@ document.addEventListener('DOMContentLoaded', () => {
         countdownTimer = document.getElementById('countdown-timer');
         jiraBoard = document.getElementById('jira-board');
         timesUpScreen = document.getElementById('times-up-screen');
-        restartTimerBtn = document.getElementById('restart-timer-btn');
+        // 'restartTimerBtn' was unused and removed.
         debugDropdown = document.getElementById('debug-dropdown'); 
-        // Note: Key audit elements removed here.
+        // 'testKeyInput', 'loadKeyBtn', 'hardResetBtn' were unused and removed.
         
         // Cache the timer's parent div for visibility control
         timerContainer = countdownTimer ? countdownTimer.parentElement : null; 
@@ -363,6 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     /**
      * Checks if the test is currently running (i.e., not fully completed).
+     * @returns {boolean} True if the assessment is not yet fully complete.
      */
     function isTestRunning() {
         const allComplete = Object.values(scenarioState).every(state => state.completed);
@@ -373,6 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * Attaches all primary event listeners.
      */
     function attachEventListeners() {
+        const hardResetBtn = document.getElementById('hard-reset-btn'); // Local variable for local usage
         
         // --- ADMIN ACCESS (CTRL + SHIFT + DELETE + Password Gate) ---
         document.addEventListener('keydown', (e) => {
@@ -387,19 +396,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+        
+        // --- SECURITY (Disable Right-Click Menu) ---
+        document.body.addEventListener('contextmenu', (e) => {
+            // Only block right-click if Debug Mode is OFF
+            if (!isDebugMode) {
+                 e.preventDefault(); 
+            }
+        });
+        
+        // Debug: Hard Reset button handler (Wipes all local storage)
+        if (hardResetBtn) {
+            hardResetBtn.addEventListener('click', () => {
+                if (!confirm("WARNING: This will clear ALL progress, including saved completion data and the timer. Are you sure you want to restart the assessment completely?")) return;
 
-        // Note: Hard Reset and Load Test Key buttons are removed from event listeners.
+                localStorage.removeItem('ue5ScenarioTimer');
+                localStorage.removeItem('ue5ScenarioState');
+                localStorage.removeItem('ue5InterruptedSteps');
+                localStorage.removeItem('ue5ActiveScenario');
+                localStorage.removeItem('ue5ActiveStep');
+                
+                location.reload();
+            });
+        }
     }
     
     /**
      * Calculates the total ideal time (0.5 hours per step) across all scenarios.
+     * @returns {{totalSteps: number, idealTotalTime: number}} The calculated totals.
      */
     function calculateTotalIdealTime() {
         let totalSteps = 0;
         
         Object.values(window.SCENARIOS).forEach(scenario => {
             if (scenario.steps) {
-                // Only count steps marked as core tasks if needed, but for simplicity, counting all steps now
+                // Counting all steps, including dead ends, as they all represent an "ideal" 0.5hr time cost for a correct answer.
                 totalSteps += Object.keys(scenario.steps).length;
             }
         });
@@ -410,8 +441,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Serializes all scenario choices into a compact, stable Base64 JSON string.
-     * RESTORED FOR TRACKING PURPOSES.
+     * Serializes scenario choices into a compact, stable Base64 JSON string.
+     * @param {object} [stateToSerialize=scenarioState] - The state to serialize.
+     * @returns {string} The Base64 encoded test key.
      */
     function generateTestKey(stateToSerialize = scenarioState) {
         const compactData = {};
@@ -547,6 +579,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Determines the color class for time logged vs. estimate.
+     * @param {number} logged - Logged hours.
+     * @param {number} estimate - Estimated hours.
+     * @returns {string} Tailwind CSS class for color.
      */
     function getLoggedTimeColorClass(logged, estimate) {
         if (logged <= estimate) {
@@ -664,6 +699,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     /**
      * Renders a specific step (prompt and choices) of a scenario.
+     * @param {string} scenarioId - The ID of the scenario.
+     * @param {string} stepId - The ID of the step to render.
      */
     function renderStep(scenarioId, stepId) {
         const scenario = window.SCENARIOS[scenarioId];
@@ -716,7 +753,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 6. Create Choice Buttons
         // Map original index to shuffled button for time tracking stability
-        shuffledChoices.forEach((choice, originalIndex) => {
+        shuffledChoices.forEach((choice) => {
             const timeCost = getTimeCostForChoice(choice.type);
             const isCorrect = choice.type === 'correct';
 
@@ -738,8 +775,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 debugClass = 'border-gray-600 hover:border-blue-500';
             }
             
-            // Add 'unselectable' class from style.css
-            btn.className = `block w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg border transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 ${debugClass}`;
+            // Apply unselectable class to choices
+            btn.className = `block w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg border transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 unselectable ${debugClass}`;
             
             btn.innerHTML = `<span class="font-bold">${choice.text}</span>`; 
 
@@ -766,6 +803,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Called when a user clicks an answer choice.
+     * @param {HTMLElement} choiceButton - The clicked button element.
      */
     function handleChoice(choiceButton) {
         const { choiceNext, choiceTimeCost, originalIndex } = choiceButton.dataset;
@@ -793,6 +831,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Called when a user clicks a scenario card from the backlog.
+     * @param {string} scenarioId - The ID of the scenario selected.
+     * @param {string|null} startStepId - Optional ID for the step to start at.
      */
     function selectScenario(scenarioId, startStepId = null) {
         
@@ -849,7 +889,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (allComplete) {
             let totalLoggedTime = Object.values(scenarioState).reduce((acc, s) => acc + s.loggedTime, 0);
             stopTimerOnComplete(); 
-            // Pass the calculated time, but no mistakes array/key, simplifying the final modal
+            // Pass the calculated time to the modal
             showAssessmentModal('complete', totalLoggedTime);
         } else {
              // Show the individual ticket conclusion inline
@@ -1005,7 +1045,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // 1. Calculate final scores
             if (totalLoggedTime === null) {
-                // Should not happen if called correctly, but falls back to current live state if time is null
+                // If the time is null (e.g., loaded from a cleared state), recalculate from the passed state
                 totalLoggedTime = Object.values(stateToUse).reduce((acc, s) => acc + s.loggedTime, 0);
             }
             

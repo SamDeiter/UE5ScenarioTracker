@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let timeRemaining = TOTAL_TEST_TIME_SECONDS; 
 
     let scenarioStartTime = 0; // Timestamp for when a scenario was started
-    let lastStepTimeCost = 0; // Stores the time cost of the most recent choice
+    // REMOVED: lastStepTimeCost is no longer used for UI display, so we remove the variable definition.
     
 	// --- TIMER & TIME UTILITIES ---
     
@@ -219,8 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // If a scenario is active, re-render the current step to show/hide hints
             if (currentScenarioId && currentStepId) {
-                // When toggling, we want to reset the time cost display so it doesn't show feedback
-                lastStepTimeCost = 0;
+                // We no longer track lastStepTimeCost for display, but re-render is still useful
                 renderStep(currentScenarioId, currentStepId);
             }
         });
@@ -240,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ticketPlaceholder.classList.remove('hidden');
             currentScenarioId = null;
             currentStepId = null;
-            lastStepTimeCost = 0; // Reset last step cost
+            // Removed lastStepTimeCost reset
             
             // Clear active ticket state
             saveCurrentTicketState();
@@ -376,6 +375,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- UI RENDERING & FLOW ---
 
     /**
+     * Helper function to determine the color class for logged time based on estimate.
+     * @param {number} logged - Time logged so far.
+     * @param {number} estimate - Estimated time for the ticket.
+     * @returns {string} Tailwind CSS color class.
+     */
+    function getLoggedTimeColorClass(logged, estimate) {
+        if (logged <= estimate) {
+            // Under or exactly on budget: Green
+            return 'text-green-400';
+        } 
+        
+        // Calculate the ratio of being over budget
+        const overBudgetRatio = logged / estimate;
+        
+        // MODIFIED: Lowering thresholds for earlier warnings
+        if (overBudgetRatio <= 1.20) { // Up to 20% over (was 25%)
+            return 'text-yellow-400';
+        } else if (overBudgetRatio <= 1.40) { // Up to 40% over (was 50%)
+            return 'text-orange-400';
+        } else { // More than 40% over (High concern)
+            return 'text-red-400';
+        }
+    }
+
+    /**
      * Renders the list of tickets in the backlog (left column).
      */
     function renderBacklog() {
@@ -427,16 +451,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let statusSpan;
             let loggedTimeDisplay = '';
+            const logged = state.loggedTime;
+            const loggedColorClass = getLoggedTimeColorClass(logged, estimate);
+
 
             if (state.completed) {
-                const logged = state.loggedTime;
+                // Determine color based on final logged time vs estimate
                 const isOverBudget = logged > estimate;
 
                 statusSpan = `<span class="text-xs font-semibold text-green-400">COMPLETED</span>`;
                 loggedTimeDisplay = `
                     <div class="text-sm text-gray-300">
-                        Logged: <span class="font-bold ${isOverBudget ? 'text-orange-400' : 'text-green-400'}">${logged.toFixed(1)} hrs</span> / 
-                        Est: <span class="font-bold text-gray-400">${estimate.toFixed(1)} hrs</span>
+                        Logged: <span class="font-bold ${loggedColorClass}">${logged.toFixed(1)} hrs</span> / 
+                        Est: <span class="font-bold text-green-400">${estimate.toFixed(1)} hrs</span>
                     </div>
                 `;
             } else {
@@ -444,19 +471,23 @@ document.addEventListener('DOMContentLoaded', () => {
                  const savedStepId = interruptedSteps[scenarioId];
                  
                  if (savedStepId && savedStepId !== scenario.start) {
-                     // Ticket is in progress
-                     const stepNumber = Object.keys(scenario.steps).indexOf(savedStepId) + 1;
-                     statusSpan = `<span class="text-xs font-semibold text-yellow-400">IN PROGRESS (Step ${stepNumber})</span>`;
+                     // Ticket is in progress - Show Logged vs Estimate
+                     statusSpan = `<span class="text-xs font-semibold text-yellow-400">IN PROGRESS</span>`;
+                     loggedTimeDisplay = `
+                        <div class="text-sm text-gray-400">
+                            Logged: <span class="font-bold ${loggedColorClass}">${logged.toFixed(1)} hrs</span> / 
+                            Est: <span class="font-bold text-green-400">${estimate.toFixed(1)} hrs</span>
+                        </div>
+                    `;
                  } else {
-                     // Ticket not started
+                     // Ticket not started - Show only Estimate
                      statusSpan = `<span class="text-xs font-semibold text-blue-400">NOT STARTED</span>`;
+                     loggedTimeDisplay = `
+                        <div class="text-sm text-gray-400">
+                            Est. Time: <span class="font-bold text-green-400">${estimate.toFixed(1)} hrs</span>
+                        </div>
+                    `;
                  }
-                
-                loggedTimeDisplay = `
-                    <div class="text-sm text-gray-400">
-                        Est. Time: <span class="font-bold">${estimate.toFixed(1)} hrs</span>
-                    </div>
-                `;
             }
             
             const html = `
@@ -497,6 +528,8 @@ document.addEventListener('DOMContentLoaded', () => {
         currentStepId = stepId;
 
         // --- Multi-Ticket Fix: Save the current state immediately ---
+        // Save the progress of the currently active ticket in the interrupted map
+        interruptedSteps[currentScenarioId] = currentStepId;
         saveCurrentTicketState();
 
         // 2. Shuffle choices (always visible)
@@ -508,24 +541,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const stepNumber = stepIndex !== -1 ? stepIndex + 1 : 1;
         const totalSteps = stepKeys.length;
 
+        // NEW LOGIC: Conditionally generate the step count prefix
+        const stepCountPrefix = isDebugMode 
+            ? `Step ${stepNumber} / ${totalSteps}: ` 
+            : '';
+
         // 4. Time Log Display (for the action *just* completed)
-        let timeLogHtml = '';
-        if (lastStepTimeCost > 0) {
-            timeLogHtml = `
-                <div class="mb-4 p-3 bg-gray-800/80 border border-gray-700 rounded-lg text-sm font-semibold text-gray-300">
-                    <div class="flex justify-between items-center">
-                        <span class="text-yellow-400">Previous Action Cost:</span>
-                        <span class="font-bold">${lastStepTimeCost.toFixed(1)} hrs</span>
-                    </div>
-                </div>
-            `;
-        }
+        // REMOVED: Time log HTML is completely removed.
+        let timeLogHtml = ''; 
         
         // 5. Build the Step Prompt and Choices
         const stepHtml = `
             ${timeLogHtml}
             <div id="ticket-step-prompt" class="mb-6">
-                <h5 class="text-xl font-bold text-gray-200 mb-4">Step ${stepNumber} / ${totalSteps}: ${step.title}</h5>
+                <h5 class="text-xl font-bold text-gray-200 mb-4">${stepCountPrefix}${step.title}</h5>
                 <div class="prose prose-sm prose-invert text-gray-300">${step.prompt}</div>
             </div>
             <div id="ticket-step-choices" class="space-y-3"></div>
@@ -571,8 +600,7 @@ document.addEventListener('DOMContentLoaded', () => {
             choicesContainer.appendChild(btn);
         });
         
-        // After rendering, clear the last step cost so it only shows up once
-        lastStepTimeCost = 0;
+        // REMOVED: After rendering, clear the last step cost so it only shows up once
         
         // Re-render backlog to update active/interrupted status
         renderBacklog();
@@ -591,7 +619,7 @@ document.addEventListener('DOMContentLoaded', () => {
         saveScenarioState();
 
         // 2. Store the time cost for display on the *next* step
-        lastStepTimeCost = timeCost;
+        // REMOVED: lastStepTimeCost is no longer updated or tracked here.
 
         // 3. Check for scenario conclusion
         if (choiceNext === 'conclusion') {
@@ -611,9 +639,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function selectScenario(scenarioId, startStepId = null) {
         
         // --- MULTI-TICKET FIX: Save previous ticket's progress before switching ---
+        // If there was a currently active scenario, save its current step to the interrupted map
         if (currentScenarioId && currentStepId && currentScenarioId !== scenarioId) {
-            // Save the exact step where the user interrupted the previous scenario
             interruptedSteps[currentScenarioId] = currentStepId;
+            // Clear the single active ticket state to reflect we are now switching
+            localStorage.removeItem('ue5ActiveScenario');
+            localStorage.removeItem('ue5ActiveStep');
             saveCurrentTicketState(); // Save the map immediately
         }
         // -------------------------------------------------------------------------
@@ -627,6 +658,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const scenario = window.SCENARIOS[scenarioId];
         
         // Determine starting step: 1. Passed in ID (crash recovery), 2. Interrupted map, 3. Scenario start
+        // MODIFIED: Ensure recovery uses the highest priority step ID found.
         currentStepId = startStepId 
             || interruptedSteps[scenarioId] 
             || scenario.start; 
@@ -645,7 +677,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 5. Update the global active ticket tracking
         currentScenarioId = scenarioId;
         scenarioStartTime = Date.now(); // Reset scenario timer for real-time penalty calculation
-        saveCurrentTicketState();
+        // saveCurrentTicketState() is now called inside renderStep
     }
     
     // Note: finishScenario depends on renderSingleTicketConclusion and showAssessmentModal
@@ -703,15 +735,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const simulatedTime = logged - realTimePenalty;
 
         // Determine color based on individual ticket performance (non-red scale)
-        let timeColorClass;
-        if (logged <= estimate) {
-            timeColorClass = 'text-green-400';
-        } else if (logged <= estimate * 2) {
-            timeColorClass = 'text-yellow-400';
-        } else {
-            timeColorClass = 'text-orange-400';
-        }
-
+        const timeColorClass = getLoggedTimeColorClass(logged, estimate);
+        
         // Determine upbeat message based on efficiency
         let summaryMessage;
         if (logged <= estimate) {
@@ -765,12 +790,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // Reset UI to placeholder state
             ticketContent.classList.add('hidden');
             ticketPlaceholder.classList.remove('hidden');
+            
+            // --- CRITICAL CHANGE: Clear active ticket state BEFORE saving ---
             currentScenarioId = null;
             currentStepId = null;
-            lastStepTimeCost = 0; // Reset last step cost
-
+            // Removed lastStepTimeCost reset
+            
             // Clear active ticket state in localStorage
-            saveCurrentTicketState();
+            saveCurrentTicketState(); // This ensures ue5ActiveScenario/ue5ActiveStep are removed
 
             // Re-render the backlog to ensure active status is gone
             renderBacklog();

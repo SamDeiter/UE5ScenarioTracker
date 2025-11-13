@@ -31,8 +31,19 @@
                     <label for="debug-toggle" class="text-sm font-medium text-gray-300">Debug Mode</label>
                 </div>
                 
-                <button id="restart-btn" class="text-sm bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-200 ease-in-out">
+                <button id="restart-btn" class="text-sm bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-200 ease-in-out hidden">
                     Reset All Scenarios
+                </button>
+            </div>
+        </div>
+        
+        <!-- Key Lookup (Visible only in Debug Mode) - MOVED TO FULL WIDTH -->
+        <div id="key-lookup-container" class="w-full max-w-7xl mb-4 p-4 bg-gray-800 rounded-lg shadow-inner border border-gray-700 hidden">
+            <h4 class="text-lg font-semibold text-gray-300 mb-2">Load Test Key (Debug Only)</h4>
+            <div class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+                <input type="text" id="test-key-input" placeholder="Paste test key here..." class="flex-grow p-2 rounded-lg bg-gray-700 border border-gray-600 text-sm text-yellow-300 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500">
+                <button id="load-key-btn" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-200">
+                    Load Path
                 </button>
             </div>
         </div>

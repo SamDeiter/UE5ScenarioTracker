@@ -45,7 +45,8 @@ code {
 /* Custom styles for paragraphs inside prompts/feedback */
 #ticket-step-prompt p,
 #ticket-step-feedback p {
-    margin-bottom: 1rem; color: #d1d5db; /* text-gray-300 */
+    margin-bottom: 1rem; 
+    color: #d1d5db; /* text-gray-300 */
 }
 
 /* Custom styles for strong tags inside prompts/feedback */

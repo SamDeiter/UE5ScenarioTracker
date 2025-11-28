@@ -1,103 +1,106 @@
-window.SCENARIOS['lumen_gi'] = {
+window.SCENARIOS['PitchBlackIndoorGI'] = {
     meta: {
-        title: "Lighting: Local Point Light Not Contributing to Global Illumination",
-        description: "A Movable Point Light inside a Nanite structure fails to bounce light or illuminate the chamber via Lumen, despite high intensity. Focuses on Light component settings and Nanite Distance Field configuration.",
+        title: "Pitch Black Indoor GI",
+        description: "No bounce light. Investigates Lumen settings and geometry thickness.",
         estimateHours: 1.5
     },
     start: "step-1",
     steps: {
         'step-1': {
             skill: 'lighting',
-            title: 'Step 1: The Isolated Light',
-            prompt: "<p>You have placed a <strong>Movable Point Light</strong> inside a dark chamber of a Nanite ruin. The light source itself is visible, but it casts no bounce light—the room remains pitch black outside the direct radius. You have already verified the Intensity is high (8000+ lumens).</p><strong>What specific property on the Light Component determines if it injects energy into the Lumen GI solution?</strong>",
+            title: 'Step 1: The Symptom',
+            prompt: "You have a room with windows and some bright exterior lighting, but inside the room everything between direct light patches is pitch black. There’s almost no visible bounce light or ambient fill—GI looks completely dead. What do you check first?",
             choices: [
                 {
-                    text: 'Action: Check the <strong>Affect Global Illumination</strong> checkbox in the Light\'s Advanced settings.',
+                    text: "Action: [Check Logs/View Modes]",
                     type: 'correct',
-                    feedback: "<p><strong>Optimal Time Logged:</strong> Correct. By default, or on migrated assets, this flag might be disabled. Without it, the light is ignored by the Lumen solver.</p>",
+                    feedback: "You switch to Lumen visualization and Lighting Only view modes, then check Project Settings for Global Illumination. You notice Lumen is either disabled for GI/reflections or set to a fallback method. In the Lumen overview, the room barely shows any indirect contribution at all, which explains the pure black interiors.",
                     next: 'step-2'
                 },
                 {
-                    text: 'Action: Switch the light Mobility to <strong>Stationary</strong> and build lighting.',
+                    text: "Action: [Wrong Guess]",
                     type: 'wrong',
-                    feedback: "<p><strong>Maximum Time Logged (Ineffective Fix):</strong> Lumen works best with Movable lights. Stationary lights require baking, which defeats the purpose of using real-time GI for this dynamic setup.</p>",
-                    next: 'step-2'
-                },
+                    feedback: "You crank up light intensity and exposure, but the corners of the room still sit in pure black. Direct light gets brighter, but there’s still no realistic bounce or fill. Clearly this isn’t just a brightness issue.",
+                    next: 'step-1W'
+                }
+            ]
+        },
+        'step-1W': {
+            skill: 'lighting',
+            title: 'Dead End: Wrong Guess',
+            prompt: "You went down the wrong path, assuming the lights were just too dim or the camera exposure was wrong. Even after overexposing the scene, the indirect lighting inside the room is still basically zero.",
+            choices: [
                 {
-                    text: 'Action: Increase the <strong>Attenuation Radius</strong> significantly.',
-                    type: 'partial',
-                    feedback: "<p><strong>Standard Time Logged:</strong> This might make the direct light reach further, but it doesn't fix the underlying issue of missing GI bounce.</p>",
-                    next: 'step-2'
-                },
-                {
-                    text: 'Action: Adjust the <strong>Exposure Compensation</strong> in the Post Process Volume.',
-                    type: 'misguided',
-                    feedback: "<p><strong>Extended Time Logged (Investigation):</strong> This changes the camera sensitivity globally, washing out the exterior, rather than fixing the local light contribution.</p>",
+                    text: "Action: [Revert and try again]",
+                    type: 'correct',
+                    feedback: "You roll back the extreme intensity/exposure tweaks and refocus on the actual GI system—whether Lumen is enabled and how the room’s geometry is built.",
                     next: 'step-2'
                 }
             ]
         },
         'step-2': {
-            skill: 'rendering',
-            title: 'Step 2: The Occluded Geometry',
-            prompt: "<p>You enabled 'Affect Global Illumination', but the room is still unexpectedly dark. The mesh is a complex imported <strong>Nanite</strong> asset.</p><strong>What specific Static Mesh setting is often disabled on complex imports to save memory, preventing Lumen from calculating GI inside the mesh?</strong>",
+            skill: 'lighting',
+            title: 'Step 2: Investigation',
+            prompt: "You open Project Settings and the level’s meshes to investigate why there’s no usable indirect light inside the room. What do you find?",
             choices: [
                 {
-                    text: 'Action: Enable <strong>Affect Distance Field Lighting</strong> in the Static Mesh Editor settings.',
+                    text: "Action: [Identify Root Cause]",
                     type: 'correct',
-                    feedback: "<p><strong>Optimal Time Logged:</strong> Correct. Lumen relies on Mesh Distance Fields (software ray tracing) to calculate surface cache coverage. If this is off, the mesh effectively doesn't exist for Lumen GI.</p>",
+                    feedback: "In Project Settings you see that Lumen is not enabled for Global Illumination (or the project is still using legacy static/SMRT GI), so the engine isn’t computing real-time bounce. On top of that, you notice the room is built from thin single-sided planes instead of thick walls, which can also cause Lumen to fail or leak light if/when it’s enabled. Combined, this explains why interior indirect lighting is essentially pitch black.",
                     next: 'step-3'
                 },
                 {
-                    text: 'Action: Disable <strong>Nanite</strong> on the mesh to force it to use standard geometry.',
+                    text: "Action: [Misguided Attempt]",
                     type: 'misguided',
-                    feedback: "<p><strong>Extended Time Logged (Investigation):</strong> This is a massive performance regression. Nanite should work with Lumen; disabling it is a workaround, not a fix.</p>",
-                    next: 'step-3'
-                },
+                    feedback: "You try dropping additional fill lights into the room to fake GI, but this quickly becomes messy and inconsistent, and still doesn’t behave like proper global illumination as you move lights or time of day.",
+                    next: 'step-2M'
+                }
+            ]
+        },
+        'step-2M': {
+            skill: 'lighting',
+            title: 'Dead End: Misguided',
+            prompt: "Those fake fill lights didn’t solve the core problem. You’re just painting light into the scene instead of fixing why there’s no proper bounce or why Lumen can’t evaluate the room correctly.",
+            choices: [
                 {
-                    text: 'Action: Increase the <strong>Lightmap Resolution</strong> on the mesh.',
-                    type: 'wrong',
-                    feedback: "<p><strong>Maximum Time Logged (Ineffective Fix):</strong> Lightmaps are for baked static lighting. They have zero effect on fully dynamic Lumen GI.</p>",
-                    next: 'step-3'
-                },
-                {
-                    text: 'Action: Enable <strong>Two-Sided</strong> on the mesh material.',
-                    type: 'partial',
-                    feedback: "<p><strong>Standard Time Logged:</strong> This affects how the material renders, but if the Distance Field isn't generated (the root cause), the GI will still fail.</p>",
+                    text: "Action: [Realize mistake]",
+                    type: 'correct',
+                    feedback: "You realize the real fix is to enable and configure Lumen for GI, and to make sure the room’s geometry has proper thickness so Lumen can trace and contain light accurately.",
                     next: 'step-3'
                 }
             ]
         },
         'step-3': {
-            skill: 'debug',
-            title: 'Step 3: Visual Verification',
-            prompt: "<p>You've configured the light and the mesh. Now you want to visually confirm that the mesh is properly represented in the Lumen cache.</p><strong>Which View Mode allows you to inspect the simplified geometry representation used by Lumen?</strong>",
+            skill: 'lighting',
+            title: 'Step 3: The Fix',
+            prompt: "You now know the cause: Lumen GI is disabled or misconfigured, and the room is built from thin geometry that doesn’t play nicely with tracing. How do you fix it?",
             choices: [
                 {
-                    text: 'Action: View Mode -> Visualize -> <strong>Lumen Scene</strong>.',
+                    text: "Action: [Enable Lumen and check geometry.]",
                     type: 'correct',
-                    feedback: "<p><strong>Optimal Time Logged:</strong> This view shows exactly what Lumen 'sees'—the surface cache and distance field representation. It's the ultimate truth for debugging GI coverage.</p>",
-                    next: 'conclusion'
-                },
+                    feedback: "In Project Settings, you switch Global Illumination (and, if needed, Reflections) to use Lumen and restart the editor so the change takes effect. You then rebuild the room with proper thick walls (boxes or solid meshes) instead of paper-thin planes, or swap to assets with real volume. With Lumen enabled and solid geometry in place, the system can trace light bounces correctly and generate believable indirect lighting indoors.",
+                    next: 'step-4'
+                }
+            ]
+        },
+        'step-4': {
+            skill: 'lighting',
+            title: 'Step 4: Verification',
+            prompt: "With Lumen enabled and the room rebuilt with thick walls, you need to confirm that indirect lighting now works. How do you verify the fix in PIE?",
+            choices: [
                 {
-                    text: 'Action: View Mode -> <strong>Lighting Only</strong>.',
-                    type: 'partial',
-                    feedback: "<p><strong>Standard Time Logged:</strong> This shows the result of the lighting, but not the underlying data structure (the cache) causing the issue.</p>",
-                    next: 'conclusion'
-                },
-                {
-                    text: 'Action: View Mode -> Optimization -> <strong>Light Complexity</strong>.',
-                    type: 'wrong',
-                    feedback: "<p><strong>Maximum Time Logged (Ineffective Fix):</strong> This shows shader cost, not GI validity.</p>",
-                    next: 'conclusion'
-                },
-                {
-                    text: 'Action: View Mode -> <strong>Path Tracing</strong>.',
-                    type: 'misguided',
-                    feedback: "<p><strong>Extended Time Logged (Investigation):</strong> Path Tracing uses a completely different ray-tracing backend. It might look correct while Lumen is still broken.</p>",
+                    text: "Action: [Play in Editor]",
+                    type: 'correct',
+                    feedback: "In PIE and in Lighting Only / Lumen visualizations, you now see soft bounce light filling the room—corners are no longer pitch black, and light from windows bleeds naturally into the interior. Moving lights or changing time of day updates the GI in real time, confirming that enabling Lumen and using proper geometry thickness solved the issue.",
                     next: 'conclusion'
                 }
             ]
+        },
+        'conclusion': {
+            skill: 'lighting',
+            title: 'Conclusion',
+            prompt: "Lesson: If an interior is pitch black with no bounce, don’t just crank up lights. First, ensure Lumen is enabled as the Global Illumination method in Project Settings. Then, make sure your room is built with solid, thick geometry so Lumen can trace and contain light properly instead of failing or leaking through paper-thin walls.",
+            choices: []
         }
     }
 };

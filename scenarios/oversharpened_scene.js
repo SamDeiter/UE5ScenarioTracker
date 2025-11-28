@@ -1,72 +1,106 @@
-window.SCENARIOS['oversharpened_scene'] = {
+window.SCENARIOS['GrainySharpening'] = {
     meta: {
-        title: "Rendering: Washed Out Scene & Sharpening Artifacts",
-        description: "The scene lacks contrast (washed out) and has severe shimmering/ringing artifacts on edges. Investigates Post Process Volume exposure settings and default engine sharpening overrides.",
-        estimateHours: 0.75
+        title: "Scene Looks Grainy/Sharpened",
+        description: "Visuals are harsh. Investigates r.Tonemapper.Sharpen console variable.",
+        estimateHours: 1.5
     },
     start: "step-1",
     steps: {
         'step-1': {
             skill: 'rendering',
-            title: 'Step 1: The Washed Out Look',
-            prompt: "<p>The entire scene appears dull, grey, and washed out. Bright emissive lights look flat. You suspect the <strong>Post Process Volume</strong> is the culprit.</p><strong>What is the most likely cause of this flattened dynamic range in the Exposure settings?</strong>",
+            title: 'Step 1: The Symptom',
+            prompt: "The whole game looks grainy and overly crispy, like a sharpen filter has been cranked too high. Fine details shimmer and edges look harsh. Over-sharpened visuals. What do you check first?",
             choices: [
                 {
-                    text: 'Action: The <strong>Min EV100</strong> and <strong>Max EV100</strong> are clamped to a very small range (e.g., both 6.0).',
+                    text: "Action: [Check Logs/View Modes]",
                     type: 'correct',
-                    feedback: "<p><strong>Optimal Time Logged:</strong> Correct. Clamping the exposure range prevents the camera from adapting to bright or dark areas, flattening the image.</p>",
+                    feedback: "You open the console and inspect post-process settings, then use buffer visualization to confirm the base image is fine. You spot that r.Tonemapper.Sharpen is set to a very high value (above 1.0), which explains the harsh, grainy sharpening across the whole scene.",
                     next: 'step-2'
                 },
                 {
-                    text: 'Action: The <strong>Bloom</strong> intensity is set too high.',
-                    type: 'misguided',
-                    feedback: "<p><strong>Extended Time Logged (Investigation):</strong> High bloom causes glowing, not a washed-out, low-contrast look across the whole frame.</p>",
-                    next: 'step-2'
-                },
-                {
-                    text: 'Action: The Directional Light intensity is too low.',
+                    text: "Action: [Wrong Guess]",
                     type: 'wrong',
-                    feedback: "<p><strong>Maximum Time Logged (Ineffective Fix):</strong> Increasing light intensity won't fix the exposure clamping issue; the camera will just auto-expose down again (if not fully clamped) or remain grey.</p>",
-                    next: 'step-2'
-                },
+                    feedback: "You spend time reimporting textures and tweaking their compression, but nothing changes—the scene still looks razor-sharp and noisy. The problem clearly isn’t in the textures themselves.",
+                    next: 'step-1W'
+                }
+            ]
+        },
+        'step-1W': {
+            skill: 'rendering',
+            title: 'Dead End: Wrong Guess',
+            prompt: "You went down the wrong path, blaming texture import and compression settings. Rebuilding and reimporting didn’t soften the image at all.",
+            choices: [
                 {
-                    text: 'Action: The <strong>Color Grading</strong> saturation is set to 0.',
-                    type: 'partial',
-                    feedback: "<p><strong>Standard Time Logged:</strong> This would make the scene black and white, not necessarily washed out/low contrast in terms of luminance.</p>",
+                    text: "Action: [Revert and try again]",
+                    type: 'correct',
+                    feedback: "You undo the unnecessary texture tweaks and go back to the root cause: a post-process or console variable that’s sharpening the final image too aggressively.",
                     next: 'step-2'
                 }
             ]
         },
         'step-2': {
             skill: 'rendering',
-            title: 'Step 2: The Shimmering Edges',
-            prompt: "<p>You fixed the contrast, but now you notice high-contrast edges (like wires) have distracting <strong>ringing artifacts</strong> and shimmering. It looks like an aggressive filter is applied.</p><strong>Where would you find a global 'Sharpening' override that persists across levels?</strong>",
+            title: 'Step 2: Investigation',
+            prompt: "You investigate the project’s post-processing pipeline and console variables to find what’s over-sharpening the image. What do you find?",
             choices: [
                 {
-                    text: 'Action: Project Settings -> Engine -> Rendering -> <strong>Default Postprocessing Settings</strong>.',
+                    text: "Action: [Identify Root Cause]",
                     type: 'correct',
-                    feedback: "<p><strong>Optimal Time Logged:</strong> Correct. The 'Sharpening' value here applies globally if not overridden by a local volume. A value > 0.5 often causes ringing.</p>",
-                    next: 'conclusion'
+                    feedback: "You find that r.Tonemapper.Sharpen is set globally to a very high value in a config file or via startup console commands. This pushes an aggressive sharpening pass on top of the tonemapped image, making the whole scene look grainy and harsh.",
+                    next: 'step-3'
                 },
                 {
-                    text: 'Action: Editor Preferences -> Viewport -> <strong>Realtime</strong>.',
-                    type: 'wrong',
-                    feedback: "<p><strong>Maximum Time Logged (Ineffective Fix):</strong> This toggles realtime rendering, not image processing filters.</p>",
-                    next: 'conclusion'
-                },
-                {
-                    text: 'Action: The <strong>Anti-Aliasing</strong> method is set to FXAA.',
-                    type: 'partial',
-                    feedback: "<p><strong>Standard Time Logged:</strong> FXAA is blurry, not sharp. TAA/TSR are smoother. While related to edge quality, the specific 'ringing' is a sharpening artifact.</p>",
-                    next: 'conclusion'
-                },
-                {
-                    text: 'Action: The <strong>Screen Percentage</strong> is set to 200%.',
+                    text: "Action: [Misguided Attempt]",
                     type: 'misguided',
-                    feedback: "<p><strong>Extended Time Logged (Investigation):</strong> Supersampling (200%) usually <em>reduces</em> artifacts, though it costs performance. It doesn't cause ringing.</p>",
+                    feedback: "You try lowering overall contrast and disabling film grain in the post-process volume, but the crunchy edge halos remain. Those tweaks don’t change the dedicated sharpen pass driven by r.Tonemapper.Sharpen.",
+                    next: 'step-2M'
+                }
+            ]
+        },
+        'step-2M': {
+            skill: 'rendering',
+            title: 'Dead End: Misguided',
+            prompt: "Those post-process changes didn’t fix the crunchy look because the sharpening is still being applied after tonemapping via the console variable.",
+            choices: [
+                {
+                    text: "Action: [Realize mistake]",
+                    type: 'correct',
+                    feedback: "You realize you must directly reduce or reset r.Tonemapper.Sharpen instead of trying to hide its effect with other post-process tweaks.",
+                    next: 'step-3'
+                }
+            ]
+        },
+        'step-3': {
+            skill: 'rendering',
+            title: 'Step 3: The Fix',
+            prompt: "You know the cause: r.Tonemapper.Sharpen is set too high. How do you fix it?",
+            choices: [
+                {
+                    text: "Action: [Reduce r.Tonemapper.Sharpen.]",
+                    type: 'correct',
+                    feedback: "You set r.Tonemapper.Sharpen to a saner value between 0 and 1 (or even 0 to disable it) in the console and then commit the change in DefaultEngine.ini or your startup config. The harsh ringing and grainy oversharpening disappear, leaving a cleaner, more natural image.",
+                    next: 'step-4'
+                }
+            ]
+        },
+        'step-4': {
+            skill: 'rendering',
+            title: 'Step 4: Verification',
+            prompt: "You need to verify that reducing r.Tonemapper.Sharpen actually fixed the grainy, over-sharpened look. How do you check it in PIE?",
+            choices: [
+                {
+                    text: "Action: [Play in Editor]",
+                    type: 'correct',
+                    feedback: "In PIE, the scene now looks much smoother and more filmic. Fine details no longer shimmer, edges aren’t haloed, and the overall image looks less noisy. Comparing before/after captures confirms that lowering r.Tonemapper.Sharpen resolved the over-sharpened visuals.",
                     next: 'conclusion'
                 }
             ]
+        },
+        'conclusion': {
+            skill: 'rendering',
+            title: 'Conclusion',
+            prompt: "Lesson: If your scene looks grainy and over-sharpened, check r.Tonemapper.Sharpen. Keeping this value in the 0–1 range (or disabling it) prevents harsh post-process sharpening and preserves a clean, stable final image.",
+            choices: []
         }
     }
 };

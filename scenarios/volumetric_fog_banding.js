@@ -1,103 +1,106 @@
-window.SCENARIOS['volumetric_fog_banding'] = {
+window.SCENARIOS['FogBandingArtifacts'] = {
     meta: {
-        title: "Lighting: Severe Volumetric Fog Banding",
-        description: "Volumetric fog shows severe vertical banding and light leakage. Requires tuning Voxel Quality, History Weight, and Shadow Injection settings.",
-        estimateHours: 3.0
+        title: "Volumetric Fog Banding",
+        description: "Fog looks sliced. Investigates GridPixelSize and View Distance.",
+        estimateHours: 1.5
     },
     start: "step-1",
     steps: {
         'step-1': {
-            skill: 'lighting',
-            title: 'Step 1: The Pixelated Fog',
-            prompt: "<p>Your scene has <strong>Volumetric Fog</strong> enabled, but it looks terrible. There are distinct vertical bands (stripes) and light leaks through walls. You've confirmed the Directional Light is Movable.</p><strong>What is the primary setting to increase the resolution of the volumetric voxel grid?</strong>",
+            skill: 'rendering',
+            title: 'Step 1: The Symptom',
+            prompt: "Your volumetric fog doesn’t look smooth—it appears as distinct \"slices\" or bands in the distance, almost like horizontal layers stacked on top of each other. What do you check first?",
             choices: [
                 {
-                    text: 'Action: Increase <strong>Volumetric Scattering Sample Count</strong> (Voxel Quality) in the Exponential Height Fog component.',
+                    text: "Action: [Check Logs/View Modes]",
                     type: 'correct',
-                    feedback: "<p><strong>Optimal Time Logged:</strong> Correct. Increasing this (e.g., from 128 to 256) directly improves the grid resolution, reducing blocky artifacts.</p>",
+                    feedback: "You switch to fog and volumetric visualization view modes and inspect console variables. You notice the Volumetric Fog View Distance is set very high for the current quality, and the 3D grid resolution looks stretched, which hints that the fog grid is too coarse over that long range.",
                     next: 'step-2'
                 },
                 {
-                    text: 'Action: Increase the <strong>Fog Density</strong>.',
+                    text: "Action: [Wrong Guess]",
                     type: 'wrong',
-                    feedback: "<p><strong>Maximum Time Logged (Ineffective Fix):</strong> Making the fog thicker just makes the artifacts more visible.</p>",
-                    next: 'step-2'
-                },
+                    feedback: "You start tweaking fog color and density in the Exponential Height Fog and post-process, but the hard bands and slices remain clearly visible. The issue is not simply the color or amount of fog.",
+                    next: 'step-1W'
+                }
+            ]
+        },
+        'step-1W': {
+            skill: 'rendering',
+            title: 'Dead End: Wrong Guess',
+            prompt: "You went down the wrong path, assuming the banding came from bad fog color or density curves. Those changes didn’t remove the visible layers in the volumetric fog.",
+            choices: [
                 {
-                    text: 'Action: Enable <strong>Contact Shadows</strong> on the light.',
-                    type: 'partial',
-                    feedback: "<p><strong>Standard Time Logged:</strong> Contact shadows are screen-space and don't affect the volumetric voxel grid resolution.</p>",
-                    next: 'step-2'
-                },
-                {
-                    text: 'Action: Increase the <strong>Lightmap Resolution</strong> of the floor.',
-                    type: 'misguided',
-                    feedback: "<p><strong>Extended Time Logged (Investigation):</strong> Volumetric fog is dynamic; lightmaps are irrelevant here.</p>",
+                    text: "Action: [Revert and try again]",
+                    type: 'correct',
+                    feedback: "You revert the unnecessary color/density tweaks and refocus on how the volumetric fog grid is allocated—its view distance and resolution settings.",
                     next: 'step-2'
                 }
             ]
         },
         'step-2': {
             skill: 'rendering',
-            title: 'Step 2: Temporal Stability',
-            prompt: "<p>The resolution is better, but the fog still flickers and bands when the camera moves.</p><strong>Which setting improves the temporal stability of the fog simulation?</strong>",
+            title: 'Step 2: Investigation',
+            prompt: "You dig into the volumetric fog console variables and project settings to understand why the fog volume is breaking into visible layers. What do you find?",
             choices: [
                 {
-                    text: 'Action: Increase the <strong>History Weight</strong> in the Volumetric Fog settings (e.g., to 0.9).',
+                    text: "Action: [Identify Root Cause]",
                     type: 'correct',
-                    feedback: "<p><strong>Optimal Time Logged:</strong> Correct. A higher history weight relies more on previous frames, smoothing out jitter and noise over time.</p>",
+                    feedback: "You discover that the Volumetric Fog View Distance is pushed very far, while r.VolumetricFog.GridPixelSize is still set for a relatively low-res grid. With that long view distance on a coarse grid, each depth slice becomes large enough to be visible, causing the distinct banding in the fog.",
                     next: 'step-3'
                 },
                 {
-                    text: 'Action: Switch Anti-Aliasing to <strong>FXAA</strong>.',
-                    type: 'wrong',
-                    feedback: "<p><strong>Maximum Time Logged (Ineffective Fix):</strong> FXAA is a spatial post-process and does not help with volumetric temporal accumulation.</p>",
-                    next: 'step-3'
-                },
-                {
-                    text: 'Action: Decrease the <strong>View Distance</strong> of the fog.',
-                    type: 'partial',
-                    feedback: "<p><strong>Standard Time Logged:</strong> This concentrates the voxels, which might help resolution, but doesn't fix the temporal flickering.</p>",
-                    next: 'step-3'
-                },
-                {
-                    text: 'Action: Turn off <strong>Motion Blur</strong>.',
+                    text: "Action: [Misguided Attempt]",
                     type: 'misguided',
-                    feedback: "<p><strong>Extended Time Logged (Investigation):</strong> Motion blur is a separate post-process effect.</p>",
+                    feedback: "You try increasing volumetric fog intensity and adding more lights, but the bands just become more obvious. Brightening the fog doesn’t change the underlying grid resolution or view distance mismatch.",
+                    next: 'step-2M'
+                }
+            ]
+        },
+        'step-2M': {
+            skill: 'rendering',
+            title: 'Dead End: Misguided',
+            prompt: "That didn’t work because you’re still using the same coarse volumetric grid over a huge view distance. The renderer is forced to slice the fog into big steps, which show up as visible layers.",
+            choices: [
+                {
+                    text: "Action: [Realize mistake]",
+                    type: 'correct',
+                    feedback: "You realize you must either reduce the effective volumetric fog view distance or adjust r.VolumetricFog.GridPixelSize so the grid resolution and view distance are better matched and the banding disappears.",
                     next: 'step-3'
                 }
             ]
         },
         'step-3': {
-            skill: 'console',
-            title: 'Step 3: Advanced Shadow Injection',
-            prompt: "<p>There is still some light leaking through solid walls into the fog.</p><strong>Which console command forces high-quality shadow injection into the fog grid?</strong>",
+            skill: 'rendering',
+            title: 'Step 3: The Fix',
+            prompt: "You know the cause: the volumetric fog grid is stretched too far, so the fog slices become visible. How do you fix it?",
             choices: [
                 {
-                    text: 'Action: <code>r.VolumetricFog.InjectShadowsInFogGrid 1</code>',
+                    text: "Action: [Adjust r.VolumetricFog.GridPixelSize.]",
                     type: 'correct',
-                    feedback: "<p><strong>Optimal Time Logged:</strong> Correct. This forces the engine to sample shadows more accurately for the volumetric grid, preventing leaks.</p>",
-                    next: 'conclusion'
-                },
+                    feedback: "You tune the volumetric settings: either increase r.VolumetricFog.GridPixelSize to use fewer, larger pixels and bring the view distance back into a comfortable range, or reduce the Volumetric Fog View Distance so the existing grid resolution isn’t overextended. After balancing these settings, the fog volume is distributed more evenly and the obvious bands disappear.",
+                    next: 'step-4'
+                }
+            ]
+        },
+        'step-4': {
+            skill: 'rendering',
+            title: 'Step 4: Verification',
+            prompt: "With the volumetric fog grid and view distance adjusted, you need to confirm that the banding is gone. How do you verify this in PIE?",
+            choices: [
                 {
-                    text: 'Action: <code>r.ShadowQuality 5</code>',
-                    type: 'partial',
-                    feedback: "<p><strong>Standard Time Logged:</strong> Improves general shadows, but doesn't specifically target the volumetric injection pass.</p>",
-                    next: 'conclusion'
-                },
-                {
-                    text: 'Action: <code>stat fps</code>',
-                    type: 'wrong',
-                    feedback: "<p><strong>Maximum Time Logged (Ineffective Fix):</strong> This just shows the frame rate.</p>",
-                    next: 'conclusion'
-                },
-                {
-                    text: 'Action: <code>r.Lumen.Reflections.Allow 0</code>',
-                    type: 'misguided',
-                    feedback: "<p><strong>Extended Time Logged (Investigation):</strong> Lumen reflections are unrelated to volumetric fog shadows.</p>",
+                    text: "Action: [Play in Editor]",
+                    type: 'correct',
+                    feedback: "In PIE, you look out across long vistas and up into the sky through the fog. The harsh slices are gone; the fog now appears as a smooth, continuous volume with subtle gradients instead of visible bands. The visual artifacts have been resolved, confirming that adjusting r.VolumetricFog.GridPixelSize and/or view distance fixed the issue.",
                     next: 'conclusion'
                 }
             ]
+        },
+        'conclusion': {
+            skill: 'rendering',
+            title: 'Conclusion',
+            prompt: "Lesson: If volumetric fog shows visible \"slices\" or bands, don’t just tweak color and density. Check the Volumetric Fog View Distance and r.VolumetricFog.GridPixelSize. Bringing the view distance down or adjusting the grid pixel size so the 3D fog grid isn’t stretched too far will eliminate banding and restore smooth fog.",
+            choices: []
         }
     }
 };

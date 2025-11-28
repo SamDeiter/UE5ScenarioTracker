@@ -1,4 +1,12 @@
-window.SCENARIOS['assetmanagement_beginner'] = {
+"""
+Expand assetmanagement_beginner.js from 1 step to 10+ steps
+
+This script will create an expanded version of the asset management beginner scenario,
+transforming it from a single-step quiz into a sequential debugging journey.
+"""
+
+# The expanded scenario content
+EXPANDED_SCENARIO = """window.SCENARIOS['assetmanagement_beginner'] = {
     meta: {
         title: "Asset Management: Missing Material References After Folder Reorganization",
         description: "After reorganizing the Content folder, meshes show pink/black checkers and the Level Blueprint fails to spawn a particle system. Investigates asset redirectors, reference fixing, and Blueprint recompilation.",
@@ -84,9 +92,9 @@ window.SCENARIOS['assetmanagement_beginner'] = {
                     next: 'step-3'
                 },
                 {
-                    text: 'Action: Search the Content Browser for files with "Redirector" in the name.',
+                    text: 'Action: Search the Content Browser for files with \"Redirector\" in the name.',
                     type: 'partial',
-                    feedback: "<p><strong>Standard Time Logged:</strong> Redirectors don't have "Redirector" in their filename - they keep the original asset name. You need to enable the view option to see them.</p>",
+                    feedback: "<p><strong>Standard Time Logged:</strong> Redirectors don't have \"Redirector\" in their filename - they keep the original asset name. You need to enable the view option to see them.</p>",
                     next: 'step-3'
                 },
                 {
@@ -126,7 +134,7 @@ window.SCENARIOS['assetmanagement_beginner'] = {
                 {
                     text: 'Action: Redirectors maintain references temporarily, but they need to be <strong>fixed up</strong> to update all references to point directly to the new location.',
                     type: 'correct',
-                    feedback: "<p><strong>Optimal Time Logged:</strong> Exactly! Redirectors are a temporary solution. The "Fix Up Redirectors" command updates all references to point directly to the new asset locations, then removes the redirectors.</p>",
+                    feedback: "<p><strong>Optimal Time Logged:</strong> Exactly! Redirectors are a temporary solution. The \"Fix Up Redirectors\" command updates all references to point directly to the new asset locations, then removes the redirectors.</p>",
                     next: 'step-4'
                 },
                 {
@@ -138,13 +146,13 @@ window.SCENARIOS['assetmanagement_beginner'] = {
                 {
                     text: 'Action: Redirectors automatically fix references after a certain amount of time.',
                     type: 'misguided',
-                    feedback: "<p><strong>Extended Time Logged (Investigation):</strong> Redirectors don't auto-fix. You need to manually run the "Fix Up Redirectors" command.</p>",
+                    feedback: "<p><strong>Extended Time Logged (Investigation):</strong> Redirectors don't auto-fix. You need to manually run the \"Fix Up Redirectors\" command.</p>",
                     next: 'step-3M'
                 },
                 {
                     text: 'Action: Redirectors are just informational - you still need to manually update all references.',
                     type: 'partial',
-                    feedback: "<p><strong>Standard Time Logged:</strong> Redirectors do more than inform - they can automatically update references when you use the "Fix Up Redirectors" command.</p>",
+                    feedback: "<p><strong>Standard Time Logged:</strong> Redirectors do more than inform - they can automatically update references when you use the \"Fix Up Redirectors\" command.</p>",
                     next: 'step-4'
                 }
             ]
@@ -167,7 +175,7 @@ window.SCENARIOS['assetmanagement_beginner'] = {
         'step-3M': {
             skill: 'assetmanagement',
             title: 'Waiting for Auto-Fix',
-            prompt: "<p>You waited, but the references are still broken. A senior developer explains that you need to manually run the "Fix Up Redirectors" command.</p><strong>How do you do this?</strong>",
+            prompt: "<p>You waited, but the references are still broken. A senior developer explains that you need to manually run the \"Fix Up Redirectors\" command.</p><strong>How do you do this?</strong>",
             choices: [
                 {
                     text: 'Action: Right-click on the folder containing redirectors and select <strong>Fix Up Redirectors in Folder</strong>.',
@@ -383,7 +391,7 @@ window.SCENARIOS['assetmanagement_beginner'] = {
         'step-8M': {
             skill: 'assetmanagement',
             title: 'Keeping Redirectors for Safety',
-            prompt: "<p>You kept the redirectors "just in case." A week later, the tech lead asks why there are still redirectors in the project. They explain that fixed-up redirectors are safe to delete and should be removed to keep the project clean.</p><strong>What should you do?</strong>",
+            prompt: "<p>You kept the redirectors \"just in case.\" A week later, the tech lead asks why there are still redirectors in the project. They explain that fixed-up redirectors are safe to delete and should be removed to keep the project clean.</p><strong>What should you do?</strong>",
             choices: [
                 {
                     text: 'Action: Delete the redirectors and empty folder now.',
@@ -432,7 +440,7 @@ window.SCENARIOS['assetmanagement_beginner'] = {
             prompt: "<p>Everything is working perfectly! Before you finish, you want to document what you learned for future reference and share best practices with the team.</p><strong>What's the most important lesson from this experience?</strong>",
             choices: [
                 {
-                    text: 'Action: Document the proper workflow: Move assets → Enable "Show Redirectors" → Fix Up Redirectors in Folder → Recompile affected Blueprints → Delete redirectors and empty folders.',
+                    text: 'Action: Document the proper workflow: Move assets → Enable \"Show Redirectors\" → Fix Up Redirectors in Folder → Recompile affected Blueprints → Delete redirectors and empty folders.',
                     type: 'correct',
                     feedback: "<p><strong>Optimal Time Logged:</strong> Perfect! You create a wiki page documenting this workflow. Future folder reorganizations will be much smoother. Task complete!</p>",
                     next: 'conclusion'
@@ -459,3 +467,38 @@ window.SCENARIOS['assetmanagement_beginner'] = {
         }
     }
 };
+"""
+
+def main():
+    import sys
+    from pathlib import Path
+    
+    # Get the scenario file path
+    script_dir = Path(__file__).parent
+    scenario_file = script_dir.parent.parent / 'scenarios' / 'assetmanagement_beginner.js'
+    
+    print(f"Expanding scenario: {scenario_file}")
+    print(f"Creating backup...")
+    
+    # Create backup
+    backup_file = scenario_file.with_suffix('.js.bak')
+    with open(scenario_file, 'r', encoding='utf-8') as f:
+        original_content = f.read()
+    
+    with open(backup_file, 'w', encoding='utf-8') as f:
+        f.write(original_content)
+    
+    print(f"Backup created: {backup_file}")
+    print(f"Writing expanded scenario...")
+    
+    # Write expanded scenario
+    with open(scenario_file, 'w', encoding='utf-8') as f:
+        f.write(EXPANDED_SCENARIO)
+    
+    print(f"✓ Expansion complete!")
+    print(f"  - Original backed up to: {backup_file}")
+    print(f"  - Expanded scenario written to: {scenario_file}")
+    print(f"  - New step count: 10 main steps + 6 dead-end steps = 16 total steps")
+
+if __name__ == '__main__':
+    main()

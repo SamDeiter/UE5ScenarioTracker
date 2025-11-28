@@ -23,4 +23,6 @@ start http://localhost:8000
 
 :: Start Python's built-in HTTP server on port 8000.
 :: If this command fails, try changing 'py' to 'python'.
+pushd %~dp0..\..
 py -m http.server 8000
+popd

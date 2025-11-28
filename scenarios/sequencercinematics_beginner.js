@@ -1,128 +1,106 @@
-
-window.SCENARIOS = window.SCENARIOS || {};
-
-window.SCENARIOS['SequencerLightRestoreStateIssue'] = {
+window.SCENARIOS['SequencerLightReverts'] = {
     meta: {
-        title: "Cinematic Light Fails to Persist After Sequence Stops",
-        description: "When testing the short cinematic sequence, the camera cuts and character animation play correctly. However, a tracked Spotlight, which has its intensity and color keyframed to be red at the end of the sequence, immediately turns off and reverts to its initial intensity (or disappears) the moment the sequence finishes playing. The light should remain red and on, illuminating the scene after the cinematic concludes. The actor itself is persistent in the level.",
-        difficulty: "medium",
-        category: "Sequencer & Cinematics",
-        estimate: 0.75
+        title: "Light Reverts After Cinematic",
+        description: "Keyframed light resets after sequence. Investigates \"Restore State\" vs \"Keep State\".",
+        estimateHours: 1.5
     },
-    start: "step_1",
+    start: "step-1",
     steps: {
-    "step_1": {
-        "prompt": "When testing the short cinematic sequence, the camera cuts and character animation play correctly. However, a tracked Spotlight, which has its intensity and color keyframed to be red at the end of the sequence, immediately turns off and reverts to its initial intensity (or disappears) the moment the sequence finishes playing. The light should remain red and on, illuminating the scene after the cinematic concludes. The actor itself is persistent in the level.",
-        "choices": [
-            {
-                "text": "Scrub the timeline to the final frame of the sequence and verify that the keyframes for Intensity and Light Color are correctly set (Intensity > 0, Color = Red) and that the keyframes are present on the final frame.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Click the 'Save All' button in the main Unreal Editor toolbar to ensure both the Level Sequence asset and the current Level are saved.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.02
-            },
-            {
-                "text": "Return to the level viewport and trigger the cinematic playback (e.g., using PIE mode or walking into the trigger volume).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.08
-            },
-            {
-                "text": "Double-click the Level Sequence Asset within the Level Sequence Actor's Details panel or Content Browser to open the Sequencer editor.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.03
-            },
-            {
-                "text": "Checking the mobility settings (e.g., ensuring the light is Movable) on the Light Actor in the Level Details panel, assuming a lighting bake or static issue is causing the behavior.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.15
-            },
-            {
-                "text": "Locate the 'Binding' section within the Sequencer Details panel for the selected light actor.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Trying to use a Level Blueprint to manually set the light color and intensity to red immediately after the 'On Finished' output of the cinematic trigger node.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.3
-            },
-            {
-                "text": "Locate the Level Sequence Actor associated with the cinematic in the Outliner (or Content Browser if dynamically played).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.03
-            },
-            {
-                "text": "Uncheck the 'Restore State' option. This instructs Sequencer to leave the actor's properties at the state defined by the final keyframe.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.08
-            },
-            {
-                "text": "Verify that the light is now red and remains on with the keyframed intensity after the sequence successfully finishes and the playback cursor stops.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Expand the 'Binding' section settings to expose advanced cinematic options.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.03
-            },
-            {
-                "text": "Attempting to change the 'When Finished' option on the main Level Sequence Actor in the level to 'Keep State' or 'Keep Last Frame', believing this affects Possessable Actor properties rather than just the sequence playback cursor.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.25
-            },
-            {
-                "text": "Confirm that the light actor is listed as a 'Possessable' (green icon) since it is an existing actor in the level and should maintain its state.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.04
-            },
-            {
-                "text": "In the Sequencer editor, identify the specific track binding for the problematic persistent light actor (e.g., 'Spotlight_Environment_01').",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.04
-            },
-            {
-                "text": "With the light binding track selected, locate the 'Details' panel specific to the Sequencer editor (this panel often needs to be explicitly enabled via the Window menu within Sequencer).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Close the Sequencer editor window.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.02
-            },
-            {
-                "text": "Find the boolean property labeled 'Restore State' or 'Restore State/Keep State'.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Observe that the 'Restore State' checkbox is currently enabled (checked). This setting automatically reverts the actor's properties to their pre-sequence values upon completion or stopping.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.03
-            }
-        ]
+        'step-1': {
+            skill: 'sequencer',
+            title: 'Step 1: The Symptom',
+            prompt: "A spotlight is keyframed in Sequencer to fade to bright RED at the end of a cinematic, but as soon as the sequence finishes, the light snaps back to its original white color. Property resets on sequence end. What do you check first?",
+            choices: [
+                {
+                    text: "Action: [Check Logs/View Modes]",
+                    type: 'correct',
+                    feedback: "You scrub the Sequencer timeline and watch the light in the viewport: during the shot, the color correctly animates to RED. The moment playback stops, the light’s color instantly returns to white. This tells you the track is applying during the sequence but something is explicitly restoring the pre-sequence state when it ends.",
+                    next: 'step-2'
+                },
+                {
+                    text: "Action: [Wrong Guess]",
+                    type: 'wrong',
+                    feedback: "You try duplicating the keys and even keyframe the light directly in the level, but the color still snaps back to white when the cinematic finishes. Clearly the keys are working during playback, so the problem isn’t missing keyframes.",
+                    next: 'step-1W'
+                }
+            ]
+        },
+        'step-1W': {
+            skill: 'sequencer',
+            title: 'Dead End: Wrong Guess',
+            prompt: "You went down the wrong path, assuming the issue was bad keyframes or a broken light actor. The animation clearly plays correctly; it’s only after the sequence ends that the property reverts.",
+            choices: [
+                {
+                    text: "Action: [Revert and try again]",
+                    type: 'correct',
+                    feedback: "You undo the extra keyframe clutter and refocus on Sequencer’s playback settings—specifically what Sequencer does to bound properties when the section finishes.",
+                    next: 'step-2'
+                }
+            ]
+        },
+        'step-2': {
+            skill: 'sequencer',
+            title: 'Step 2: Investigation',
+            prompt: "You open the Level Sequence, select the light’s color track section, and inspect its properties to understand why the light state is being reverted after playback. What do you find?",
+            choices: [
+                {
+                    text: "Action: [Identify Root Cause]",
+                    type: 'correct',
+                    feedback: "In the section’s Properties, you see that \"When Finished\" is set to the default \"Restore State\". That setting tells Sequencer to push the animated value during playback and then restore the original value (white) as soon as the sequence stops. That’s exactly why the spotlight won’t stay RED at the end of the cinematic.",
+                    next: 'step-3'
+                },
+                {
+                    text: "Action: [Misguided Attempt]",
+                    type: 'misguided',
+                    feedback: "You consider adding another hidden sequence or a Blueprint to reapply the RED color after the cinematic, but that’s just a hack. It would fight against Sequencer still restoring the original value on its own.",
+                    next: 'step-2M'
+                }
+            ]
+        },
+        'step-2M': {
+            skill: 'sequencer',
+            title: 'Dead End: Misguided',
+            prompt: "That didn’t work because Sequencer is still configured to restore the light’s original color when the sequence ends. Any external attempts to force the color RED will be overwritten unless you change that behavior.",
+            choices: [
+                {
+                    text: "Action: [Realize mistake]",
+                    type: 'correct',
+                    feedback: "You realize the correct approach is to change the track’s \"When Finished\" behavior in Sequencer so it keeps the final value from the cinematic instead of restoring the pre-cinematic state.",
+                    next: 'step-3'
+                }
+            ]
+        },
+        'step-3': {
+            skill: 'sequencer',
+            title: 'Step 3: The Fix',
+            prompt: "You now know the cause: the spotlight’s color track is set to \"Restore State\" at the end of the sequence. How do you fix it so the light stays RED after the cinematic?",
+            choices: [
+                {
+                    text: "Action: [Set \"When Finished\" to \"Keep State\".]",
+                    type: 'correct',
+                    feedback: "In Sequencer, you right-click the light color track section, open Properties, and change the \"When Finished\" option from \"Restore State\" to \"Keep State\". This tells Sequencer to leave the light at its final keyed value (RED) when the cinematic ends instead of snapping back to the original white color.",
+                    next: 'step-4'
+                }
+            ]
+        },
+        'step-4': {
+            skill: 'sequencer',
+            title: 'Step 4: Verification',
+            prompt: "You re-run the cinematic in PIE and watch the spotlight’s behavior before, during, and after the sequence. How do you verify the fix?",
+            choices: [
+                {
+                    text: "Action: [Play in Editor]",
+                    type: 'correct',
+                    feedback: "In PIE, the spotlight starts white, animates to RED as the sequence plays, and after the cinematic finishes, it remains RED in the level. The property no longer snaps back, confirming that setting \"When Finished\" to \"Keep State\" solved the problem.",
+                    next: 'conclusion'
+                }
+            ]
+        },
+        'conclusion': {
+            skill: 'sequencer',
+            title: 'Conclusion',
+            prompt: "Lesson: When a property animated in Sequencer reverts after playback, check the track section’s \"When Finished\" setting. Use \"Keep State\" instead of the default \"Restore State\" whenever you want the final cinematic value—like a light turning RED—to persist after the sequence ends.",
+            choices: []
+        }
     }
-}
 };

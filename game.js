@@ -1,37 +1,50 @@
 // Wait for the DOM to be fully loaded before running the game logic
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- GLOBAL CONFIGURATION ---
-    const TOTAL_TEST_TIME_SECONDS = 30 * 60; // Total 30 minutes for the assessment countdown timer
-    const LOW_TIME_WARNING_SECONDS = 5 * 60; // Time remaining threshold to trigger pulsing red timer
-    const PASS_THRESHOLD = 0.80; // Pass if (Ideal Time / Logged Time) >= 80%
-    const DEBUG_PASSWORD = 'IloveUnreal'; // Secret password to enable Debug Mode
+    /* ==========================================================================
+       == CONFIGURATION & CONSTANTS
+       ========================================================================== */
+    const CONFIG = {
+        TOTAL_TEST_TIME_SECONDS: 30 * 60, // 30 minutes
+        LOW_TIME_WARNING_SECONDS: 5 * 60, // 5 minutes
+        PASS_THRESHOLD: 0.80, // 80% efficiency
+        DEBUG_PASSWORD: 'IloveUnreal',
+        TIME_COSTS: {
+            correct: 0.5,
+            partial: 1.0,
+            misguided: 1.5,
+            wrong: 2.0,
+        }
+    };
 
-    // --- DEBUG ACCESS STATE ---
     let debugAccessState = {
         passwordModalVisible: false // Tracks if the password input is currently shown
     };
 
-    // --- DOM ELEMENT CACHE ---
-    // Note: Removed unused variables related to audit features and hard reset UI.
-    let headerControls, backlogList, ticketViewColumn, ticketPlaceholder, 
+    // --- DOM ELEMENT CACHE (Populated by cacheDOMElements) ---
+    let backlogList, ticketViewColumn, ticketPlaceholder,
         ticketContent, ticketTitle, ticketDescription, ticketStepContent,
-        debugToggle, countdownTimer, jiraBoard, timesUpScreen, 
-        debugDropdown; 
-    
+        countdownTimer, jiraBoard, timesUpScreen, debugDropdown;
+
     let timerContainer; // Parent container for the countdown timer
 
-    // --- CORE GAME STATE ---
+    /* ==========================================================================
+       == CORE GAME STATE
+       ========================================================================== */
     let scenarioState = {}; // Stores progress, time logged, and choices for each scenario (Ticket)
     let currentScenarioId = null; // Key of the scenario currently displayed (e.g., 'golem')
     let currentStepId = null; // Key of the current question step within the scenario
     let interruptedSteps = {}; // Stores the last active step for non-completed scenarios
     let isDebugMode = false; // Flag for debug visualization/controls
     let mainTimerInterval = null; // ID for the setInterval used for the 30-minute countdown
-    
-    let timeRemaining = TOTAL_TEST_TIME_SECONDS; // Remaining time on the countdown timer
-    
-	// --- ENCODING UTILITIES (Restored for Test Key Generation) ---
+
+    let timeRemaining = CONFIG.TOTAL_TEST_TIME_SECONDS; // Remaining time on the countdown timer
+    let sessionScenarioOrder = []; // Randomized order of scenarios for this session
+
+    /* ==========================================================================
+       == UTILITY FUNCTIONS
+       ========================================================================== */
+    // --- ENCODING UTILITIES (Restored for Test Key Generation) ---
     /**
      * Encodes a string to a Unicode-safe Base64 string.
      * @param {string} str - The string to encode.
@@ -39,14 +52,14 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function base64EncodeUnicode(str) {
         const utf8Bytes = encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
-            function(match, p1) {
+            function (match, p1) {
                 return String.fromCharCode('0x' + p1);
             });
-            return btoa(utf8Bytes);
+        return btoa(utf8Bytes);
     }
-    
-	// --- TIMER & TIME UTILITIES ---
-    
+
+    // --- TIMER & TIME UTILITIES ---
+
     /**
      * Converts total seconds into MM:SS format for display.
      * @param {number} totalSeconds - Total seconds remaining.
@@ -64,34 +77,31 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {number} Time cost in hours.
      */
     function getTimeCostForChoice(type) {
-        switch (type) {
-            case 'correct':
-                return 0.5; // Optimal
-            case 'partial':
-                return 1.0; // Standard
-            case 'misguided':
-                return 1.5; // Extended
-            case 'wrong':
-                return 2.0; // Maximum
-            default:
-                return 0;
-        }
+        return CONFIG.TIME_COSTS[type] || 0;
     }
 
-    // --- TIMER LOGIC ---
-    
+    /* ==========================================================================
+       == TIMER LOGIC
+       ========================================================================== */
+
     /**
      * Updates the main timer display, applies visual cues, and handles expiry.
      */
     function updateMainTimerDisplay() {
         // 1. Update Display
         countdownTimer.textContent = formatTime(timeRemaining);
-        
+
         // 2. Update Color/Pulse based on time left
-        countdownTimer.classList.remove('pulse-red', 'text-blue-300', 'text-yellow-400', 'text-orange-400', 'text-green-500');
-        if (timeRemaining <= LOW_TIME_WARNING_SECONDS && timeRemaining > 0) {
-            countdownTimer.classList.add('text-yellow-400', 'pulse-red');
+        countdownTimer.classList.remove('pulse-red', 'text-blue-300', 'text-yellow-400', 'text-orange-400', 'text-green-500', 'text-red-500');
+
+        if (timeRemaining <= 60 && timeRemaining > 0) {
+            // CRITICAL: Less than 1 minute (Red + Pulse)
+            countdownTimer.classList.add('text-red-500', 'pulse-red');
+        } else if (timeRemaining <= CONFIG.LOW_TIME_WARNING_SECONDS && timeRemaining > 0) {
+            // WARNING: Less than 5 minutes (Yellow)
+            countdownTimer.classList.add('text-yellow-400');
         } else if (timeRemaining > 0) {
+            // NORMAL: Blue
             countdownTimer.classList.add('text-blue-300');
         }
 
@@ -103,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 4. Decrement
         timeRemaining--;
-        
+
         // 5. Save remaining time to Local Storage
         localStorage.setItem('ue5ScenarioTimer', timeRemaining.toString());
     }
@@ -114,32 +124,32 @@ document.addEventListener('DOMContentLoaded', () => {
     function startMainTimer(isInitialStart = false) {
         // Load time state
         if (isInitialStart) {
-            timeRemaining = TOTAL_TEST_TIME_SECONDS;
+            timeRemaining = CONFIG.TOTAL_TEST_TIME_SECONDS;
             localStorage.removeItem('ue5ScenarioTimer');
         } else {
             const savedTime = localStorage.getItem('ue5ScenarioTimer');
             if (savedTime !== null) {
                 timeRemaining = parseInt(savedTime, 10);
             } else {
-                timeRemaining = TOTAL_TEST_TIME_SECONDS;
+                timeRemaining = CONFIG.TOTAL_TEST_TIME_SECONDS;
             }
         }
-        
+
         // CRITICAL FIX: Ensure timer container is visible if time is > 0
         if (timerContainer && timeRemaining > 0) {
             timerContainer.classList.remove('hidden');
         }
 
         if (mainTimerInterval) clearInterval(mainTimerInterval);
-        
+
         if (timeRemaining > 0) {
-             updateMainTimerDisplay(); // Initial display update
-             mainTimerInterval = setInterval(updateMainTimerDisplay, 1000); // Start the 1-second interval
+            updateMainTimerDisplay(); // Initial display update
+            mainTimerInterval = setInterval(updateMainTimerDisplay, 1000); // Start the 1-second interval
         } else {
-             endGameByTime(); // Time already ran out
+            endGameByTime(); // Time already ran out
         }
     }
-    
+
     /**
      * Pauses the countdown timer without clearing state.
      */
@@ -149,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
             mainTimerInterval = null;
         }
     }
-    
+
     /**
      * Resumes the countdown timer only if the assessment is incomplete.
      */
@@ -162,8 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- CORE GAME INITIALIZATION ---
-
+    /* ==========================================================================
+       == DEBUG & ADMIN FUNCTIONS
+       ========================================================================== */
     /**
      * Toggles the Debug Mode state and updates the UI visibility.
      */
@@ -173,12 +184,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             isDebugMode = !isDebugMode;
         }
-        
+
         // Manually toggle UI state
         if (debugDropdown) {
             debugDropdown.classList.toggle('hidden', !isDebugMode);
         }
-        
+
         // Update internal logic based on new mode
         if (isDebugMode) {
             pauseMainTimer();
@@ -189,12 +200,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Re-enable security when exiting debug mode
             document.body.classList.add('unselectable');
         }
-        
+
         // Update the visual status of the hidden toggle (for consistency)
         if (debugToggle) {
             debugToggle.checked = isDebugMode;
         }
-        
+
         // Re-render current step to show/hide hints if a ticket is open
         if (currentScenarioId && currentStepId) {
             renderStep(currentScenarioId, currentStepId);
@@ -226,12 +237,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         `;
-        
+
         document.body.insertAdjacentHTML('beforeend', modalHtml);
 
         const modal = document.getElementById('password-modal');
         const input = document.getElementById('password-input');
-        
+
         input.focus();
 
         const cleanup = () => {
@@ -264,17 +275,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-
+    /* ==========================================================================
+       == INITIALIZATION & DOM SETUP
+       == CORE INITIALIZATION
+       ========================================================================== */
     /**
-     * The primary entry point for setting up the game state.
-     */
+    * The primary entry point for setting up the game state.
+    */
     function initializeApp() {
-        
+
+        // Safety check: Ensure SCENARIOS object exists
+        if (!window.SCENARIOS || Object.keys(window.SCENARIOS).length === 0) {
+            console.error('No scenarios loaded! Waiting for scenario files...');
+            setTimeout(initializeApp, 100); // Retry after 100ms
+            return;
+        }
+
         // 1. --- AGGRESSIVE STATE CHECK AND RESET (Fixes infinite modal loop) ---
         const savedStateJSON = localStorage.getItem('ue5ScenarioState');
         let initialScenarioState = {};
         let allCompleteOnLoad = false;
-        
+
         if (savedStateJSON) {
             try {
                 initialScenarioState = JSON.parse(savedStateJSON);
@@ -282,73 +303,100 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("Initial load failed, resetting saved state.");
             }
         }
-        
+
         // Determine completion state based on potentially loaded data
         if (Object.keys(initialScenarioState).length > 0) {
-             allCompleteOnLoad = Object.values(initialScenarioState).every(s => s.completed);
+            allCompleteOnLoad = Object.values(initialScenarioState).every(s => s.completed);
         }
-        
+
         // CRITICAL FIX: If completed, clear the state immediately so the next load starts clean.
         let showCompletionModal = false;
         if (allCompleteOnLoad) {
             // We set a flag to show the modal *this time*
             showCompletionModal = true;
-            
+
             // Then, we clear the data immediately so the next load gets a clean start.
             localStorage.removeItem('ue5ScenarioState'); // Clears the completion status
             localStorage.removeItem('ue5InterruptedSteps');
             localStorage.removeItem('ue5ActiveScenario');
             localStorage.removeItem('ue5ActiveStep');
-            localStorage.removeItem('ue5ScenarioTimer'); 
+            localStorage.removeItem('ue5ScenarioTimer');
         }
         // --- END AGGRESSIVE STATE CHECK ---
 
         // 2. Load data from local storage (this loads a default clean state if the state was just cleared above)
+        // --- SCENARIO RANDOMIZATION LOGIC ---
+        const allKeys = Object.keys(window.SCENARIOS);
+        let storedOrder = JSON.parse(localStorage.getItem('ue5ScenarioOrder') || '[]');
+
+        // Filter stored order to remove deleted scenarios
+        storedOrder = storedOrder.filter(id => allKeys.includes(id));
+
+        // Find new scenarios not in stored order
+        const newScenarios = allKeys.filter(id => !storedOrder.includes(id));
+
+        // Shuffle new scenarios
+        for (let i = newScenarios.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newScenarios[i], newScenarios[j]] = [newScenarios[j], newScenarios[i]];
+        }
+
+        // Combine: Keep stored order first (to maintain consistency on refresh), then add new ones
+        sessionScenarioOrder = [...storedOrder, ...newScenarios];
+
+        // If it was empty (first run or reset), shuffle the whole thing
+        if (storedOrder.length === 0) {
+            for (let i = sessionScenarioOrder.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [sessionScenarioOrder[i], sessionScenarioOrder[j]] = [sessionScenarioOrder[j], sessionScenarioOrder[i]];
+            }
+        }
+
+        // Save the order
+        localStorage.setItem('ue5ScenarioOrder', JSON.stringify(sessionScenarioOrder));
+
         loadScenarioState();
         loadInterruptedSteps();
-        
+
         // 3. Check for crash recovery / active scenario
         const activeScenarioId = localStorage.getItem('ue5ActiveScenario');
         const activeStepId = localStorage.getItem('ue5ActiveStep');
-        
+
         // 4. Start the timer (handles loading saved time or 30:00)
         startMainTimer();
 
         // 5. Render the backlog
         renderBacklog();
-        
+
         // 6. Recover the active ticket view if the state was saved
         if (activeScenarioId && activeStepId) {
-             selectScenario(activeScenarioId, activeStepId);
+            selectScenario(activeScenarioId, activeStepId);
         }
-        
+
         // 7. If completed on load, stop the timer and show the final modal immediately.
-        if (showCompletionModal) { 
+        if (showCompletionModal) {
             if (timerContainer) {
                 timerContainer.classList.add('hidden');
             }
             toggleDebugMode(true); // Ensure debug mode is off
             stopTimerOnComplete();
-            
+
             // Use the initial state's data (which still holds the score) to show the final modal
             let totalLoggedTime = Object.values(initialScenarioState).reduce((acc, s) => acc + s.loggedTime, 0);
 
-            showAssessmentModal('complete', totalLoggedTime, initialScenarioState); 
+            showAssessmentModal('complete', totalLoggedTime, initialScenarioState);
         }
 
         // 8. Initialize debug UI state (Dropdown is always hidden on start)
         if (debugDropdown) {
-             debugDropdown.classList.add('hidden');
+            debugDropdown.classList.add('hidden');
         }
     }
-	
-    // --- CORE INITIALIZATION HELPERS ---
-    
+
     /**
      * Finds and assigns all necessary DOM elements to global variables.
      */
     function cacheDOMElements() {
-        headerControls = document.getElementById('header-controls');
         backlogList = document.getElementById('backlog-list');
         ticketViewColumn = document.getElementById('ticket-view-column');
         ticketPlaceholder = document.getElementById('ticket-placeholder');
@@ -356,18 +404,15 @@ document.addEventListener('DOMContentLoaded', () => {
         ticketTitle = document.getElementById('ticket-title');
         ticketDescription = document.getElementById('ticket-description');
         ticketStepContent = document.getElementById('ticket-step-content');
-        debugToggle = document.getElementById('debug-toggle'); 
         countdownTimer = document.getElementById('countdown-timer');
         jiraBoard = document.getElementById('jira-board');
         timesUpScreen = document.getElementById('times-up-screen');
-        // 'restartTimerBtn' was unused and removed.
-        debugDropdown = document.getElementById('debug-dropdown'); 
-        // 'testKeyInput', 'loadKeyBtn', 'hardResetBtn' were unused and removed.
-        
+        debugDropdown = document.getElementById('debug-dropdown');
+
         // Cache the timer's parent div for visibility control
-        timerContainer = countdownTimer ? countdownTimer.parentElement : null; 
+        timerContainer = countdownTimer ? countdownTimer.parentElement : null;
     }
-    
+
     /**
      * Checks if the test is currently running (i.e., not fully completed).
      * @returns {boolean} True if the assessment is not yet fully complete.
@@ -376,13 +421,61 @@ document.addEventListener('DOMContentLoaded', () => {
         const allComplete = Object.values(scenarioState).every(state => state.completed);
         return !allComplete;
     }
-    
+
+    /**
+     * Toggles the debug mode state and updates the UI.
+     * @param {boolean} forceState - Optional boolean to force a specific state.
+     */
+    function toggleDebugMode(forceState = null) {
+        if (forceState !== null) {
+            isDebugMode = forceState;
+        } else {
+            isDebugMode = !isDebugMode;
+        }
+
+        const debugControls = document.getElementById('debug-controls-container');
+        const debugToggle = document.getElementById('debug-toggle');
+
+        if (isDebugMode) {
+            if (debugControls) debugControls.classList.remove('hidden');
+            if (debugToggle) debugToggle.checked = true;
+            if (debugDropdown) debugDropdown.classList.remove('hidden');
+            document.body.classList.add('debug-active');
+        } else {
+            // Keep the container visible if we want, or hide it. 
+            // The user requested "debug mode active again", implying the toggle itself should be visible.
+            // But usually, the toggle is hidden until the key combo.
+            // However, since I unhidden it in index.html, let's just manage the dropdown and state.
+            if (debugToggle) debugToggle.checked = false;
+            if (debugDropdown) debugDropdown.classList.add('hidden');
+            document.body.classList.remove('debug-active');
+        }
+
+        // Re-render backlog to show/hide debug info if any
+        renderBacklog();
+    }
+
+    /**
+     * Shows the password modal for admin access.
+     */
+    function showPasswordModal() {
+        // Simple prompt for now to avoid complex modal HTML insertion if not needed
+        const password = prompt("Enter Admin Password:", "");
+        if (password === "ue5admin") { // Simple hardcoded password for now
+            toggleDebugMode(true);
+            alert("Debug Mode Enabled");
+        } else if (password !== null) {
+            alert("Incorrect Password");
+        }
+    }
+
     /**
      * Attaches all primary event listeners.
      */
     function attachEventListeners() {
-        const hardResetBtn = document.getElementById('hard-reset-btn'); // Local variable for local usage
-        
+        const hardResetBtn = document.getElementById('hard-reset-btn');
+        if (!hardResetBtn) console.error('❌ Hard Reset button element NOT found in DOM!');
+
         // --- ADMIN ACCESS (CTRL + SHIFT + DELETE + Password Gate) ---
         document.addEventListener('keydown', (e) => {
             // Check for the combination: CTRL + SHIFT + DELETE (KeyCode 46 is Delete on most systems)
@@ -396,18 +489,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
-        
-        // --- SECURITY (Disable Right-Click Menu) ---
-        document.body.addEventListener('contextmenu', (e) => {
-            // Only block right-click if Debug Mode is OFF
-            if (!isDebugMode) {
-                 e.preventDefault(); 
-            }
-        });
-        
+
+
+
+        // Debug: Toggle Checkbox Handler
+        const debugToggle = document.getElementById('debug-toggle');
+        if (debugToggle) {
+            debugToggle.addEventListener('change', (e) => {
+                // Toggle based on checkbox state
+                toggleDebugMode(e.target.checked);
+            });
+        }
+
         // Debug: Hard Reset button handler (Wipes all local storage)
         if (hardResetBtn) {
+            console.log("✅ Hard Reset button found. Attaching listener.");
             hardResetBtn.addEventListener('click', () => {
+                console.log("🔘 Hard Reset button clicked!");
                 if (!confirm("WARNING: This will clear ALL progress, including saved completion data and the timer. Are you sure you want to restart the assessment completely?")) return;
 
                 localStorage.removeItem('ue5ScenarioTimer');
@@ -415,19 +513,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.removeItem('ue5InterruptedSteps');
                 localStorage.removeItem('ue5ActiveScenario');
                 localStorage.removeItem('ue5ActiveStep');
-                
+                localStorage.removeItem('ue5ScenarioOrder'); // Clear the randomized order so next session is fresh
+
                 location.reload();
             });
         }
     }
-    
+
     /**
      * Calculates the total ideal time (0.5 hours per step) across all scenarios.
+     * This is used to calculate the final efficiency score.
      * @returns {{totalSteps: number, idealTotalTime: number}} The calculated totals.
      */
     function calculateTotalIdealTime() {
         let totalSteps = 0;
-        
+
         Object.values(window.SCENARIOS).forEach(scenario => {
             if (scenario.steps) {
                 // Counting all steps, including dead ends, as they all represent an "ideal" 0.5hr time cost for a correct answer.
@@ -436,18 +536,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         return {
             totalSteps: totalSteps,
-            idealTotalTime: totalSteps * 0.5 
+            idealTotalTime: totalSteps * 0.5
         };
     }
 
     /**
      * Serializes scenario choices into a compact, stable Base64 JSON string.
+     * This creates a reproducible key for verifying a user's test results.
      * @param {object} [stateToSerialize=scenarioState] - The state to serialize.
      * @returns {string} The Base64 encoded test key.
      */
     function generateTestKey(stateToSerialize = scenarioState) {
         const compactData = {};
-        
+
         Object.keys(stateToSerialize).forEach(scenarioId => {
             const state = stateToSerialize[scenarioId];
             if (Object.keys(state.choicesMade).length > 0) {
@@ -455,7 +556,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 compactData[scenarioId] = state.choicesMade;
             }
         });
-        
+
         if (Object.keys(compactData).length === 0) {
             return "No Choices Recorded";
         }
@@ -470,26 +571,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // --- STATE MANAGEMENT ---
-
+    /* ==========================================================================
+       == STATE MANAGEMENT (SAVE/LOAD)
+       ========================================================================== */
     /**
      * Loads game state from localStorage, ensuring cleanup of old penalty/corrupted keys.
      */
     function loadScenarioState() {
-        const savedStateJSON = localStorage.getItem('ue5ScenarioState');
+        console.log("Loading scenario state...");
+        
+        if (!window.SCENARIOS || Object.keys(window.SCENARIOS).length === 0) {
+            console.warn("Cannot load state: SCENARIOS not loaded yet.");
+            return;
+        }
+
+        let savedStateJSON = null;
+        try {
+            savedStateJSON = localStorage.getItem('ue5ScenarioState');
+        } catch (e) {
+            console.error("localStorage access failed:", e);
+            return;
+        }
+
         let savedState = {};
 
         if (savedStateJSON) {
             try {
                 savedState = JSON.parse(savedStateJSON);
+                console.log("Found saved state:", savedState);
             } catch (e) {
                 console.error("Failed to parse saved state, resetting.", e);
-                savedState = {}; 
+                savedState = {};
             }
+        } else {
+            console.log("No saved state found.");
         }
 
         const newScenarioState = {};
-        
+
         Object.keys(window.SCENARIOS).forEach(scenarioId => {
             const defaultState = {
                 completed: false,
@@ -501,7 +620,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ...defaultState,
                 ...(savedState[scenarioId] || {})
             };
-            
+
             // Recalculate logged time based on choicesMade to ensure consistency 
             let recalculateTime = 0;
             if (newScenarioState[scenarioId].choicesMade) {
@@ -509,16 +628,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (scenario) {
                     Object.keys(newScenarioState[scenarioId].choicesMade).forEach(stepId => {
                         const originalIndex = newScenarioState[scenarioId].choicesMade[stepId];
-                        if (scenario.steps[stepId] && scenario.steps[stepId].choices.length > originalIndex) {
-                            recalculateTime += getTimeCostForChoice(scenario.steps[stepId].choices[originalIndex].type);
+                        // Safety check for valid step and choice index
+                        if (scenario.steps[stepId] && 
+                            scenario.steps[stepId].choices && 
+                            scenario.steps[stepId].choices.length > originalIndex) {
+                            
+                            const choiceType = scenario.steps[stepId].choices[originalIndex].type;
+                            recalculateTime += getTimeCostForChoice(choiceType);
+                        } else {
+                            console.warn(`Invalid choice index or missing step for ${scenarioId} step ${stepId}`);
                         }
                     });
                 }
             }
             newScenarioState[scenarioId].loggedTime = recalculateTime;
         });
-        
+
         scenarioState = newScenarioState;
+        console.log("State loaded successfully:", scenarioState);
+        
+        // Only save back if we actually loaded something valid, to avoid wiping on error
+        // But we need to save to initialize defaults if nothing was there.
         saveScenarioState();
     }
 
@@ -526,11 +656,16 @@ document.addEventListener('DOMContentLoaded', () => {
      * Saves the current game state to localStorage.
      */
     function saveScenarioState() {
-        localStorage.setItem('ue5ScenarioState', JSON.stringify(scenarioState));
+        try {
+            localStorage.setItem('ue5ScenarioState', JSON.stringify(scenarioState));
+            // console.log("State saved."); // Uncomment for verbose logging
+        } catch (e) {
+            console.error("Failed to save state to localStorage:", e);
+        }
     }
 
     /**
-     * Resets all scenario progress to default values.
+     * Resets all scenario progress to default values. (Currently unused, but kept for potential future admin features).
      */
     function resetAllScenarioState() {
         scenarioState = {};
@@ -555,11 +690,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 interruptedSteps = JSON.parse(savedInterruptedJSON);
             } catch (e) {
                 console.error("Failed to parse interrupted steps state, resetting.", e);
-                interruptedSteps = {}; 
+                interruptedSteps = {};
             }
         }
     }
-    
+
     /**
      * Saves the currently active ticket state and the multi-ticket progress map.
      */
@@ -575,8 +710,11 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('ue5InterruptedSteps', JSON.stringify(interruptedSteps));
     }
 
-    // --- UI RENDERING & FLOW ---
-
+    /* ==========================================================================
+       == UI RENDERING LOGIC
+       ========================================================================== */
+    /**
+       ========================================================================== */
     /**
      * Determines the color class for time logged vs. estimate.
      * @param {number} logged - Logged hours.
@@ -586,32 +724,100 @@ document.addEventListener('DOMContentLoaded', () => {
     function getLoggedTimeColorClass(logged, estimate) {
         if (logged <= estimate) {
             return 'text-green-400';
-        } 
-        
+        }
+
         const overBudgetRatio = logged / estimate;
-        
-        if (overBudgetRatio <= 1.20) { 
+
+        if (overBudgetRatio <= 1.20) {
             return 'text-yellow-400';
         } else if (overBudgetRatio <= 1.40) {
             return 'text-orange-400';
-        } else { 
+        } else {
             return 'text-red-400';
         }
     }
 
     /**
      * Renders the list of tickets in the backlog (left column).
+     * It reads from `scenarioState` to apply correct styling for completed/in-progress tickets.
+     */
+    /**
+     * Updates the progress tracker in the header with current completion stats.
+     */
+    function updateProgressTracker() {
+        const progressIndicator = document.getElementById('progress-indicator');
+        const progressCompleted = document.getElementById('progress-completed');
+        const progressTotal = document.getElementById('progress-total');
+        const progressEfficiency = document.getElementById('progress-efficiency');
+
+        if (!progressIndicator) return;
+
+        // Calculate stats
+        const totalScenarios = Object.keys(scenarioState).length;
+        const completedScenarios = Object.values(scenarioState).filter(s => s.completed).length;
+
+        // Calculate efficiency (ideal time / actual time)
+        const totalLoggedTime = Object.values(scenarioState).reduce((acc, s) => acc + s.loggedTime, 0);
+        const { idealTotalTime } = calculateTotalIdealTime();
+        const efficiencyScore = totalLoggedTime > 0 ? (idealTotalTime / totalLoggedTime) : 0;
+        const efficiencyPercent = Math.round(efficiencyScore * 100);
+
+        // Update UI
+        progressCompleted.textContent = completedScenarios;
+        progressTotal.textContent = totalScenarios;
+        progressEfficiency.textContent = efficiencyPercent + '%';
+
+        // Update progress bar width
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercent = totalScenarios > 0 ? (completedScenarios / totalScenarios) * 100 : 0;
+        if (progressBar) {
+            progressBar.style.width = progressPercent + '%';
+            
+            // Color code the progress bar
+            if (progressPercent >= 75) {
+                progressBar.className = 'h-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-500';
+            } else if (progressPercent >= 50) {
+                progressBar.className = 'h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-500';
+            } else if (progressPercent >= 25) {
+                progressBar.className = 'h-full bg-gradient-to-r from-yellow-500 to-orange-400 transition-all duration-500';
+            } else {
+                progressBar.className = 'h-full bg-gradient-to-r from-red-500 to-pink-400 transition-all duration-500';
+            }
+        }
+
+        // Color code efficiency
+        progressEfficiency.className = 'text-lg font-bold';
+        if (efficiencyPercent >= 80) {
+            progressEfficiency.classList.add('text-green-400');
+        } else if (efficiencyPercent >= 60) {
+            progressEfficiency.classList.add('text-yellow-400');
+        } else {
+            progressEfficiency.classList.add('text-red-400');
+        }
+
+        // Show the indicator if there's any progress
+        if (completedScenarios > 0 || totalLoggedTime > 0) {
+            progressIndicator.classList.remove('hidden');
+        }
+    }
+
+    /**
+     * Renders the list of tickets in the backlog (left column).
+     * It reads from `scenarioState` to apply correct styling for completed/in-progress tickets.
      */
     function renderBacklog() {
         backlogList.innerHTML = '';
-        
-        const scenarioKeys = Object.keys(window.SCENARIOS);
-        
+
+        // Use the randomized session order instead of default object keys
+        const scenarioKeys = sessionScenarioOrder && sessionScenarioOrder.length > 0
+            ? sessionScenarioOrder
+            : Object.keys(window.SCENARIOS);
+
         const validScenarios = scenarioKeys
             .map(id => ({ id, data: window.SCENARIOS[id] }))
-            .filter(item => 
-                item.data && 
-                item.data.meta && 
+            .filter(item =>
+                item.data &&
+                item.data.meta &&
                 item.data.meta.title &&
                 typeof item.data.meta.estimateHours !== 'undefined'
             );
@@ -624,22 +830,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const meta = scenario.meta;
             const title = meta.title;
             const description = meta.description ? meta.description.substring(0, 70) + '...' : "No description available.";
-            
-            let estimate = parseFloat(meta.estimateHours); 
+
+            let estimate = parseFloat(meta.estimateHours);
             if (isNaN(estimate)) {
                 estimate = 0;
             }
-            
+
             const card = document.createElement('div');
             const isActive = currentScenarioId === scenarioId && !state.completed;
-            
-            card.className = `p-4 rounded-lg border-l-4 cursor-pointer transition-all duration-200 ${
-                state.completed 
-                    ? 'bg-gray-700/50 border-green-600' 
-                    : isActive
-                        ? 'bg-blue-900/40 border-blue-400 ring-2 ring-blue-400' 
-                        : 'bg-gray-700 hover:bg-gray-600/80 border-blue-500'
-            }`;
+
+            card.className = `p-4 rounded-lg border-l-4 cursor-pointer transition-all duration-200 mb-3 ${state.completed
+                ? 'bg-gray-800/50 border-green-600 opacity-60'
+                : isActive
+                    ? 'bg-[#2a2a2a] border-blue-500 shadow-lg ring-1 ring-blue-500/30'
+                    : 'bg-[#1e1e1e] hover:bg-[#252525] border-transparent hover:border-gray-600'
+                }`;
             card.dataset.scenarioId = scenarioId;
 
             let statusSpan;
@@ -648,39 +853,83 @@ document.addEventListener('DOMContentLoaded', () => {
             const loggedColorClass = getLoggedTimeColorClass(logged, estimate);
 
 
+            // Helper for safe translation
+            const safeT = (key) => typeof window.t === 'function' ? window.t(key) : key;
+
             if (state.completed) {
-                statusSpan = `<span class="text-xs font-semibold text-green-400">COMPLETED</span>`;
+                statusSpan = `<span class="text-xs font-semibold text-green-400">${safeT('status.completed')}</span>`;
                 loggedTimeDisplay = `
                     <div class="text-sm text-gray-300">
-                        Logged: <span class="font-bold ${loggedColorClass}">${logged.toFixed(1)} hrs</span> / 
-                        Est: <span class="font-bold text-green-400">${estimate.toFixed(1)} hrs</span>
+                        ${safeT('label.logged')} <span class="font-bold ${loggedColorClass}">${logged.toFixed(1)} hrs</span> / 
+                        ${safeT('label.est')} <span class="font-bold text-green-400">${estimate.toFixed(1)} hrs</span>
                     </div>
                 `;
             } else {
-                 const savedStepId = interruptedSteps[scenarioId];
-                 
-                 if (savedStepId && savedStepId !== scenario.start) {
-                     statusSpan = `<span class="text-xs font-semibold text-yellow-400">IN PROGRESS</span>`;
-                     loggedTimeDisplay = `
+                const savedStepId = interruptedSteps[scenarioId];
+
+                if (savedStepId && savedStepId !== scenario.start) {
+                    statusSpan = `<span class="text-xs font-semibold text-yellow-400">${safeT('status.in_progress')}</span>`;
+                    loggedTimeDisplay = `
                         <div class="text-sm text-gray-400">
-                            Logged: <span class="font-bold ${loggedColorClass}">${logged.toFixed(1)} hrs</span> / 
-                            Est: <span class="font-bold text-green-400">${estimate.toFixed(1)} hrs</span>
+                            ${safeT('label.logged')} <span class="font-bold ${loggedColorClass}">${logged.toFixed(1)} hrs</span> / 
+                            ${safeT('label.est')} <span class="font-bold text-green-400">${estimate.toFixed(1)} hrs</span>
                         </div>
                     `;
-                 } else {
-                     statusSpan = `<span class="text-xs font-semibold text-blue-400">NOT STARTED</span>`;
-                     loggedTimeDisplay = `
+                } else {
+                    statusSpan = `<span class="text-xs font-semibold text-blue-400">${safeT('status.not_started')}</span>`;
+                    loggedTimeDisplay = `
                         <div class="text-sm text-gray-400">
-                            Est. Time: <span class="font-bold text-green-400">${estimate.toFixed(1)} hrs</span>
+                            ${safeT('label.est_time')} <span class="font-bold text-green-400">${estimate.toFixed(1)} hrs</span>
                         </div>
                     `;
-                 }
+                }
             }
-            
+
+            // --- CATEGORY LOGIC ---
+            const SCENARIO_CATEGORIES = {
+                'audio_concurrency': 'Audio',
+                'blueprint_infinite_loop': 'Blueprint',
+                'dash': 'Gameplay',
+                'directional_light': 'Lighting',
+                'generator': 'Tools',
+                'golem': 'Gameplay',
+                'inventory': 'UI',
+                'lumen_gi': 'Rendering',
+                'lumen_mesh_distance': 'Rendering',
+                'nanite_wpo': 'Rendering',
+                'oversharpened_scene': 'Post Process',
+                'terminal': 'Core',
+                'volumetric_fog_banding': 'Rendering',
+                'volumetric_fog_material': 'Rendering',
+                'world_partition': 'World Building'
+            };
+
+            const rawCategory = meta.category || SCENARIO_CATEGORIES[scenarioId] || 'General';
+            // Convert Category to translation key format: "Audio" -> "category.audio"
+            const categoryKey = 'category.' + rawCategory.toLowerCase().replace(' ', '_');
+            const categoryLabel = safeT(categoryKey);
+
+            let categoryColorClass = 'bg-gray-700 text-gray-300 border-gray-600'; // Default
+            if (['Rendering', 'Lighting', 'Post Process'].includes(rawCategory)) categoryColorClass = 'bg-purple-900/50 text-purple-200 border-purple-700';
+            else if (['Blueprint', 'Gameplay'].includes(rawCategory)) categoryColorClass = 'bg-blue-900/50 text-blue-200 border-blue-700';
+            else if (['Audio'].includes(rawCategory)) categoryColorClass = 'bg-orange-900/50 text-orange-200 border-orange-700';
+            else if (['UI', 'Tools'].includes(rawCategory)) categoryColorClass = 'bg-yellow-900/50 text-yellow-200 border-yellow-700';
+            else if (['Core', 'World Building'].includes(rawCategory)) categoryColorClass = 'bg-red-900/50 text-red-200 border-red-700';
+
+            const difficultyKey = estimate > 5 ? 'difficulty.long' : estimate > 2 ? 'difficulty.med' : 'difficulty.short';
+            const difficultyLabel = safeT(difficultyKey);
+
             const html = `
-                <h4 class="font-bold ${state.completed ? 'text-gray-400 line-through' : 'text-gray-100'}">${title}</h4>
-                <p class="text-xs text-gray-400 mt-1">${description}</p>
-                <div class="mt-3 pt-3 border-t border-gray-600">
+                <div class="flex justify-between items-start mb-1">
+                    <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded border ${categoryColorClass}">${categoryLabel}</span>
+                    <span class="text-xs font-mono px-2 py-0.5 rounded ${estimate > 5 ? 'bg-red-900 text-red-200' : estimate > 2 ? 'bg-yellow-900 text-yellow-200' : 'bg-green-900 text-green-200'}">
+                        ${difficultyLabel}
+                    </span>
+                </div>
+                <h4 class="font-bold ${state.completed ? 'text-gray-400 line-through' : 'text-gray-100'} mb-1">${title}</h4>
+                <p class="text-xs text-gray-400 mb-2 line-clamp-2">${description}</p>
+                
+                <div class="pt-2 border-t border-gray-700 flex justify-between items-center">
                     ${statusSpan}
                     ${loggedTimeDisplay}
                 </div>
@@ -688,15 +937,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
             card.innerHTML = html;
-            
+
             if (!state.completed) {
                 card.addEventListener('click', () => selectScenario(scenarioId));
             }
 
             backlogList.appendChild(card);
         });
+
+        // Update the progress tracker after rendering
+        updateProgressTracker();
     }
-    
+
     /**
      * Renders a specific step (prompt and choices) of a scenario.
      * @param {string} scenarioId - The ID of the scenario.
@@ -705,12 +957,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderStep(scenarioId, stepId) {
         const scenario = window.SCENARIOS[scenarioId];
         const step = scenario.steps[stepId];
-        
+
         if (!step) {
             console.error(`Step "${stepId}" not found in scenario "${scenarioId}"`);
             return;
         }
-        
+
         // 1. Update the active ticket references
         currentScenarioId = scenarioId;
         currentStepId = stepId;
@@ -734,8 +986,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalSteps = stepKeys.length;
 
         // Conditionally generate the step count prefix (visible only in debug mode)
-        const stepCountPrefix = isDebugMode 
-            ? `Step ${stepNumber} / ${totalSteps}: ` 
+        const stepCountPrefix = isDebugMode
+            ? `Step ${stepNumber} / ${totalSteps}: `
             : '';
 
         // 5. Build the Step Prompt and Choices
@@ -758,62 +1010,59 @@ document.addEventListener('DOMContentLoaded', () => {
             const isCorrect = choice.type === 'correct';
 
             const btn = document.createElement('button');
-            
+
             // Determine button styling (Debug Mode only shows hint colors)
             let debugClass = '';
             if (isDebugMode) {
                 if (isCorrect) {
-                     debugClass = 'border-green-600 debug-correct';
+                    debugClass = 'border-green-600 debug-correct';
                 } else if (choice.type === 'partial') {
-                     debugClass = 'border-yellow-600';
+                    debugClass = 'border-yellow-600';
                 } else if (choice.type === 'misguided') {
-                     debugClass = 'border-orange-600';
+                    debugClass = 'border-orange-600';
                 } else {
-                     debugClass = 'border-red-600';
+                    debugClass = 'border-red-600';
                 }
             } else {
                 debugClass = 'border-gray-600 hover:border-blue-500';
             }
-            
+
             // Apply unselectable class to choices
-            btn.className = `block w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg border transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 unselectable ${debugClass}`;
-            
-            btn.innerHTML = `<span class="font-bold">${choice.text}</span>`; 
+            // Apply unselectable class to choices
+            btn.className = `block w-full text-left p-4 rounded-md border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 unselectable text-sm md:text-base relative overflow-hidden ${debugClass} ${isDebugMode ? '' : 'bg-[#111111] border-[#333] text-gray-300 hover:bg-[#1a1a1a] hover:border-blue-500 hover:text-white hover:shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:-translate-y-0.5 active:translate-y-0 active:bg-blue-900/20'
+                }`;
+
+            btn.innerHTML = `<span class="font-bold">${choice.text}</span>`;
 
             // Attach minimal data to dataset
             btn.dataset.choiceNext = choice.next;
             btn.dataset.choiceTimeCost = timeCost;
-            
+
             // CRITICAL: Store the original index from the SCENARIOS array for stable score tracking
             // We need to find the original index in the unshuffled array
             const originalIndexInChoices = step.choices.indexOf(choice);
             if (originalIndexInChoices !== -1) {
                 btn.dataset.originalIndex = originalIndexInChoices;
-            } else {
-                console.error("Could not find choice in original array for stable index mapping.");
-                btn.dataset.originalIndex = -1; // Fallback to -1 if mapping fails
             }
-
             btn.addEventListener('click', () => handleChoice(btn));
             choicesContainer.appendChild(btn);
         });
-        
-        renderBacklog();
     }
 
     /**
      * Called when a user clicks an answer choice.
+     * It logs the time cost, saves state, and advances to the next step or concludes the scenario.
      * @param {HTMLElement} choiceButton - The clicked button element.
      */
     function handleChoice(choiceButton) {
         const { choiceNext, choiceTimeCost, originalIndex } = choiceButton.dataset;
         const timeCost = parseFloat(choiceTimeCost);
         const index = parseInt(originalIndex, 10);
-        
+
         // 1. Log the time cost (updates global state)
         const state = scenarioState[currentScenarioId];
         state.loggedTime += timeCost;
-        
+
         // 2. Record the original index of the choice made
         state.choicesMade[currentStepId] = index;
 
@@ -831,26 +1080,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Called when a user clicks a scenario card from the backlog.
+     * It displays the ticket view and renders the correct starting step.
      * @param {string} scenarioId - The ID of the scenario selected.
      * @param {string|null} startStepId - Optional ID for the step to start at.
      */
+
     function selectScenario(scenarioId, startStepId = null) {
-        
+
         // Save previous ticket's progress before switching
         if (currentScenarioId && currentStepId && currentScenarioId !== scenarioId) {
             interruptedSteps[currentScenarioId] = currentStepId;
             localStorage.removeItem('ue5ActiveScenario');
             localStorage.removeItem('ue5ActiveStep');
-            saveCurrentTicketState(); 
+            saveCurrentTicketState();
         }
-        
+
         const scenario = window.SCENARIOS[scenarioId];
-        
+
+        // Safety check: If scenario doesn't exist, bail out
+        if (!scenario) {
+            console.error(`Scenario '${scenarioId}' not found in SCENARIOS object.`);
+            return;
+        }
+
+        currentScenarioId = scenarioId;
+
         // Determine starting step: 1. Passed in ID, 2. Interrupted map, 3. Scenario start
-        currentStepId = startStepId 
-            || interruptedSteps[scenarioId] 
-            || scenario.start; 
-        
+        const nextStepId = startStepId
+            || interruptedSteps[scenarioId]
+            || scenario.start;
+
         // Update ticket header
         ticketTitle.textContent = scenario.meta.title;
         ticketDescription.textContent = scenario.meta.description;
@@ -859,21 +1118,69 @@ document.addEventListener('DOMContentLoaded', () => {
         ticketPlaceholder.classList.add('hidden');
         ticketContent.classList.remove('hidden');
 
-        // Render the chosen step
-        renderStep(scenarioId, currentStepId);
-        
-        // Update the global active ticket tracking
-        currentScenarioId = scenarioId;
+        // Check if we are resuming or starting fresh
+        const isResuming = interruptedSteps[scenarioId] && interruptedSteps[scenarioId] !== scenario.start;
+        const buttonText = isResuming ? "Resume Ticket" : "Start Ticket";
+
+        // Render the "Start Ticket" view instead of the first step immediately
+        // Fix: Handle different property names for estimate (estimate vs estimateHours)
+        const estimateVal = scenario.meta.estimate || scenario.meta.estimateHours || 0;
+        const difficultyVal = scenario.meta.difficulty || 'Medium';
+
+        // Difficulty Color Logic
+        let diffColor = 'text-yellow-400';
+        if (difficultyVal.toLowerCase() === 'hard') diffColor = 'text-red-400';
+        if (difficultyVal.toLowerCase() === 'easy') diffColor = 'text-green-400';
+
+        ticketStepContent.innerHTML = `
+            <div class="flex flex-col items-center justify-center h-full p-8 text-center">
+                <div class="mb-6 p-6 bg-ue-panel border border-gray-700 rounded-lg max-w-2xl w-full text-left shadow-lg">
+                    <h4 class="text-xl font-bold text-gray-100 mb-3">Ticket Details</h4>
+                    <p class="text-base text-gray-300 mb-6 leading-relaxed border-b border-gray-700 pb-4">${scenario.meta.description}</p>
+                    
+                    <div class="grid grid-cols-2 gap-6 text-sm">
+                        <div>
+                            <span class="block text-gray-500 text-xs uppercase tracking-wider mb-1">Category</span>
+                            <span class="text-ue-accent font-semibold text-base">${scenario.meta.category || 'General'}</span>
+                        </div>
+                        <div>
+                            <span class="block text-gray-500 text-xs uppercase tracking-wider mb-1">Est. Time Cost</span>
+                            <span class="text-gray-200 font-mono text-base">${estimateVal} hrs</span>
+                        </div>
+                         <div>
+                            <span class="block text-gray-500 text-xs uppercase tracking-wider mb-1">Difficulty</span>
+                            <span class="${diffColor} font-bold uppercase text-sm border border-gray-600 px-2 py-0.5 rounded inline-block bg-gray-800">${difficultyVal}</span>
+                        </div>
+                         <div>
+                            <span class="block text-gray-500 text-xs uppercase tracking-wider mb-1">Status</span>
+                            <span class="text-gray-400 font-medium">${isResuming ? 'In Progress' : 'Not Started'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="start-ticket-btn" class="bg-ue-accent hover:bg-blue-600 text-white font-bold py-3 px-10 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95 text-lg">
+                    ${buttonText}
+                </button>
+            </div>
+        `;
+
+        // Attach listener to the start button
+        document.getElementById('start-ticket-btn').addEventListener('click', () => {
+            currentStepId = nextStepId;
+            renderStep(scenarioId, currentStepId);
+            saveCurrentTicketState();
+        });
     }
-    
+
     /**
      * Called when the user completes the final step of a scenario.
+     * Marks the scenario as complete and checks if the entire assessment is finished.
      */
     function finishScenario() {
         // Mark as completed
         const state = scenarioState[currentScenarioId];
         state.completed = true;
-        
+
         // Clear its step from the interrupted map since it's done
         if (interruptedSteps[currentScenarioId]) {
             delete interruptedSteps[currentScenarioId];
@@ -882,32 +1189,33 @@ document.addEventListener('DOMContentLoaded', () => {
         saveScenarioState();
         saveCurrentTicketState();
         renderBacklog();
-        
+
         // Check if all scenarios are done (triggers final modal)
         const allComplete = Object.values(scenarioState).every(s => s.completed);
-        
+
         if (allComplete) {
             let totalLoggedTime = Object.values(scenarioState).reduce((acc, s) => acc + s.loggedTime, 0);
-            stopTimerOnComplete(); 
+            stopTimerOnComplete();
             // Pass the calculated time to the modal
             showAssessmentModal('complete', totalLoggedTime);
         } else {
-             // Show the individual ticket conclusion inline
+            // Show the individual ticket conclusion inline
             pauseMainTimer();
             renderSingleTicketConclusion();
         }
     }
-    
+
     /**
      * Renders the final summary screen for a completed scenario directly into the ticket panel.
+     * This provides immediate feedback after finishing one ticket.
      */
     function renderSingleTicketConclusion() {
-        
+
         const state = scenarioState[currentScenarioId];
         const scenario = window.SCENARIOS[currentScenarioId];
         const estimateHours = scenario.meta.estimateHours;
         const loggedHours = state.loggedTime;
-        
+
         const timeColorClass = getLoggedTimeColorClass(loggedHours, estimateHours);
 
         // Calculate overrun/underrun
@@ -915,7 +1223,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const diffColorClass = timeDifference > 0 ? 'text-red-400' : 'text-green-400';
         const diffLabel = timeDifference > 0 ? 'Over' : 'Under';
         const diffValue = Math.abs(timeDifference);
-        
+
         let summaryMessage;
         if (loggedHours <= estimateHours) {
             summaryMessage = "Excellent outcome! The solution was found well within the estimated time.";
@@ -924,10 +1232,10 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             summaryMessage = "Ticket resolved. The issue was complex, resulting in a higher time log than originally estimated.";
         }
-        
+
         const buttonText = "Back to Backlog";
         const buttonId = "close-scenario-btn";
-        
+
         const conclusionHtml = `
             <div class="text-center p-8">
                 <h3 class="text-3xl font-bold ${timeColorClass} mb-6">Ticket Resolved</h3>
@@ -956,34 +1264,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 </button>
             </div>
         `;
-        
+
         ticketStepContent.innerHTML = conclusionHtml;
-        
+
         // Add event listener to the close button
         document.getElementById(buttonId).addEventListener('click', () => {
             // Reset UI to placeholder state
             ticketContent.classList.add('hidden');
             ticketPlaceholder.classList.remove('hidden');
-            
+
             currentScenarioId = null;
             currentStepId = null;
-            
-            saveCurrentTicketState(); 
+
+            saveCurrentTicketState();
 
             renderBacklog();
-            
+
             // Resume the timer now that the user is selecting the next task
             resumeMainTimer();
         });
     }
 
+    /* ==========================================================================
+       == FINAL ASSESSMENT & COMPLETION LOGIC
+       ========================================================================== */
     /**
      * Stops the game when the timer runs out. 
      */
     function endGameByTime() {
         clearInterval(mainTimerInterval);
-        localStorage.removeItem('ue5ScenarioTimer'); 
-        
+        localStorage.removeItem('ue5ScenarioTimer');
+
         if (timerContainer) {
             timerContainer.classList.add('hidden');
         }
@@ -991,18 +1302,18 @@ document.addEventListener('DOMContentLoaded', () => {
         countdownTimer.classList.remove('pulse-red', 'text-blue-300', 'text-yellow-400');
         countdownTimer.classList.add('text-orange-400');
         countdownTimer.textContent = "00:00";
-        
+
         // Show "Time's Up" modal
-        showAssessmentModal('timeout'); 
+        showAssessmentModal('timeout');
     }
-    
+
     /**
      * Stops the timer when all scenarios are completed.
      */
     function stopTimerOnComplete() {
         clearInterval(mainTimerInterval);
-        localStorage.removeItem('ue5ScenarioTimer'); 
-        
+        localStorage.removeItem('ue5ScenarioTimer');
+
         // HIDE THE TIMER DISPLAY ENTIRELY
         if (timerContainer) {
             timerContainer.classList.add('hidden');
@@ -1016,6 +1327,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Assessment modal rendering function (ONLY for final, global status).
+     * This is shown when the timer runs out or all tickets are completed.
      * @param {string} status - 'timeout' or 'complete'.
      * @param {number|null} [totalLoggedTime=null] - Total simulated time in hours.
      * @param {object} [stateToUse=scenarioState] - The state object to use for generating the key.
@@ -1025,8 +1337,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let mainTitle, subText, mainTitleColor;
         let finalStatsHtml = '';
-        let buttonHtml = ''; 
-        
+        let buttonHtml = '';
+
         // Determine completion based on the state that was passed in
         const allScenariosComplete = Object.values(stateToUse).every(s => s.completed);
 
@@ -1035,35 +1347,35 @@ document.addEventListener('DOMContentLoaded', () => {
             mainTitle = "Time's Up!";
             subText = "The assessment period has ended. Assessment incomplete.";
             mainTitleColor = "text-orange-400";
-            
+
             buttonHtml = `
                 <p class="text-sm text-gray-400 mt-4">This assessment is incomplete.</p>
             `;
-            
-        } else if (allScenariosComplete || totalLoggedTime !== null) { 
+
+        } else if (allScenariosComplete || totalLoggedTime !== null) {
             // ASSESSMENT COMPLETE status 
-            
+
             // 1. Calculate final scores
             if (totalLoggedTime === null) {
                 // If the time is null (e.g., loaded from a cleared state), recalculate from the passed state
                 totalLoggedTime = Object.values(stateToUse).reduce((acc, s) => acc + s.loggedTime, 0);
             }
-            
+
             // Note: calculateTotalIdealTime correctly uses the global SCENARIOS data
             const { idealTotalTime } = calculateTotalIdealTime();
             const efficiencyScore = totalLoggedTime > 0 ? (idealTotalTime / totalLoggedTime) : 0;
             const finalEfficiencyPercent = Math.round(efficiencyScore * 100);
             const passed = efficiencyScore >= PASS_THRESHOLD;
-            
+
             // 2. Generate Test Key (Using the state that was passed in)
             const testKey = generateTestKey(stateToUse);
 
             mainTitle = passed ? "Assessment Passed" : "Assessment Completed";
             mainTitleColor = passed ? "text-green-500" : "text-yellow-500";
-            subText = passed 
+            subText = passed
                 ? "Congratulations! Your results are logged based on efficient problem-solving."
                 : "You completed all tickets. Review the details below.";
-            
+
             // 4. Assemble Final Stats HTML (Reproducible Key added back)
             finalStatsHtml = `
                 <div class="mt-4 border-t border-gray-600 pt-4">
@@ -1081,7 +1393,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="font-bold">Efficiency Score:</span>
                             <span class="font-bold ${mainTitleColor}">${finalEfficiencyPercent}%</span>
                         </div>
-                        <p class="text-xs text-gray-400 text-center">(Pass Threshold: ${PASS_THRESHOLD * 100}%)</p>
+                        <p class="text-xs text-gray-400 text-center">(Pass Threshold: ${CONFIG.PASS_THRESHOLD * 100}%)</p>
                     </div>
                 </div>
                 
@@ -1100,7 +1412,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </button>
                 </div>
             `;
-            
+
             buttonHtml = `
                 <p class="text-sm text-gray-400 mt-4">This assessment is complete.</p>
             `;
@@ -1126,11 +1438,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (allScenariosComplete || totalLoggedTime !== null) {
             const copyButton = document.getElementById('copy-key-btn');
             const keyDisplay = document.getElementById('test-key-display');
-            
+
             if (copyButton && keyDisplay) {
                 copyButton.addEventListener('click', () => {
-                    const keyToCopy = keyDisplay.textContent; 
-                    
+                    const keyToCopy = keyDisplay.textContent;
+
                     // Use document.execCommand('copy') for better compatibility in iframe environments
                     const tempInput = document.createElement('textarea');
                     tempInput.value = keyToCopy;
@@ -1149,9 +1461,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // --- Entry Point ---
+    // --- APPLICATION ENTRY POINT ---
     cacheDOMElements();
     attachEventListeners();
     initializeApp();
+
+    // --- EVENT LISTENERS ---
+
+    // Listen for language changes to re-render dynamic content
+    document.addEventListener('languageChanged', (e) => {
+        // Re-render backlog to update translations
+        renderBacklog();
+    });
 
 });

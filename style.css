@@ -5,73 +5,429 @@
 
 /* Custom base styles */
 body {
-    background-color: #1a202c; /* bg-gray-900 */
-    color: #e2e8f0; /* text-gray-200 */
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    background-color: #2b2b2b;
+    /* UE5 Editor background */
+    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
 }
 
-/* --- SECURITY: ANTI-COPY/PASTE CLASS --- */
-/* Prevents text selection and changes the cursor to default/text */
+/* === CUSTOM SCROLLBAR (UE5 Style) === */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background-color: #1e1e1e;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #4a4a4a;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #6a6a6a;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #2b2b2b;
+}
+
+/* === SECURITY: ANTI-COPY/PASTE CLASS === */
 .unselectable {
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
     cursor: default;
 }
 
-/* Allow input fields (like password modal) and text areas to be selectable and usable */
-input, textarea, #test-key-display {
+input,
+textarea,
+#test-key-display {
     -webkit-user-select: text !important;
     -moz-user-select: text !important;
     -ms-user-select: text !important;
     user-select: text !important;
     cursor: text !important;
 }
-/* ------------------------------------- */
 
-
-/* Custom class for the glowing border on correct answers in debug mode */
+/* === DEBUG & ANIMATION STYLES === */
 .debug-correct {
-    box-shadow: 0 0 15px 4px rgba(22, 163, 74, 0.7); /* Green-600 glow */
-    border-color: #16a34a; /* green-600 */
+    box-shadow: 0 0 15px 4px rgba(22, 163, 74, 0.5);
+    border-color: #16a34a;
 }
 
-/* Custom class for the pulsing red timer */
 .pulse-red {
     animation: pulse-red-animation 1.5s infinite;
 }
 
 @keyframes pulse-red-animation {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 1;
         transform: scale(1);
     }
+
     50% {
         opacity: 0.8;
         transform: scale(1.05);
     }
 }
 
-/* Custom styles for code blocks inside prompts/feedback */
+/* === TYPOGRAPHY & CONTENT STYLES === */
 code {
-    background-color: #2d3748; /* bg-gray-700 */
-    color: #90cdf4; /* text-blue-300 */
+    background-color: #262626;
+    color: #dcdcaa;
+    /* VS Code-like yellow/white */
     padding: 2px 6px;
     border-radius: 4px;
-    font-family: "Fira Code", "Courier New", monospace;
-    font-size: 0.9em;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+    border: 1px solid #333;
 }
 
-/* Custom styles for paragraphs inside prompts/feedback */
+/* Ticket Content Polish */
 #ticket-step-prompt p,
 #ticket-step-feedback p {
-    margin-bottom: 1rem; 
-    color: #d1d5db; /* text-gray-300 */
+    margin-bottom: 1rem;
+    color: #cccccc;
+    line-height: 1.6;
 }
 
-/* Custom styles for strong tags inside prompts/feedback */
 #ticket-step-prompt strong,
 #ticket-step-feedback strong {
-    color: #93c5fd; /* text-blue-300 */
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* Glassmorphism / Panel Utilities */
+.ue-panel {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+}
+
+.ue-btn {
+    transition: all 0.2s ease;
+}
+
+.ue-btn:active {
+    transform: translateY(1px);
+}
+
+/* === SCROLL LIMITS === */
+#backlog-list {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+#ticket-step-content {
+    max-height: 65vh;
+    overflow-y: auto;
+}
+
+/* Lighter ticket card backgrounds */
+.bg-ue-panel {
+    background-color: #2a2a2a !important;
+}
+
+.bg-ue-header {
+    background-color: #222222 !important;
+}
+
+/* Ticket cards in backlog */
+#backlog-list > div {
+    background-color: #2d2d2d !important;
+    border-color: #444 !important;
+}
+
+#backlog-list > div:hover {
+    background-color: #333 !important;
+}
+
+/* Override blue colors to gray/white */
+h1 {
+    color: #e2e8f0 !important;
+}
+
+#countdown-timer {
+    color: #e2e8f0 !important;
+}
+
+/* Fix ticket view column background to match darker panel color */
+#ticket-view-column {
+    background-color: #1e1e1e !important;
+}
+
+/* Position progress indicator to the left, not centered */
+.w-full.max-w-7xl.mb-4.flex.justify-start {
+    justify-content: flex-start !important;
+}
+
+
+/* Also override the placeholder inside */
+#ticket-placeholder {
+    background-color: #1e1e1e !important;
+}
+
+/* Keep column containers at gray-800, but make sure content areas inside are darker */
+#backlog-column,
+#ticket-view-column {
+    background-color: #1f2937 !important;  /* gray-800 - medium dark */
+}
+
+/* Make the actual content/placeholder areas darker */
+#ticket-placeholder,
+#ticket-content {
+    background-color: #1e1e1e !important;  /* Very dark for content */
+}
+
+/* Make Start Ticket button more visible */
+#ticket-content button,
+.ue-btn,
+button {
+    background-color: #0d7377 !important;
+    color: #ffffff !important;
+    border: 1px solid #14b8a6 !important;
+    font-weight: 600 !important;
+}
+
+#ticket-content button:hover,
+.ue-btn:hover,
+button:hover {
+    background-color: #14b8a6 !important;
+}
+
+.w-full.max-w-7xl.mb-4.flex.justify-start {
+}
+
+/* Fix backlog scrolling - remove max-height limit and ensure full visibility */
+#backlog-list {
+    max-height: none !important;
+    overflow-y: visible !important;
+    padding-bottom: 2rem !important;
+}
+
+#backlog-column {
+    overflow-y: auto !important;
+    max-height: calc(100vh - 250px) !important;
+}
+
+/* FORCE remove all blue tints - use neutral grays only */
+#backlog-column,
+#ticket-view-column,
+.bg-gray-800,
+.bg-gray-700 {
+    background-color: #2d2d2d !important;  /* Neutral dark gray, no blue */
+}
+
+/* Headers should be slightly lighter neutral gray */
+#backlog-column h2,
+#ticket-view-column h2,
+.bg-gray-700\/50 {
+    background-color: #3a3a3a !important;  /* Lighter neutral gray */
+}
+
+/* ==========================================================================
+   UE5 AUTHENTIC THEME OVERRIDES
+   ========================================================================== */
+
+:root {
+    /* Colors derived from UE5 Theme Editor */
+    --ue5-bg: #151515;       /* Main window background */
+    --ue5-panel: #202020;    /* Panel background */
+    --ue5-header: #2a2a2a;   /* Header background */
+    --ue5-content: #1a1a1a;  /* Content/Input background */
+    --ue5-blue: #005d9e;     /* Primary Blue */
+    --ue5-blue-hover: #0070e0;
+    --ue5-text: #dddddd;
+    --ue5-border: #333333;
+}
+
+/* Main Background */
+body {
+    background-color: var(--ue5-bg) !important;
+    color: var(--ue5-text) !important;
+}
+
+/* Panels (Backlog, Ticket View) */
+#backlog-column,
+#ticket-view-column,
+.ue-panel {
+    background-color: var(--ue5-panel) !important;
+    border: 1px solid var(--ue5-border) !important;
+}
+
+/* Headers */
+#backlog-column h2,
+#ticket-view-column h2,
+#ticket-header,
+.bg-ue-header {
+    background-color: var(--ue5-header) !important;
+    border-bottom: 1px solid var(--ue5-border) !important;
+    color: #ffffff !important;
+}
+
+/* Content Areas (Lists, Placeholders) */
+#backlog-list,
+#ticket-placeholder,
+#ticket-content,
+#ticket-step-content {
+    background-color: var(--ue5-content) !important;
+}
+
+/* Buttons - UE5 Style */
+#ticket-content button,
+.ue-btn,
+button {
+    background-color: var(--ue5-blue) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 3px !important;
+    font-weight: 500 !important;
+    transition: background-color 0.2s !important;
+}
+
+#ticket-content button:hover,
+.ue-btn:hover,
+button:hover {
+    background-color: var(--ue5-blue-hover) !important;
+}
+
+/* Progress Bar - UE5 Blue */
+#progress-bar {
+    background: var(--ue5-blue) !important;
+    background-image: none !important; /* Remove gradient */
+}
+
+/* Ticket Cards */
+#backlog-list > div {
+    background-color: var(--ue5-panel) !important;
+    border: 1px solid var(--ue5-border) !important;
+}
+
+#backlog-list > div:hover {
+    background-color: var(--ue5-header) !important;
+}
+
+/* ==========================================================================
+   LAYOUT & SCROLLING FIXES (Applied last to ensure priority)
+   ========================================================================== */
+
+/* Fix backlog scrolling - remove max-height limit on the list itself */
+#backlog-list {
+    max-height: none !important;
+    overflow-y: visible !important;
+    padding-bottom: 2rem !important;
+}
+
+/* Apply scrolling to the column container instead */
+#backlog-column {
+    overflow-y: auto !important;
+    max-height: calc(100vh - 250px) !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Ensure the header stays at the top */
+#backlog-column h2 {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+}
+
+/* ==========================================================================
+   BUTTON READABILITY IMPROVEMENTS
+   ========================================================================== */
+
+#ticket-content button,
+.ue-btn,
+button {
+    font-size: 1rem !important;       /* Increase font size */
+    font-weight: 600 !important;      /* Make text bolder */
+    padding: 12px 20px !important;    /* More padding for better spacing */
+    line-height: 1.5 !important;      /* Better line height for multi-line text */
+    letter-spacing: 0.02em !important; /* Slight letter spacing */
+    text-align: left !important;      /* Left align text for better readability on long answers */
+}
+
+/* Center the "Start Ticket" button specifically if needed, but keep answers left-aligned */
+#start-ticket-btn {
+    text-align: center !important;
+    font-size: 1.1rem !important;
+}
+
+/* Add a subtle text shadow to help text pop against the blue */
+#ticket-content button,
+.ue-btn,
+button {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* ==========================================================================
+   SUBTLE BUTTON STYLING (UE5 Property Style)
+   ========================================================================== */
+
+#ticket-content button,
+.ue-btn,
+button {
+    background-color: #383838 !important;  /* Dark gray button */
+    color: #eeeeee !important;             /* Light gray text */
+    border: 1px solid #252525 !important;  /* Subtle border */
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05) !important;
+    text-shadow: none !important;
+    transition: background-color 0.1s, color 0.1s !important;
+}
+
+#ticket-content button:hover,
+.ue-btn:hover,
+button:hover {
+    background-color: #505050 !important;  /* Lighter gray on hover */
+    color: #ffffff !important;
+    border-color: #606060 !important;
+}
+
+/* Active/Selected state can be blue */
+#ticket-content button:active,
+.ue-btn:active,
+button:active {
+    background-color: #005d9e !important; /* UE5 Blue only on click/active */
+    border-color: #005d9e !important;
+}
+
+/* Specific style for the "Start Ticket" button to make it stand out slightly more but still fit */
+#start-ticket-btn {
+    background-color: #005d9e !important; /* Keep Start button blue as primary action */
+    border: 1px solid #004d85 !important;
+}
+
+#start-ticket-btn:hover {
+    background-color: #0070e0 !important;
+}
+
+/* === DEBUG & ANIMATION STYLES (Updated for Priority) === */
+.debug-correct {
+    box-shadow: 0 0 15px 4px rgba(22, 163, 74, 0.5) !important;
+    border-color: #16a34a !important;
+    border-width: 2px !important;
+}
+
+/* Add other debug classes if they were missing from style.css or need overrides */
+.border-green-600.debug-correct {
+    border-color: #16a34a !important;
+}
+
+.border-yellow-600 {
+    border-color: #ca8a04 !important;
+    border-width: 2px !important;
+}
+
+.border-orange-600 {
+    border-color: #ea580c !important;
+    border-width: 2px !important;
+}
+
+.border-red-600 {
+    border-color: #dc2626 !important;
+    border-width: 2px !important;
 }

@@ -1,146 +1,106 @@
-
-window.SCENARIOS = window.SCENARIOS || {};
-
-window.SCENARIOS['VolumetricShadowingPerformance'] = {
+window.SCENARIOS['WPOShadowDetachment'] = {
     meta: {
-        title: "Translucent Mesh Material Fails Dynamic Self-Shadowing & Causes Severe Overdraw",
-        description: "A large, translucent mesh (representing a cloud or nebula volume) is placed in the level. It uses World Position Offset (WPO) to simulate internal movement. The problem presents in two ways: 1) The mesh component is set to 'Cast Dynamic Shadows', but it does not receive dynamic self-shadowing or external shadows correctly from nearby movable lights, resulting in a flat, unlit appearance. 2) When viewing the scene in the 'Shader Complexity' view mode, this single mesh renders as bright red/pink, causing a significant frame rate drop (upwards of 15ms) whenever it is on screen, indicating extreme overdraw/expensive calculation.",
-        difficulty: "medium",
-        category: "Materials & Shaders",
-        estimate: 3
+        title: "Shadow Detached from WPO Mesh",
+        description: "Shadow stays put while mesh moves with wind. Investigates Shadow Pass Switch and WPO shadows.",
+        estimateHours: 1.5
     },
-    start: "step_1",
+    start: "step-1",
     steps: {
-    "step_1": {
-        "prompt": "A large, translucent mesh (representing a cloud or nebula volume) is placed in the level. It uses World Position Offset (WPO) to simulate internal movement. The problem presents in two ways: 1) The mesh component is set to 'Cast Dynamic Shadows', but it does not receive dynamic self-shadowing or external shadows correctly from nearby movable lights, resulting in a flat, unlit appearance. 2) When viewing the scene in the 'Shader Complexity' view mode, this single mesh renders as bright red/pink, causing a significant frame rate drop (upwards of 15ms) whenever it is on screen, indicating extreme overdraw/expensive calculation.",
-        "choices": [
-            {
-                "text": "To fundamentally fix the overdraw and enable robust shadowing for the complex shape, change the Material's Blend Mode from 'Translucent' to 'Masked' (or Opaque if complexity allows).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.2
-            },
-            {
-                "text": "Connect the output of the 'DitherTemporalAA' node to the 'Opacity Mask' input of the main material node, replacing the old Opacity connection.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.15
-            },
-            {
-                "text": "Trying to solve the performance issue by disabling Ray Tracing in the Project Settings or Post Process Volume, which treats the symptom (slowness) but not the cause (expensive shader iteration and overdraw).",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.5
-            },
-            {
-                "text": "Enabling 'Volumetric Translucent Shadows' in Project Settings without realizing that the custom material, due to WPO usage, requires a transition to Masked blend mode for reliable dynamic shadowing.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.4
-            },
-            {
-                "text": "Because the material is now Masked, we must replicate the soft fading edges. In the Material Graph, reroute the Opacity logic (which was previously connected to the Translucent Opacity input) through the 'DitherTemporalAA' node.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.25
-            },
-            {
-                "text": "Increasing the Light Source Radius or Light Source Angle to try and soften the missing shadows, incorrectly assuming the light definition is too sharp.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.3
-            },
-            {
-                "text": "Recompile the material and verify in the 'Lit' view mode that dynamic self-shadowing is now correctly applied to the mesh.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Switch the viewport to 'Shader Complexity' view mode and visually confirm the material renders in the highest complexity colors (bright pink/red).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Return to M_Volumetric_Base. Since the material uses Translucent Blend Mode and WPO, enable the 'Output Velocity' flag in the Material Details under the Translucency section for proper motion vector generation.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Locate the specific Static Mesh Actor in the Outliner and identify the applied Material Instance (e.g., MI_Volumetric_Cloud).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Checking the mesh component's collision settings or trace channels, incorrectly assuming the shadow failure is due to a misconfigured trace setting.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.2
-            },
-            {
-                "text": "In the Material Details panel, locate the 'Masked' section and ensure 'Use Dithered Opacity' is checked (this setting is crucial when using DitherTemporalAA with Masked Blend Mode).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Reduce the 'Iteration_Count' parameter in the Material Instance to a reasonable real-time value (e.g., 16 or 20) to solve the initial performance spike caused by excessive shader instructions.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Analyze the Material Function (MF_Noise_Iterator) and determine that it contains an expensive custom loop structure whose iteration count is controlled by a scalar parameter ('Iteration_Count').",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.3
-            },
-            {
-                "text": "In M_Volumetric_Base, identify the custom Material Function (MF_Noise_Iterator) used to generate the complex volumetric look and WPO, noting that this function is called multiple times.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.2
-            },
-            {
-                "text": "Return to the 'Shader Complexity' view mode and confirm the shader is now rendering in green/yellow, signifying a massively reduced instruction count and fixing the performance hit.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.15
-            },
-            {
-                "text": "Use the console command 'stat GPU' to confirm that the GPU time spikes significantly when the problematic mesh is visible, validating that the issue is performance related to draw call complexity.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.15
-            },
-            {
-                "text": "To address the shadowing failure related to WPO, navigate to the Material Details panel (M_Volumetric_Base), General section, and check the box labeled 'Apply World Position Offset in Ray Tracing'.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.2
-            },
-            {
-                "text": "Use the 'Pixel Depth Offset' input (available on Opaque/Masked materials) to slightly offset the depth buffer based on the density calculation, improving shadowing quality near edges and blending the WPO changes more smoothly.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.15
-            },
-            {
-                "text": "Return to the Material Instance (MI_Volumetric_Cloud) and check the exposed parameter 'Iteration_Count', noting it is set to an excessively high value (e.g., 64 or 128).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Open the Material Instance and trace it back to the Parent Material (M_Volumetric_Base) to begin analysis of the shader graph.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            }
-        ]
+        'step-1': {
+            skill: 'materials',
+            title: 'Step 1: The Symptom',
+            prompt: "Your foliage or mesh is animated using World Position Offset for wind, but its shadow stays in the original position or appears detached and floating away from the object. The lit mesh and its shadow no longer line up. What do you check first?",
+            choices: [
+                {
+                    text: "Action: [Check Logs/View Modes]",
+                    type: 'correct',
+                    feedback: "You switch to lighting and shadow visualization view modes and notice that the mesh’s WPO animation is visible in the base pass, but the shadow map still looks like the undeformed, original mesh. This strongly suggests the shadow pass isn’t respecting the WPO displacement.",
+                    next: 'step-2'
+                },
+                {
+                    text: "Action: [Wrong Guess]",
+                    type: 'wrong',
+                    feedback: "You try adjusting light intensity and changing the sun angle, but the shadow still appears detached and doesn’t follow the animated mesh. Clearly this isn’t just a simple lighting strength or angle problem.",
+                    next: 'step-1W'
+                }
+            ]
+        },
+        'step-1W': {
+            skill: 'materials',
+            title: 'Dead End: Wrong Guess',
+            prompt: "You went down the wrong path, assuming the issue was just light settings or directional angle. Even after tweaking those, the shadow remains offset from the moving mesh.",
+            choices: [
+                {
+                    text: "Action: [Revert and try again]",
+                    type: 'correct',
+                    feedback: "You undo the unnecessary light tweaks and refocus on the material itself, especially how World Position Offset is handled in different rendering passes.",
+                    next: 'step-2'
+                }
+            ]
+        },
+        'step-2': {
+            skill: 'materials',
+            title: 'Step 2: Investigation',
+            prompt: "You open the material used for the wind-animated mesh and inspect how World Position Offset is wired. You want to understand why the lit mesh moves but the shadow does not. What do you find?",
+            choices: [
+                {
+                    text: "Action: [Identify Root Cause]",
+                    type: 'correct',
+                    feedback: "You discover the material uses World Position Offset to drive wind animation, but there is no logic to handle WPO differently in the shadow pass. The shadow map is still generated from the original, undisplaced mesh position, so the lighting pass and shadow pass disagree on where the object actually is.",
+                    next: 'step-3'
+                },
+                {
+                    text: "Action: [Misguided Attempt]",
+                    type: 'misguided',
+                    feedback: "You try cranking up cascaded shadow resolution and tweaking distance / contact shadows, but the shadow still sits in the wrong place. The problem isn’t quality or range—it’s that the shadow pass isn’t using the displaced vertices.",
+                    next: 'step-2M'
+                }
+            ]
+        },
+        'step-2M': {
+            skill: 'materials',
+            title: 'Dead End: Misguided',
+            prompt: "Those shadow quality tweaks didn’t work because the underlying mismatch remains: the base pass uses displaced vertices from WPO, while the shadow map still assumes the original static mesh position.",
+            choices: [
+                {
+                    text: "Action: [Realize mistake]",
+                    type: 'correct',
+                    feedback: "You realize you must explicitly tell the material what to do in the shadow pass—either applying appropriate WPO there via a Shadow Pass Switch node or compensating with light shadow bias—rather than just increasing shadow quality.",
+                    next: 'step-3'
+                }
+            ]
+        },
+        'step-3': {
+            skill: 'materials',
+            title: 'Step 3: The Fix',
+            prompt: "You now know the cause: the World Position Offset isn’t being handled correctly for the shadow pass, so the shadow is cast from the original mesh instead of the displaced one. How do you fix it?",
+            choices: [
+                {
+                    text: "Action: [Enable \"Shadow Pass Switch\" or correct shadow bias.]",
+                    type: 'correct',
+                    feedback: "In the material, you use a Shadow Pass Switch to control how WPO is applied for shadow casting, ensuring that the shadow pass uses a version of the displacement that matches the visible animation (or a simplified variant that still lines up). Where needed, you also refine the light’s Shadow Bias settings to avoid minor detachment artifacts. After recompiling the material, the mesh and its shadow move together with the wind instead of separating.",
+                    next: 'step-4'
+                }
+            ]
+        },
+        'step-4': {
+            skill: 'materials',
+            title: 'Step 4: Verification',
+            prompt: "You re-run the scene in PIE and watch the wind-animated meshes and their shadows over time. How do you verify that the issue is resolved?",
+            choices: [
+                {
+                    text: "Action: [Play in Editor]",
+                    type: 'correct',
+                    feedback: "In PIE, as the wind animates the foliage or mesh via World Position Offset, the shadow now deforms or shifts appropriately with it rather than staying behind or floating away. The silhouette and shadow stay aligned from multiple camera angles, confirming that the Shadow Pass Switch / shadow bias fix worked.",
+                    next: 'conclusion'
+                }
+            ]
+        },
+        'conclusion': {
+            skill: 'materials',
+            title: 'Conclusion',
+            prompt: "Lesson: When using World Position Offset for animation (like wind), remember that shadows are generated in a separate pass. Use a Shadow Pass Switch node in the material (and refine shadow bias on the light if needed) so the shadow pass accounts for WPO and the mesh’s shadow doesn’t detach or drift away from the visible geometry.",
+            choices: []
+        }
     }
-}
 };

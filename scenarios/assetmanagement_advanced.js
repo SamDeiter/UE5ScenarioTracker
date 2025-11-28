@@ -1,158 +1,106 @@
-
-window.SCENARIOS = window.SCENARIOS || {};
-
-window.SCENARIOS['MismatchedSkeletonReference'] = {
+window.SCENARIOS['AnimNotifiesNotFiring'] = {
     meta: {
-        title: "Silent Anim Notify Failure Due to Orphaned Skeleton Asset Reference",
-        description: "The player character's attack animations play correctly in the level viewport, but the associated particle effects and sound effects (triggered by Anim Notifies) never execute in PIE (Play In Editor). However, when opening the attack animation asset directly and viewing it in the Animation Editor viewport, the Anim Notifies fire perfectly, generating the expected effects. This indicates the notify logic is sound, but its execution is blocked in the game environment, possibly due to a reference mismatch following a recent asset migration.",
-        difficulty: "medium",
-        category: "Asset Management",
-        estimate: 3
+        title: "Anim Notifies Not Firing in PIE",
+        description: "Attack animation plays but effects (Notifies) are missing in PIE. Investigates Montage vs Sequence playback and Notify Trigger Modes.",
+        estimateHours: 1.5
     },
-    start: "step_1",
+    start: "step-1",
     steps: {
-    "step_1": {
-        "prompt": "The player character's attack animations play correctly in the level viewport, but the associated particle effects and sound effects (triggered by Anim Notifies) never execute in PIE (Play In Editor). However, when opening the attack animation asset directly and viewing it in the Animation Editor viewport, the Anim Notifies fire perfectly, generating the expected effects. This indicates the notify logic is sound, but its execution is blocked in the game environment, possibly due to a reference mismatch following a recent asset migration.",
-        "choices": [
-            {
-                "text": "If the issue persists, navigate to the content folder containing the orphaned Skeleton ('SK_Hero_B') and any affected animations/Blueprints.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Right-click the incorrect Skeleton asset ('SK_Hero_B') and select 'Replace References'.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Perform a 'Save All' operation across the project to commit the reference changes and redirector cleanup.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Attempting to migrate the character mesh or Anim BP back into the project, believing the assets are missing data, rather than having incorrect references.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 1
-            },
-            {
-                "text": "After fixing redirectors, manually delete the now-unreferenced or obsolete Skeleton asset ('SK_Hero_B') to prevent future confusion and reference issues.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Locate the Skeletal Mesh Component within the Player Character Blueprint. Verify that the Mesh is assigned and the 'Anim Class' is correctly set to the target Animation Blueprint.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "In the Animation Blueprint (ABP), confirm the implementation logic for the Anim Notify event (e.g., 'Event_PlayImpactFX') is present and uses standard nodes (e.g., 'Spawn Emitter at Location'). Set a Breakpoint on this event in the ABP.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.2
-            },
-            {
-                "text": "In the 'Replace References' dialog, select the correct, currently used Skeleton asset ('SK_Hero_A') as the replacement target and confirm the operation.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.2
-            },
-            {
-                "text": "Checking the collision profiles on the character mesh, assuming a physics interaction is preventing the notify from firing.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.4
-            },
-            {
-                "text": "Checking Project Settings for Sound or FX volumes, assuming the issue is global audio/rendering suppression.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.3
-            },
-            {
-                "text": "Open the specific animation sequence (e.g., 'Anim_Attack_01') and verify that the Anim Notifies are placed correctly on the timeline and that they are correctly linked to a corresponding function or event in the Animation Blueprint (ABP).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.2
-            },
-            {
-                "text": "Recompile and save the Animation Blueprint ('ABP_Hero').",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Trying to recreate the Anim Notifies from scratch in the Animation Sequence, assuming the notify asset itself is corrupted.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.5
-            },
-            {
-                "text": "Run PIE and perform the attack. Observe that the Breakpoint in the Animation Blueprint is never hit, confirming that the Anim Notify event is not being fired at runtime, even though the animation is playing.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.3
-            },
-            {
-                "text": "Right-click the 'SK_Hero_B' asset and select 'Reference Viewer' to confirm that only the Animation Blueprint and possibly a few related animations are referencing this incorrect skeleton.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.3
-            },
-            {
-                "text": "Right-click on the folder in the Content Browser and select 'Fix Up Redirectors in Folder' to clean up any remaining corrupted redirector files that might be pointing to the obsolete asset ID.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.3
-            },
-            {
-                "text": "Realize that the Skeletal Mesh component is compiled against 'SK_Hero_A', but the Anim BP is compiled against 'SK_Hero_B', leading to a runtime mismatch where the Notify logic, though correctly present, cannot execute.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.2
-            },
-            {
-                "text": "Open the Animation Blueprint (ABP_Hero) and check the 'Skeleton' asset displayed in the Asset Details pane of the Animation Blueprint editor. Identify that it is referencing a different, older, or orphaned Skeleton asset (e.g., 'SK_Hero_B').",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.4
-            },
-            {
-                "text": "Attempt running PIE to verify the Anim Notifies are now firing (the visual/sound effects should now appear).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Run a final PIE session to confirm that all Anim Notifies for the character are now executing reliably.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Open the Animation Blueprint ('ABP_Hero') again. Check the Asset Details panel to confirm the Skeleton reference has been successfully updated to 'SK_Hero_A'.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Open the Skeletal Mesh asset itself (e.g., 'SKM_Hero') and observe which Skeleton asset it is currently associated with in the Asset Details panel (e.g., 'SK_Hero_A').",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.2
-            },
-            {
-                "text": "Navigate to the location of the currently referenced, but incorrect, Skeleton asset ('SK_Hero_B') in the Content Browser.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            }
-        ]
+        'step-1': {
+            skill: 'asset_management',
+            title: 'Step 1: The Symptom',
+            prompt: "Your attack animation plays in-game, but the Particle and Sound effects that you see in the animation asset preview never appear in PIE. What do you check first?",
+            choices: [
+                {
+                    text: "Action: [Check Logs/View Modes]",
+                    type: 'correct',
+                    feedback: "You enable animation debugging / notify visualization and log output. In the Animation Preview the notifies clearly fire, but in PIE you see no notify debug messages at all when the attack plays—suggesting the notifies aren’t being triggered in-game.",
+                    next: 'step-2'
+                },
+                {
+                    text: "Action: [Wrong Guess]",
+                    type: 'wrong',
+                    feedback: "You spend time tweaking Niagara and audio settings, but the effects still never trigger in PIE. The attack animation plays, so this is probably not a simple VFX/audio setup issue.",
+                    next: 'step-1W'
+                }
+            ]
+        },
+        'step-1W': {
+            skill: 'asset_management',
+            title: 'Dead End: Wrong Guess',
+            prompt: "You went down the VFX/audio rabbit hole—recompiling systems, swapping sounds—but nothing changed. The animation plays, yet no notifies fire in PIE.",
+            choices: [
+                {
+                    text: "Action: [Revert and try again]",
+                    type: 'correct',
+                    feedback: "You roll back the unnecessary changes and refocus on how and when the animation notifies are actually evaluated in the attack animation.",
+                    next: 'step-2'
+                }
+            ]
+        },
+        'step-2': {
+            skill: 'asset_management',
+            title: 'Step 2: Investigation',
+            prompt: "You open the attack animation asset and inspect the notify track and how the animation is played in the Animation Blueprint. What do you find?",
+            choices: [
+                {
+                    text: "Action: [Identify Root Cause]",
+                    type: 'correct',
+                    feedback: "You discover that the notifies are configured as \"Montage Only\" (or their Notify Trigger Mode is set for a montage slot), but in-game the attack is being played as a raw sequence in the AnimGraph. Because it isn’t running through the montage system or the expected slot, those notifies never fire during PIE.",
+                    next: 'step-3'
+                },
+                {
+                    text: "Action: [Misguided Attempt]",
+                    type: 'misguided',
+                    feedback: "You try re-adding the notifies, duplicating the animation, or reimporting the FX assets. The notifies still don’t fire in PIE because the way the animation is played (sequence vs montage / slot) and the Notify Trigger Mode are still mismatched.",
+                    next: 'step-2M'
+                }
+            ]
+        },
+        'step-2M': {
+            skill: 'asset_management',
+            title: 'Dead End: Misguided',
+            prompt: "That didn’t work because the issue isn’t missing assets—it’s when and how the notifies are evaluated. If the animation is played as a sequence but the notifies are set up for montage-only triggering, they will never fire.",
+            choices: [
+                {
+                    text: "Action: [Realize mistake]",
+                    type: 'correct',
+                    feedback: "You realize you must either adjust the Notify Trigger Mode to match how the animation is played, or switch to playing the attack via an Animation Montage that uses the correct notify-bearing slot.",
+                    next: 'step-3'
+                }
+            ]
+        },
+        'step-3': {
+            skill: 'asset_management',
+            title: 'Step 3: The Fix',
+            prompt: "You now know the notifies are configured for the wrong context (Montage Only vs Sequence, or an incompatible Notify Trigger Mode). How do you fix it?",
+            choices: [
+                {
+                    text: "Action: [Check Notify Trigger Mode or use Montage.]",
+                    type: 'correct',
+                    feedback: "You update the setup: either you switch the attack to play through an Animation Montage using the correct slot, or you change the Anim Notify Trigger Mode so notifies fire for the way the animation is actually played (sequence vs montage). After saving the animation and Animation Blueprint, the notifies are now eligible to trigger in PIE.",
+                    next: 'step-4'
+                }
+            ]
+        },
+        'step-4': {
+            skill: 'asset_management',
+            title: 'Step 4: Verification',
+            prompt: "You re-run the game in PIE and trigger the attack again with your updated notify configuration. What happens now?",
+            choices: [
+                {
+                    text: "Action: [Play in Editor]",
+                    type: 'correct',
+                    feedback: "In PIE, when the attack animation plays, the Anim Notifies now fire as expected: the Particle Effect spawns and the Sound cue plays at the correct frames. Your debug output also shows the notify events triggering, confirming that the fix worked.",
+                    next: 'conclusion'
+                }
+            ]
+        },
+        'conclusion': {
+            skill: 'asset_management',
+            title: 'Conclusion',
+            prompt: "Lesson: If Anim Notifies work in the animation preview but not in PIE, verify how the animation is played and how the notifies are configured. Ensure the Notify Trigger Mode matches your playback (sequence vs montage), or play the attack via a Montage when using montage-specific notifies and slots.",
+            choices: []
+        }
     }
-}
 };

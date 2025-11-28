@@ -1,110 +1,106 @@
-
-window.SCENARIOS = window.SCENARIOS || {};
-
-window.SCENARIOS['DataLayerStreamingOverride'] = {
+window.SCENARIOS['FoliagePoppingInTooClose'] = {
     meta: {
-        title: "Decorative Props Popping In Too Close in World Partition",
-        description: "We have recently completed placing a dense patch of static mesh actors (bushes and rocks) in a new wilderness area using a dedicated Data Layer. When testing in PIE, the surrounding landscape tiles and nearby structural meshes stream in correctly at about 500 meters. However, the newly placed bushes and rocks only become visible when the player is extremely close (approximately 10 meters away), causing obvious and jarring visual popping as the player approaches the area.",
-        difficulty: "medium",
-        category: "World Partition & Streaming",
-        estimate: 0.8
+        title: "Foliage Popping In Too Close",
+        description: "Actors load at 10m. Investigates Data Layers and Loading Range.",
+        estimateHours: 1.5
     },
-    start: "step_1",
+    start: "step-1",
     steps: {
-    "step_1": {
-        "prompt": "We have recently completed placing a dense patch of static mesh actors (bushes and rocks) in a new wilderness area using a dedicated Data Layer. When testing in PIE, the surrounding landscape tiles and nearby structural meshes stream in correctly at about 500 meters. However, the newly placed bushes and rocks only become visible when the player is extremely close (approximately 10 meters away), causing obvious and jarring visual popping as the player approaches the area.",
-        "choices": [
-            {
-                "text": "Checking the individual Static Mesh Asset properties (e.g., LOD settings, collision complexity) instead of focusing on the actor instance streaming parameters.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.15
-            },
-            {
-                "text": "In the Data Layers Editor, locate the identified Data Layer (e.g., 'DL_GroundCover_Details').",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Identify the 'Streaming Distance Override' property for this specific Data Layer.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Examine the Details panel for the selected actors and confirm that the 'Is Spatially Loaded' checkbox is enabled, indicating they should be managed by the spatial grid streaming system.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Double-click the Data Layer entry or select it and view its properties panel within the Data Layers Editor.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Inspect the Runtime Properties section of the Data Layer configuration.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Save the changes in the Data Layers Editor, save the main map, and test in PIE to confirm the bushes and rocks now stream in at the correct distance (500m).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Increasing the global 'Streaming Distance' setting within the World Partition map configuration, which unnecessarily loads all other distant actors sooner.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.3
-            },
-            {
-                "text": "Locate the 'Data Layers' section within the World Settings panel and click the 'Edit Data Layers' button to launch the dedicated Data Layers Editor window.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Modifying the 'HLOD Layer' or generating new Hierarchical Level of Detail meshes, assuming the issue is related to mesh reduction/LOD settings.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.25
-            },
-            {
-                "text": "In the Data Layers section of the Details panel, identify the specific Data Layer assigned to these assets (e.g., 'DL_GroundCover_Details').",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Select a subset of the problematic Static Mesh Actors (bushes/rocks) in the Level Viewport or the Outliner.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Open the main World Settings panel (Window -> World Settings) to access the World Partition configuration.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Confirm that the 'Streaming Distance Override' is set to an abnormally low value (e.g., 1000.0, representing 10 meters, instead of using the global grid distance).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Reset the 'Streaming Distance Override' property value back to 0.0. This tells the World Partition system to default back to the standard global streaming distance defined by the Runtime Grid settings.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.15
-            }
-        ]
+        'step-1': {
+            skill: 'world_partition',
+            title: 'Step 1: The Symptom',
+            prompt: "Newly placed bushes and rocks only appear when the player is about 10 meters away. The loading range feels way too short and ruins the illusion of a dense world. What do you check first?",
+            choices: [
+                {
+                    text: "Action: [Check Logs/View Modes]",
+                    type: 'correct',
+                    feedback: "You enable World Partition / runtime cell debug and use the Data Layer and HLOD visualization tools. You notice that these foliage actors only stream in when the nearby cell loads and that their loading radius is much smaller than the rest of the environment, hinting at a World Partition / loading range setup issue.",
+                    next: 'step-2'
+                },
+                {
+                    text: "Action: [Wrong Guess]",
+                    type: 'wrong',
+                    feedback: "You try changing LOD settings and material complexity on the meshes, but the pop-in distance doesn’t change at all. Clearly this isn’t just an LOD or performance problem.",
+                    next: 'step-1W'
+                }
+            ]
+        },
+        'step-1W': {
+            skill: 'world_partition',
+            title: 'Dead End: Wrong Guess',
+            prompt: "You went down the wrong path, assuming the issue was mesh LODs or materials. The bushes and rocks still appear only when you’re very close.",
+            choices: [
+                {
+                    text: "Action: [Revert and try again]",
+                    type: 'correct',
+                    feedback: "You undo the unnecessary LOD/material tweaks and refocus on how these actors are streamed by World Partition—Data Layers, spatial loading, and loading ranges.",
+                    next: 'step-2'
+                }
+            ]
+        },
+        'step-2': {
+            skill: 'world_partition',
+            title: 'Step 2: Investigation',
+            prompt: "You select several of the problem bushes and rocks in the level and inspect their World Partition and Data Layer settings. What do you find?",
+            choices: [
+                {
+                    text: "Action: [Identify Root Cause]",
+                    type: 'correct',
+                    feedback: "You see that the actors are marked as Spatially Loaded and belong to a Data Layer / HLOD setup with a very small Loading Range. Their grid placement means the cells containing them only stream in when the player is extremely close, so the foliage pops in at around 10 meters instead of much farther out.",
+                    next: 'step-3'
+                },
+                {
+                    text: "Action: [Misguided Attempt]",
+                    type: 'misguided',
+                    feedback: "You try duplicating the meshes into another level or turning off HLODs entirely, but that either breaks other streaming behavior or doesn’t reliably fix the pop-in distance. You still haven’t addressed the actual loading range configuration.",
+                    next: 'step-2M'
+                }
+            ]
+        },
+        'step-2M': {
+            skill: 'world_partition',
+            title: 'Dead End: Misguided',
+            prompt: "Those changes didn’t work because the underlying World Partition settings for spatial loading and loading range are still forcing the foliage to stream in too late.",
+            choices: [
+                {
+                    text: "Action: [Realize mistake]",
+                    type: 'correct',
+                    feedback: "You realize the correct fix is to adjust the actors’ spatial loading and loading range in the World Partition details instead of trying to hack around it with level duplicates or disabled HLODs.",
+                    next: 'step-3'
+                }
+            ]
+        },
+        'step-3': {
+            skill: 'world_partition',
+            title: 'Step 3: The Fix',
+            prompt: "You now know the cause: the foliage actors are in a World Partition setup with a loading range that’s too small. How do you fix it?",
+            choices: [
+                {
+                    text: "Action: [Adjust Loading Range or Grid Placement.]",
+                    type: 'correct',
+                    feedback: "In the actor and World Partition settings, you verify that \"Is Spatially Loaded\" is set correctly, then adjust the Grid Placement or increase the Loading Range for the relevant Data Layer / HLOD settings so the cells containing the bushes and rocks stream in from farther away. After saving, the foliage should begin loading at a more appropriate distance.",
+                    next: 'step-4'
+                }
+            ]
+        },
+        'step-4': {
+            skill: 'world_partition',
+            title: 'Step 4: Verification',
+            prompt: "You need to confirm that bushes and rocks now appear at a reasonable distance instead of popping in at 10 meters. How do you verify the fix?",
+            choices: [
+                {
+                    text: "Action: [Play in Editor]",
+                    type: 'correct',
+                    feedback: "In PIE, you approach the area again from multiple angles. This time, the bushes and rocks are already visible well before you reach them, and the World Partition debug view shows their cells loading at the new, larger range. The distracting close-range pop-in is gone.",
+                    next: 'conclusion'
+                }
+            ]
+        },
+        'conclusion': {
+            skill: 'world_partition',
+            title: 'Conclusion',
+            prompt: "Lesson: If foliage or props only pop in very close to the player in a World Partition level, inspect their Data Layer and spatial loading settings. Make sure \"Is Spatially Loaded\" and Grid Placement are configured correctly, and increase the Loading Range so the relevant cells stream in at a reasonable distance.",
+            choices: []
+        }
     }
-}
 };

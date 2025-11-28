@@ -1,158 +1,106 @@
-
-window.SCENARIOS = window.SCENARIOS || {};
-
-window.SCENARIOS['MaterialParameterAndAnimJitter'] = {
+window.SCENARIOS['CinematicHandClipping'] = {
     meta: {
-        title: "Desynchronized Material Effects and Animation Jitter in Cinematic Sequence",
-        description: "A complex cinematic sequence, 'Pickup_Cinematic', is exhibiting two major flaws. First, a crucial glowing prop (SM_Relic) loses its emissive intensity abruptly just as the character starts the pickup motion, then returns to full intensity after the camera cuts. The desired effect is a slow, smooth fade over 4 seconds during the pickup. Second, the character's right hand slightly clips through the SM_Relic during the final moments of the grab animation, suggesting a subtle transform offset issue.",
-        difficulty: "medium",
-        category: "Sequencer & Cinematics",
-        estimate: 1.5
+        title: "Hand Clips Through Prop",
+        description: "Animation compression causes clipping. Investigates Control Rig additive layers in Sequencer.",
+        estimateHours: 1.5
     },
-    start: "step_1",
+    start: "step-1",
     steps: {
-    "step_1": {
-        "prompt": "A complex cinematic sequence, 'Pickup_Cinematic', is exhibiting two major flaws. First, a crucial glowing prop (SM_Relic) loses its emissive intensity abruptly just as the character starts the pickup motion, then returns to full intensity after the camera cuts. The desired effect is a slow, smooth fade over 4 seconds during the pickup. Second, the character's right hand slightly clips through the SM_Relic during the final moments of the grab animation, suggesting a subtle transform offset issue.",
-        "choices": [
-            {
-                "text": "In the Sequencer timeline, select the track corresponding to the static mesh 'SM_Relic' (the glowing prop).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Save the 'Pickup_Cinematic' Level Sequence asset.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Set a keyframe on the Control Rig track for the adjusted hand position at Frame 180.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Expand the newly created Control Rig track and select the bone controlling the right hand (e.g., 'hand_r_bone' or similar relevant control).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Add flanking keyframes (e.g., at Frame 160 and Frame 200) where the hand transform is reset to 0.0 relative offset, ensuring a smooth blend into and out of the correction.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Locate and open the Level Sequence asset named 'Pickup_Cinematic' in the Content Browser.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Delete the entire superfluous 'Transform' track on the SKM_Hero actor, relying solely on the underlying animation clip for movement.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "In the animation editor (Persona), trying to edit the base 'Anim_Pickup_Relic' animation asset to fix the clipping, thus permanently altering the source data.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.3
-            },
-            {
-                "text": "Review the entire sequence playback, checking both the 'Glow_Intensity' fade timing and the hand/relic interaction at the point of pickup.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Select 'Add Control Rig Track' from the context menu to introduce a layer for fine-tuning bone positions without modifying the base animation asset.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Scrub the timeline to the end of the required fade (Frame 200, 4 seconds later) and key the 'Glow_Intensity' parameter to 0.0 to achieve the smooth 4-second fade.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Checking the collision settings of the Skeletal Mesh and the Static Mesh, attempting to use physics/collision response to fix a visual/transform issue.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.2
-            },
-            {
-                "text": "Observe the keyframes for 'Glow_Intensity'. Note the unexpected keyframe at Frame 30, which abruptly sets the value to 0.0, causing the instant fade-out.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.15
-            },
-            {
-                "text": "Using the Sequencer transform controls for the 'hand_r_bone' control, adjust the position slightly along the local X or Z axis (e.g., +1.5 units) to pull the hand away from the relic.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Delete the erroneous 'Glow_Intensity' keyframe located at Frame 30 to prevent the premature fade.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "If deleting the Transform track introduces new errors, undo the deletion and instead, right-click the 'Anim_Pickup_Relic' animation clip itself.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Scrub to the exact frame where the clipping occurs (around Frame 180).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Scrub the timeline to the start of the required fade (Frame 80) and ensure the Glow_Intensity is keyed to its maximum value (e.g., 5.0).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Opening the SM_Relic Material Blueprint and attempting to debug the Glow Intensity logic within the Material Editor, assuming the material itself is flawed.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.4
-            },
-            {
-                "text": "Select the track for the Skeletal Mesh Actor (SKM_Hero) and examine the tracks for any conflicting data, focusing on the Transform track.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.15
-            },
-            {
-                "text": "Expand the Material Parameter section under the SM_Relic track, specifically targeting the parameter named 'Glow_Intensity'.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Save the current level to ensure the changes to the possessed actors are retained.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Identify that the existing 'Transform' track, added on top of the 'Anim_Pickup_Relic' animation, is causing a subtle additive offset resulting in the clipping.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            }
-        ]
+        'step-1': {
+            skill: 'sequencer',
+            title: 'Step 1: The Symptom',
+            prompt: "During a pickup shot in your cinematic, the character’s hand slides through the prop instead of landing cleanly on it. The placement looks imprecise right at the moment of contact. What do you check first?",
+            choices: [
+                {
+                    text: "Action: [Check Logs/View Modes]",
+                    type: 'correct',
+                    feedback: "You scrub the sequence frame by frame in Sequencer and enable animation debug overlays. You see that the base animation is close, but the fingers and wrist miss the prop by just a few centimeters and clip through it. It’s clearly a posing / alignment issue, not a missing attach or visibility problem.",
+                    next: 'step-2'
+                },
+                {
+                    text: "Action: [Wrong Guess]",
+                    type: 'wrong',
+                    feedback: "You try nudging the prop in the level and tweaking its collision, but the hand still visibly clips during the pickup. Moving the prop just breaks other shots, so this clearly isn’t the right fix.",
+                    next: 'step-1W'
+                }
+            ]
+        },
+        'step-1W': {
+            skill: 'sequencer',
+            title: 'Dead End: Wrong Guess',
+            prompt: "Adjusting the prop’s transform didn’t solve the clipping and started to hurt continuity in other angles. You realize the problem is with the character’s pose during the grab, not the prop itself.",
+            choices: [
+                {
+                    text: "Action: [Revert and try again]",
+                    type: 'correct',
+                    feedback: "You revert the prop offsets and refocus on the character animation in Sequencer—specifically the hand and attach timing.",
+                    next: 'step-2'
+                }
+            ]
+        },
+        'step-2': {
+            skill: 'sequencer',
+            title: 'Step 2: Investigation',
+            prompt: "You inspect the animation track and the prop attachment in Sequencer. The timing is right, but the hand bone is just slightly off-target during the grab. What do you find?",
+            choices: [
+                {
+                    text: "Action: [Identify Root Cause]",
+                    type: 'correct',
+                    feedback: "You determine that animation compression has smoothed out the precise finger movements, or the original mocap data just doesn't perfectly align with this specific prop. The animation itself is 'correct' but needs a non-destructive adjustment on top to fit the scene perfectly.",
+                    next: 'step-3'
+                },
+                {
+                    text: "Action: [Misguided Attempt]",
+                    type: 'misguided',
+                    feedback: "You try re-recording the entire sequence or moving the prop's pivot, but that's overkill and creates new problems. You just need a local adjustment for these specific frames.",
+                    next: 'step-2M'
+                }
+            ]
+        },
+        'step-2M': {
+            skill: 'sequencer',
+            title: 'Dead End: Misguided',
+            prompt: "Re-doing the whole animation or changing global transforms is too destructive. You need a way to tweak the hand position *only* during the grab without breaking the rest of the shot.",
+            choices: [
+                {
+                    text: "Action: [Realize mistake]",
+                    type: 'correct',
+                    feedback: "You realize that Sequencer's Control Rig integration allows for additive adjustments on top of existing animation tracks.",
+                    next: 'step-3'
+                }
+            ]
+        },
+        'step-3': {
+            skill: 'sequencer',
+            title: 'Step 3: The Fix',
+            prompt: "You need to fix the hand clipping without replacing the base animation. How do you do this?",
+            choices: [
+                {
+                    text: "Action: [Use Control Rig to add additive offset.]",
+                    type: 'correct',
+                    feedback: "You right-click the skeletal mesh track in Sequencer and select 'Bake to Control Rig' or simply add a Control Rig track with 'Additive' enabled. You then keyframe the hand control to offset the position slightly during the grab frames, ensuring a clean contact with the prop. The base animation still plays, but your additive layer fixes the clipping.",
+                    next: 'step-4'
+                }
+            ]
+        },
+        'step-4': {
+            skill: 'sequencer',
+            title: 'Step 4: Verification',
+            prompt: "You scrub through the timeline and play the cinematic in PIE. How do you verify the fix?",
+            choices: [
+                {
+                    text: "Action: [Play in Editor]",
+                    type: 'correct',
+                    feedback: "In PIE, the character reaches out and grabs the prop with perfect alignment. The fingers no longer clip through the object, and the rest of the animation remains untouched. The additive Control Rig adjustment solved the specific spacing issue.",
+                    next: 'conclusion'
+                }
+            ]
+        },
+        'conclusion': {
+            skill: 'sequencer',
+            title: 'Conclusion',
+            prompt: "Lesson: For precise interactions like grabbing props, base animations often need tweaking. Use Control Rig in Sequencer (specifically additive layers) to make non-destructive, per-shot adjustments to bone positions without having to re-export or modify the original animation asset.",
+            choices: []
+        }
     }
-}
 };

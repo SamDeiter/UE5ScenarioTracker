@@ -1,128 +1,131 @@
-
-window.SCENARIOS = window.SCENARIOS || {};
-
 window.SCENARIOS['BlackMetallicObject'] = {
     meta: {
         title: "Metallic Asset Appears Pitch Black in Dynamic Scene",
-        description: "A highly reflective metallic statue has been placed into the level. Despite the level being well-lit using a dynamic directional light and having Lumen enabled, the statue appears uniformly pitch black in the viewport and in PIE. Other nearby non-metallic objects reflect light and shadows correctly. The material instance applied to the statue has Metallic set to 1.0 and Roughness set to 0.1. The object is clearly not receiving any environmental reflections or indirect light.",
-        difficulty: "medium",
-        category: "Lighting & Rendering",
-        estimate: 0.73
+        description: "A highly reflective metallic statue appears pitch black despite dynamic lighting. Investigates reflection environments, Lumen settings, and material properties.",
+        estimateHours: 1.5
     },
-    start: "step_1",
+    start: "step-1",
     steps: {
-    "step_1": {
-        "prompt": "A highly reflective metallic statue has been placed into the level. Despite the level being well-lit using a dynamic directional light and having Lumen enabled, the statue appears uniformly pitch black in the viewport and in PIE. Other nearby non-metallic objects reflect light and shadows correctly. The material instance applied to the statue has Metallic set to 1.0 and Roughness set to 0.1. The object is clearly not receiving any environmental reflections or indirect light.",
-        "choices": [
-            {
-                "text": "If checking the Ray Tracing visibility property solved the issue, instruct the user to hit 'Save All' and verify the statue is now correctly reflecting the scene.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.03
-            },
-            {
-                "text": "Deleting the directional light and replacing it, or modifying its intensity to extreme values, mistakenly assuming the issue is primary lighting source intensity rather than reflection setup.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.2
-            },
-            {
-                "text": "Check the Sky Light actor in the scene. Ensure its 'Source Type' is set to 'SLS Captured Scene' and confirm its 'Intensity' is a visible value (e.g., 1.0).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "In the Editor Viewport, switch the view mode to 'Buffer Visualization -> World Reflection' to visually confirm if the object is receiving any reflection data from the Sky Light or Lumen.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.06
-            },
-            {
-                "text": "In the Post Process Volume settings, search for 'Lumen' and confirm that both 'Global Illumination' and 'Reflections' settings are explicitly set to 'Lumen' or 'Final Gather', and that the intensity values are not zero.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Final verification: Ensure the Static Mesh Component's 'Hidden In Game' property is not checked, and the statue renders correctly in the Play In Editor mode.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.06
-            },
-            {
-                "text": "If the issue persists, open Project Settings (Edit -> Project Settings) and navigate to the 'Rendering' section to globally confirm 'Global Illumination Method' is set to 'Lumen' and 'Reflection Method' is set to 'Lumen'.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.07
-            },
-            {
-                "text": "Expand the 'Rendering' category in the Details panel and verify 'Visible' and 'Cast Shadows' are checked.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.04
-            },
-            {
-                "text": "Attempting to change the Material's roughness parameter to 1.0 (matte) to confirm light interaction, thus removing the metallic visual requirement for reflections, which misdiagnoses the problem.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.15
-            },
-            {
-                "text": "Select the problematic black metallic Static Mesh Actor in the viewport or World Outliner.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.03
-            },
-            {
-                "text": "Select the Post Process Volume in the scene and ensure the 'Unbound' property is checked, or that the statue is within the volume's bounds.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.04
-            },
-            {
-                "text": "In the Details panel for the Static Mesh Component, verify the 'Mobility' setting is set to 'Movable' to ensure full compatibility with dynamic systems like Lumen and runtime reflections.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Check the 'Rendering' property 'Affects Global Illumination' and ensure it is enabled, allowing the object to interact with GI systems.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.04
-            },
-            {
-                "text": "Return to the problematic Static Mesh Actor and specifically review the 'Visible in Ray Tracing' setting one last time. If it was disabled, re-enable it.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.03
-            },
-            {
-                "text": "If a dedicated Reflection Capture actor is present near the statue (despite using Lumen), check its influence bounds to ensure the statue is fully contained within it.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Verify the material applied to the mesh component's slot 0. Confirm the Material Instance has Metallic=1.0 and Roughness is a low value (e.g., 0.1), ruling out material setup as the primary cause.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Locate the specific toggle 'Visible in Ray Tracing' (usually found near the bottom of the Rendering section) and confirm it is checked. If unchecked, metallic/reflective objects often appear black when using hardware ray tracing or high-quality Lumen reflections.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.08
-            },
-            {
-                "text": "Manually placing multiple Sphere Reflection Capture actors across the scene and running 'Build Reflection Captures,' assuming Lumen is disabled or misconfigured, wasting time on legacy techniques.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.1
-            }
-        ]
+        'step-1': {
+            skill: 'lighting',
+            title: 'Step 1: Initial Observation',
+            prompt: "You have placed a highly detailed metallic statue in your level. There is a strong directional light and a skylight, and the floor looks correctly lit. However, the statue itself appears completely pitch black, as if it has no material at all. What do you check first?",
+            choices: [
+                {
+                    text: "Action: [Check Output Log or View Modes]",
+                    type: 'correct',
+                    feedback: "You check the Output Log for shader errors—none found. You switch to 'Lighting Only' mode, and the statue is still black. You switch to 'Reflections' view mode and notice the entire area around the statue is black/empty. This suggests the issue is related to how the object is reflecting its environment.",
+                    next: 'step-2'
+                },
+                {
+                    text: "Action: [Increase Light Intensity]",
+                    type: 'wrong',
+                    feedback: "You crank up the Directional Light intensity to 50,000 lux. The floor becomes blindingly white, but the metallic statue remains pitch black. Increasing direct light brightness doesn't help if the material relies entirely on reflections that don't exist.",
+                    next: 'step-1W'
+                }
+            ]
+        },
+        'step-1W': {
+            skill: 'lighting',
+            title: 'Dead End: Lighting Intensity',
+            prompt: "Blasting the scene with light didn't fix the black statue; it just ruined the exposure for everything else. The issue isn't a lack of photons, but how the material is handling them.",
+            choices: [
+                {
+                    text: "Action: [Revert and check View Modes]",
+                    type: 'correct',
+                    feedback: "You revert the light intensity changes and decide to investigate the material and the scene's reflection data.",
+                    next: 'step-2'
+                }
+            ]
+        },
+        'step-2': {
+            skill: 'lighting',
+            title: 'Step 2: Material Inspection',
+            prompt: "You open the statue's material instance. You see it has a Metallic value of 1.0 and a Roughness of 0.1 (very shiny). What does this imply for the lighting?",
+            choices: [
+                {
+                    text: "Action: [Realize it needs reflections to be visible]",
+                    type: 'correct',
+                    feedback: "Correct. A fully metallic object (Metallic=1.0) derives almost all of its visible color from reflected light. If the scene has no reflection data (no captures, no Lumen, no skybox contribution), the object reflects 'nothing', which renders as black.",
+                    next: 'step-3'
+                },
+                {
+                    text: "Action: [Change Material to Unlit]",
+                    type: 'misguided',
+                    feedback: "You switch the Shading Model to Unlit and plug the Base Color into Emissive. The statue is now visible, but it looks like a flat, glowing cartoon sticker. This fixes the visibility but completely destroys the realistic PBR look you need.",
+                    next: 'step-2M'
+                }
+            ]
+        },
+        'step-2M': {
+            skill: 'lighting',
+            title: 'Dead End: Changing Material',
+            prompt: "Making the material Unlit made it visible, but it looks terrible and doesn't react to light anymore. This is not a valid fix for a PBR asset.",
+            choices: [
+                {
+                    text: "Action: [Revert to Lit material]",
+                    type: 'correct',
+                    feedback: "You switch the material back to Default Lit. The statue returns to being pitch black. You need to fix the environment, not break the material.",
+                    next: 'step-3'
+                }
+            ]
+        },
+        'step-3': {
+            skill: 'lighting',
+            title: 'Step 3: Checking Reflection Captures',
+            prompt: "You've confirmed the material is correct (Metallic). Now you look at the scene. You check the World Outliner for any 'SphereReflectionCapture' or 'BoxReflectionCapture' actors. What do you find?",
+            choices: [
+                {
+                    text: "Action: [Check World Outliner for SphereReflectionCapture]",
+                    type: 'correct',
+                    feedback: "You search the Outliner and find ZERO reflection capture actors. Since Lumen is also disabled in this project (or not supported by your current settings), the engine has no way to calculate reflections. The metal is reflecting a black void.",
+                    next: 'step-4'
+                },
+                {
+                    text: "Action: [Add a Skylight]",
+                    type: 'partial',
+                    feedback: "You add a Skylight. This adds a tiny bit of ambient fill, but without reflection captures to map that sky onto the surface, the highly polished metal still looks wrong and mostly dark. You need localized reflection data.",
+                    next: 'step-4'
+                }
+            ]
+        },
+        'step-4': {
+            skill: 'lighting',
+            title: 'Step 4: The Fix - Adding Reflections',
+            prompt: "The scene lacks reflection data. How do you provide the metallic statue with something to reflect?",
+            choices: [
+                {
+                    text: "Action: [Place a Sphere Reflection Capture and Build Reflection Captures]",
+                    type: 'correct',
+                    feedback: "You drag a Sphere Reflection Capture into the scene, surrounding the statue. You click 'Build Reflection Captures'. Suddenly, the statue 'pops' into existence, reflecting the surrounding room and sky. It looks like real chrome now.",
+                    next: 'step-5'
+                },
+                {
+                    text: "Action: [Enable Lumen in Project Settings]",
+                    type: 'correct',
+                    feedback: "Alternative Fix: You go to Project Settings > Rendering and enable Lumen for Global Illumination and Reflections. After a shader compile, the statue lights up with accurate, real-time reflections of the environment. This also solves the problem.",
+                    next: 'step-5'
+                }
+            ]
+        },
+        'step-5': {
+            skill: 'lighting',
+            title: 'Step 5: Verification',
+            prompt: "The statue now looks like shiny metal instead of a black void. How do you verify the fix is robust?",
+            choices: [
+                {
+                    text: "Action: [Play in Editor (PIE)]",
+                    type: 'correct',
+                    feedback: "You jump into the game. The statue continues to look correct. If you used a Reflection Capture, the reflections are static but stable. If you used Lumen, they update dynamically as you move. The asset is fixed.",
+                    next: 'conclusion'
+                }
+            ]
+        },
+        'conclusion': {
+            skill: 'lighting',
+            title: 'Conclusion',
+            prompt: "Lesson: Metallic materials (Metallic=1.0) rely entirely on reflections for their appearance. If an object renders pitch black, check your Reflection Captures or Lumen settings. The engine needs reflection data to know what the metal should look like.",
+            choices: []
+        }
     }
-}
 };

@@ -1,7 +1,9 @@
 @echo off
+pushd %~dp0..\..
 echo UE5 Scenario Analysis
 echo =====================
 echo.
-node analyze_scenarios.js
+node tools\js\analyze_scenarios.js
 echo.
+popd
 pause

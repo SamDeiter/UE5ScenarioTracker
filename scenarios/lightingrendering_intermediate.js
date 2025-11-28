@@ -1,176 +1,106 @@
-
-window.SCENARIOS = window.SCENARIOS || {};
-
-window.SCENARIOS['EmissiveGILightingFix'] = {
+window.SCENARIOS['LightmapShadowBleeding'] = {
     meta: {
-        title: "Missing Lumen Global Illumination from Emissive Materials",
-        description: "The scene contains several custom meshes textured with a powerful emissive material (acting as futuristic wall lights). While the materials themselves glow brightly when viewed directly, they cast absolutely no dynamic light or bounce light onto nearby static geometry, even though Lumen Global Illumination is enabled. If the primary Directional Light is disabled, the level becomes completely dark, proving the emissive sources are not being registered as light contributors. The intent is for the emissive material to provide soft, dynamic indirect lighting.",
-        difficulty: "medium",
-        category: "Lighting & Rendering",
-        estimate: 1.75
+        title: "Lightmap Shadow Bleeding",
+        description: "Static mesh has splotchy shadows despite high resolution. Investigates UV Channel overlaps and Lightmap Coordinate Index.",
+        estimateHours: 1.5
     },
-    start: "step_1",
+    start: "step-1",
     steps: {
-    "step_1": {
-        "prompt": "The scene contains several custom meshes textured with a powerful emissive material (acting as futuristic wall lights). While the materials themselves glow brightly when viewed directly, they cast absolutely no dynamic light or bounce light onto nearby static geometry, even though Lumen Global Illumination is enabled. If the primary Directional Light is disabled, the level becomes completely dark, proving the emissive sources are not being registered as light contributors. The intent is for the emissive material to provide soft, dynamic indirect lighting.",
-        "choices": [
-            {
-                "text": "Attempting to manually build lighting (Build > Build Lighting Only), as Lumen is a dynamic GI system and baked lighting is irrelevant to this specific problem.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.15
-            },
-            {
-                "text": "Search the Project Settings (Rendering) for the 'Lumen Global Illumination' section.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.04
-            },
-            {
-                "text": "Attempting to solve the issue by adjusting the Sky Light or Directional Light intensity, which are unrelated to the emissive material GI contribution.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.3
-            },
-            {
-                "text": "Ensure the setting 'Hardware Ray Tracing' is set to 'Enabled' or 'Support Global Illumination and Reflections' if the project targets high-end PCs (to ensure maximum path support for emissive GI).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.07
-            },
-            {
-                "text": "Type 'r.Lumen.EmissiveLightSourceSurfaceCacheResolution 1' into the console to verify that the surface cache resolution is sufficient for the small light sources.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Verify the project is using a compatible reflection method. Navigate to Project Settings > Rendering > Reflection Method and confirm it is set to 'Lumen'.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Review the mesh UVs: open the Static Mesh Editor for SM_WallLight and ensure UV Channel 0 (used for lightmap/GI sampling) is appropriately unwrapped without overlapping regions.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.15
-            },
-            {
-                "text": "In the Material Details panel, under the 'Lighting' category, ensure the flag 'Use Emissive for Dynamic Area Lighting' is checked.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.08
-            },
-            {
-                "text": "Save the level, close the editor, restart UE5, and reload the level to clear any potential transient rendering bugs.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.08
-            },
-            {
-                "text": "Select the Static Mesh Actor (SM_WallLight) in the level viewport. Check the Details panel for the 'Static Mesh' component.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.04
-            },
-            {
-                "text": "In the Post Process Volume, enable the 'Global Illumination' category override.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.03
-            },
-            {
-                "text": "Under Global Illumination, ensure 'Method' is explicitly set to 'Lumen'.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.03
-            },
-            {
-                "text": "Locate the Post Process Volume in the level (or add a new infinite one if missing).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Open the console (~) and type 'r.Lumen.EmissiveRadiance 1' to ensure emissive contribution calculation is enabled at the engine level (it should be 1 by default, but verify).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Hit 'Build' > 'Build Reflection Captures' to update indirect lighting cache, although Lumen is dynamic, sometimes this helps reset certain visualization aspects.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Open the material used for the lighting meshes (e.g., M_NeonStrip). Check that the 'Shading Model' in the Material Details panel is set to 'Default Lit'.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.08
-            },
-            {
-                "text": "Check the Material Instance applied to the mesh to ensure no parameter (like Emissive Multiplier) was overridden and set back to zero accidentally in the instance.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.08
-            },
-            {
-                "text": "Placing a standard Point Light adjacent to the emissive object and setting its 'Visibility' to false in an attempt to fake the lighting effect, bypassing the necessary Emissive GI pipeline fix.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.2
-            },
-            {
-                "text": "Changing the material blend mode to 'Translucent' or 'Masked', which often disables the ability for the material to contribute to Lumen Global Illumination, compounding the original issue.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.25
-            },
-            {
-                "text": "Under Global Illumination > Lumen, check the 'Emissive Light Contribution' slider and ensure it is set to 1.0 (or higher if the scene requires a boost).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Verify the project is using a compatible rendering method. Navigate to Project Settings > Rendering > Dynamic Global Illumination Method and confirm it is set to 'Lumen'.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "In the mesh component details, search for 'Lighting'. Ensure 'Cast Shadows' is checked for the mesh component, as Lumen GI often requires this for contribution, even if the shadow is soft or minor.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.07
-            },
-            {
-                "text": "Under Global Illumination > Lumen, confirm 'Final Gather Quality' is set to a reasonable value (e.g., 2.0 or 3.0) for better light integration.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.06
-            },
-            {
-                "text": "If using Software Ray Tracing, ensure the 'Software Ray Tracing Mode' is set to 'Global' for proper Scene Trace coverage.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.07
-            },
-            {
-                "text": "Back in the level, adjust the 'Emissive Light Source: Scale' property on the mesh component. If the scale is 0, Lumen may ignore the source, so set it to 1.0 or higher.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Verify the Emissive color intensity in the material graph is connected to the 'Emissive Color' output and is sufficiently high (e.g., multiplied by a Scalar Parameter with a value of 50.0 or more).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.07
-            }
-        ]
+        'step-1': {
+            skill: 'lighting',
+            title: 'Step 1: The Symptom',
+            prompt: "After building lighting, a static mesh shows ugly, splotchy / bleeding shadows even though its Lightmap Resolution is very high (e.g. 1024). What do you check first?",
+            choices: [
+                {
+                    text: "Action: [Check Logs/View Modes]",
+                    type: 'correct',
+                    feedback: "You switch to Lightmap Density and Lighting Only view modes and notice that despite the high resolution, the baked shadows look smeared in specific areas of the mesh. This points to a UV/lightmap problem rather than just resolution.",
+                    next: 'step-2'
+                },
+                {
+                    text: "Action: [Wrong Guess]",
+                    type: 'wrong',
+                    feedback: "You try cranking the Lightmap Resolution even higher and rebake, but the shadows are still blotchy. Clearly the issue isn’t just not having enough lightmap texels.",
+                    next: 'step-1W'
+                }
+            ]
+        },
+        'step-1W': {
+            skill: 'lighting',
+            title: 'Dead End: Wrong Guess',
+            prompt: "You chased resolution and build settings, but the shadows are still blotchy and bleeding. Increasing Lightmap Resolution didn’t actually solve the artifact.",
+            choices: [
+                {
+                    text: "Action: [Revert and try again]",
+                    type: 'correct',
+                    feedback: "You undo the unnecessary resolution changes and focus on the mesh’s lightmap setup instead, where UV issues are far more likely.",
+                    next: 'step-2'
+                }
+            ]
+        },
+        'step-2': {
+            skill: 'lighting',
+            title: 'Step 2: Investigation',
+            prompt: "You open the static mesh in the Static Mesh Editor and inspect the Lightmap UVs and settings. What do you find?",
+            choices: [
+                {
+                    text: "Action: [Identify Root Cause]",
+                    type: 'correct',
+                    feedback: "You discover that the UVs in Channel 1 (the intended lightmap channel) have overlapping islands and/or the Lightmap Coordinate Index is incorrectly set to 0, which is the texture UV channel. As a result, the baked shadows are fighting over the same texels and bleeding across faces.",
+                    next: 'step-3'
+                },
+                {
+                    text: "Action: [Misguided Attempt]",
+                    type: 'misguided',
+                    feedback: "You try adjusting indirect lighting settings and changing light types, but the artifacts remain. The real issue lies in the mesh’s lightmap UVs and the coordinate index, not the light actors themselves.",
+                    next: 'step-2M'
+                }
+            ]
+        },
+        'step-2M': {
+            skill: 'lighting',
+            title: 'Dead End: Misguided',
+            prompt: "Those lighting tweaks didn’t work because the shadow data is still being baked into bad UVs. As long as the lightmap channel has overlaps or the wrong index, you’ll keep getting splotchy results.",
+            choices: [
+                {
+                    text: "Action: [Realize mistake]",
+                    type: 'correct',
+                    feedback: "You realize you must fix the lightmap UVs themselves and ensure the Lightmap Coordinate Index points to a non-overlapping channel (typically UV Channel 1).",
+                    next: 'step-3'
+                }
+            ]
+        },
+        'step-3': {
+            skill: 'lighting',
+            title: 'Step 3: The Fix',
+            prompt: "You now know the cause: overlapping UVs on the lightmap channel or the Lightmap Coordinate Index using the wrong channel. How do you fix it?",
+            choices: [
+                {
+                    text: "Action: [Fix UV Channel 1 overlaps or Lightmap Coordinate Index.]",
+                    type: 'correct',
+                    feedback: "In the Static Mesh Editor, you inspect UV Channel 1 and either regenerate or rebuild unique, non-overlapping lightmap UVs. You then set the Lightmap Coordinate Index to 1 so the mesh uses that clean channel for baking. After saving the mesh and rebuilding lighting, the shadows are no longer splotchy.",
+                    next: 'step-4'
+                }
+            ]
+        },
+        'step-4': {
+            skill: 'lighting',
+            title: 'Step 4: Verification',
+            prompt: "You rebake lighting and view the mesh in the level and in PIE. How do you verify the fix?",
+            choices: [
+                {
+                    text: "Action: [Play in Editor]",
+                    type: 'correct',
+                    feedback: "In both the level viewport and PIE, the static mesh now has clean, stable baked shadows. The previous blotchy and bleeding areas are gone, confirming that correct, non-overlapping UVs on Channel 1 and the proper Lightmap Coordinate Index fixed the issue.",
+                    next: 'conclusion'
+                }
+            ]
+        },
+        'conclusion': {
+            skill: 'lighting',
+            title: 'Conclusion',
+            prompt: "Lesson: High Lightmap Resolution alone won’t fix bad bakes. For clean baked shadows, ensure your static meshes have unique, non-overlapping lightmap UVs (typically on UV Channel 1) and that the Lightmap Coordinate Index points to that channel instead of the texture UVs.",
+            choices: []
+        }
     }
-}
 };

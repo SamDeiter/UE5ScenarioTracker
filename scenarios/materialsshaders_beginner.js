@@ -1,134 +1,106 @@
-
-window.SCENARIOS = window.SCENARIOS || {};
-
-window.SCENARIOS['BlackMaterialDueToEmissiveMiswiring'] = {
+window.SCENARIOS['TextureStretching'] = {
     meta: {
-        title: "Lit Material Renders Pure Black in Scene",
-        description: "A newly created master material (M_Master_Rock) intended for a PBR static mesh rock appears completely black in the main level viewport, regardless of how intense the surrounding lighting (Point Lights, Sky Light, Directional Light) is. The rock object is correctly set to 'Movable' and 'Cast Shadows'. When viewing the material preview sphere inside the Material Editor, the material looks perfectly correct, reflecting light and displaying texture detail, and the Shading Model is confirmed to be 'Default Lit'.",
-        difficulty: "medium",
-        category: "Materials & Shaders",
-        estimate: 0.7
+        title: "Texture Stretching on Mesh",
+        description: "Material looks distorted. Investigates UV scaling and Texture Coordinate nodes.",
+        estimateHours: 1.5
     },
-    start: "step_1",
+    start: "step-1",
     steps: {
-    "step_1": {
-        "prompt": "A newly created master material (M_Master_Rock) intended for a PBR static mesh rock appears completely black in the main level viewport, regardless of how intense the surrounding lighting (Point Lights, Sky Light, Directional Light) is. The rock object is correctly set to 'Movable' and 'Cast Shadows'. When viewing the material preview sphere inside the Material Editor, the material looks perfectly correct, reflecting light and displaying texture detail, and the Shading Model is confirmed to be 'Default Lit'.",
-        "choices": [
-            {
-                "text": "Trace the wire outputting the calculated color from this PBR network.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.06
-            },
-            {
-                "text": "Understand that since the PBR calculation is driving Emissive Color, and Emissive Color is only visible when the Base Color is non-zero, the material is likely calculating a zero Base Color, resulting in a black output in the scene (even if the Emissive is non-zero, it is being masked out by the lack of Base Color in a Lit shader, or the Emissive output itself is not bright enough to overcome the scene darkness).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Observe that the 'Base Color' input is currently disconnected (or driven by a constant zero).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.04
-            },
-            {
-                "text": "Verify that the 'Emissive Color' input is now correctly disconnected (or driven by a constant black/zero if necessary).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.03
-            },
-            {
-                "text": "Examine the final output connection nodes leading into the Material's Main Attributes output node.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.02
-            },
-            {
-                "text": "Return to the Level Editor and confirm the static mesh now renders correctly with proper lighting interaction and color.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.09
-            },
-            {
-                "text": "Identify the primary PBR network (texture samplers combined with color/scalar parameters) intended to define the visual color.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.04
-            },
-            {
-                "text": "Double-click the Material Instance (MI_Rock_A) and use the 'Go to Parent Material' button to open M_Master_Rock.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Click 'Apply' and 'Save' the M_Master_Rock material and wait for compilation to complete.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.15
-            },
-            {
-                "text": "Checking the Mesh Component's 'Hidden in Game' or 'Visible' flags in the Details panel.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Changing the material Blend Mode from 'Opaque' to 'Masked' or 'Translucent'.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Select the black Static Mesh Actor in the Level Editor to verify the assigned material instance (MI_Rock_A).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.01
-            },
-            {
-                "text": "Reconnect the exact same PBR network output to the 'Base Color' input instead.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.06
-            },
-            {
-                "text": "Adding extra light sources or increasing the intensity of existing scene lights unnecessarily.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.15
-            },
-            {
-                "text": "Disconnect the PBR network wire from the 'Emissive Color' input.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.04
-            },
-            {
-                "text": "Inspect the Material Details panel (left side) to confirm the Shading Model is indeed 'Default Lit' and the Blend Mode is 'Opaque'.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.03
-            },
-            {
-                "text": "Verify the Roughness, Metallic, and Normal inputs are still connected correctly to ensure PBR calculations remain intact.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.03
-            },
-            {
-                "text": "Applying a brand new, default material to the mesh to 'confirm the mesh isn't broken', wasting time on replacing the material setup.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Observe that this PBR network is incorrectly connected to the 'Emissive Color' input of the main material node.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.04
-            }
-        ]
+        'step-1': {
+            skill: 'materials',
+            title: 'Step 1: The Symptom',
+            prompt: "The material on your mesh looks stretched and distorted, even though the source texture is a clean square image. What do you check first?",
+            choices: [
+                {
+                    text: "Action: [Check Logs/View Modes]",
+                    type: 'correct',
+                    feedback: "You switch to different view modes and inspect the mesh in the viewport. The texture appears fine on a simple test cube, but on this specific mesh it’s clearly stretched in certain directions. That strongly suggests a UV or tiling issue rather than a broken texture asset.",
+                    next: 'step-2'
+                },
+                {
+                    text: "Action: [Wrong Guess]",
+                    type: 'wrong',
+                    feedback: "You tweak compression settings and reimport the texture, but nothing changes on the mesh. The distortion is still there, so the problem isn’t with the texture file itself.",
+                    next: 'step-1W'
+                }
+            ]
+        },
+        'step-1W': {
+            skill: 'materials',
+            title: 'Dead End: Wrong Guess',
+            prompt: "You chased texture import settings and compression options, but the material is still stretched on the mesh. Clearly the issue lies elsewhere.",
+            choices: [
+                {
+                    text: "Action: [Revert and try again]",
+                    type: 'correct',
+                    feedback: "You revert the unnecessary texture changes and refocus on the mesh’s UVs and how the material is sampling them.",
+                    next: 'step-2'
+                }
+            ]
+        },
+        'step-2': {
+            skill: 'materials',
+            title: 'Step 2: Investigation',
+            prompt: "You inspect the material graph and the mesh’s UVs to understand why the texture is distorted. What do you find?",
+            choices: [
+                {
+                    text: "Action: [Identify Root Cause]",
+                    type: 'correct',
+                    feedback: "You discover that the material plugs the texture sample’s UVs directly from the default coordinates, with no control over tiling, and the mesh’s UV islands are unevenly scaled. In some cases there isn’t even a Texture Coordinate node exposed for adjustment. The UV map itself is stretched, so the square texture is being warped across the surface.",
+                    next: 'step-3'
+                },
+                {
+                    text: "Action: [Misguided Attempt]",
+                    type: 'misguided',
+                    feedback: "You try changing the material to Unlit or adjusting roughness and normal strength, but the texture still looks warped. Those tweaks don’t fix underlying UV or tiling problems.",
+                    next: 'step-2M'
+                }
+            ]
+        },
+        'step-2M': {
+            skill: 'materials',
+            title: 'Dead End: Misguided',
+            prompt: "Those shading and lighting adjustments didn’t help because the distortion comes from how the texture is mapped, not how it’s lit.",
+            choices: [
+                {
+                    text: "Action: [Realize mistake]",
+                    type: 'correct',
+                    feedback: "You realize you must fix the UV layout or give the material explicit control over tiling via a Texture Coordinate node instead of just adjusting lighting.",
+                    next: 'step-3'
+                }
+            ]
+        },
+        'step-3': {
+            skill: 'materials',
+            title: 'Step 3: The Fix',
+            prompt: "You now know the texture stretching is caused by bad UV scaling or missing tiling control in the material. How do you fix it?",
+            choices: [
+                {
+                    text: "Action: [Add TexCoord node or fix Mesh UVs.]",
+                    type: 'correct',
+                    feedback: "In the Material Editor, you add a TextureCoordinate (TexCoord) node and plug it into the texture sample’s UVs, adjusting UTiling/VTiling until the pattern looks even. If the UVs themselves are distorted, you go back to your DCC tool (or use Generate UVs) to create a clean, evenly scaled UV map. After applying the changes, the texture finally appears correctly proportioned on the mesh.",
+                    next: 'step-4'
+                }
+            ]
+        },
+        'step-4': {
+            skill: 'materials',
+            title: 'Step 4: Verification',
+            prompt: "You apply the updated material and, if needed, the fixed UVs, then view the mesh in the level and in PIE. How do you verify the fix?",
+            choices: [
+                {
+                    text: "Action: [Play in Editor]",
+                    type: 'correct',
+                    feedback: "In the viewport and PIE, the texture now tiles cleanly across the mesh with no stretching or warping. The square details remain square, confirming that the TexCoord setup and/or UV fix solved the problem.",
+                    next: 'conclusion'
+                }
+            ]
+        },
+        'conclusion': {
+            skill: 'materials',
+            title: 'Conclusion',
+            prompt: "Lesson: If a square texture looks stretched on a mesh, inspect the UVs and material UV input. Use a TextureCoordinate node with proper tiling, and ensure the mesh has a clean, correctly scaled UV map so the material can display without distortion.",
+            choices: []
+        }
     }
-}
 };

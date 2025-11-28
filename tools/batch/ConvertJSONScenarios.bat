@@ -1,4 +1,5 @@
 @echo off
+pushd %~dp0..\..
 echo Converting JSON scenario files to JS format...
 echo.
 
@@ -25,8 +26,9 @@ if not exist raw_data.json (
 
 echo.
 echo Running converter...
-node convert_data.js
+node tools\js\convert_data.js
 
 echo.
 echo Done! Check the output_scenarios folder.
+popd
 pause

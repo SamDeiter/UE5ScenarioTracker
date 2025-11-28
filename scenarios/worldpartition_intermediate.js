@@ -1,122 +1,106 @@
-
-window.SCENARIOS = window.SCENARIOS || {};
-
-window.SCENARIOS['ForcedDataLayerUnload'] = {
+window.SCENARIOS['LandmarkUnloading'] = {
     meta: {
-        title: "Gameplay-Critical Landmark Streams Out Prematurely",
-        description: "We have a large, highly visible Clock Tower asset (a Static Mesh Actor placed in the world) that is essential for gameplay navigation and contains a required mission trigger volume at its base. The tower is assigned to the 'DL_KeyLandmarks' Data Layer. When the player moves approximately 50 meters away from the base, the entire Clock Tower and the associated mission trigger volume abruptly unload (stream out), which should not happen because a nearby, pre-placed trigger Blueprint (BP_MissionZone_A) is supposed to keep this entire area loaded until the mission is complete. The goal is to ensure the Clock Tower remains loaded while the player is within the influence of BP_MissionZone_A, regardless of distance to the default World Partition grid boundary.",
-        difficulty: "medium",
-        category: "World Partition & Streaming",
-        estimate: 1.15
+        title: "Landmark Unloading During Mission",
+        description: "Important mesh unloads. Investigates \"Is Spatially Loaded\" and Data Layer activation.",
+        estimateHours: 1.5
     },
-    start: "step_1",
+    start: "step-1",
     steps: {
-    "step_1": {
-        "prompt": "We have a large, highly visible Clock Tower asset (a Static Mesh Actor placed in the world) that is essential for gameplay navigation and contains a required mission trigger volume at its base. The tower is assigned to the 'DL_KeyLandmarks' Data Layer. When the player moves approximately 50 meters away from the base, the entire Clock Tower and the associated mission trigger volume abruptly unload (stream out), which should not happen because a nearby, pre-placed trigger Blueprint (BP_MissionZone_A) is supposed to keep this entire area loaded until the mission is complete. The goal is to ensure the Clock Tower remains loaded while the player is within the influence of BP_MissionZone_A, regardless of distance to the default World Partition grid boundary.",
-        "choices": [
-            {
-                "text": "Compile and Save the 'BP_MissionZone_A' Blueprint.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Attempting to create a new Blueprint to manually load the Data Layer via an 'Activate Data Layer' node on Begin Play, overlooking the existing, configured World Partition Streaming Source component.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.4
-            },
-            {
-                "text": "Ensure the Actor's 'Is Spatially Loaded' property is checked, confirming it relies on the Data Layer or streaming grid (it should not be set to 'Always Loaded').",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Open the World Outliner and select the Clock Tower Static Mesh Actor to inspect its properties.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Examine the Streaming Source component's Details panel under the 'Streaming Source' category.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.15
-            },
-            {
-                "text": "Add a new element to the 'Data Layers' array and select the 'DL_KeyLandmarks' Data Layer asset reference from the dropdown list.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.15
-            },
-            {
-                "text": "Validate the issue by performing a Play-In-Editor (PIE) session and observing the abrupt unloading of the Clock Tower asset when moving slightly away from its base.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Double-click 'BP_MissionZone_A' to open its Blueprint Editor.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "In the Components tab of the Blueprint Editor, select the 'World Partition Streaming Source' component.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Check the 'Data Layers' array property within the Streaming Source details, noticing that 'DL_KeyLandmarks' is either missing or empty.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.15
-            },
-            {
-                "text": "Open the Data Layers Panel (Window -> Data Layers) and confirm the 'DL_KeyLandmarks' Data Layer's 'Runtime State' is set to 'Unloaded' (default behavior for runtime streaming).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Locate the dedicated streaming Blueprint responsible for the area, named 'BP_MissionZone_A', in the World Outliner.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Manually set the Clock Tower Actor's 'Is Spatially Loaded' property to unchecked, forcing it to be 'Always Loaded' regardless of Data Layer or Streaming Source, which violates the intended mission control structure.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.3
-            },
-            {
-                "text": "Verify in the Details panel, under the 'World Partition' section, that the Actor is assigned to the 'DL_KeyLandmarks' Data Layer.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Verify that the 'Target Behavior' property is correctly set to 'Always Loaded' (meaning the area should be loaded when the source is active).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Exit the Blueprint Editor and run a new PIE session to confirm that the Clock Tower now remains streamed in and visible while the player is within the trigger zone of 'BP_MissionZone_A'.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Increase the global World Partition Streaming Distance parameter in World Settings or Project Settings, unnecessarily loading far too much of the map and negatively impacting performance.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.5
-            }
-        ]
+        'step-1': {
+            skill: 'world_partition',
+            title: 'Step 1: The Symptom',
+            prompt: "A large Clock Tower landmark disappears when the player moves about 50 meters away, even though it’s critical for the mission and should stay visible from much farther. Actor unloads by distance. What do you check first?",
+            choices: [
+                {
+                    text: "Action: [Check Logs/View Modes]",
+                    type: 'correct',
+                    feedback: "You enable World Partition debug visualization and watch the runtime cells while moving around the level. You see the Clock Tower’s cell unload as soon as you cross the 50m threshold, confirming that World Partition streaming—rather than LODs or culling—is causing the landmark to vanish.",
+                    next: 'step-2'
+                },
+                {
+                    text: "Action: [Wrong Guess]",
+                    type: 'wrong',
+                    feedback: "You try disabling distance culling and adjusting LOD screensize on the mesh, but the Clock Tower still completely unloads beyond ~50m. That didn’t help because the issue isn’t LODs—it’s the actor being streamed out entirely.",
+                    next: 'step-1W'
+                }
+            ]
+        },
+        'step-1W': {
+            skill: 'world_partition',
+            title: 'Dead End: Wrong Guess',
+            prompt: "You went down the wrong path tweaking LODs and cull distances, but the Clock Tower still unloads once you’re far enough away. Those settings only affect how it’s rendered, not whether it’s streamed in at all.",
+            choices: [
+                {
+                    text: "Action: [Revert and try again]",
+                    type: 'correct',
+                    feedback: "You roll back the unnecessary LOD/cull changes and refocus on the actor’s World Partition settings—how and when the landmark is streamed by the grid.",
+                    next: 'step-2'
+                }
+            ]
+        },
+        'step-2': {
+            skill: 'world_partition',
+            title: 'Step 2: Investigation',
+            prompt: "You select the Clock Tower actor and inspect its World Partition, Data Layer, and spatial loading properties. You want to understand why it unloads so aggressively. What do you find?",
+            choices: [
+                {
+                    text: "Action: [Identify Root Cause]",
+                    type: 'correct',
+                    feedback: "You discover that the Clock Tower is marked as \"Is Spatially Loaded\" and lives in a normal World Partition grid cell with the default streaming distance. As soon as the player moves beyond that grid range, the cell (and thus the Clock Tower) is unloaded. It isn’t assigned to any special mission Data Layer that would keep it active, so the landmark is treated like any other distant prop and disappears.",
+                    next: 'step-3'
+                },
+                {
+                    text: "Action: [Misguided Attempt]",
+                    type: 'misguided',
+                    feedback: "You consider duplicating the Clock Tower into a second level or increasing global streaming distances, but that would be heavy-handed and could hurt performance across the whole map. Plausible, but wrong—you still haven’t addressed why this specific landmark unloads.",
+                    next: 'step-2M'
+                }
+            ]
+        },
+        'step-2M': {
+            skill: 'world_partition',
+            title: 'Dead End: Misguided',
+            prompt: "That didn’t work because you’re still relying on the default grid to stream the landmark. As long as the Clock Tower is just another spatially loaded actor, the grid distance rules will keep unloading it when the player moves away.",
+            choices: [
+                {
+                    text: "Action: [Realize mistake]",
+                    type: 'correct',
+                    feedback: "You realize the fix is to opt the Clock Tower out of normal grid-based streaming—either by disabling \"Is Spatially Loaded\" so it always stays loaded, or by assigning it to a Data Layer that mission logic keeps activated during relevant gameplay.",
+                    next: 'step-3'
+                }
+            ]
+        },
+        'step-3': {
+            skill: 'world_partition',
+            title: 'Step 3: The Fix',
+            prompt: "You know the cause: the Clock Tower is being unloaded by the standard World Partition grid distance. How do you fix it so the landmark stays visible for the mission?",
+            choices: [
+                {
+                    text: "Action: [Disable \"Is Spatially Loaded\" or use Data Layer.]",
+                    type: 'correct',
+                    feedback: "In the actor’s World Partition settings, you either disable \"Is Spatially Loaded\" so the Clock Tower is always loaded regardless of distance, or you assign it to a dedicated mission Data Layer. Your mission Blueprint then keeps that Data Layer Activated while the mission is active. With either approach, the landmark is no longer governed solely by the grid’s distance rules and remains present when the player moves away.",
+                    next: 'step-4'
+                }
+            ]
+        },
+        'step-4': {
+            skill: 'world_partition',
+            title: 'Step 4: Verification',
+            prompt: "You need to verify that the Clock Tower now stays visible throughout the mission, even when the player moves more than 50m away. How do you confirm the fix?",
+            choices: [
+                {
+                    text: "Action: [Play in Editor]",
+                    type: 'correct',
+                    feedback: "In PIE, you start the mission and move around the level, backing far away from the landmark. The Clock Tower remains loaded and visible at long distances, and World Partition debug shows its cell or Data Layer staying active for the duration of the mission. Validated—the landmark no longer unloads mid-mission.",
+                    next: 'conclusion'
+                }
+            ]
+        },
+        'conclusion': {
+            skill: 'world_partition',
+            title: 'Conclusion',
+            prompt: "Lesson: If an important landmark unloads based on grid distance, don’t just crank up global streaming. Either disable \"Is Spatially Loaded\" so it always stays loaded, or place it on a mission-specific Data Layer that stays Activated while needed. This keeps key landmarks visible without breaking overall streaming performance.",
+            choices: []
+        }
     }
-}
 };

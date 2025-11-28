@@ -1,128 +1,106 @@
-
-window.SCENARIOS = window.SCENARIOS || {};
-
-window.SCENARIOS['RedirectorAndBulkLoadConflict'] = {
+window.SCENARIOS['AssetMissingInPackagedBuild'] = {
     meta: {
-        title: "Corrupted Texture Reference After Migration",
-        description: "A high-fidelity environmental prop (a large metallic statue) suddenly appears black and untextured in the level viewport, instead of its intended polished gold look. We recently moved the asset and its associated textures to a new folder structure. Opening the Material Instance reveals that all scalar and vector parameters are correct, and the material asset appears to be assigned, but the visual preview in the Material Instance Editor is also incorrect, showing a dull grey reflection suggesting the base texture inputs are failing to load.",
-        difficulty: "medium",
-        category: "Asset Management",
-        estimate: 1.35
+        title: "Asset Missing in Packaged Build",
+        description: "A Blueprint works in editor but fails to load a mesh in packaged build. Investigates Soft Object References and cooking settings.",
+        estimateHours: 1.5
     },
-    start: "step_1",
+    start: "step-1",
     steps: {
-    "step_1": {
-        "prompt": "A high-fidelity environmental prop (a large metallic statue) suddenly appears black and untextured in the level viewport, instead of its intended polished gold look. We recently moved the asset and its associated textures to a new folder structure. Opening the Material Instance reveals that all scalar and vector parameters are correct, and the material asset appears to be assigned, but the visual preview in the Material Instance Editor is also incorrect, showing a dull grey reflection suggesting the base texture inputs are failing to load.",
-        "choices": [
-            {
-                "text": "Close and reopen the Material Instance (MI_Statue_Polished) to force the engine to reload the dependency structure with the fixed loading setting.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "In the Content Browser, right-click the folder identified in the previous step and select 'Fix Up Redirectors in Folder' to resolve the obsolete reference paths.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.15
-            },
-            {
-                "text": "Observe that the setting 'Force Bulk Load' is currently enabled (This setting, combined with a messy redirector, prevents reliable path resolution at editor load time).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.15
-            },
-            {
-                "text": "Verify that the statue now renders correctly in the level viewport and that the texture preview in the Material Instance Editor is accurate.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Verify the Reference Viewer again. The dependency chain should look cleaner, but the statue still renders incorrectly (this confirms the redirectors were a problem, but not the only one).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Double-click the T_Statue_Normal texture asset itself to open the Texture Editor.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Creating a brand new Material Instance and attempting to assign the texture, which will fail because the reference issue is on the texture asset itself, not the material instance.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.3
-            },
-            {
-                "text": "Uncheck the 'Force Bulk Load' checkbox.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Confirm that while the Material Instance specifies the texture, the Parent Material editor shows the Texture Sample node defaulting to 'None' or producing an error, indicating the reference lookup is failing on asset load.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Navigate to the Parent Material (M_Master_Metal) from the Material Instance Editor and examine the Texture Sample nodes that are failing to render, specifically the T_Statue_Normal texture input.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Locate the statue Static Mesh in the Level and identify the assigned Material Instance (MI_Statue_Polished).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Search the Content Browser for the texture T_Statue_Normal, right-click the asset, and select 'Reference Viewer' to inspect its dependency graph and check for redirector chains pointing back to the old, invalid directory structure.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.15
-            },
-            {
-                "text": "Attempting to rebuild level lighting or reflection captures, assuming the issue is lighting-related rather than asset-reference related.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.2
-            },
-            {
-                "text": "Identify the folder that still contains the broken redirectors (often the source folder prior to the move).",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            },
-            {
-                "text": "Save the modified T_Statue_Normal texture asset.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Deleting and manually re-importing the texture, failing to realize the redirectors still exist and are pointing other assets to the old path.",
-                "next": "step_1",
-                "type": "misguided",
-                "time_cost": 0.4
-            },
-            {
-                "text": "In the Texture Editor Details panel, search for the 'Loading' section.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.05
-            },
-            {
-                "text": "Double-click MI_Statue_Polished to open the Material Instance Editor and verify that all texture parameters (Normal Map, Base Color Texture) are pointing to valid assets by name, but the preview sphere is visually incorrect.",
-                "next": "conclusion",
-                "type": "correct",
-                "time_cost": 0.1
-            }
-        ]
+        'step-1': {
+            skill: 'asset_management',
+            title: 'Step 1: The Symptom',
+            prompt: "In the editor, BP_PropContainer correctly loads and shows its mesh at runtime. In a packaged build, the Blueprint still spawns, but the mesh is completely missing (invisible). What do you check first?",
+            choices: [
+                {
+                    text: "Action: [Check Logs/View Modes]",
+                    type: 'correct',
+                    feedback: "You check the output log in the packaged build and see warnings that a mesh failed to load from a Soft Object Reference path. This tells you the Blueprint is trying to load something that isn’t actually present in the cooked content.",
+                    next: 'step-2'
+                },
+                {
+                    text: "Action: [Wrong Guess]",
+                    type: 'wrong',
+                    feedback: "You double-check collision, materials, and visibility settings, but everything looks fine. The mesh still doesn’t appear in the packaged build, so it’s probably not a simple rendering or visibility issue.",
+                    next: 'step-1W'
+                }
+            ]
+        },
+        'step-1W': {
+            skill: 'asset_management',
+            title: 'Dead End: Wrong Guess',
+            prompt: "You spent time tweaking materials, LODs, and visibility flags, but nothing fixed the missing mesh in the packaged build. Clearly this isn’t just a rendering flag problem.",
+            choices: [
+                {
+                    text: "Action: [Revert and try again]",
+                    type: 'correct',
+                    feedback: "You undo the unnecessary changes and refocus on how the Blueprint is actually loading the mesh and whether the asset is being cooked at all.",
+                    next: 'step-2'
+                }
+            ]
+        },
+        'step-2': {
+            skill: 'asset_management',
+            title: 'Step 2: Investigation',
+            prompt: "You inspect BP_PropContainer to see how it loads its mesh and why it might be missing only in packaged builds. What do you find?",
+            choices: [
+                {
+                    text: "Action: [Identify Root Cause]",
+                    type: 'correct',
+                    feedback: "You discover that the mesh is loaded via a Soft Object Reference (or async load) at runtime, and nothing in the project hard-references that mesh. The asset also lives in a folder that is not marked to always cook, so the cooker strips it out of the packaged build.",
+                    next: 'step-3'
+                },
+                {
+                    text: "Action: [Misguided Attempt]",
+                    type: 'misguided',
+                    feedback: "You try replacing the mesh at runtime with another Soft Object Reference, or you rebuild the Blueprint, but the packaged build still can’t find the asset. The underlying problem—assets not being cooked—remains.",
+                    next: 'step-2M'
+                }
+            ]
+        },
+        'step-2M': {
+            skill: 'asset_management',
+            title: 'Dead End: Misguided',
+            prompt: "Your changes didn’t help because the real issue is that the asset never gets cooked into the build. If it isn’t cooked, no amount of Blueprint logic will make it appear at runtime.",
+            choices: [
+                {
+                    text: "Action: [Realize mistake]",
+                    type: 'correct',
+                    feedback: "You realize you must ensure the directory containing the Soft-referenced meshes is explicitly included in cooking, so the assets actually exist in the packaged content.",
+                    next: 'step-3'
+                }
+            ]
+        },
+        'step-3': {
+            skill: 'asset_management',
+            title: 'Step 3: The Fix',
+            prompt: "You now know the mesh is only ever referenced through a Soft Object Reference, so it’s not being cooked. How do you fix it so BP_PropContainer can load the mesh in a packaged build?",
+            choices: [
+                {
+                    text: "Action: [Add directory to \"Additional Asset Directories to Cook\".]",
+                    type: 'correct',
+                    feedback: "You open Project Settings > Packaging and add the directory containing the dynamically loaded meshes to \"Additional Asset Directories to Cook\". Now the cooker includes those assets in the packaged build, and the Soft Object Reference can successfully load them at runtime.",
+                    next: 'step-4'
+                }
+            ]
+        },
+        'step-4': {
+            skill: 'asset_management',
+            title: 'Step 4: Verification',
+            prompt: "You build and run a new packaged build after changing the packaging settings. How do you verify the fix?",
+            choices: [
+                {
+                    text: "Action: [Play in Editor]",
+                    type: 'correct',
+                    feedback: "You test both in PIE and in a fresh packaged build. BP_PropContainer now correctly loads and displays its mesh at runtime in the packaged game, confirming that adding the directory to \"Additional Asset Directories to Cook\" solved the problem.",
+                    next: 'conclusion'
+                }
+            ]
+        },
+        'conclusion': {
+            skill: 'asset_management',
+            title: 'Conclusion',
+            prompt: "Lesson: When loading meshes (or other assets) via Soft Object References or async loads, make sure those assets are cooked. If nothing hard-references them, add their folders to Project Settings > Packaging > \"Additional Asset Directories to Cook\" so they’re present in packaged builds.",
+            choices: []
+        }
     }
-}
 };

@@ -382,7 +382,7 @@ button {
 
 #ticket-content button,
 .ue-btn,
-button {
+button:not(#hard-reset-btn) {
     background-color: #383838 !important;
     /* Dark gray button */
     color: #eeeeee !important;
@@ -396,7 +396,7 @@ button {
 
 #ticket-content button:hover,
 .ue-btn:hover,
-button:hover {
+button:not(#hard-reset-btn):hover {
     background-color: #505050 !important;
     /* Lighter gray on hover */
     color: #ffffff !important;

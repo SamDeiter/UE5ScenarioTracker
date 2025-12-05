@@ -4,7 +4,7 @@ window.SCENARIOS['GrainySharpening'] = {
         description: "Visuals are harsh. Investigates r.Tonemapper.Sharpen console variable.",
         estimateHours: 1.5,
         difficulty: "Beginner",
-        category: "Post-Processing"
+        category: "PostProcess"
     },
     start: "step-1",
     steps: {

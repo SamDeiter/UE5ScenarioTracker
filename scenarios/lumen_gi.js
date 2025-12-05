@@ -205,11 +205,29 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
             title: 'Dead End: No Restart',
             prompt: "<p>You enabled Lumen but didn't restart. The change hasn't taken effect yet.</p><strong>What do you need to do?</strong>",
             choices: [
-                {
+{
                     text: "Action: Restart the editor to apply the Lumen GI setting.",
                     type: 'correct',
                     feedback: "<p><strong>Optimal Time Logged:</strong> After restart, Lumen is now active.</p>",
                     next: 'step-4'
+                },
+                {
+                    text: "Toggle the Lumen Global Illumination setting off and back on in Project Settings without restarting the editor.",
+                    type: 'partial',
+                    feedback: "<p>You flip the Lumen GI setting off and on again, hoping the engine will hot-reload it. The UI updates, but under the hood the renderer still behaves as if the old setting is active. You realize a restart is probably still required.</p>",
+                    next: 'step-3W'
+                },
+                {
+                    text: "Tweak the Post Process Volume exposure and contrast to compensate for the dark GI.",
+                    type: 'misguided',
+                    feedback: "<p>You crank up exposure and contrast until the scene looks brighter, but shadows and bounce lighting still feel wrong. A teammate points out that you're masking the underlying GI issue rather than fixing it. You're still stuck chasing the real problem.</p>",
+                    next: 'step-3W'
+                },
+                {
+                    text: "Start reauthoring several key materials, increasing their emissive and base color values.",
+                    type: 'wrong',
+                    feedback: "<p>You spend a long time pushing emissive and brightening albedo on multiple materials. The look of the level drifts away from the art direction and the GI still feels inconsistent. This sends you down a rabbit hole that ultimately doesn't solve the renderer state issue.</p>",
+                    next: 'step-3W'
                 }
             ]
         },
@@ -219,7 +237,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
             title: 'Step 4: Geometry Investigation',
             prompt: "<p><strong>After the editor restart:</strong> You show the Art Lead the updated scene. \"It's better, but still way too dark. Are you sure Lumen is working properly?\"</p><p>You see <em>some</em> bounce light now, but it's still very weak and inconsistent. You suspect there might be a geometry issue.</p><strong>What do you investigate?</strong>",
             choices: [
-                {
+{
                     text: "Action: Check if the walls are <strong>single-sided planes</strong> or <strong>thick solid meshes</strong>.",
                     type: 'correct',
                     feedback: "<p><strong>Optimal Time Logged:</strong> The room is built from thin, single-sided planes! Lumen needs thick geometry to properly trace and contain light. This explains the weak GI.</p>",
@@ -236,6 +254,12 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
                     type: 'misguided',
                     feedback: "<p><strong>Extended Time Logged:</strong> More lights don't fix the geometry issue. You're still treating symptoms.</p>",
                     next: 'step-4M'
+                },
+                {
+                    text: "Inspect the room's meshes for thin walls, flipped normals, and light leaks that could confuse Lumen.",
+                    type: 'correct',
+                    feedback: "<p>You orbit around the room and check each wall mesh, quickly spotting paper-thin geometry and a few inverted normals. It explains why indirect lighting is bleeding and breaking down. You decide to fix the geometry before touching any more global settings.</p>",
+                    next: 'step-5'
                 }
             ]
         },
@@ -245,10 +269,28 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
             title: 'Dead End: More Lights',
             prompt: "<p>Adding more lights creates an unnatural, over-lit look and doesn't solve the core geometry problem.</p><strong>What should you investigate instead?</strong>",
             choices: [
-                {
+{
                     text: "Action: Check the room's geometry thickness and mesh construction.",
                     type: 'correct',
                     feedback: "<p><strong>Optimal Time Logged:</strong> You focus on the actual problem: the geometry.</p>",
+                    next: 'step-5'
+                },
+                {
+                    text: "Increase the intensity of all point lights in the room to overpower the dark areas.",
+                    type: 'misguided',
+                    feedback: "<p>You crank up the light intensities and the room looks blown out while the GI still behaves oddly in corners. A lighting artist points out that if the bounce is wrong, flooding the scene with direct light just hides the real issue. You're still not addressing the geometry.</p>",
+                    next: 'step-4M'
+                },
+                {
+                    text: "Add additional fill lights near the problem corners instead of touching the meshes.",
+                    type: 'wrong',
+                    feedback: "<p>You start sprinkling small fill lights into every dark corner. The level becomes overlit and visually noisy, and performance starts to dip. You've made the lighting setup harder to maintain without resolving the underlying GI discrepancy.</p>",
+                    next: 'step-4M'
+                },
+                {
+                    text: "Use the Lumen scene visualizer to confirm where geometry is missing or too thin before making changes.",
+                    type: 'partial',
+                    feedback: "<p>You open the Lumen visualizer and immediately see that some walls barely show up or have gaps. You still haven't edited the meshes, but now you have clear evidence that geometry is at fault. The next logical step is to actually fix those meshes.</p>",
                     next: 'step-5'
                 }
             ]
@@ -259,7 +301,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
             title: 'Step 5: Fixing Geometry',
             prompt: "<p><strong>You call over the Environment Artist:</strong> \"How did you build this room?\"</p><p>They explain: \"Oh, I just used single planes for the walls to save on tri count. Is that a problem?\"</p><p>You explain that Lumen needs thick geometry to properly trace light. They understand and offer to help rebuild it.</p><strong>What's the fix?</strong>",
             choices: [
-                {
+{
                     text: "Action: Replace the thin planes with <strong>thick box meshes</strong> or <strong>solid wall assets</strong> that have proper volume.",
                     type: 'correct',
                     feedback: "<p><strong>Optimal Time Logged:</strong> You rebuild the room with thick walls (10-20cm minimum). Lumen can now properly trace light bounces and contain them within the room.</p>",
@@ -270,6 +312,18 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
                     type: 'wrong',
                     feedback: "<p><strong>Maximum Time Logged:</strong> Double-sided rendering doesn't give the geometry actual thickness. Lumen still can't trace properly through zero-thickness geometry.</p>",
                     next: 'step-5W'
+                },
+                {
+                    text: "Replace problematic wall planes with solid box meshes that have proper thickness.",
+                    type: 'correct',
+                    feedback: "<p>You swap out the ultra-thin planes for box meshes with actual volume. After rebuilding the level, Lumen's GI behaves much more predictably and the light leaks disappear. This directly addresses the core visibility and distance field issues.</p>",
+                    next: 'step-6'
+                },
+                {
+                    text: "Add simple blocking volumes behind thin walls instead of touching the original meshes.",
+                    type: 'partial',
+                    feedback: "<p>You drop in blocking volumes to give Lumen something more solid to work with. The GI improves in most areas, but the setup is now a bit hacky and hard to reason about. Long term, the meshes themselves still need to be cleaned up.</p>",
+                    next: 'step-5W'
                 }
             ]
         },
@@ -279,10 +333,28 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
             title: 'Dead End: Double-Sided Material',
             prompt: "<p>Making the material double-sided doesn't add physical thickness to the geometry. Lumen still struggles.</p><strong>What's the real solution?</strong>",
             choices: [
-                {
+{
                     text: "Action: Replace the planes with actual thick geometry (boxes or solid meshes).",
                     type: 'correct',
                     feedback: "<p><strong>Optimal Time Logged:</strong> Now you're addressing the actual geometry problem.</p>",
+                    next: 'step-6'
+                },
+                {
+                    text: "Enable Two Sided on the wall material and hope Lumen treats the room as closed.",
+                    type: 'misguided',
+                    feedback: "<p>You flip the material to Two Sided and the walls do render from both sides, but Lumen's representation of the scene is still based on geometry, not material tricks. Some artifacts shift around, yet the core GI problem remains.</p>",
+                    next: 'step-5W'
+                },
+                {
+                    text: "Increase the material opacity mask or shadow-related settings to try to block more light.",
+                    type: 'wrong',
+                    feedback: "<p>You dig into opacity and shadow settings, trying to force the material to occlude more light. This adds complexity and can introduce shadow artifacts without changing the underlying mesh thickness. You lose time without meaningful GI improvement.</p>",
+                    next: 'step-5W'
+                },
+                {
+                    text: "Ask the environment artist to review the meshes and propose a proper geometry fix.",
+                    type: 'partial',
+                    feedback: "<p>You pull in the environment artist, who immediately calls out the paper-thin walls and suggests replacing them with solid assets. You haven't made the change yet, but you now have clear direction to move away from material hacks and fix the meshes.</p>",
                     next: 'step-6'
                 }
             ]
@@ -293,7 +365,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
             title: 'Step 6: Mesh Distance Fields',
             prompt: "<p><strong>The Environment Artist finishes rebuilding the walls:</strong> \"Okay, I replaced everything with proper thick meshes. How does it look now?\"</p><p>The GI is much better, but you notice some furniture meshes in the room still appear oddly dark. You switch to <strong>Mesh Distance Fields</strong> visualization to investigate.</p><strong>What do you find?</strong>",
             choices: [
-                {
+{
                     text: "Action: Check if the problematic meshes have <strong>Generate Mesh Distance Fields</strong> enabled.",
                     type: 'correct',
                     feedback: "<p><strong>Optimal Time Logged:</strong> Some meshes have this disabled! Lumen uses distance fields for GI calculations. You enable it on the affected meshes and rebuild lighting data.</p>",
@@ -304,6 +376,18 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
                     type: 'misguided',
                     feedback: "<p><strong>Extended Time Logged:</strong> Material properties affect appearance but won't fix missing distance field data for Lumen.</p>",
                     next: 'step-6M'
+                },
+                {
+                    text: "Verify that Generate Mesh Distance Fields is enabled for the affected meshes and rebuild distance fields.",
+                    type: 'correct',
+                    feedback: "<p>You open the mesh settings and see that distance fields aren't generated for a few key assets. After enabling them and rebuilding, Lumen's indirect lighting becomes more stable and accurate in those areas.</p>",
+                    next: 'step-7'
+                },
+                {
+                    text: "Increase the global distance field resolution in Project Settings to try to sharpen GI details.",
+                    type: 'partial',
+                    feedback: "<p>You raise the overall distance field resolution, which helps some small details but comes with a noticeable performance cost. The scene looks better, but you suspect per-mesh settings would have been a cleaner, more targeted solution.</p>",
+                    next: 'step-6M'
                 }
             ]
         },
@@ -313,10 +397,28 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
             title: 'Dead End: Material Tweaking',
             prompt: "<p>Adjusting materials didn't fix the dark meshes. The problem is at the mesh level, not the material level.</p><strong>What should you check?</strong>",
             choices: [
-                {
+{
                     text: "Action: Check the mesh distance field settings.",
                     type: 'correct',
                     feedback: "<p><strong>Optimal Time Logged:</strong> You investigate the mesh-level settings for Lumen.</p>",
+                    next: 'step-7'
+                },
+                {
+                    text: "Tweak roughness and specular on wall materials to try to smooth out noisy GI.",
+                    type: 'misguided',
+                    feedback: "<p>You adjust roughness and specular values, which changes how highlights and reflections look but doesn't fix the underlying GI structure. The indirect lighting remains unstable in problem areas, and you're still ignoring distance field settings.</p>",
+                    next: 'step-6M'
+                },
+                {
+                    text: "Increase emissive contribution on a few materials so they 'light up' the space more.",
+                    type: 'wrong',
+                    feedback: "<p>You push emissive values and the room starts to glow unnaturally. While Lumen does pick up some extra bounce, the lighting now fights the art direction and still feels inconsistent. You've traded one problem for another without addressing the real cause.</p>",
+                    next: 'step-6M'
+                },
+                {
+                    text: "Open the Lumen visualizer and compare how the distance fields look for problem meshes versus working ones.",
+                    type: 'partial',
+                    feedback: "<p>You bring up the visualizer and immediately notice that some meshes barely register in the distance field. This gives you a clear hint that mesh distance field settings are the culprit, nudging you toward the correct configuration work.</p>",
                     next: 'step-7'
                 }
             ]
@@ -327,7 +429,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
             title: 'Step 7: Initial Verification',
             prompt: "<p><strong>You've made all the fixes:</strong> Lumen enabled, thick geometry, distance fields generated. Time to show the Art Lead.</p><p>\"Let me see it in action,\" they say.</p><strong>How do you demonstrate that it's working?</strong>",
             choices: [
-                {
+{
                     text: "Action: Play in Editor and observe the room in <strong>Lighting Only</strong> mode.",
                     type: 'correct',
                     feedback: "<p><strong>Optimal Time Logged:</strong> In PIE, you now see soft bounce light filling the room. Corners are no longer pitch black, and light from windows bleeds naturally into the interior. Much better!</p>",
@@ -338,6 +440,18 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
                     type: 'partial',
                     feedback: "<p><strong>Standard Time Logged:</strong> The viewport can be misleading. Always verify in PIE for accurate lighting behavior.</p>",
                     next: 'step-8'
+                },
+                {
+                    text: "Use the Lumen scene and surface cache visualizers to confirm GI coverage across the room.",
+                    type: 'correct',
+                    feedback: "<p>You step through the visualizers and see that the room is now represented cleanly in Lumen's data. Bounce lighting looks continuous and surfaces cache correctly. With the base behavior validated, you're ready to test more dynamic scenarios.</p>",
+                    next: 'step-8'
+                },
+                {
+                    text: "Rely on a quick eyeball pass in Lit mode without any debug visualizers.",
+                    type: 'partial',
+                    feedback: "<p>You fly around in Lit mode and the scene seems fine, but you're essentially guessing. Without debug overlays, you could easily miss subtle coverage issues or cache problems. You decide you should still run more aggressive, dynamic tests.</p>",
+                    next: 'step-8'
                 }
             ]
         },
@@ -347,7 +461,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
             title: 'Step 8: Dynamic Testing',
             prompt: "<p><strong>The Art Lead is impressed:</strong> \"Wow, that looks so much better! But wait--will this update properly when we change the time of day? We need dynamic lighting for our day/night cycle.\"</p><p>Good question. You need to verify Lumen's dynamic behavior.</p><strong>What test should you perform?</strong>",
             choices: [
-                {
+{
                     text: "Action: Change the <strong>Directional Light rotation</strong> (time of day) and verify GI updates in real-time.",
                     type: 'correct',
                     feedback: "<p><strong>Optimal Time Logged:</strong> As you rotate the sun, the bounce light in the room updates smoothly and realistically. Lumen is working correctly!</p>",
@@ -358,6 +472,18 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
                     type: 'wrong',
                     feedback: "<p><strong>Maximum Time Logged:</strong> Without testing dynamic behavior, you might miss issues that only appear when lighting changes.</p>",
                     next: 'step-8W'
+                },
+                {
+                    text: "In Play In Editor, animate a key light's intensity and color while watching how Lumen updates in real time.",
+                    type: 'correct',
+                    feedback: "<p>You hook the light up to a simple curve and watch the GI respond smoothly as the light ramps and shifts color. There are no obvious hitches or stale lighting, confirming that dynamic changes are propagating correctly.</p>",
+                    next: 'step-9'
+                },
+                {
+                    text: "Only scrub the light's transform in the editor viewport without actually entering Play mode.",
+                    type: 'partial',
+                    feedback: "<p>You drag the light around in the editor and things look okay, but this doesn't fully match runtime behavior. Without testing in PIE or a packaged build, you might miss frame-to-frame issues or streaming interactions. You still need a proper dynamic test pass.</p>",
+                    next: 'step-8W'
                 }
             ]
         },
@@ -367,10 +493,28 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
             title: 'Dead End: Incomplete Testing',
             prompt: "<p>You skipped dynamic testing, but later discover the GI doesn't update properly when lights move. You should have tested this earlier.</p><strong>What should you do?</strong>",
             choices: [
-                {
+{
                     text: "Action: Go back and test dynamic light changes.",
                     type: 'correct',
                     feedback: "<p><strong>Optimal Time Logged:</strong> You perform the dynamic test and verify everything works.</p>",
+                    next: 'step-9'
+                },
+                {
+                    text: "Capture a single before/after screenshot and assume dynamic GI is fine if they look similar.",
+                    type: 'misguided',
+                    feedback: "<p>You compare static screenshots and conclude everything is okay, but this doesn't reveal temporal issues, hitches, or late updates. Your lead reminds you that dynamic systems need time-based testing, not just still images.</p>",
+                    next: 'step-8W'
+                },
+                {
+                    text: "Blame Nanite or Virtual Shadow Maps without collecting any profiling data.",
+                    type: 'wrong',
+                    feedback: "<p>You start pointing at Nanite and VSM as likely culprits, but you haven't actually profiled or isolated the issue. This sends the team on a wild goose chase until someone insists on re-running proper dynamic Lumen tests.</p>",
+                    next: 'step-8W'
+                },
+                {
+                    text: "Set up a simple Blueprint-driven light flicker test and run it in PIE to validate dynamic GI updates.",
+                    type: 'partial',
+                    feedback: "<p>You wire the light to a Blueprint that rapidly changes its intensity and color during PIE. The GI reacts correctly, confirming the system behaves as expected under stress. You finally have the evidence you need to move forward.</p>",
                     next: 'step-9'
                 }
             ]
@@ -381,7 +525,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
             title: 'Step 9: Performance Check',
             prompt: "<p><strong>The Tech Lead stops by to review your work:</strong> \"Looks great visually, but what's the performance cost? We need to ship on console too.\"</p><p>Good point--you should verify the performance impact.</p><strong>What should you check?</strong>",
             choices: [
-                {
+{
                     text: "Action: Open <strong>stat unit</strong> and <strong>stat Lumen</strong> to check performance impact.",
                     type: 'correct',
                     feedback: "<p><strong>Optimal Time Logged:</strong> Performance is acceptable. If needed, you could adjust Lumen quality settings, but for now it's within budget.</p>",
@@ -392,6 +536,18 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
                     type: 'partial',
                     feedback: "<p><strong>Standard Time Logged:</strong> Always verify performance, especially with Lumen. You check and confirm it's acceptable.</p>",
                     next: 'conclusion'
+                },
+                {
+                    text: "Profile the scene using stat GPU and Lumen console variables to measure the cost of your GI setup.",
+                    type: 'correct',
+                    feedback: "<p>You run stat GPU and adjust r.Lumen settings while watching frame time. You get a clear picture of how much Lumen is costing you and where you can safely dial quality up or down. This closes the loop between quality and performance.</p>",
+                    next: 'conclusion'
+                },
+                {
+                    text: "Lower all Lumen quality settings to their minimum values to guarantee better performance.",
+                    type: 'misguided',
+                    feedback: "<p>You slam the quality sliders down and FPS improves, but the scene looks noticeably worse and QA immediately flags the regression. You've improved performance at the expense of visual targets, and now you need a more measured tuning approach.</p>",
+                    next: 'step-9'
                 }
             ]
         },

@@ -62,7 +62,7 @@ for filename in os.listdir(scenarios_dir):
         else:
             difficulty = 'General'
     
-    # Categorize by area based on filename
+    # Categorize by area based on filename and content
     if 'assetmanagement' in filename:
         area = 'Asset Management'
     elif 'blueprint' in filename:
@@ -83,6 +83,19 @@ for filename in os.listdir(scenarios_dir):
         area = 'Nanite'
     elif 'fog' in filename or 'volumetric' in filename:
         area = 'Volumetrics'
+    # More specific categorization for previously "General" scenarios
+    elif 'dash' in filename:
+        area = 'Performance'
+    elif 'generator' in filename:
+        area = 'Procedural Generation'
+    elif 'golem' in filename:
+        area = 'AI/Gameplay'
+    elif 'inventory' in filename:
+        area = 'UI/Systems'
+    elif 'oversharpened' in filename:
+        area = 'Post-Processing'
+    elif 'terminal' in filename:
+        area = 'UI/UX'
     else:
         area = 'General'
     

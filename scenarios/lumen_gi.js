@@ -177,7 +177,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
             prompt: "<p>You've confirmed that Lumen is disabled. You need to enable it and restart the editor for the change to take effect.</p><strong>What's the correct approach?</strong>",
             choices: [
 {
-                    text: "Enable Lumen but don"t restart the editor.",
+                    text: "Enable Lumen but don't restart the editor.",
                     type: 'wrong',
                     feedback: "<p><strong>Maximum Time Logged:</strong> The setting requires an editor restart to take effect. Nothing changes until you restart.</p>",
                     next: 'step-3W'
@@ -198,7 +198,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
         },
         'step-4-deep-1': {
             skill: 'lighting',
-            title: 'Visualizing Lumen's Geometry Representation',
+            title: 'Visualizing Lumen\\'s Geometry Representation',
             prompt: "<p>Before diving into mesh edits, let's use Lumen's built-in visualization tools to understand how it 'sees' your scene's geometry. This will help confirm if thin walls or gaps are indeed the problem.</p><strong>Which visualization mode is most effective here?</strong>",
             choices: [
                 {
@@ -327,7 +327,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
         
         'step-4-deep-1': {
             skill: 'lighting',
-            title: 'Visualizing Lumen's Geometry Representation',
+            title: 'Visualizing Lumen\\'s Geometry Representation',
             prompt: "<p>Before diving into mesh edits, let's use Lumen's built-in visualization tools to understand how it 'sees' your scene's geometry. This will help confirm if thin walls or gaps are indeed the problem.</p><strong>Which visualization mode is most effective here?</strong>",
             choices: [
                 {
@@ -588,7 +588,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
             prompt: "<p>Adding more lights creates an unnatural, over-lit look and doesn't solve the core geometry problem.</p><strong>What should you investigate instead?</strong>",
             choices: [
 {
-                    text: "Check the room"s geometry thickness and mesh construction.",
+                    text: "Check the room's geometry thickness and mesh construction.",
                     type: 'correct',
                     feedback: "<p><strong>Optimal Time Logged:</strong> You focus on the actual problem: the geometry.</p>",
                     next: 'step-4-deep-1'
@@ -685,7 +685,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
             prompt: "<p><strong>The Environment Artist finishes rebuilding the walls:</strong> \"Okay, I replaced everything with proper thick meshes. How does it look now?\"</p><p>The GI is much better, but you notice some furniture meshes in the room still appear oddly dark. You switch to <strong>Mesh Distance Fields</strong> visualization to investigate.</p><strong>What do you find?</strong>",
             choices: [
 {
-                    text: "Assume it"s a material issue and start tweaking roughness values.",
+                    text: "Assume it's a material issue and start tweaking roughness values.",
                     type: 'misguided',
                     feedback: "<p><strong>Extended Time Logged:</strong> Material properties affect appearance but won't fix missing distance field data for Lumen.</p>",
                     next: 'step-6M'
@@ -857,7 +857,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
         },
         'step-4-deep-1': {
             skill: 'lighting',
-            title: 'Visualizing Lumen's Geometry Representation',
+            title: 'Visualizing Lumen\\'s Geometry Representation',
             prompt: "<p>Before diving into mesh edits, let's use Lumen's built-in visualization tools to understand how it 'sees' your scene's geometry. This will help confirm if thin walls or gaps are indeed the problem.</p><strong>Which visualization mode is most effective here?</strong>",
             choices: [
                 {
@@ -986,7 +986,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
         
         'step-4-deep-1': {
             skill: 'lighting',
-            title: 'Visualizing Lumen's Geometry Representation',
+            title: 'Visualizing Lumen\\'s Geometry Representation',
             prompt: "<p>Before diving into mesh edits, let's use Lumen's built-in visualization tools to understand how it 'sees' your scene's geometry. This will help confirm if thin walls or gaps are indeed the problem.</p><strong>Which visualization mode is most effective here?</strong>",
             choices: [
                 {
@@ -1176,7 +1176,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
         },
         'step-4-deep-1': {
             skill: 'lighting',
-            title: 'Visualizing Lumen's Geometry Representation',
+            title: 'Visualizing Lumen\\'s Geometry Representation',
             prompt: "<p>Before diving into mesh edits, let's use Lumen's built-in visualization tools to understand how it 'sees' your scene's geometry. This will help confirm if thin walls or gaps are indeed the problem.</p><strong>Which visualization mode is most effective here?</strong>",
             choices: [
                 {
@@ -1305,7 +1305,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
         
         'step-4-deep-1': {
             skill: 'lighting',
-            title: 'Visualizing Lumen's Geometry Representation',
+            title: 'Visualizing Lumen\\'s Geometry Representation',
             prompt: "<p>Before diving into mesh edits, let's use Lumen's built-in visualization tools to understand how it 'sees' your scene's geometry. This will help confirm if thin walls or gaps are indeed the problem.</p><strong>Which visualization mode is most effective here?</strong>",
             choices: [
                 {
@@ -1504,7 +1504,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
         
         'step-4-deep-1': {
             skill: 'lighting',
-            title: 'Visualizing Lumen's Geometry Representation',
+            title: 'Visualizing Lumen\\'s Geometry Representation',
             prompt: "<p>Before diving into mesh edits, let's use Lumen's built-in visualization tools to understand how it 'sees' your scene's geometry. This will help confirm if thin walls or gaps are indeed the problem.</p><strong>Which visualization mode is most effective here?</strong>",
             choices: [
                 {
@@ -1633,7 +1633,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
         
         'step-4-deep-1': {
             skill: 'lighting',
-            title: 'Visualizing Lumen's Geometry Representation',
+            title: 'Visualizing Lumen\\'s Geometry Representation',
             prompt: "<p>Before diving into mesh edits, let's use Lumen's built-in visualization tools to understand how it 'sees' your scene's geometry. This will help confirm if thin walls or gaps are indeed the problem.</p><strong>Which visualization mode is most effective here?</strong>",
             choices: [
                 {
@@ -1828,7 +1828,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
         },
         'step-4-deep-1': {
             skill: 'lighting',
-            title: 'Visualizing Lumen's Geometry Representation',
+            title: 'Visualizing Lumen\\'s Geometry Representation',
             prompt: "<p>Before diving into mesh edits, let's use Lumen's built-in visualization tools to understand how it 'sees' your scene's geometry. This will help confirm if thin walls or gaps are indeed the problem.</p><strong>Which visualization mode is most effective here?</strong>",
             choices: [
                 {
@@ -1957,7 +1957,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
         
         'step-4-deep-1': {
             skill: 'lighting',
-            title: 'Visualizing Lumen's Geometry Representation',
+            title: 'Visualizing Lumen\\'s Geometry Representation',
             prompt: "<p>Before diving into mesh edits, let's use Lumen's built-in visualization tools to understand how it 'sees' your scene's geometry. This will help confirm if thin walls or gaps are indeed the problem.</p><strong>Which visualization mode is most effective here?</strong>",
             choices: [
                 {
@@ -2147,7 +2147,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
         },
         'step-4-deep-1': {
             skill: 'lighting',
-            title: 'Visualizing Lumen's Geometry Representation',
+            title: 'Visualizing Lumen\\'s Geometry Representation',
             prompt: "<p>Before diving into mesh edits, let's use Lumen's built-in visualization tools to understand how it 'sees' your scene's geometry. This will help confirm if thin walls or gaps are indeed the problem.</p><strong>Which visualization mode is most effective here?</strong>",
             choices: [
                 {
@@ -2276,7 +2276,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
         
         'step-4-deep-1': {
             skill: 'lighting',
-            title: 'Visualizing Lumen's Geometry Representation',
+            title: 'Visualizing Lumen\\'s Geometry Representation',
             prompt: "<p>Before diving into mesh edits, let's use Lumen's built-in visualization tools to understand how it 'sees' your scene's geometry. This will help confirm if thin walls or gaps are indeed the problem.</p><strong>Which visualization mode is most effective here?</strong>",
             choices: [
                 {
@@ -2466,7 +2466,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
         },
         'step-4-deep-1': {
             skill: 'lighting',
-            title: 'Visualizing Lumen's Geometry Representation',
+            title: 'Visualizing Lumen\\'s Geometry Representation',
             prompt: "<p>Before diving into mesh edits, let's use Lumen's built-in visualization tools to understand how it 'sees' your scene's geometry. This will help confirm if thin walls or gaps are indeed the problem.</p><strong>Which visualization mode is most effective here?</strong>",
             choices: [
                 {
@@ -2595,7 +2595,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
         
         'step-4-deep-1': {
             skill: 'lighting',
-            title: 'Visualizing Lumen's Geometry Representation',
+            title: 'Visualizing Lumen\\'s Geometry Representation',
             prompt: "<p>Before diving into mesh edits, let's use Lumen's built-in visualization tools to understand how it 'sees' your scene's geometry. This will help confirm if thin walls or gaps are indeed the problem.</p><strong>Which visualization mode is most effective here?</strong>",
             choices: [
                 {
@@ -2785,7 +2785,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
         },
         'step-4-deep-1': {
             skill: 'lighting',
-            title: 'Visualizing Lumen's Geometry Representation',
+            title: 'Visualizing Lumen\\'s Geometry Representation',
             prompt: "<p>Before diving into mesh edits, let's use Lumen's built-in visualization tools to understand how it 'sees' your scene's geometry. This will help confirm if thin walls or gaps are indeed the problem.</p><strong>Which visualization mode is most effective here?</strong>",
             choices: [
                 {
@@ -2914,7 +2914,7 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
         
         'step-4-deep-1': {
             skill: 'lighting',
-            title: 'Visualizing Lumen's Geometry Representation',
+            title: 'Visualizing Lumen\\'s Geometry Representation',
             prompt: "<p>Before diving into mesh edits, let's use Lumen's built-in visualization tools to understand how it 'sees' your scene's geometry. This will help confirm if thin walls or gaps are indeed the problem.</p><strong>Which visualization mode is most effective here?</strong>",
             choices: [
                 {

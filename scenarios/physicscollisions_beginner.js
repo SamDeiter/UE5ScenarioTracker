@@ -120,7 +120,7 @@ window.SCENARIOS['NoCollisionOnRock'] = {
 
         'step-inv-2': {
             skill: 'editor',
-            title: 'Inspecting the Placed Actor's Details',
+            title: 'Inspecting the Placed Actor\\'s Details',
             prompt: "Before diving into the asset itself, you select the rock actor in the level. What specific properties in its Details panel should you check to ensure no overrides are preventing collision?",
             choices: [
                 {
@@ -207,7 +207,7 @@ window.SCENARIOS['NoCollisionOnRock'] = {
 
         'step-inv-2': {
             skill: 'editor',
-            title: 'Inspecting the Placed Actor's Details',
+            title: 'Inspecting the Placed Actor\\'s Details',
             prompt: "Before diving into the asset itself, you select the rock actor in the level. What specific properties in its Details panel should you check to ensure no overrides are preventing collision?",
             choices: [
                 {
@@ -302,7 +302,7 @@ window.SCENARIOS['NoCollisionOnRock'] = {
 
         'step-inv-2': {
             skill: 'editor',
-            title: 'Step 1.7: Inspecting the Placed Actor's Details',
+            title: 'Step 1.7: Inspecting the Placed Actor\\'s Details',
             prompt: "Before diving into the asset itself, you select the rock actor in the level. What specific properties in its Details panel should you check to ensure no overrides are preventing collision?",
             choices: [
                 {
@@ -392,7 +392,7 @@ window.SCENARIOS['NoCollisionOnRock'] = {
 
         'step-inv-2': {
             skill: 'editor',
-            title: 'Inspecting the Placed Actor's Details',
+            title: 'Inspecting the Placed Actor\\'s Details',
             prompt: "Before diving into the asset itself, you select the rock actor in the level. What specific properties in its Details panel should you check to ensure no overrides are preventing collision?",
             choices: [
                 {
@@ -487,7 +487,7 @@ window.SCENARIOS['NoCollisionOnRock'] = {
 
         'step-inv-2': {
             skill: 'editor',
-            title: 'Step 1.7: Inspecting the Placed Actor's Details',
+            title: 'Step 1.7: Inspecting the Placed Actor\\'s Details',
             prompt: "Before diving into the asset itself, you select the rock actor in the level. What specific properties in its Details panel should you check to ensure no overrides are preventing collision?",
             choices: [
                 {
@@ -573,7 +573,7 @@ window.SCENARIOS['NoCollisionOnRock'] = {
 
         'step-inv-2': {
             skill: 'editor',
-            title: 'Inspecting the Placed Actor's Details',
+            title: 'Inspecting the Placed Actor\\'s Details',
             prompt: "Before diving into the asset itself, you select the rock actor in the level. What specific properties in its Details panel should you check to ensure no overrides are preventing collision?",
             choices: [
                 {
@@ -668,7 +668,7 @@ window.SCENARIOS['NoCollisionOnRock'] = {
 
         'step-inv-2': {
             skill: 'editor',
-            title: 'Step 1.7: Inspecting the Placed Actor's Details',
+            title: 'Step 1.7: Inspecting the Placed Actor\\'s Details',
             prompt: "Before diving into the asset itself, you select the rock actor in the level. What specific properties in its Details panel should you check to ensure no overrides are preventing collision?",
             choices: [
                 {
@@ -753,7 +753,7 @@ window.SCENARIOS['NoCollisionOnRock'] = {
 
         'step-inv-2': {
             skill: 'editor',
-            title: 'Inspecting the Placed Actor's Details',
+            title: 'Inspecting the Placed Actor\\'s Details',
             prompt: "Before diving into the asset itself, you select the rock actor in the level. What specific properties in its Details panel should you check to ensure no overrides are preventing collision?",
             choices: [
                 {
@@ -840,7 +840,7 @@ window.SCENARIOS['NoCollisionOnRock'] = {
 
         'step-inv-2': {
             skill: 'editor',
-            title: 'Inspecting the Placed Actor's Details',
+            title: 'Inspecting the Placed Actor\\'s Details',
             prompt: "Before diving into the asset itself, you select the rock actor in the level. What specific properties in its Details panel should you check to ensure no overrides are preventing collision?",
             choices: [
                 {
@@ -935,7 +935,7 @@ window.SCENARIOS['NoCollisionOnRock'] = {
 
         'step-inv-2': {
             skill: 'editor',
-            title: 'Step 1.7: Inspecting the Placed Actor's Details',
+            title: 'Step 1.7: Inspecting the Placed Actor\\'s Details',
             prompt: "Before diving into the asset itself, you select the rock actor in the level. What specific properties in its Details panel should you check to ensure no overrides are preventing collision?",
             choices: [
                 {
@@ -1025,7 +1025,7 @@ window.SCENARIOS['NoCollisionOnRock'] = {
 
         'step-inv-2': {
             skill: 'editor',
-            title: 'Inspecting the Placed Actor's Details',
+            title: 'Inspecting the Placed Actor\\'s Details',
             prompt: "Before diving into the asset itself, you select the rock actor in the level. What specific properties in its Details panel should you check to ensure no overrides are preventing collision?",
             choices: [
                 {
@@ -1120,7 +1120,7 @@ window.SCENARIOS['NoCollisionOnRock'] = {
 
         'step-inv-2': {
             skill: 'editor',
-            title: 'Step 1.7: Inspecting the Placed Actor's Details',
+            title: 'Step 1.7: Inspecting the Placed Actor\\'s Details',
             prompt: "Before diving into the asset itself, you select the rock actor in the level. What specific properties in its Details panel should you check to ensure no overrides are preventing collision?",
             choices: [
                 {
@@ -1206,7 +1206,7 @@ window.SCENARIOS['NoCollisionOnRock'] = {
 
         'step-inv-2': {
             skill: 'editor',
-            title: 'Inspecting the Placed Actor's Details',
+            title: 'Inspecting the Placed Actor\\'s Details',
             prompt: "Before diving into the asset itself, you select the rock actor in the level. What specific properties in its Details panel should you check to ensure no overrides are preventing collision?",
             choices: [
                 {
@@ -1301,7 +1301,7 @@ window.SCENARIOS['NoCollisionOnRock'] = {
 
         'step-inv-2': {
             skill: 'editor',
-            title: 'Step 1.7: Inspecting the Placed Actor's Details',
+            title: 'Step 1.7: Inspecting the Placed Actor\\'s Details',
             prompt: "Before diving into the asset itself, you select the rock actor in the level. What specific properties in its Details panel should you check to ensure no overrides are preventing collision?",
             choices: [
                 {

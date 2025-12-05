@@ -202,7 +202,7 @@ class LogicEngineApp:
             widget.destroy()
         self.check_vars = {}
         
-        files = glob.glob('scenarios/*.js')
+        files = glob.glob('../../scenarios/*.js')
         count = 0
         current_mode = self.mode.get()
         self.log(f"Scanning {len(files)} files in '{current_mode}' mode...")
@@ -400,8 +400,8 @@ IMPORTANT: Do not replace the whole file. Just output the NEW steps and where to
                 resp = requests.post(url, headers=headers, json=data, timeout=60)
                 resp.raise_for_status()
                 result = resp.json()
-                os.makedirs('responses', exist_ok=True)
-                with open('responses/last_raw_response.json', 'w', encoding='utf-8') as f:
+                os.makedirs('../../responses', exist_ok=True)
+                with open('../../responses/last_raw_response.json', 'w', encoding='utf-8') as f:
                     json.dump(result, f, indent=2)
                 text = result['candidates'][0]['content']['parts'][0]['text']
                 text = text.replace("```json", "").replace("```", "").strip()

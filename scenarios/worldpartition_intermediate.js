@@ -78,7 +78,7 @@ window.SCENARIOS['LandmarkUnloading'] = {
             prompt: "You know the cause: the Clock Tower is being unloaded by the standard World Partition grid distance. How do you fix it so the landmark stays visible for the mission?",
             choices: [
                 {
-                    text: "Disable \"Is Spatially Loaded\" or use Data Layer.]",
+                    text: "Disable \'Is Spatially Loaded\' or use Data Layer.]",
                     type: 'correct',
                     feedback: "In the actor's World Partition settings, you either disable \"Is Spatially Loaded\" so the Clock Tower is always loaded regardless of distance, or you assign it to a dedicated mission Data Layer. Your mission Blueprint then keeps that Data Layer Activated while the mission is active. With either approach, the landmark is no longer governed solely by the grid's distance rules and remains present when the player moves away.",
                     next: 'step-4'

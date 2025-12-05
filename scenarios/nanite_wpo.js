@@ -42,7 +42,7 @@ window.SCENARIOS['nanite_wpo'] = {
 
         'step-1W': {
             skill: 'rendering',
-            title: 'Dead End: Lighting Tweaks Didn\'t Help',
+            title: 'Dead End: Lighting Tweaks Didn\\'t Help',
             prompt: "<p>Randomly adjusting Skylight and exposure didn't resolve the artifact. The mesh still turns black beyond ~10 meters. It's clearly not just a lighting value issue.</p><strong>How do you get back on track?</strong>",
             choices: [
                 {
@@ -84,7 +84,7 @@ window.SCENARIOS['nanite_wpo'] = {
                     next: 'step-1SC'
                 },
                 {
-                    text: "Accept the broken references as \"good enough for now\" and proceed with debugging on top of this unstable state.",
+                    text: "Accept the broken references as \'good enough for now\' and proceed with debugging on top of this unstable state.",
                     type: 'wrong',
                     feedback: "<p><strong>Maximum Time Logged (Unstable Baseline):</strong> Debugging on a corrupted project state makes every future problem harder to reason about.</p>",
                     next: 'step-1SC'
@@ -194,7 +194,7 @@ window.SCENARIOS['nanite_wpo'] = {
                     next: 'step-4'
                 },
                 {
-                    text: "Push tessellation even higher to \"force more detail\".",
+                    text: "Push tessellation even higher to \'force more detail\'.",
                     type: 'wrong',
                     feedback: "<p><strong>Maximum Time Logged:</strong> You just burn more performance budget for no benefit in Nanite.</p>",
                     next: 'step-3W'
@@ -368,7 +368,7 @@ window.SCENARIOS['nanite_wpo'] = {
                     next: 'step-6W'
                 },
                 {
-                    text: "Disable real-time rendering in the viewport and call it \"verified\" because it looks fine in a single frame.",
+                    text: "Disable real-time rendering in the viewport and call it \'verified\' because it looks fine in a single frame.",
                     type: 'wrong',
                     feedback: "<p><strong>Maximum Time Logged:</strong> This doesn't count as verification. You're not testing dynamic behavior or streaming changes at all.</p>",
                     next: 'step-6W'
@@ -452,7 +452,7 @@ window.SCENARIOS['nanite_wpo'] = {
                     next: 'step-8'
                 },
                 {
-                    text: "Ignore Lumen entirely and assume lighting is \"good enough\".",
+                    text: "Ignore Lumen entirely and assume lighting is \'good enough\'.",
                     type: 'misguided',
                     feedback: "<p><strong>Extended Time Logged:</strong> You're leaving potential lighting bugs undiscovered, especially in darker or indirect-lit areas.</p>",
                     next: 'step-7W'
@@ -484,7 +484,7 @@ window.SCENARIOS['nanite_wpo'] = {
                     next: 'step-9'
                 },
                 {
-                    text: "Mass-apply random Nanite setting changes to all meshes in the project so they \"match\".",
+                    text: "Mass-apply random Nanite setting changes to all meshes in the project so they \'match\'.",
                     type: 'wrong',
                     feedback: "<p><strong>Maximum Time Logged (High Risk):</strong> This can introduce a wave of new issues and performance regressions project-wide.</p>",
                     next: 'step-8SC'
@@ -516,7 +516,7 @@ window.SCENARIOS['nanite_wpo'] = {
                     next: 'step-8SC'
                 },
                 {
-                    text: "Accept the new broken behavior as the \"new normal\" and move on.",
+                    text: "Accept the new broken behavior as the \'new normal\' and move on.",
                     type: 'wrong',
                     feedback: "<p><strong>Maximum Time Logged:</strong> You're normalizing a mess instead of using your tools to restore a known-good state.</p>",
                     next: 'step-8SC'
@@ -548,7 +548,7 @@ window.SCENARIOS['nanite_wpo'] = {
                     next: 'step-10'
                 },
                 {
-                    text: "Close the ticket with a vague note like \"engine bug fixed\" and no details about what actually changed.",
+                    text: "Close the ticket with a vague note like \'engine bug fixed\' and no details about what actually changed.",
                     type: 'wrong',
                     feedback: "<p><strong>Maximum Time Logged (Poor Practice):</strong> QA and future developers have no idea what happened. When a related issue appears later, they'll have to start from zero again.</p>",
                     next: 'step-9W'
@@ -594,13 +594,13 @@ window.SCENARIOS['nanite_wpo'] = {
                     next: 'conclusion'
                 },
                 {
-                    text: "Delete all test assets and levels so the project stays \"clean\".",
+                    text: "Delete all test assets and levels so the project stays \'clean\'.",
                     type: 'wrong',
                     feedback: "<p><strong>Maximum Time Logged (Lost Evidence):</strong> You remove valuable test cases that could have helped catch regressions later. QA now has to reconstruct the scenario from scratch.</p>",
                     next: 'step-10W'
                 },
                 {
-                    text: "Rely on QA to \"figure it out\" without giving them any tailored test level or clear reproduction steps.",
+                    text: "Rely on QA to \'figure it out\' without giving them any tailored test level or clear reproduction steps.",
                     type: 'misguided',
                     feedback: "<p><strong>Extended Time Logged (Shifts Burden):</strong> QA will eventually verify it, but you're pushing avoidable work onto them and increasing the chance of misunderstandings.</p>",
                     next: 'step-10W'
@@ -632,7 +632,7 @@ window.SCENARIOS['nanite_wpo'] = {
                     next: 'step-10W'
                 },
                 {
-                    text: "Do nothing further; hope the existing levels are \"good enough\" for regression testing.",
+                    text: "Do nothing further; hope the existing levels are \'good enough\' for regression testing.",
                     type: 'wrong',
                     feedback: "<p><strong>Maximum Time Logged:</strong> You're banking on luck instead of providing a clear verification path.</p>",
                     next: 'step-10W'

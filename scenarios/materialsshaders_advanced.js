@@ -78,7 +78,7 @@ window.SCENARIOS['WPOShadowDetachment'] = {
             prompt: "You now know the cause: the World Position Offset isn't being handled correctly for the shadow pass, so the shadow is cast from the original mesh instead of the displaced one. How do you fix it?",
             choices: [
                 {
-                    text: "Enable \"Shadow Pass Switch\" or correct shadow bias.]",
+                    text: "Enable \'Shadow Pass Switch\' or correct shadow bias.]",
                     type: 'correct',
                     feedback: "In the material, you use a Shadow Pass Switch to control how WPO is applied for shadow casting, ensuring that the shadow pass uses a version of the displacement that matches the visible animation (or a simplified variant that still lines up). Where needed, you also refine the light's Shadow Bias settings to avoid minor detachment artifacts. After recompiling the material, the mesh and its shadow move together with the wind instead of separating.",
                     next: 'step-ver-B'
@@ -289,7 +289,7 @@ window.SCENARIOS['WPOShadowDetachment'] = {
             prompt: "You now know the cause: the World Position Offset isn't being handled correctly for the shadow pass, so the shadow is cast from the original mesh instead of the displaced one. How do you fix it?",
             choices: [
                 {
-                    text: "Enable "Shadow Pass Switch" or correct shadow bias.]",
+                    text: "Enable 'Shadow Pass Switch' or correct shadow bias.]",
                     type: 'correct',
                     feedback: "In the material, you use a Shadow Pass Switch to control how WPO is applied for shadow casting, ensuring that the shadow pass uses a version of the displacement that matches the visible animation (or a simplified variant that still lines up). Where needed, you also refine the light's Shadow Bias settings to avoid minor detachment artifacts. After recompiling the material, the mesh and its shadow move together with the wind instead of separating.",
                     next: 'step-ver-A'
@@ -535,7 +535,7 @@ window.SCENARIOS['WPOShadowDetachment'] = {
             prompt: "You now know the cause: the World Position Offset isn't being handled correctly for the shadow pass, so the shadow is cast from the original mesh instead of the displaced one. How do you fix it?",
             choices: [
                 {
-                    text: "Enable "Shadow Pass Switch" or correct shadow bias.]",
+                    text: "Enable 'Shadow Pass Switch' or correct shadow bias.]",
                     type: 'correct',
                     feedback: "In the material, you use a Shadow Pass Switch to control how WPO is applied for shadow casting, ensuring that the shadow pass uses a version of the displacement that matches the visible animation (or a simplified variant that still lines up). Where needed, you also refine the light's Shadow Bias settings to avoid minor detachment artifacts. After recompiling the material, the mesh and its shadow move together with the wind instead of separating.",
                     next: 'step-ver-A'

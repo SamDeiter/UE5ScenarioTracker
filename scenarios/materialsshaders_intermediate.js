@@ -78,7 +78,7 @@ window.SCENARIOS['TranslucencySortingIssue'] = {
             prompt: "You now know the issue is the default sorting of Translucent materials. How do you fix the glass so objects behind it render in the correct order?",
             choices: [
                 {
-                    text: "Enable \"Render After DOF\" or adjust Sort Priority.]",
+                    text: "Enable \'Render After DOF\' or adjust Sort Priority.]",
                     type: 'correct',
                     feedback: "In the material and mesh details, you enable \"Render After DOF\" so the glass is drawn at a more appropriate stage, and you raise the Translucency Sort Priority on the window meshes so they consistently render in front of background objects but behind foreground ones. Where suitable, you also switch the shading model to Thin Translucent for better glass behavior. After recompiling, the sorting issues are gone from normal gameplay views.",
                     next: 'step-4'
@@ -188,7 +188,7 @@ window.SCENARIOS['TranslucencySortingIssue'] = {
 
         'step-red-herring-W': {
             skill: 'materials',
-            title: 'Dead End: Mesh Properties Don't Sort Translucency',
+            title: 'Dead End: Mesh Properties Don\\'t Sort Translucency',
             prompt: "Adjusting mesh pivots and bounds didn't resolve the sorting. You need to focus on properties that directly influence how translucent materials are drawn relative to each other. What's the next logical step?",
             choices: [
                 {
@@ -359,7 +359,7 @@ window.SCENARIOS['TranslucencySortingIssue'] = {
 
         'step-red-herring-W': {
             skill: 'materials',
-            title: 'Dead End: Mesh Properties Don't Sort Translucency',
+            title: 'Dead End: Mesh Properties Don\\'t Sort Translucency',
             prompt: "Adjusting mesh pivots and bounds didn't resolve the sorting. You need to focus on properties that directly influence how translucent materials are drawn relative to each other. What's the next logical step?",
             choices: [
                 {
@@ -534,7 +534,7 @@ window.SCENARIOS['TranslucencySortingIssue'] = {
 
         'step-red-herring-W': {
             skill: 'materials',
-            title: 'Dead End: Mesh Properties Don't Sort Translucency',
+            title: 'Dead End: Mesh Properties Don\\'t Sort Translucency',
             prompt: "Adjusting mesh pivots and bounds didn't resolve the sorting. You need to focus on properties that directly influence how translucent materials are drawn relative to each other. What's the next logical step?",
             choices: [
                 {
@@ -705,7 +705,7 @@ window.SCENARIOS['TranslucencySortingIssue'] = {
 
         'step-red-herring-W': {
             skill: 'materials',
-            title: 'Dead End: Mesh Properties Don't Sort Translucency',
+            title: 'Dead End: Mesh Properties Don\\'t Sort Translucency',
             prompt: "Adjusting mesh pivots and bounds didn't resolve the sorting. You need to focus on properties that directly influence how translucent materials are drawn relative to each other. What's the next logical step?",
             choices: [
                 {

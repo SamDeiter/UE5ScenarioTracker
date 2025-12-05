@@ -241,7 +241,7 @@ window.SCENARIOS['EventDispatcherRaceCondition'] = {
             prompt: "<p><strong>The Tech Lead sees your Tick implementation:</strong> \"Why are you checking this every frame? That's incredibly wasteful. Just bind it once in the right place during initialization.\"</p><strong>What's the proper approach?</strong>",
             choices: [
 {
-                    text: "Remove the Tick loop and bind in GameMode"s BeginPlay.",
+                    text: "Remove the Tick loop and bind in GameMode's BeginPlay.",
                     type: 'correct',
                     feedback: "<p><strong>Optimal Time Logged:</strong> You implement the clean, efficient solution.</p>",
                     next: 'step-4'
@@ -273,7 +273,7 @@ window.SCENARIOS['EventDispatcherRaceCondition'] = {
             prompt: "<p><strong>You're ready to implement:</strong> You move the <code>Bind Event to Dispatcher</code> logic from the HUD widget's Event Construct to the GameMode's BeginPlay.</p><p>But now you realize: the HUD widget doesn't exist yet in GameMode's BeginPlay!</p><strong>How do you handle this?</strong>",
             choices: [
 {
-                    text: "Create the widget but don"t store it in a variable.",
+                    text: "Create the widget but don't store it in a variable.",
                     type: 'wrong',
                     feedback: "<p><strong>Maximum Time Logged (Garbage Collection):</strong> The widget gets garbage collected immediately because there's no reference to it. The binding fails.</p>",
                     next: 'step-4W'
@@ -338,7 +338,7 @@ window.SCENARIOS['EventDispatcherRaceCondition'] = {
             prompt: "<p><strong>You've implemented the fix:</strong> The HUD widget is created and stored in GameMode's BeginPlay, and the dispatcher binding happens immediately after.</p><p>Time to test!</p><strong>How do you verify it works?</strong>",
             choices: [
 {
-                    text: "Just run PIE and assume it works if you don"t see errors.",
+                    text: "Just run PIE and assume it works if you don't see errors.",
                     type: 'wrong',
                     feedback: "<p><strong>Maximum Time Logged:</strong> Without logging, you can't confirm the timing is correct. Always verify with explicit logging.</p>",
                     next: 'step-5W'

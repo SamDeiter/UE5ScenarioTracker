@@ -79,7 +79,7 @@ window.SCENARIOS['InvisibleFogParticles'] = {
             prompt: "You now know the material isn't contributing to volumetric fog, which is why the particle effect disappears in it. How do you fix it?",
             choices: [
                 {
-                    text: "Enable \"Apply Volumetric Translucent Shadow\".]",
+                    text: "Enable \'Apply Volumetric Translucent Shadow\'.]",
                     type: 'correct',
                     feedback: "In the particle's base material, you enable \"Apply Volumetric Translucent Shadow\" in the material details so the translucent particles write into and receive from the volumetric fog's lighting/shadowing. After recompiling the material (and updating any instances), the effect is now correctly evaluated inside the fog volume.",
                     next: 'step-4'

@@ -78,7 +78,7 @@ window.SCENARIOS['SequencerLightReverts'] = {
             prompt: "You now know the cause: the spotlight's color track is set to \"Restore State\" at the end of the sequence. How do you fix it so the light stays RED after the cinematic?",
             choices: [
                 {
-                    text: "Set \"When Finished\" to \"Keep State\".]",
+                    text: "Set \'When Finished\' to \'Keep State\'.]",
                     type: 'correct',
                     feedback: "In Sequencer, you right-click the light color track section, open Properties, and change the \"When Finished\" option from \"Restore State\" to \"Keep State\". This tells Sequencer to leave the light at its final keyed value (RED) when the cinematic ends instead of snapping back to the original white color.",
                     next: 'step-4'

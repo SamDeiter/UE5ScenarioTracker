@@ -902,7 +902,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.className = `p-4 rounded-lg border-l-4 cursor-pointer transition-all duration-200 mb-3 ${state.completed
                 ? 'bg-gray-800/50 border-green-600 opacity-60'
                 : isActive
-                    ? 'bg-[#2a2a2a] border-blue-500 shadow-lg ring-1 ring-blue-500/30'
+                    ? 'active-ticket bg-[#2a2a2a] border-blue-500 shadow-lg ring-1 ring-blue-500/30'
                     : 'bg-[#1e1e1e] hover:bg-[#252525] border-transparent hover:border-gray-600'
                 }`;
             card.dataset.scenarioId = scenarioId;
@@ -1069,9 +1069,19 @@ document.addEventListener('DOMContentLoaded', () => {
             : '';
 
         // 5. Build the Step Prompt and Choices
+        let imageHtml = '';
+        if (step.image && step.image.url) {
+            imageHtml = `
+                <div class="mb-4">
+                    <img src="${step.image.url}" alt="${step.image.alt || 'Step Illustration'}" class="w-full rounded-lg border border-gray-700 shadow-md">
+                </div>
+            `;
+        }
+
         const stepHtml = `
             <div id="ticket-step-prompt" class="mb-6">
                 <h5 class="text-xl font-bold text-gray-200 mb-4">${stepCountPrefix}${step.title}</h5>
+                ${imageHtml}
                 <div class="prose prose-sm prose-invert text-gray-300">${step.prompt}</div>
             </div>
             <div id="ticket-step-choices" class="space-y-3"></div>
@@ -1262,6 +1272,9 @@ document.addEventListener('DOMContentLoaded', () => {
             renderStep(scenarioId, currentStepId);
             saveCurrentTicketState();
         });
+
+        // Refresh the backlog to highlight the selected ticket
+        renderBacklog();
     }
 
     /**

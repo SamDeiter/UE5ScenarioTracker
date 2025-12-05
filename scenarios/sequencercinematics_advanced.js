@@ -78,7 +78,7 @@ window.SCENARIOS['PlayerLockedAfterCinematic'] = {
             prompt: "You know the camera remains bound to the cinematic and the OnFinished event isn't handing control back to the player. How do you fix it?",
             choices: [
                 {
-                    text: "Ensure Camera Cut \"Restore State\" is on or manually set View Target.]",
+                    text: "Ensure Camera Cut \'Restore State\' is on or manually set View Target.]",
                     type: 'correct',
                     feedback: "In the Level Sequence, you enable \"Restore State\" on the Camera Cut track so that when the cinematic ends, Sequencer restores the previous gameplay camera automatically. In Blueprint, you also hook into the Level Sequence Player's OnFinished/OnStop event and call \"Set View Target with Blend\" on the Player Controller, targeting the player's camera and re-enabling player input. With these changes, the game cleanly returns control to the player after the sequence.",
                     next: 'step-4'

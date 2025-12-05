@@ -316,6 +316,13 @@ button:hover {
     background-color: var(--ue5-header) !important;
 }
 
+/* Active Ticket Styling (Overrides generic list item styles) */
+#backlog-list > div.active-ticket {
+    background-color: var(--ue5-header) !important;
+    border: 1px solid var(--ue5-blue) !important;
+    box-shadow: 0 0 10px rgba(0, 93, 158, 0.3) !important;
+}
+
 /* ==========================================================================
    LAYOUT & SCROLLING FIXES (Applied last to ensure priority)
    ========================================================================== */

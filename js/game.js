@@ -560,89 +560,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
         }
-
-        // --- DEBUG NAVIGATION BUTTONS ---
-        const debugPrevStep = document.getElementById('debug-prev-step');
-        const debugNextStep = document.getElementById('debug-next-step');
-        const debugSkipToEnd = document.getElementById('debug-skip-to-end');
-
-        if (debugPrevStep) {
-            debugPrevStep.addEventListener('click', () => {
-                debugNavigateStep('prev');
-            });
-        }
-
-        if (debugNextStep) {
-            debugNextStep.addEventListener('click', () => {
-                debugNavigateStep('next');
-            });
-        }
-
-        if (debugSkipToEnd) {
-            debugSkipToEnd.addEventListener('click', () => {
-                debugNavigateStep('end');
-            });
-        }
-    }
-
-    /**
-     * Debug function to navigate between steps in the current scenario.
-     * @param {string} direction - 'prev', 'next', or 'end'
-     */
-    function debugNavigateStep(direction) {
-        if (!currentScenarioId) {
-            console.warn("No scenario selected");
-            return;
-        }
-
-        const scenario = window.SCENARIOS[currentScenarioId];
-        if (!scenario || !scenario.steps) {
-            console.warn("Invalid scenario");
-            return;
-        }
-
-        const stepKeys = Object.keys(scenario.steps);
-        const currentIndex = stepKeys.indexOf(currentStepId);
-
-        let newStepId = currentStepId;
-
-        if (direction === 'prev') {
-            if (currentIndex > 0) {
-                newStepId = stepKeys[currentIndex - 1];
-            }
-        } else if (direction === 'next') {
-            if (currentIndex < stepKeys.length - 1) {
-                newStepId = stepKeys[currentIndex + 1];
-            }
-        } else if (direction === 'end') {
-            // Find conclusion or last step
-            if (scenario.steps['conclusion']) {
-                newStepId = 'conclusion';
-            } else {
-                newStepId = stepKeys[stepKeys.length - 1];
-            }
-        }
-
-        if (newStepId !== currentStepId) {
-            currentStepId = newStepId;
-            renderStep(currentScenarioId, currentStepId);
-            updateDebugStepDisplay();
-            console.log(`🔧 Debug navigated to: ${currentStepId}`);
-        }
-    }
-
-    /**
-     * Updates the debug panel's current step display.
-     */
-    function updateDebugStepDisplay() {
-        const debugCurrentStep = document.getElementById('debug-current-step');
-        if (debugCurrentStep) {
-            if (currentScenarioId && currentStepId) {
-                debugCurrentStep.textContent = currentStepId;
-            } else {
-                debugCurrentStep.textContent = 'None';
-            }
-        }
     }
 
     /**
@@ -1048,8 +965,9 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             const rawCategory = meta.category || SCENARIO_CATEGORIES[scenarioId] || 'General';
-            // Use the raw category name directly (truncate if too long)
-            const categoryLabel = rawCategory.length > 20 ? rawCategory.substring(0, 17) + '...' : rawCategory;
+            // Convert Category to translation key format: "Audio" -> "category.audio"
+            const categoryKey = 'category.' + rawCategory.toLowerCase().replace(' ', '_');
+            const categoryLabel = safeT(categoryKey);
 
             // Unique color for each category
             const categoryColors = {
@@ -1145,8 +1063,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const stepNumber = stepIndex !== -1 ? stepIndex + 1 : 1;
         const totalSteps = stepKeys.length;
 
-        // Conditionally generate the step count prefix (disabled to avoid redundancy with step titles)
-        const stepCountPrefix = '';
+        // Conditionally generate the step count prefix (visible only in debug mode)
+        const stepCountPrefix = isDebugMode
+            ? `Step ${stepNumber} / ${totalSteps}: `
+            : '';
 
         // 5. Build the Step Prompt and Choices
         let imageHtml = '';

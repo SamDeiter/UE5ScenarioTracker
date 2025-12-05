@@ -233,24 +233,20 @@ button:hover {
    ========================================================================== */
 
 :root {
-    /* Brighter UE5-inspired theme for better readability */
-    --ue5-bg: #1e2328;
-    /* Main window background - lighter slate */
-    --ue5-panel: #2a3038;
-    /* Panel background - medium slate */
-    --ue5-header: #353d48;
-    /* Header background - visible contrast */
-    --ue5-content: #252b32;
+    /* Colors derived from UE5 Theme Editor */
+    --ue5-bg: #151515;
+    /* Main window background */
+    --ue5-panel: #202020;
+    /* Panel background */
+    --ue5-header: #2a2a2a;
+    /* Header background */
+    --ue5-content: #1a1a1a;
     /* Content/Input background */
-    --ue5-blue: #0078d4;
-    /* Primary Blue - brighter, more visible */
-    --ue5-blue-hover: #1a8aeb;
-    --ue5-text: #e8ecf0;
-    /* Brighter text */
-    --ue5-border: #404854;
-    /* More visible borders */
-    --ue5-accent: #00a8e8;
-    /* Accent color for highlights */
+    --ue5-blue: #005d9e;
+    /* Primary Blue */
+    --ue5-blue-hover: #0070e0;
+    --ue5-text: #dddddd;
+    --ue5-border: #333333;
 }
 
 /* Main Background */
@@ -321,7 +317,7 @@ button:hover {
 }
 
 /* Active Ticket Styling (Overrides generic list item styles) */
-#backlog-list>div.active-ticket {
+#backlog-list > div.active-ticket {
     background-color: var(--ue5-header) !important;
     border: 1px solid var(--ue5-blue) !important;
     box-shadow: 0 0 10px rgba(0, 93, 158, 0.3) !important;
@@ -357,15 +353,21 @@ button:hover {
    BUTTON READABILITY IMPROVEMENTS
    ========================================================================== */
 
-/* Only style buttons in ticket content area and explicitly styled buttons */
-#ticket-step-content button,
-.ue-btn {
+#ticket-content button,
+.ue-btn,
+button {
     font-size: 1rem !important;
+    /* Increase font size */
     font-weight: 600 !important;
+    /* Make text bolder */
     padding: 12px 20px !important;
+    /* More padding for better spacing */
     line-height: 1.5 !important;
+    /* Better line height for multi-line text */
     letter-spacing: 0.02em !important;
+    /* Slight letter spacing */
     text-align: left !important;
+    /* Left align text for better readability on long answers */
 }
 
 /* Center the "Start Ticket" button specifically if needed, but keep answers left-aligned */
@@ -375,8 +377,9 @@ button:hover {
 }
 
 /* Add a subtle text shadow to help text pop against the blue */
-#ticket-step-content button,
-.ue-btn {
+#ticket-content button,
+.ue-btn,
+button {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
 }
 
@@ -384,20 +387,25 @@ button:hover {
    SUBTLE BUTTON STYLING (UE5 Property Style)
    ========================================================================== */
 
-/* Only style answer/action buttons, not debug controls */
-#ticket-step-content button,
-.ue-btn {
+#ticket-content button,
+.ue-btn,
+button:not(#hard-reset-btn) {
     background-color: #383838 !important;
+    /* Dark gray button */
     color: #eeeeee !important;
+    /* Light gray text */
     border: 1px solid #252525 !important;
+    /* Subtle border */
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
     text-shadow: none !important;
     transition: background-color 0.1s, color 0.1s !important;
 }
 
-#ticket-step-content button:hover,
-.ue-btn:hover {
+#ticket-content button:hover,
+.ue-btn:hover,
+button:not(#hard-reset-btn):hover {
     background-color: #505050 !important;
+    /* Lighter gray on hover */
     color: #ffffff !important;
     border-color: #606060 !important;
 }

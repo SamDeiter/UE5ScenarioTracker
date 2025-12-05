@@ -12,8 +12,17 @@ from pathlib import Path
 class ScenarioGenerator:
     def __init__(self, api_key, templates_path=None):
         """Initialize the generator with Gemini API"""
+        self.api_key = api_key
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        # Dynamically fetch available models
+        valid_model = self._find_first_valid_model()
+        if valid_model:
+            print(f"✨ Using model: {valid_model}")
+            self.model = genai.GenerativeModel(valid_model)
+        else:
+            print("⚠️ Could not find specific model, defaulting to gemini-pro")
+            self.model = genai.GenerativeModel('gemini-pro')
         
         # Load templates
         if templates_path is None:
@@ -23,6 +32,21 @@ class ScenarioGenerator:
             self.templates = json.load(f)
         
         self.token_count = 0
+
+    def _find_first_valid_model(self):
+        """Fetch list of models and return the first one that supports generateContent"""
+        import requests
+        try:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models?key={self.api_key}"
+            resp = requests.get(url, timeout=10)
+            if resp.status_code == 200:
+                data = resp.json()
+                for m in data.get('models', []):
+                    if "generateContent" in m.get('supportedGenerationMethods', []):
+                         return m['name'].replace('models/', '')
+        except Exception as e:
+            print(f"⚠️ Warning fetching models: {e}")
+        return None
         
     def log_tokens(self, prompt, response):
         """Track token usage"""
@@ -45,12 +69,13 @@ class ScenarioGenerator:
         category_key = self._map_category_to_template(category)
         wrong_templates = self.templates['wrong_answers'].get(category_key, [])
         
-        prompt = f"""Convert this UE5 debugging scenario to a step-by-step assessment outline.
+        prompt = f"""Convert this UE5 debugging scenario to a BRANCHING debugging assessment.
 
 SCENARIO:
 Title: {raw_scenario['scenario']['title']}
 Problem: {raw_scenario['scenario']['problem_description']}
 Category: {category}
+Estimated Hours: {raw_scenario['scenario']['estimated_hours']}
 
 CORRECT STEPS ({len(raw_scenario['scenario']['correct_solution_steps'])} steps):
 {self._format_steps(raw_scenario['scenario']['correct_solution_steps'])}
@@ -58,27 +83,63 @@ CORRECT STEPS ({len(raw_scenario['scenario']['correct_solution_steps'])} steps):
 WRONG STEPS ({len(raw_scenario['scenario']['common_wrong_steps'])} steps):
 {self._format_wrong_steps(raw_scenario['scenario']['common_wrong_steps'])}
 
+CRITICAL RULES - UE5 TOOLS ONLY:
+✅ Console commands: stat unit, stat gpu, stat game, r.*, showflag.*
+✅ Editor tools: Details panel, Profiler, World Settings, Buffer Visualization
+✅ Visual debug: wireframe, collision view, reflection view
+❌ NO external apps: Task Manager, RenderDoc, PIX, Nsight, Visual Studio Profiler
+
+DEBUGGING PROGRESSION (Broad → Specific):
+1. Foundation diagnostics first (stat unit to identify bottleneck)
+2. Then narrow down (stat gpu if GPU-bound)
+3. Then specific tools (GPU Profiler for exact pass)
+Wrong choices that skip steps create DETOURS
+
 TASK:
-Create a JSON outline with this structure:
+Create branching JSON outline with OPTIMAL PATH (25-40 steps) + DETOURS:
 {{
   "scenario_id": "{raw_scenario['scenario']['scenario_id']}",
-  "total_steps": <number>,
-  "steps": [
+  "estimate_hours": {raw_scenario['scenario']['estimated_hours']},
+  "optimal_path": [
     {{
-      "step_num": 1,
-      "correct_action": "<brief action>",
+      "step_id": "step-1",
+      "action": "<brief action>",
       "time_cost": <hours>,
-      "wrong_action": "<brief wrong action>",
-      "time_penalty": <hours>
+      "has_detours": true/false
+    }},
+    {{
+      "step_id": "step-2",
+      "action": "<next action>",
+      "time_cost": <hours>,
+      "has_detours": false
     }}
-  ]
+  ],
+  "detours": {{
+    "step-1": [
+      {{
+        "detour_id": "step-1W",
+        "trigger": "wrong",
+        "reason": "<why this creates detour>",
+        "steps": ["step-1W"],
+        "converges_to": "step-3",
+        "total_penalty": <hours>
+      }}
+    ]
+  }}
 }}
 
+CRITICAL - STEP ID FORMAT:
+- Main path: "step-1", "step-2", "step-3" etc. (NEVER "s1", "s2")
+- Detours: "step-1W", "step-2W" etc. for wrong choice detours
+- Use EXACT format: "step-{{number}}" or "step-{{number}}W"
+
 RULES:
-- Each step needs ONE correct choice and ONE wrong choice
-- Use these wrong answer types when relevant: {', '.join(wrong_templates[:3])}
+- Optimal path: 25-40 steps that sum to estimate_hours
+- Break down complex steps into 2-3 substeps
+- Add detours when logical progression violated (e.g., GPU Profiler before stat unit)
+- NOT every step needs detours (add strategically ~40-50% of steps)
+- Detours are 1-2 steps long, then converge back
 - Keep actions brief (will expand later)
-- Match time costs from source data
 - Return ONLY valid JSON, no markdown
 
 JSON:"""
@@ -98,7 +159,7 @@ JSON:"""
         """
         category = raw_scenario['scenario']['focus_area']
         
-        prompt = f"""Expand this scenario outline into full assessment content.
+        prompt = f"""Expand this BRANCHING scenario outline into full DEBUGGING ASSESSMENT content.
 
 OUTLINE:
 {json.dumps(outline, indent=2)}
@@ -106,34 +167,54 @@ OUTLINE:
 ORIGINAL PROBLEM:
 {raw_scenario['scenario']['problem_description']}
 
+CRITICAL: THIS IS AN ASSESSMENT, NOT A TUTORIAL
+- Prompts show SYMPTOMS only (what you see, error messages, visual bugs)
+- Prompts DON'T teach or explain solutions
+- Prompts DON'T telegraph the answer
+- User must apply UE5 knowledge to choose correct action
+
+UE5 TOOLS ONLY:
+✅ Console: stat unit, stat gpu, r.*, showflag.*, show collision
+✅ Editor: Details panel, Profiler, Buffer Visualization, World Settings
+✅ Views: wireframe, reflection buffer, collision view
+❌ NO: Task Manager, RenderDoc, PIX, Nsight, external profilers
+
 TASK:
-For each step, generate:
-1. A clear prompt asking "What do you do next?" after describing the situation
-2. Correct choice text (detailed, specific UI navigation)
-3. Wrong choice text (plausible mistake)
-4. Feedback for correct: "Optimal Time Logged: Xhrs. Correct approach."
-5. Feedback for wrong: "Extended Time Logged: +Xhrs. This approach wastes time."
+For each step in optimal_path AND each detour step, generate:
+1. Prompt: Describe WHAT you see/experience (symptoms), ask "What do you do next?"
+2. ONE correct choice (detailed, specific UE5 actions)
+3. THREE wrong choices with varying wrongness:
+   - Choice 1: Obviously wrong (completely different system) OR "Works but bad" (causes memory leaks, performance issues)
+   - Choice 2: Plausible but wrong property/setting
+   - Choice 3: SUBTLY wrong (almost correct but critical small mistake)
+4. Feedback for each:
+   - Correct: "Optimal Time: +Xhrs. [Why this is right approach]"
+   - Wrong: "Extended Time: +Xhrs. [What happened / consequence]"
 
 Return JSON:
 {{
   "steps": [
     {{
-      "step_num": 1,
-      "prompt": "<situation description>",
-      "correct_text": "<detailed correct action>",
+      "step_id": "step-1",
+      "prompt": "<symptoms only>",
+      "correct_text": "<detailed UE5 action>",
       "correct_feedback": "<feedback>",
-      "wrong_text": "<detailed wrong action>",
-      "wrong_feedback": "<feedback>"
+      "wrong_choices": [
+        {{"text": "<wrong 1>", "feedback": "<consequence>", "type": "obvious"}},
+        {{"text": "<wrong 2>", "feedback": "<consequence>", "type": "plausible"}},
+        {{"text": "<wrong 3>", "feedback": "<consequence>", "type": "subtle"}}
+      ]
     }}
   ]
 }}
 
 RULES:
-- Prompts should describe current state, not repeat the action
-- Actions should be specific (exact menu paths, property names)
-- Wrong answers should be realistic mistakes developers make
-- Keep HTML formatting minimal (<p>, <strong> only)
-- Return ONLY valid JSON
+- Prompts: <150 chars, describe situation not solution
+- Actions: Specific (exact menu paths, console commands, property names)
+- Each wrong answer = DIFFERENT mistake type
+- "Works but bad" = fixes issue but creates new problem
+- Keep concise for file size
+- Return ONLY valid JSON, no markdown
 
 JSON:"""
 
@@ -144,7 +225,7 @@ JSON:"""
         return details
     
     def merge_outline_and_details(self, outline, details, raw_scenario):
-        """Merge Pass 1 and Pass 2 into final scenario structure"""
+        """Merge Pass 1 (branching outline) and Pass 2 (details) into final scenario structure"""
         scenario = {
             "meta": {
                 "title": raw_scenario['scenario']['title'],
@@ -156,29 +237,90 @@ JSON:"""
             "steps": {}
         }
         
-        # Build steps
-        for i, (outline_step, detail_step) in enumerate(zip(outline['steps'], details['steps']), 1):
-            step_key = f"step-{i}"
+        # Create a map of step_id → detail for easy lookup
+        details_map = {step['step_id']: step for step in details['steps']}
+        
+        # Build optimal path steps
+        for i, outline_step in enumerate(outline.get('optimal_path', []), 1):
+            step_id = outline_step['step_id']
+            detail_step = details_map.get(step_id, {})
             
-            scenario['steps'][step_key] = {
+            # Determine next step for correct choice
+            if i < len(outline['optimal_path']):
+                next_optimal = outline['optimal_path'][i]['step_id']
+            else:
+                next_optimal = "conclusion"
+            
+            # Build choices: 1 correct + 3 wrong
+            choices = [
+                {
+                    "text": f"<p>{detail_step.get('correct_text', 'Missing')}</p>",
+                    "type": "correct",
+                    "feedback": f"<p>{detail_step.get('correct_feedback', '')}</p>",
+                    "next": next_optimal
+                }
+            ]
+            
+            # Add wrong choices - determine their next steps based on detours
+            step_detours = outline.get('detours', {}).get(step_id, [])
+            wrong_choices = detail_step.get('wrong_choices', [])
+            
+            for idx, wrong_choice in enumerate(wrong_choices[:3]):  # Max 3 wrong
+                # If there's a detour for this wrong choice, use it
+                if idx < len(step_detours):
+                    detour = step_detours[idx]
+                    next_step = detour['detour_id'] if detour.get('steps') else detour.get('converges_to', next_optimal)
+                else:
+                    # No detour defined, loop back to same step
+                    next_step = step_id
+                
+                choice_type = wrong_choice.get('type', 'wrong')
+                choices.append({
+                    "text": f"<p>{wrong_choice['text']}</p>",
+                    "type": choice_type,
+                    "feedback": f"<p>{wrong_choice['feedback']}</p>",
+                    "next": next_step
+                })
+            
+            scenario['steps'][step_id] = {
                 "skill": self._map_category_to_skill(raw_scenario['scenario']['focus_area']),
                 "title": f"Step {i}",
-                "prompt": f"<p>{detail_step['prompt']}</p><p><strong>What do you do next?</strong></p>",
-                "choices": [
-                    {
-                        "text": f"<p>{detail_step['correct_text']}</p>",
-                        "type": "correct",
-                        "feedback": f"<p>{detail_step['correct_feedback']}</p>",
-                        "next": f"step-{i+1}" if i < len(outline['steps']) else "conclusion"
-                    },
-                    {
-                        "text": f"<p>{detail_step['wrong_text']}</p>",
-                        "type": "wrong",
-                        "feedback": f"<p>{detail_step['wrong_feedback']}</p>",
-                        "next": step_key  # Loop back to same step
-                    }
-                ]
+                "prompt": f"<p>{detail_step.get('prompt', '')}</p><p><strong>What do you do next?</strong></p>",
+                "choices": choices
             }
+        
+        # Build detour steps
+        for parent_step_id, detour_list in outline.get('detours', {}).items():
+            for detour in detour_list:
+                for detour_step_id in detour.get('steps', []):
+                    # Get details for this detour step
+                    detour_detail = details_map.get(detour_step_id, {})
+                    
+                    # Detour steps typically have fewer choices (2-3)
+                    choices = [
+                        {
+                            "text": f"<p>{detour_detail.get('correct_text', 'Recognize the issue and return to proper workflow')}</p>",
+                            "type": "correct",
+                            "feedback": f"<p>{detour_detail.get('correct_feedback', 'You\'re back on track.')}</p>",
+                            "next": detour.get('converges_to', 'step-1')
+                        }
+                    ]
+                    
+                    # Add wrong choices for detours (usually 1-2)
+                    for wrong in detour_detail.get('wrong_choices', [])[:2]:
+                        choices.append({
+                            "text": f"<p>{wrong['text']}</p>",
+                            "type": wrong.get('type', 'wrong'),
+                            "feedback": f"<p>{wrong['feedback']}</p>",
+                            "next": detour_step_id  # Stay in detour
+                        })
+                    
+                    scenario['steps'][detour_step_id] = {
+                        "skill": self._map_category_to_skill(raw_scenario['scenario']['focus_area']),
+                        "title": detour_step_id.replace('-', ' ').title(),
+                        "prompt": f"<p>{detour_detail.get('prompt', 'You took a detour.')}</p><p><strong>What do you do next?</strong></p>",
+                        "choices": choices
+                    }
         
         # Add conclusion
         scenario['steps']['conclusion'] = {
@@ -201,7 +343,9 @@ JSON:"""
         # Pass 1: Outline
         print("\n📝 PASS 1: Generating outline...")
         outline = self.generate_scenario_outline(raw_scenario)
-        print(f"✅ Generated {len(outline['steps'])} steps")
+        optimal_count = len(outline.get('optimal_path', []))
+        detour_count = sum(len(d.get('steps', [])) for detours in outline.get('detours', {}).values() for d in detours)
+        print(f"✅ Generated {optimal_count} optimal steps + {detour_count} detour steps")
         
         # Pass 2: Details
         print("\n📝 PASS 2: Expanding details...")
@@ -259,6 +403,14 @@ JSON:"""
         scenario_id = output_path.stem
         
         js_content = f"window.SCENARIOS['{scenario_id}'] = {json.dumps(scenario, indent=4)};\n"
+        
+        # Check file size
+        file_size_kb = len(js_content.encode('utf-8')) / 1024
+        if file_size_kb > 100:
+            print(f"⚠️  WARNING: File size is {file_size_kb:.1f}KB (target: <100KB)")
+            print(f"   Consider using more template references or reducing text length")
+        else:
+            print(f"✅ File size: {file_size_kb:.1f}KB (under 100KB target)")
         
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(js_content)

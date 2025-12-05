@@ -427,11 +427,16 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {boolean} forceState - Optional boolean to force a specific state.
      */
     function toggleDebugMode(forceState = null) {
+        console.log(`🔧 toggleDebugMode called with forceState:`, forceState);
+        console.log(`🔧 isDebugMode BEFORE toggle:`, isDebugMode);
+
         if (forceState !== null) {
             isDebugMode = forceState;
         } else {
             isDebugMode = !isDebugMode;
         }
+
+        console.log(`🔧 isDebugMode AFTER toggle:`, isDebugMode);
 
         const debugControls = document.getElementById('debug-controls-container');
         const debugToggle = document.getElementById('debug-toggle');
@@ -441,6 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (debugToggle) debugToggle.checked = true;
             if (debugDropdown) debugDropdown.classList.remove('hidden');
             document.body.classList.add('debug-active');
+            console.log('✅ Debug mode ENABLED');
         } else {
             // Keep the container visible if we want, or hide it. 
             // The user requested "debug mode active again", implying the toggle itself should be visible.
@@ -449,6 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (debugToggle) debugToggle.checked = false;
             if (debugDropdown) debugDropdown.classList.add('hidden');
             document.body.classList.remove('debug-active');
+            console.log('❌ Debug mode DISABLED');
         }
 
         // Re-render backlog to show/hide debug info if any

@@ -5,7 +5,7 @@ window.SCENARIOS['world_partition'] = {
         "Large environment is failing to stream correctly, leading to massive hitches, incorrect LOD transitions, and high memory usage. Focuses on WP configuration, data layers, and distance fields.",
       estimateHours: 8.0,
         difficulty: "Advanced",
-        category: "World Partition" // Expanded estimate due to complexity
+        category: "World" // Expanded estimate due to complexity
     },
     start: "step-1",
     steps:

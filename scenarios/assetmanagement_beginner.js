@@ -3,7 +3,7 @@ window.SCENARIOS['assetmanagement_beginner'] = {
         title: "Asset Management: Missing Material References After Folder Reorganization",
         description: "After reorganizing the Content folder, meshes show pink/black checkers and the Level Blueprint fails to spawn a particle system. Investigates asset redirectors, reference fixing, and Blueprint recompilation.",
         estimateHours: 3.0,
-        category: "Asset Management"
+        category: "Assets"
     },
     start: "step-1",
     steps: {

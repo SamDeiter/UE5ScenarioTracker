@@ -3,7 +3,7 @@ window.SCENARIOS['LandmarkUnloading'] = {
         title: "Landmark Unloading During Mission",
         description: "Important mesh unloads. Investigates \"Is Spatially Loaded\" and Data Layer activation.",
         estimateHours: 1.5,
-        category: "World Partition"
+        category: "World"
     },
     start: "step-1",
     steps: {

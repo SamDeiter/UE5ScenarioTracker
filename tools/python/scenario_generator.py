@@ -159,6 +159,14 @@ JSON:"""
         """
         category = raw_scenario['scenario']['focus_area']
         
+        # Extract ALL step IDs that need details (optimal + detours)
+        all_step_ids = [step['step_id'] for step in outline.get('optimal_path', [])]
+        for detour_list in outline.get('detours', {}).values():
+            for detour in detour_list:
+                all_step_ids.extend(detour.get('steps', []))
+        
+        step_list_str = ", ".join(all_step_ids)
+        
         prompt = f"""Expand this BRANCHING scenario outline into full DEBUGGING ASSESSMENT content.
 
 OUTLINE:
@@ -166,6 +174,14 @@ OUTLINE:
 
 ORIGINAL PROBLEM:
 {raw_scenario['scenario']['problem_description']}
+
+CRITICAL: Generate content for ALL {len(all_step_ids)} steps including detours:
+{step_list_str}
+
+CRITICAL: Use EXACT step_id values from the outline above. DO NOT invent new step IDs!
+- For each step in optimal_path, use its "step_id" field exactly
+- For each step in detours.steps arrays, use those exact step IDs
+- Example: If outline has "step-1W-light-1", use that EXACT ID, not "step-1W1_action"
 
 CRITICAL: THIS IS AN ASSESSMENT, NOT A TUTORIAL
 - Prompts show SYMPTOMS only (what you see, error messages, visual bugs)
@@ -222,6 +238,56 @@ JSON:"""
         self.log_tokens(prompt, response.text)
         
         details = self._extract_json(response.text)
+        return details
+    
+    def validate_and_cleanup_details(self, outline, details):
+        """
+        Validate that details contains all step IDs from outline.
+        Fix any mismatches by creating missing steps or mapping incorrect IDs.
+        """
+        print("\n🔧 Validating and cleaning up step IDs...")
+        
+        # Extract expected step IDs from outline
+        expected_ids = set()
+        for step in outline.get('optimal_path', []):
+            expected_ids.add(step['step_id'])
+        for detour_list in outline.get('detours', {}).values():
+            for detour in detour_list:
+                expected_ids.update(detour.get('steps', []))
+        
+        # Extract actual step IDs from details
+        actual_ids = {step['step_id'] for step in details.get('steps', [])}
+        
+        # Find missing and extra IDs
+        missing_ids = expected_ids - actual_ids
+        extra_ids = actual_ids - expected_ids
+        
+        if missing_ids:
+            print(f"⚠️  Missing {len(missing_ids)} step IDs: {', '.join(sorted(missing_ids)[:5])}")
+            
+            # Create placeholder content for missing steps
+            for step_id in missing_ids:
+                details['steps'].append({
+                    'step_id': step_id,
+                    'prompt': f"You took a detour. Recognize the issue and return to the proper workflow.",
+                    'correct_text': "Return to the optimal debugging path",
+                    'correct_feedback': "Optimal Time: +0.02hrs. You're back on track.",
+                    'wrong_choices': [
+                        {
+                            'text': "Continue down the wrong path",
+                            'feedback': "Extended Time: +0.1hrs. This makes the problem worse.",
+                            'type': 'wrong'
+                        }
+                    ]
+                })
+            print(f"✅ Added {len(missing_ids)} placeholder steps for missing IDs")
+        
+        if extra_ids:
+            print(f"⚠️  Found {len(extra_ids)} unexpected step IDs (will be ignored during merge)")
+        
+        if not missing_ids and not extra_ids:
+            print("✅ All step IDs match perfectly!")
+        
         return details
     
     def merge_outline_and_details(self, outline, details, raw_scenario):
@@ -342,15 +408,33 @@ JSON:"""
         
         # Pass 1: Outline
         print("\n📝 PASS 1: Generating outline...")
+        outline_checkpoint = Path(__file__).parent.parent.parent / 'temp' / f"{raw_scenario['scenario']['scenario_id']}_outline.json"
+        outline_checkpoint.parent.mkdir(exist_ok=True)
+        
         outline = self.generate_scenario_outline(raw_scenario)
         optimal_count = len(outline.get('optimal_path', []))
         detour_count = sum(len(d.get('steps', [])) for detours in outline.get('detours', {}).values() for d in detours)
         print(f"✅ Generated {optimal_count} optimal steps + {detour_count} detour steps")
         
+        # Save checkpoint
+        with open(outline_checkpoint, 'w', encoding='utf-8') as f:
+            json.dump(outline, f, indent=2)
+        print(f"💾 Checkpoint saved: {outline_checkpoint}")
+        
         # Pass 2: Details
         print("\n📝 PASS 2: Expanding details...")
+        details_checkpoint = Path(__file__).parent.parent.parent / 'temp' / f"{raw_scenario['scenario']['scenario_id']}_details.json"
+        
         details = self.expand_scenario_details(outline, raw_scenario)
         print(f"✅ Expanded {len(details['steps'])} steps")
+        
+        # Save checkpoint
+        with open(details_checkpoint, 'w', encoding='utf-8') as f:
+            json.dump(details, f, indent=2)
+        print(f"💾 Checkpoint saved: {details_checkpoint}")
+        
+        # Cleanup: Validate and fix step ID mismatches
+        details = self.validate_and_cleanup_details(outline, details)
         
         # Merge
         print("\n🔧 Merging outline and details...")

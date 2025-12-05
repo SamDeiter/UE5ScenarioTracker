@@ -9,18 +9,18 @@ window.SCENARIOS['CinematicHandClipping'] = {
         'step-1': {
             skill: 'sequencer',
             title: 'Step 1: The Symptom',
-            prompt: "During a pickup shot in your cinematic, the character’s hand slides through the prop instead of landing cleanly on it. The placement looks imprecise right at the moment of contact. What do you check first?",
+            prompt: "During a pickup shot in your cinematic, the character's hand slides through the prop instead of landing cleanly on it. The placement looks imprecise right at the moment of contact. What do you check first?",
             choices: [
                 {
                     text: "Action: [Check Logs/View Modes]",
                     type: 'correct',
-                    feedback: "You scrub the sequence frame by frame in Sequencer and enable animation debug overlays. You see that the base animation is close, but the fingers and wrist miss the prop by just a few centimeters and clip through it. It’s clearly a posing / alignment issue, not a missing attach or visibility problem.",
+                    feedback: "You scrub the sequence frame by frame in Sequencer and enable animation debug overlays. You see that the base animation is close, but the fingers and wrist miss the prop by just a few centimeters and clip through it. It's clearly a posing / alignment issue, not a missing attach or visibility problem.",
                     next: 'step-2'
                 },
                 {
                     text: "Action: [Wrong Guess]",
                     type: 'wrong',
-                    feedback: "You try nudging the prop in the level and tweaking its collision, but the hand still visibly clips during the pickup. Moving the prop just breaks other shots, so this clearly isn’t the right fix.",
+                    feedback: "You try nudging the prop in the level and tweaking its collision, but the hand still visibly clips during the pickup. Moving the prop just breaks other shots, so this clearly isn't the right fix.",
                     next: 'step-1W'
                 }
             ]
@@ -28,12 +28,12 @@ window.SCENARIOS['CinematicHandClipping'] = {
         'step-1W': {
             skill: 'sequencer',
             title: 'Dead End: Wrong Guess',
-            prompt: "Adjusting the prop’s transform didn’t solve the clipping and started to hurt continuity in other angles. You realize the problem is with the character’s pose during the grab, not the prop itself.",
+            prompt: "Adjusting the prop's transform didn't solve the clipping and started to hurt continuity in other angles. You realize the problem is with the character's pose during the grab, not the prop itself.",
             choices: [
                 {
                     text: "Action: [Revert and try again]",
                     type: 'correct',
-                    feedback: "You revert the prop offsets and refocus on the character animation in Sequencer—specifically the hand and attach timing.",
+                    feedback: "You revert the prop offsets and refocus on the character animation in Sequencer--specifically the hand and attach timing.",
                     next: 'step-2'
                 }
             ]

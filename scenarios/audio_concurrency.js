@@ -90,7 +90,7 @@ window.SCENARIOS['audio_concurrency'] = {
                     next: 'step-2M'
                 },
                 {
-                    text: 'Action: Ignore the warning and assume it's a false positive.',
+                    text: 'Action: Ignore the warning and assume it\'s a false positive.',
                     type: 'wrong',
                     feedback: "<p><strong>Maximum Time Logged (Ineffective Fix):</strong> The engine is explicitly telling you what's wrong. Ignoring it wastes everyone's time.</p>",
                     next: 'step-3'
@@ -352,7 +352,7 @@ window.SCENARIOS['audio_concurrency'] = {
                     next: 'step-9'
                 },
                 {
-                    text: 'Action: Increase the volume of the footsteps so they're louder than gunshots.',
+                    text: 'Action: Increase the volume of the footsteps so they\'re louder than gunshots.',
                     type: 'wrong',
                     feedback: "<p><strong>Maximum Time Logged (Ineffective Fix):</strong> Volume doesn't affect which sounds the audio engine chooses to play. You need Priority settings.</p>",
                     next: 'step-8W'

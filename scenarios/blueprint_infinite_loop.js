@@ -20,7 +20,7 @@ window.SCENARIOS['EditorFreezeLoop'] = {
                 {
                     text: "Action: [Wrong Guess]",
                     type: 'wrong',
-                    feedback: "You try lowering graphics settings and closing background apps, but the editor still freezes the instant the While Loop runs. This has nothing to do with performance or GPU load—the logic is locking the game thread.",
+                    feedback: "You try lowering graphics settings and closing background apps, but the editor still freezes the instant the While Loop runs. This has nothing to do with performance or GPU load--the logic is locking the game thread.",
                     next: 'step-1W'
                 }
             ]
@@ -33,7 +33,7 @@ window.SCENARIOS['EditorFreezeLoop'] = {
                 {
                     text: "Action: [Revert and try again]",
                     type: 'correct',
-                    feedback: "You undo the pointless performance tweaks and go back to inspecting the While Loop itself—its condition and what changes inside the loop body.",
+                    feedback: "You undo the pointless performance tweaks and go back to inspecting the While Loop itself--its condition and what changes inside the loop body.",
                     next: 'step-2'
                 }
             ]
@@ -46,13 +46,13 @@ window.SCENARIOS['EditorFreezeLoop'] = {
                 {
                     text: "Action: [Identify Root Cause]",
                     type: 'correct',
-                    feedback: "You discover that the loop condition depends on a variable that never changes inside the loop body. The While Loop starts with the condition true and nothing ever decrements, increments, or flips that value, so the condition never becomes false. The loop spins forever—an infinite loop that freezes the editor.",
+                    feedback: "You discover that the loop condition depends on a variable that never changes inside the loop body. The While Loop starts with the condition true and nothing ever decrements, increments, or flips that value, so the condition never becomes false. The loop spins forever--an infinite loop that freezes the editor.",
                     next: 'step-3'
                 },
                 {
                     text: "Action: [Misguided Attempt]",
                     type: 'misguided',
-                    feedback: "You consider adding delays or moving the loop to another Blueprint, but neither idea fixes the fact that the condition itself never changes. You’d just be moving a bad loop around instead of correcting its logic.",
+                    feedback: "You consider adding delays or moving the loop to another Blueprint, but neither idea fixes the fact that the condition itself never changes. You'd just be moving a bad loop around instead of correcting its logic.",
                     next: 'step-2M'
                 }
             ]
@@ -60,7 +60,7 @@ window.SCENARIOS['EditorFreezeLoop'] = {
         'step-2M': {
             skill: 'blueprints',
             title: 'Dead End: Misguided',
-            prompt: "Those ideas didn’t work because the loop condition is still stuck true forever. As long as nothing inside the loop moves the condition toward false, the While Loop will always hang the game thread.",
+            prompt: "Those ideas didn't work because the loop condition is still stuck true forever. As long as nothing inside the loop moves the condition toward false, the While Loop will always hang the game thread.",
             choices: [
                 {
                     text: "Action: [Realize mistake]",
@@ -73,7 +73,7 @@ window.SCENARIOS['EditorFreezeLoop'] = {
         'step-3': {
             skill: 'blueprints',
             title: 'Step 3: The Fix',
-            prompt: "You know the cause: the While Loop’s condition never changes, so it runs forever. How do you fix it?",
+            prompt: "You know the cause: the While Loop's condition never changes, so it runs forever. How do you fix it?",
             choices: [
                 {
                     text: "Action: [Add break condition or incrementer.]",
@@ -99,7 +99,7 @@ window.SCENARIOS['EditorFreezeLoop'] = {
         'conclusion': {
             skill: 'blueprints',
             title: 'Conclusion',
-            prompt: "Lesson: If a While Loop freezes the editor, check whether its condition ever changes. Always add a counter, state change, or explicit Break node inside the loop body so the condition can become false and the loop can terminate. Never rely on a While Loop that doesn’t move toward an exit.",
+            prompt: "Lesson: If a While Loop freezes the editor, check whether its condition ever changes. Always add a counter, state change, or explicit Break node inside the loop body so the condition can become false and the loop can terminate. Never rely on a While Loop that doesn't move toward an exit.",
             choices: []
         }
     }

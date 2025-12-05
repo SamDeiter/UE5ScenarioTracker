@@ -14,13 +14,13 @@ window.SCENARIOS['EventDispatcherRaceCondition'] = {
                 {
                     text: "Action: [Check Logs/View Modes]",
                     type: 'correct',
-                    feedback: "You add Print Strings / logging around the dispatcher Bind and Broadcast calls and use Blueprint debugging. The logs show the dispatcher is broadcast very early, before the listener’s BeginPlay ever runs—and in some cases, the listener object isn’t even valid yet.",
+                    feedback: "You add Print Strings / logging around the dispatcher Bind and Broadcast calls and use Blueprint debugging. The logs show the dispatcher is broadcast very early, before the listener's BeginPlay ever runs--and in some cases, the listener object isn't even valid yet.",
                     next: 'step-2'
                 },
                 {
                     text: "Action: [Wrong Guess]",
                     type: 'wrong',
-                    feedback: "You spend time rewiring the dispatcher pins and renaming events, but the bound event still never fires. The problem clearly isn’t just a bad connection or typo in the event name.",
+                    feedback: "You spend time rewiring the dispatcher pins and renaming events, but the bound event still never fires. The problem clearly isn't just a bad connection or typo in the event name.",
                     next: 'step-1W'
                 }
             ]
@@ -46,13 +46,13 @@ window.SCENARIOS['EventDispatcherRaceCondition'] = {
                 {
                     text: "Action: [Identify Root Cause]",
                     type: 'correct',
-                    feedback: "You see that the actor calling the dispatcher broadcasts during its BeginPlay or even Construction Script, but the listener binds to the dispatcher later—sometimes after the broadcast already happened, sometimes after the listener widget has been removed from parent and destroyed. In another case, the binding object isn’t stored as a variable at all, so it’s garbage collected. In short: the event binding happens too late or the listener doesn’t exist anymore when the dispatcher fires.",
+                    feedback: "You see that the actor calling the dispatcher broadcasts during its BeginPlay or even Construction Script, but the listener binds to the dispatcher later--sometimes after the broadcast already happened, sometimes after the listener widget has been removed from parent and destroyed. In another case, the binding object isn't stored as a variable at all, so it's garbage collected. In short: the event binding happens too late or the listener doesn't exist anymore when the dispatcher fires.",
                     next: 'step-3'
                 },
                 {
                     text: "Action: [Misguided Attempt]",
                     type: 'misguided',
-                    feedback: "You try duplicating the dispatcher, creating a second bound event, or moving logic into a different custom event. None of this changes the fact that the dispatcher is firing before anything is actually bound—or that the widget you’re binding from has already been destroyed.",
+                    feedback: "You try duplicating the dispatcher, creating a second bound event, or moving logic into a different custom event. None of this changes the fact that the dispatcher is firing before anything is actually bound--or that the widget you're binding from has already been destroyed.",
                     next: 'step-2M'
                 }
             ]
@@ -60,12 +60,12 @@ window.SCENARIOS['EventDispatcherRaceCondition'] = {
         'step-2M': {
             skill: 'blueprints',
             title: 'Dead End: Misguided',
-            prompt: "That didn’t work because you never fixed the timing or lifetime issues. If the dispatcher fires before binding, or the bound object is garbage collected / removed from parent, no amount of extra events will make it trigger.",
+            prompt: "That didn't work because you never fixed the timing or lifetime issues. If the dispatcher fires before binding, or the bound object is garbage collected / removed from parent, no amount of extra events will make it trigger.",
             choices: [
                 {
                     text: "Action: [Realize mistake]",
                     type: 'correct',
-                    feedback: "You realize that the dispatcher must be bound while the listener is guaranteed to exist, and that the listener must be stored in a valid reference (not a temporary) so it isn’t garbage collected before the dispatcher fires.",
+                    feedback: "You realize that the dispatcher must be bound while the listener is guaranteed to exist, and that the listener must be stored in a valid reference (not a temporary) so it isn't garbage collected before the dispatcher fires.",
                     next: 'step-3'
                 }
             ]
@@ -73,7 +73,7 @@ window.SCENARIOS['EventDispatcherRaceCondition'] = {
         'step-3': {
             skill: 'blueprints',
             title: 'Step 3: The Fix',
-            prompt: "You know the cause: the listener binds too late (race condition) or gets destroyed/GC’d before the dispatcher fires. How do you fix it?",
+            prompt: "You know the cause: the listener binds too late (race condition) or gets destroyed/GC'd before the dispatcher fires. How do you fix it?",
             choices: [
                 {
                     text: "Action: [Bind in GameMode or ensure correct init order.]",
@@ -91,7 +91,7 @@ window.SCENARIOS['EventDispatcherRaceCondition'] = {
                 {
                     text: "Action: [Play in Editor]",
                     type: 'correct',
-                    feedback: "In PIE, the logs now show the listener being created and bound before the first dispatcher broadcast. When the broadcaster fires the dispatcher, your bound event triggers reliably—no more missing calls due to race conditions or destroyed listeners.",
+                    feedback: "In PIE, the logs now show the listener being created and bound before the first dispatcher broadcast. When the broadcaster fires the dispatcher, your bound event triggers reliably--no more missing calls due to race conditions or destroyed listeners.",
                     next: 'conclusion'
                 }
             ]

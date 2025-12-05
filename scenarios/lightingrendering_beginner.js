@@ -14,7 +14,7 @@ window.SCENARIOS['BlackMetallicObject'] = {
                 {
                     text: "Action: [Check Output Log or View Modes]",
                     type: 'correct',
-                    feedback: "You check the Output Log for shader errors—none found. You switch to 'Lighting Only' mode, and the statue is still black. You switch to 'Reflections' view mode and notice the entire area around the statue is black/empty. This suggests the issue is related to how the object is reflecting its environment.",
+                    feedback: "You check the Output Log for shader errors--none found. You switch to 'Lighting Only' mode, and the statue is still black. You switch to 'Reflections' view mode and notice the entire area around the statue is black/empty. This suggests the issue is related to how the object is reflecting its environment.",
                     next: 'step-2'
                 },
                 {

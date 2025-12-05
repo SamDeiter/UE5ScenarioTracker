@@ -9,7 +9,7 @@ window.SCENARIOS['WidgetInputFailure'] = {
         'step-1': {
             skill: 'ui',
             title: 'Step 1: The Symptom',
-            prompt: "When you bring up a terminal interaction widget (UMG) in-game, you can still move the character around, but the widget doesn’t react to keyboard input or clicks. Input feels trapped in pure Game mode instead of going to the UI. What do you check first?",
+            prompt: "When you bring up a terminal interaction widget (UMG) in-game, you can still move the character around, but the widget doesn't react to keyboard input or clicks. Input feels trapped in pure Game mode instead of going to the UI. What do you check first?",
             choices: [
                 {
                     text: "Action: [Check Logs/View Modes]",
@@ -20,7 +20,7 @@ window.SCENARIOS['WidgetInputFailure'] = {
                 {
                     text: "Action: [Wrong Guess]",
                     type: 'wrong',
-                    feedback: "You try reparenting the widget and changing some visibility settings, but nothing changes—the terminal UI still ignores your keystrokes and clicks while the character keeps responding. That didn’t help.",
+                    feedback: "You try reparenting the widget and changing some visibility settings, but nothing changes--the terminal UI still ignores your keystrokes and clicks while the character keeps responding. That didn't help.",
                     next: 'step-1W'
                 }
             ]
@@ -28,12 +28,12 @@ window.SCENARIOS['WidgetInputFailure'] = {
         'step-1W': {
             skill: 'ui',
             title: 'Dead End: Wrong Guess',
-            prompt: "You went down the wrong path, assuming it was a widget hierarchy or visibility problem. The widget is clearly on screen, but it still doesn’t receive any input.",
+            prompt: "You went down the wrong path, assuming it was a widget hierarchy or visibility problem. The widget is clearly on screen, but it still doesn't receive any input.",
             choices: [
                 {
                     text: "Action: [Revert and try again]",
                     type: 'correct',
-                    feedback: "You revert the unnecessary changes and refocus on how input is routed through the Player Controller—specifically the current Input Mode and focus settings. Back on track.",
+                    feedback: "You revert the unnecessary changes and refocus on how input is routed through the Player Controller--specifically the current Input Mode and focus settings. Back on track.",
                     next: 'step-2'
                 }
             ]
@@ -46,13 +46,13 @@ window.SCENARIOS['WidgetInputFailure'] = {
                 {
                     text: "Action: [Identify Root Cause]",
                     type: 'correct',
-                    feedback: "You find that after creating and adding the terminal widget to the viewport, the Player Controller never calls Set Input Mode Game and UI (or UI Only), and the widget isn’t marked Focusable or explicitly given keyboard focus. Input remains in pure Game mode, so all keys go to character movement instead of the terminal widget.",
+                    feedback: "You find that after creating and adding the terminal widget to the viewport, the Player Controller never calls Set Input Mode Game and UI (or UI Only), and the widget isn't marked Focusable or explicitly given keyboard focus. Input remains in pure Game mode, so all keys go to character movement instead of the terminal widget.",
                     next: 'step-3'
                 },
                 {
                     text: "Action: [Misguided Attempt]",
                     type: 'misguided',
-                    feedback: "You consider adding extra input actions inside the widget’s graph, but since the controller is still in Game Only mode and the widget has no focus, those actions never fire. Plausible, but wrong.",
+                    feedback: "You consider adding extra input actions inside the widget's graph, but since the controller is still in Game Only mode and the widget has no focus, those actions never fire. Plausible, but wrong.",
                     next: 'step-2M'
                 }
             ]
@@ -60,7 +60,7 @@ window.SCENARIOS['WidgetInputFailure'] = {
         'step-2M': {
             skill: 'ui',
             title: 'Dead End: Misguided',
-            prompt: "That didn’t work because the core problem is that the Player Controller is still routing input to the game world, not the widget. Without the correct Input Mode and focus, the UI will keep being ignored.",
+            prompt: "That didn't work because the core problem is that the Player Controller is still routing input to the game world, not the widget. Without the correct Input Mode and focus, the UI will keep being ignored.",
             choices: [
                 {
                     text: "Action: [Realize mistake]",
@@ -78,7 +78,7 @@ window.SCENARIOS['WidgetInputFailure'] = {
                 {
                     text: "Action: [Set Input Mode Game and UI.]",
                     type: 'correct',
-                    feedback: "In the Player Controller (or the interaction Blueprint), you call Set Input Mode Game and UI after creating the terminal widget, passing the widget as the In Widget To Focus and disabling mouse lock if needed. You also enable the widget’s Focusable flag so it can actually receive keyboard input. You apply the fix and run the game again—the terminal now has focus and can capture input while the widget is open. It works!",
+                    feedback: "In the Player Controller (or the interaction Blueprint), you call Set Input Mode Game and UI after creating the terminal widget, passing the widget as the In Widget To Focus and disabling mouse lock if needed. You also enable the widget's Focusable flag so it can actually receive keyboard input. You apply the fix and run the game again--the terminal now has focus and can capture input while the widget is open. It works!",
                     next: 'step-4'
                 }
             ]
@@ -99,7 +99,7 @@ window.SCENARIOS['WidgetInputFailure'] = {
         'conclusion': {
             skill: 'ui',
             title: 'Conclusion',
-            prompt: "Lesson: If a terminal or UI widget doesn’t receive input, check the Player Controller’s Input Mode and focus. Use Set Input Mode Game and UI (or UI Only) and make the widget Focusable so it can grab keyboard/mouse focus while open, then restore Game Only input when you’re done.",
+            prompt: "Lesson: If a terminal or UI widget doesn't receive input, check the Player Controller's Input Mode and focus. Use Set Input Mode Game and UI (or UI Only) and make the widget Focusable so it can grab keyboard/mouse focus while open, then restore Game Only input when you're done.",
             choices: []
         }
     }

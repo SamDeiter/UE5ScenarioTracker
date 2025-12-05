@@ -52,7 +52,7 @@ window.SCENARIOS['GeneratorCrash'] = {
                 {
                     text: "Action: [Misguided Attempt]",
                     type: 'misguided',
-                    feedback: "You try increasing the 'Maximum Loop Iteration Count' in Project Settings. This might stop the crash, but it won't stop the freeze—you're still doing too much work in one frame.",
+                    feedback: "You try increasing the 'Maximum Loop Iteration Count' in Project Settings. This might stop the crash, but it won't stop the freeze--you're still doing too much work in one frame.",
                     next: 'step-2M'
                 }
             ]

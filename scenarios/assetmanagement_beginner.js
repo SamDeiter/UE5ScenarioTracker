@@ -24,7 +24,7 @@ window.SCENARIOS['assetmanagement_beginner'] = {
                     next: 'step-1W'
                 },
                 {
-                    text: 'Action: Check the <strong>Reference Viewer</strong> for one of the affected meshes to see what's referencing it.',
+                    text: 'Action: Check the <strong>Reference Viewer</strong> for one of the affected meshes to see what\'s referencing it.',
                     type: 'partial',
                     feedback: "<p><strong>Standard Time Logged:</strong> The Reference Viewer shows the dependencies, but it doesn't directly tell you about the broken references from the move. The Output Log is more direct.</p>",
                     next: 'step-2'
@@ -86,7 +86,7 @@ window.SCENARIOS['assetmanagement_beginner'] = {
                 {
                     text: 'Action: Search the Content Browser for files with "Redirector" in the name.',
                     type: 'partial',
-                    feedback: "<p><strong>Standard Time Logged:</strong> Redirectors don't have "Redirector" in their filename - they keep the original asset name. You need to enable the view option to see them.</p>",
+                    feedback: "<p><strong>Standard Time Logged:</strong> Redirectors don't have \"Redirector\" in their filename - they keep the original asset name. You need to enable the view option to see them.</p>",
                     next: 'step-3'
                 },
                 {
@@ -96,7 +96,7 @@ window.SCENARIOS['assetmanagement_beginner'] = {
                     next: 'step-2M'
                 },
                 {
-                    text: 'Action: Assume redirectors don't exist and manually fix all references.',
+                    text: 'Action: Assume redirectors don\'t exist and manually fix all references.',
                     type: 'wrong',
                     feedback: "<p><strong>Maximum Time Logged (Ineffective Fix):</strong> Redirectors were automatically created when you moved the assets. You just need to make them visible.</p>",
                     next: 'step-3'
@@ -126,7 +126,7 @@ window.SCENARIOS['assetmanagement_beginner'] = {
                 {
                     text: 'Action: Redirectors maintain references temporarily, but they need to be <strong>fixed up</strong> to update all references to point directly to the new location.',
                     type: 'correct',
-                    feedback: "<p><strong>Optimal Time Logged:</strong> Exactly! Redirectors are a temporary solution. The "Fix Up Redirectors" command updates all references to point directly to the new asset locations, then removes the redirectors.</p>",
+                    feedback: "<p><strong>Optimal Time Logged:</strong> Exactly! Redirectors are a temporary solution. The \"Fix Up Redirectors\" command updates all references to point directly to the new asset locations, then removes the redirectors.</p>",
                     next: 'step-4'
                 },
                 {
@@ -138,13 +138,13 @@ window.SCENARIOS['assetmanagement_beginner'] = {
                 {
                     text: 'Action: Redirectors automatically fix references after a certain amount of time.',
                     type: 'misguided',
-                    feedback: "<p><strong>Extended Time Logged (Investigation):</strong> Redirectors don't auto-fix. You need to manually run the "Fix Up Redirectors" command.</p>",
+                    feedback: "<p><strong>Extended Time Logged (Investigation):</strong> Redirectors don't auto-fix. You need to manually run the \"Fix Up Redirectors\" command.</p>",
                     next: 'step-3M'
                 },
                 {
                     text: 'Action: Redirectors are just informational - you still need to manually update all references.',
                     type: 'partial',
-                    feedback: "<p><strong>Standard Time Logged:</strong> Redirectors do more than inform - they can automatically update references when you use the "Fix Up Redirectors" command.</p>",
+                    feedback: "<p><strong>Standard Time Logged:</strong> Redirectors do more than inform - they can automatically update references when you use the \"Fix Up Redirectors\" command.</p>",
                     next: 'step-4'
                 }
             ]
@@ -167,7 +167,7 @@ window.SCENARIOS['assetmanagement_beginner'] = {
         'step-3M': {
             skill: 'assetmanagement',
             title: 'Waiting for Auto-Fix',
-            prompt: "<p>You waited, but the references are still broken. A senior developer explains that you need to manually run the "Fix Up Redirectors" command.</p><strong>How do you do this?</strong>",
+            prompt: "<p>You waited, but the references are still broken. A senior developer explains that you need to manually run the \"Fix Up Redirectors\" command.</p><strong>How do you do this?</strong>",
             choices: [
                 {
                     text: 'Action: Right-click on the folder containing redirectors and select <strong>Fix Up Redirectors in Folder</strong>.',
@@ -244,7 +244,7 @@ window.SCENARIOS['assetmanagement_beginner'] = {
             prompt: "<p>The <strong>Fix Up Redirectors</strong> command completed successfully. The Output Log shows that it updated references in 47 assets. You open the level and notice that most meshes now display their materials correctly!</p><strong>How can you verify that all material references are properly fixed?</strong>",
             choices: [
                 {
-                    text: 'Action: Check the meshes in the level and use the <strong>Reference Viewer</strong> on a few materials to confirm they're being referenced from the new location.',
+                    text: 'Action: Check the meshes in the level and use the <strong>Reference Viewer</strong> on a few materials to confirm they\'re being referenced from the new location.',
                     type: 'correct',
                     feedback: "<p><strong>Optimal Time Logged:</strong> Good verification! The Reference Viewer shows that materials are now correctly referenced from <code>/Game/Organized/</code>.</p>",
                     next: 'step-6'
@@ -282,7 +282,7 @@ window.SCENARIOS['assetmanagement_beginner'] = {
                     next: 'step-7'
                 },
                 {
-                    text: 'Action: The Fix Up Redirectors command doesn't work on Blueprints - you need to manually re-assign the particle system reference.',
+                    text: 'Action: The Fix Up Redirectors command doesn\'t work on Blueprints - you need to manually re-assign the particle system reference.',
                     type: 'partial',
                     feedback: "<p><strong>Standard Time Logged:</strong> Fix Up Redirectors does work on Blueprints, but sometimes they need a recompile to refresh. Try that first before manual fixes.</p>",
                     next: 'step-7'
@@ -383,7 +383,7 @@ window.SCENARIOS['assetmanagement_beginner'] = {
         'step-8M': {
             skill: 'assetmanagement',
             title: 'Keeping Redirectors for Safety',
-            prompt: "<p>You kept the redirectors "just in case." A week later, the tech lead asks why there are still redirectors in the project. They explain that fixed-up redirectors are safe to delete and should be removed to keep the project clean.</p><strong>What should you do?</strong>",
+            prompt: "<p>You kept the redirectors \"just in case.\" A week later, the tech lead asks why there are still redirectors in the project. They explain that fixed-up redirectors are safe to delete and should be removed to keep the project clean.</p><strong>What should you do?</strong>",
             choices: [
                 {
                     text: 'Action: Delete the redirectors and empty folder now.',
@@ -438,7 +438,7 @@ window.SCENARIOS['assetmanagement_beginner'] = {
                     next: 'conclusion'
                 },
                 {
-                    text: 'Action: Tell the team to never reorganize folders because it's too risky.',
+                    text: 'Action: Tell the team to never reorganize folders because it\'s too risky.',
                     type: 'wrong',
                     feedback: "<p><strong>Maximum Time Logged (Ineffective Fix):</strong> Folder organization is important for project health! The proper lesson is to use the correct workflow, not to avoid organization entirely.</p>",
                     next: 'conclusion'
@@ -450,7 +450,7 @@ window.SCENARIOS['assetmanagement_beginner'] = {
                     next: 'conclusion'
                 },
                 {
-                    text: 'Action: Document the issue but don't share the solution with the team.',
+                    text: 'Action: Document the issue but don\'t share the solution with the team.',
                     type: 'partial',
                     feedback: "<p><strong>Standard Time Logged:</strong> Sharing knowledge helps the whole team avoid similar issues. Always document and share!</p>",
                     next: 'conclusion'

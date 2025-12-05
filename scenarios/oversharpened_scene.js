@@ -20,7 +20,7 @@ window.SCENARIOS['GrainySharpening'] = {
                 {
                     text: "Action: [Wrong Guess]",
                     type: 'wrong',
-                    feedback: "You spend time reimporting textures and tweaking their compression, but nothing changes—the scene still looks razor-sharp and noisy. The problem clearly isn’t in the textures themselves.",
+                    feedback: "You spend time reimporting textures and tweaking their compression, but nothing changes--the scene still looks razor-sharp and noisy. The problem clearly isn't in the textures themselves.",
                     next: 'step-1W'
                 }
             ]
@@ -28,12 +28,12 @@ window.SCENARIOS['GrainySharpening'] = {
         'step-1W': {
             skill: 'rendering',
             title: 'Dead End: Wrong Guess',
-            prompt: "You went down the wrong path, blaming texture import and compression settings. Rebuilding and reimporting didn’t soften the image at all.",
+            prompt: "You went down the wrong path, blaming texture import and compression settings. Rebuilding and reimporting didn't soften the image at all.",
             choices: [
                 {
                     text: "Action: [Revert and try again]",
                     type: 'correct',
-                    feedback: "You undo the unnecessary texture tweaks and go back to the root cause: a post-process or console variable that’s sharpening the final image too aggressively.",
+                    feedback: "You undo the unnecessary texture tweaks and go back to the root cause: a post-process or console variable that's sharpening the final image too aggressively.",
                     next: 'step-2'
                 }
             ]
@@ -41,7 +41,7 @@ window.SCENARIOS['GrainySharpening'] = {
         'step-2': {
             skill: 'rendering',
             title: 'Step 2: Investigation',
-            prompt: "You investigate the project’s post-processing pipeline and console variables to find what’s over-sharpening the image. What do you find?",
+            prompt: "You investigate the project's post-processing pipeline and console variables to find what's over-sharpening the image. What do you find?",
             choices: [
                 {
                     text: "Action: [Identify Root Cause]",
@@ -52,7 +52,7 @@ window.SCENARIOS['GrainySharpening'] = {
                 {
                     text: "Action: [Misguided Attempt]",
                     type: 'misguided',
-                    feedback: "You try lowering overall contrast and disabling film grain in the post-process volume, but the crunchy edge halos remain. Those tweaks don’t change the dedicated sharpen pass driven by r.Tonemapper.Sharpen.",
+                    feedback: "You try lowering overall contrast and disabling film grain in the post-process volume, but the crunchy edge halos remain. Those tweaks don't change the dedicated sharpen pass driven by r.Tonemapper.Sharpen.",
                     next: 'step-2M'
                 }
             ]
@@ -60,7 +60,7 @@ window.SCENARIOS['GrainySharpening'] = {
         'step-2M': {
             skill: 'rendering',
             title: 'Dead End: Misguided',
-            prompt: "Those post-process changes didn’t fix the crunchy look because the sharpening is still being applied after tonemapping via the console variable.",
+            prompt: "Those post-process changes didn't fix the crunchy look because the sharpening is still being applied after tonemapping via the console variable.",
             choices: [
                 {
                     text: "Action: [Realize mistake]",
@@ -91,7 +91,7 @@ window.SCENARIOS['GrainySharpening'] = {
                 {
                     text: "Action: [Play in Editor]",
                     type: 'correct',
-                    feedback: "In PIE, the scene now looks much smoother and more filmic. Fine details no longer shimmer, edges aren’t haloed, and the overall image looks less noisy. Comparing before/after captures confirms that lowering r.Tonemapper.Sharpen resolved the over-sharpened visuals.",
+                    feedback: "In PIE, the scene now looks much smoother and more filmic. Fine details no longer shimmer, edges aren't haloed, and the overall image looks less noisy. Comparing before/after captures confirms that lowering r.Tonemapper.Sharpen resolved the over-sharpened visuals.",
                     next: 'conclusion'
                 }
             ]
@@ -99,7 +99,7 @@ window.SCENARIOS['GrainySharpening'] = {
         'conclusion': {
             skill: 'rendering',
             title: 'Conclusion',
-            prompt: "Lesson: If your scene looks grainy and over-sharpened, check r.Tonemapper.Sharpen. Keeping this value in the 0–1 range (or disabling it) prevents harsh post-process sharpening and preserves a clean, stable final image.",
+            prompt: "Lesson: If your scene looks grainy and over-sharpened, check r.Tonemapper.Sharpen. Keeping this value in the 0-1 range (or disabling it) prevents harsh post-process sharpening and preserves a clean, stable final image.",
             choices: []
         }
     }

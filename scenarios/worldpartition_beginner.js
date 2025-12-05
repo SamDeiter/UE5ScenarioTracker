@@ -20,7 +20,7 @@ window.SCENARIOS['FoliagePoppingInTooClose'] = {
                 {
                     text: "Action: [Wrong Guess]",
                     type: 'wrong',
-                    feedback: "You try changing LOD settings and material complexity on the meshes, but the pop-in distance doesn’t change at all. Clearly this isn’t just an LOD or performance problem.",
+                    feedback: "You try changing LOD settings and material complexity on the meshes, but the pop-in distance doesn't change at all. Clearly this isn't just an LOD or performance problem.",
                     next: 'step-1W'
                 }
             ]
@@ -28,12 +28,12 @@ window.SCENARIOS['FoliagePoppingInTooClose'] = {
         'step-1W': {
             skill: 'world_partition',
             title: 'Dead End: Wrong Guess',
-            prompt: "You went down the wrong path, assuming the issue was mesh LODs or materials. The bushes and rocks still appear only when you’re very close.",
+            prompt: "You went down the wrong path, assuming the issue was mesh LODs or materials. The bushes and rocks still appear only when you're very close.",
             choices: [
                 {
                     text: "Action: [Revert and try again]",
                     type: 'correct',
-                    feedback: "You undo the unnecessary LOD/material tweaks and refocus on how these actors are streamed by World Partition—Data Layers, spatial loading, and loading ranges.",
+                    feedback: "You undo the unnecessary LOD/material tweaks and refocus on how these actors are streamed by World Partition--Data Layers, spatial loading, and loading ranges.",
                     next: 'step-2'
                 }
             ]
@@ -52,7 +52,7 @@ window.SCENARIOS['FoliagePoppingInTooClose'] = {
                 {
                     text: "Action: [Misguided Attempt]",
                     type: 'misguided',
-                    feedback: "You try duplicating the meshes into another level or turning off HLODs entirely, but that either breaks other streaming behavior or doesn’t reliably fix the pop-in distance. You still haven’t addressed the actual loading range configuration.",
+                    feedback: "You try duplicating the meshes into another level or turning off HLODs entirely, but that either breaks other streaming behavior or doesn't reliably fix the pop-in distance. You still haven't addressed the actual loading range configuration.",
                     next: 'step-2M'
                 }
             ]
@@ -60,12 +60,12 @@ window.SCENARIOS['FoliagePoppingInTooClose'] = {
         'step-2M': {
             skill: 'world_partition',
             title: 'Dead End: Misguided',
-            prompt: "Those changes didn’t work because the underlying World Partition settings for spatial loading and loading range are still forcing the foliage to stream in too late.",
+            prompt: "Those changes didn't work because the underlying World Partition settings for spatial loading and loading range are still forcing the foliage to stream in too late.",
             choices: [
                 {
                     text: "Action: [Realize mistake]",
                     type: 'correct',
-                    feedback: "You realize the correct fix is to adjust the actors’ spatial loading and loading range in the World Partition details instead of trying to hack around it with level duplicates or disabled HLODs.",
+                    feedback: "You realize the correct fix is to adjust the actors' spatial loading and loading range in the World Partition details instead of trying to hack around it with level duplicates or disabled HLODs.",
                     next: 'step-3'
                 }
             ]
@@ -73,7 +73,7 @@ window.SCENARIOS['FoliagePoppingInTooClose'] = {
         'step-3': {
             skill: 'world_partition',
             title: 'Step 3: The Fix',
-            prompt: "You now know the cause: the foliage actors are in a World Partition setup with a loading range that’s too small. How do you fix it?",
+            prompt: "You now know the cause: the foliage actors are in a World Partition setup with a loading range that's too small. How do you fix it?",
             choices: [
                 {
                     text: "Action: [Adjust Loading Range or Grid Placement.]",

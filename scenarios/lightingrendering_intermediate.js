@@ -20,7 +20,7 @@ window.SCENARIOS['LightmapShadowBleeding'] = {
                 {
                     text: "Action: [Wrong Guess]",
                     type: 'wrong',
-                    feedback: "You try cranking the Lightmap Resolution even higher and rebake, but the shadows are still blotchy. Clearly the issue isn’t just not having enough lightmap texels.",
+                    feedback: "You try cranking the Lightmap Resolution even higher and rebake, but the shadows are still blotchy. Clearly the issue isn't just not having enough lightmap texels.",
                     next: 'step-1W'
                 }
             ]
@@ -28,12 +28,12 @@ window.SCENARIOS['LightmapShadowBleeding'] = {
         'step-1W': {
             skill: 'lighting',
             title: 'Dead End: Wrong Guess',
-            prompt: "You chased resolution and build settings, but the shadows are still blotchy and bleeding. Increasing Lightmap Resolution didn’t actually solve the artifact.",
+            prompt: "You chased resolution and build settings, but the shadows are still blotchy and bleeding. Increasing Lightmap Resolution didn't actually solve the artifact.",
             choices: [
                 {
                     text: "Action: [Revert and try again]",
                     type: 'correct',
-                    feedback: "You undo the unnecessary resolution changes and focus on the mesh’s lightmap setup instead, where UV issues are far more likely.",
+                    feedback: "You undo the unnecessary resolution changes and focus on the mesh's lightmap setup instead, where UV issues are far more likely.",
                     next: 'step-2'
                 }
             ]
@@ -52,7 +52,7 @@ window.SCENARIOS['LightmapShadowBleeding'] = {
                 {
                     text: "Action: [Misguided Attempt]",
                     type: 'misguided',
-                    feedback: "You try adjusting indirect lighting settings and changing light types, but the artifacts remain. The real issue lies in the mesh’s lightmap UVs and the coordinate index, not the light actors themselves.",
+                    feedback: "You try adjusting indirect lighting settings and changing light types, but the artifacts remain. The real issue lies in the mesh's lightmap UVs and the coordinate index, not the light actors themselves.",
                     next: 'step-2M'
                 }
             ]
@@ -60,7 +60,7 @@ window.SCENARIOS['LightmapShadowBleeding'] = {
         'step-2M': {
             skill: 'lighting',
             title: 'Dead End: Misguided',
-            prompt: "Those lighting tweaks didn’t work because the shadow data is still being baked into bad UVs. As long as the lightmap channel has overlaps or the wrong index, you’ll keep getting splotchy results.",
+            prompt: "Those lighting tweaks didn't work because the shadow data is still being baked into bad UVs. As long as the lightmap channel has overlaps or the wrong index, you'll keep getting splotchy results.",
             choices: [
                 {
                     text: "Action: [Realize mistake]",
@@ -99,7 +99,7 @@ window.SCENARIOS['LightmapShadowBleeding'] = {
         'conclusion': {
             skill: 'lighting',
             title: 'Conclusion',
-            prompt: "Lesson: High Lightmap Resolution alone won’t fix bad bakes. For clean baked shadows, ensure your static meshes have unique, non-overlapping lightmap UVs (typically on UV Channel 1) and that the Lightmap Coordinate Index points to that channel instead of the texture UVs.",
+            prompt: "Lesson: High Lightmap Resolution alone won't fix bad bakes. For clean baked shadows, ensure your static meshes have unique, non-overlapping lightmap UVs (typically on UV Channel 1) and that the Lightmap Coordinate Index points to that channel instead of the texture UVs.",
             choices: []
         }
     }

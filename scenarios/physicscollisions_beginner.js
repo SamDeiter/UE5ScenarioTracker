@@ -14,13 +14,13 @@ window.SCENARIOS['NoCollisionOnRock'] = {
                 {
                     text: "Action: [Check Logs/View Modes]",
                     type: 'correct',
-                    feedback: "You enable collision view modes (e.g., Player Collision) and immediately see that the rock has no visible collision hull at all. The character capsule doesn’t register any hit and just passes through empty space where the rock should block it.",
+                    feedback: "You enable collision view modes (e.g., Player Collision) and immediately see that the rock has no visible collision hull at all. The character capsule doesn't register any hit and just passes through empty space where the rock should block it.",
                     next: 'step-2'
                 },
                 {
                     text: "Action: [Wrong Guess]",
                     type: 'wrong',
-                    feedback: "You tweak the character movement settings and navmesh, but nothing changes—your character still walks through the rock like it isn’t there. The issue clearly isn’t with the character, it’s with the rock’s collision.",
+                    feedback: "You tweak the character movement settings and navmesh, but nothing changes--your character still walks through the rock like it isn't there. The issue clearly isn't with the character, it's with the rock's collision.",
                     next: 'step-1W'
                 }
             ]
@@ -28,12 +28,12 @@ window.SCENARIOS['NoCollisionOnRock'] = {
         'step-1W': {
             skill: 'physics',
             title: 'Dead End: Wrong Guess',
-            prompt: "You went down the wrong path, assuming the problem was character movement or navigation. Those changes didn’t stop the player from ghosting through the rock.",
+            prompt: "You went down the wrong path, assuming the problem was character movement or navigation. Those changes didn't stop the player from ghosting through the rock.",
             choices: [
                 {
                     text: "Action: [Revert and try again]",
                     type: 'correct',
-                    feedback: "You roll back the unnecessary movement/nav changes and refocus on the rock mesh itself—specifically its collision setup.",
+                    feedback: "You roll back the unnecessary movement/nav changes and refocus on the rock mesh itself--specifically its collision setup.",
                     next: 'step-2'
                 }
             ]
@@ -52,7 +52,7 @@ window.SCENARIOS['NoCollisionOnRock'] = {
                 {
                     text: "Action: [Misguided Attempt]",
                     type: 'misguided',
-                    feedback: "You consider adding complex collision as simple or turning on CCD for the character, but that won’t fix the fact that the rock currently has no proper simplified collision to interact with.",
+                    feedback: "You consider adding complex collision as simple or turning on CCD for the character, but that won't fix the fact that the rock currently has no proper simplified collision to interact with.",
                     next: 'step-2M'
                 }
             ]
@@ -60,7 +60,7 @@ window.SCENARIOS['NoCollisionOnRock'] = {
         'step-2M': {
             skill: 'physics',
             title: 'Dead End: Misguided',
-            prompt: "Those ideas didn’t resolve the core problem because the engine still has no simple collision shape to test against for this rock.",
+            prompt: "Those ideas didn't resolve the core problem because the engine still has no simple collision shape to test against for this rock.",
             choices: [
                 {
                     text: "Action: [Realize mistake]",
@@ -78,7 +78,7 @@ window.SCENARIOS['NoCollisionOnRock'] = {
                 {
                     text: "Action: [Add Simplified Collision in Static Mesh Editor.]",
                     type: 'correct',
-                    feedback: "In the Static Mesh Editor, you use the Collision menu to add simplified collision (such as an Auto Convex hull, 10DOP, or a Sphere/Box that tightly fits the rock). You then set the mesh’s Collision Presets to BlockAll or Default so the player capsule collides with it. After saving the mesh, instances of the rock now have proper blocking collision.",
+                    feedback: "In the Static Mesh Editor, you use the Collision menu to add simplified collision (such as an Auto Convex hull, 10DOP, or a Sphere/Box that tightly fits the rock). You then set the mesh's Collision Presets to BlockAll or Default so the player capsule collides with it. After saving the mesh, instances of the rock now have proper blocking collision.",
                     next: 'step-4'
                 }
             ]

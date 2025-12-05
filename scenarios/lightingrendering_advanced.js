@@ -20,7 +20,7 @@ window.SCENARIOS['LumenLightLeaking'] = {
                 {
                     text: "Action: [Wrong Guess]",
                     type: 'wrong',
-                    feedback: "You tweak post-process settings and exposure, but the light leaking is still there. The problem clearly isn’t just tone mapping or camera settings.",
+                    feedback: "You tweak post-process settings and exposure, but the light leaking is still there. The problem clearly isn't just tone mapping or camera settings.",
                     next: 'step-1W'
                 }
             ]
@@ -46,13 +46,13 @@ window.SCENARIOS['LumenLightLeaking'] = {
                 {
                     text: "Action: [Identify Root Cause]",
                     type: 'correct',
-                    feedback: "You discover that the room is built from single-sided planes with no thickness at all. The walls, ceiling, and floor are paper-thin, so Lumen’s tracing has trouble treating them as solid blockers, causing light to bleed through the edges and corners.",
+                    feedback: "You discover that the room is built from single-sided planes with no thickness at all. The walls, ceiling, and floor are paper-thin, so Lumen's tracing has trouble treating them as solid blockers, causing light to bleed through the edges and corners.",
                     next: 'step-3'
                 },
                 {
                     text: "Action: [Misguided Attempt]",
                     type: 'misguided',
-                    feedback: "You try cranking up Lumen quality settings and tweaking indirect lighting controls, but the leaks remain. The underlying geometry problem hasn’t been addressed.",
+                    feedback: "You try cranking up Lumen quality settings and tweaking indirect lighting controls, but the leaks remain. The underlying geometry problem hasn't been addressed.",
                     next: 'step-2M'
                 }
             ]
@@ -60,7 +60,7 @@ window.SCENARIOS['LumenLightLeaking'] = {
         'step-2M': {
             skill: 'lighting',
             title: 'Dead End: Misguided',
-            prompt: "Your Lumen quality tweaks didn’t fix the leaking because the real problem is that Lumen doesn’t have solid geometry to trace against. Thin, single-sided planes are still being treated unreliably.",
+            prompt: "Your Lumen quality tweaks didn't fix the leaking because the real problem is that Lumen doesn't have solid geometry to trace against. Thin, single-sided planes are still being treated unreliably.",
             choices: [
                 {
                     text: "Action: [Realize mistake]",
@@ -73,12 +73,12 @@ window.SCENARIOS['LumenLightLeaking'] = {
         'step-3': {
             skill: 'lighting',
             title: 'Step 3: The Fix',
-            prompt: "You now know the issue is single-sided, paper-thin walls that Lumen can’t reliably treat as solid occluders. How do you fix it?",
+            prompt: "You now know the issue is single-sided, paper-thin walls that Lumen can't reliably treat as solid occluders. How do you fix it?",
             choices: [
                 {
                     text: "Action: [Use thick geometry (walls with depth) instead of planes.]",
                     type: 'correct',
-                    feedback: "You replace the paper-thin planes with proper meshes that have thickness—boxes or walls with real depth—so the room becomes an enclosed volume. With solid geometry, Lumen’s traces are correctly blocked and the light leaking is dramatically reduced or eliminated.",
+                    feedback: "You replace the paper-thin planes with proper meshes that have thickness--boxes or walls with real depth--so the room becomes an enclosed volume. With solid geometry, Lumen's traces are correctly blocked and the light leaking is dramatically reduced or eliminated.",
                     next: 'step-4'
                 }
             ]
@@ -91,7 +91,7 @@ window.SCENARIOS['LumenLightLeaking'] = {
                 {
                     text: "Action: [Play in Editor]",
                     type: 'correct',
-                    feedback: "In PIE, the dark room now holds its darkness properly: outdoor light no longer bleeds through the corners, and Lumen’s indirect lighting behaves as expected with the thicker wall geometry.",
+                    feedback: "In PIE, the dark room now holds its darkness properly: outdoor light no longer bleeds through the corners, and Lumen's indirect lighting behaves as expected with the thicker wall geometry.",
                     next: 'conclusion'
                 }
             ]

@@ -20,7 +20,7 @@ window.SCENARIOS['TranslucencySortingIssue'] = {
                 {
                     text: "Action: [Wrong Guess]",
                     type: 'wrong',
-                    feedback: "You try reimporting meshes and tweaking collision, but nothing changes—the glass still causes objects behind it to vanish or appear in front. This clearly isn’t a simple mesh or collision problem.",
+                    feedback: "You try reimporting meshes and tweaking collision, but nothing changes--the glass still causes objects behind it to vanish or appear in front. This clearly isn't a simple mesh or collision problem.",
                     next: 'step-1W'
                 }
             ]
@@ -46,13 +46,13 @@ window.SCENARIOS['TranslucencySortingIssue'] = {
                 {
                     text: "Action: [Identify Root Cause]",
                     type: 'correct',
-                    feedback: "You confirm the material uses the Translucent blend mode with default settings and no special sorting overrides. The affected meshes all share similar bounds and distance from the camera, so the engine’s default translucency sorting order is ambiguous. Because Translucent blend mode has inherent sorting limitations, the glass occasionally draws in the wrong order with other geometry behind it.",
+                    feedback: "You confirm the material uses the Translucent blend mode with default settings and no special sorting overrides. The affected meshes all share similar bounds and distance from the camera, so the engine's default translucency sorting order is ambiguous. Because Translucent blend mode has inherent sorting limitations, the glass occasionally draws in the wrong order with other geometry behind it.",
                     next: 'step-3'
                 },
                 {
                     text: "Action: [Misguided Attempt]",
                     type: 'misguided',
-                    feedback: "You try changing roughness, refraction, and color, but the popping and incorrect overlap still happen. These parameters don’t change how the renderer sorts translucent primitives.",
+                    feedback: "You try changing roughness, refraction, and color, but the popping and incorrect overlap still happen. These parameters don't change how the renderer sorts translucent primitives.",
                     next: 'step-2M'
                 }
             ]
@@ -60,12 +60,12 @@ window.SCENARIOS['TranslucencySortingIssue'] = {
         'step-2M': {
             skill: 'materials',
             title: 'Dead End: Misguided',
-            prompt: "Those shading tweaks didn’t help because the problem isn’t how the glass looks, it’s when and where it’s drawn relative to other translucent objects.",
+            prompt: "Those shading tweaks didn't help because the problem isn't how the glass looks, it's when and where it's drawn relative to other translucent objects.",
             choices: [
                 {
                     text: "Action: [Realize mistake]",
                     type: 'correct',
-                    feedback: "You realize you must adjust the translucency sorting controls—such as Translucency Sort Priority or Render After DOF—or switch to a more appropriate translucency model for thin glass.",
+                    feedback: "You realize you must adjust the translucency sorting controls--such as Translucency Sort Priority or Render After DOF--or switch to a more appropriate translucency model for thin glass.",
                     next: 'step-3'
                 }
             ]
@@ -99,7 +99,7 @@ window.SCENARIOS['TranslucencySortingIssue'] = {
         'conclusion': {
             skill: 'materials',
             title: 'Conclusion',
-            prompt: "Lesson: Translucent materials have inherent sorting limitations. When glass appears to draw in the wrong order, use tools like Translucency Sort Priority, Render After DOF, and (where appropriate) the Thin Translucent shading model to control how and when it’s rendered so objects behind it display correctly.",
+            prompt: "Lesson: Translucent materials have inherent sorting limitations. When glass appears to draw in the wrong order, use tools like Translucency Sort Priority, Render After DOF, and (where appropriate) the Thin Translucent shading model to control how and when it's rendered so objects behind it display correctly.",
             choices: []
         }
     }

@@ -14,13 +14,13 @@ window.SCENARIOS['WPOShadowDetachment'] = {
                 {
                     text: "Action: [Check Logs/View Modes]",
                     type: 'correct',
-                    feedback: "You switch to lighting and shadow visualization view modes and notice that the mesh’s WPO animation is visible in the base pass, but the shadow map still looks like the undeformed, original mesh. This strongly suggests the shadow pass isn’t respecting the WPO displacement.",
+                    feedback: "You switch to lighting and shadow visualization view modes and notice that the mesh's WPO animation is visible in the base pass, but the shadow map still looks like the undeformed, original mesh. This strongly suggests the shadow pass isn't respecting the WPO displacement.",
                     next: 'step-2'
                 },
                 {
                     text: "Action: [Wrong Guess]",
                     type: 'wrong',
-                    feedback: "You try adjusting light intensity and changing the sun angle, but the shadow still appears detached and doesn’t follow the animated mesh. Clearly this isn’t just a simple lighting strength or angle problem.",
+                    feedback: "You try adjusting light intensity and changing the sun angle, but the shadow still appears detached and doesn't follow the animated mesh. Clearly this isn't just a simple lighting strength or angle problem.",
                     next: 'step-1W'
                 }
             ]
@@ -52,7 +52,7 @@ window.SCENARIOS['WPOShadowDetachment'] = {
                 {
                     text: "Action: [Misguided Attempt]",
                     type: 'misguided',
-                    feedback: "You try cranking up cascaded shadow resolution and tweaking distance / contact shadows, but the shadow still sits in the wrong place. The problem isn’t quality or range—it’s that the shadow pass isn’t using the displaced vertices.",
+                    feedback: "You try cranking up cascaded shadow resolution and tweaking distance / contact shadows, but the shadow still sits in the wrong place. The problem isn't quality or range--it's that the shadow pass isn't using the displaced vertices.",
                     next: 'step-2M'
                 }
             ]
@@ -60,12 +60,12 @@ window.SCENARIOS['WPOShadowDetachment'] = {
         'step-2M': {
             skill: 'materials',
             title: 'Dead End: Misguided',
-            prompt: "Those shadow quality tweaks didn’t work because the underlying mismatch remains: the base pass uses displaced vertices from WPO, while the shadow map still assumes the original static mesh position.",
+            prompt: "Those shadow quality tweaks didn't work because the underlying mismatch remains: the base pass uses displaced vertices from WPO, while the shadow map still assumes the original static mesh position.",
             choices: [
                 {
                     text: "Action: [Realize mistake]",
                     type: 'correct',
-                    feedback: "You realize you must explicitly tell the material what to do in the shadow pass—either applying appropriate WPO there via a Shadow Pass Switch node or compensating with light shadow bias—rather than just increasing shadow quality.",
+                    feedback: "You realize you must explicitly tell the material what to do in the shadow pass--either applying appropriate WPO there via a Shadow Pass Switch node or compensating with light shadow bias--rather than just increasing shadow quality.",
                     next: 'step-3'
                 }
             ]
@@ -73,12 +73,12 @@ window.SCENARIOS['WPOShadowDetachment'] = {
         'step-3': {
             skill: 'materials',
             title: 'Step 3: The Fix',
-            prompt: "You now know the cause: the World Position Offset isn’t being handled correctly for the shadow pass, so the shadow is cast from the original mesh instead of the displaced one. How do you fix it?",
+            prompt: "You now know the cause: the World Position Offset isn't being handled correctly for the shadow pass, so the shadow is cast from the original mesh instead of the displaced one. How do you fix it?",
             choices: [
                 {
                     text: "Action: [Enable \"Shadow Pass Switch\" or correct shadow bias.]",
                     type: 'correct',
-                    feedback: "In the material, you use a Shadow Pass Switch to control how WPO is applied for shadow casting, ensuring that the shadow pass uses a version of the displacement that matches the visible animation (or a simplified variant that still lines up). Where needed, you also refine the light’s Shadow Bias settings to avoid minor detachment artifacts. After recompiling the material, the mesh and its shadow move together with the wind instead of separating.",
+                    feedback: "In the material, you use a Shadow Pass Switch to control how WPO is applied for shadow casting, ensuring that the shadow pass uses a version of the displacement that matches the visible animation (or a simplified variant that still lines up). Where needed, you also refine the light's Shadow Bias settings to avoid minor detachment artifacts. After recompiling the material, the mesh and its shadow move together with the wind instead of separating.",
                     next: 'step-4'
                 }
             ]
@@ -99,7 +99,7 @@ window.SCENARIOS['WPOShadowDetachment'] = {
         'conclusion': {
             skill: 'materials',
             title: 'Conclusion',
-            prompt: "Lesson: When using World Position Offset for animation (like wind), remember that shadows are generated in a separate pass. Use a Shadow Pass Switch node in the material (and refine shadow bias on the light if needed) so the shadow pass accounts for WPO and the mesh’s shadow doesn’t detach or drift away from the visible geometry.",
+            prompt: "Lesson: When using World Position Offset for animation (like wind), remember that shadows are generated in a separate pass. Use a Shadow Pass Switch node in the material (and refine shadow bias on the light if needed) so the shadow pass accounts for WPO and the mesh's shadow doesn't detach or drift away from the visible geometry.",
             choices: []
         }
     }

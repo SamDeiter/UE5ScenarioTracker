@@ -1,10 +1,12 @@
 @echo off
-:: This batch file launches the UE5 Scenario Tracker application.
-::
-:: It works by simply opening the index.html file in your default web browser.
-:: A local server is NOT required for this version of the project.
+echo Stopping any local web servers...
+taskkill /F /IM python.exe 2>nul
+taskkill /F /IM node.exe 2>nul
+timeout /t 2 >nul
 
-title Launch UE5 Scenario Tracker
+echo.
+echo Opening in browser...
+start "" "file:///C:/Users/Sam Deiter/Documents/GitHub/UE5ScenarioTracker/index.html"
 
-echo Launching the application in your default browser...
-start index.html
+echo.
+echo Application opened in browser with file:// protocol (no server needed)

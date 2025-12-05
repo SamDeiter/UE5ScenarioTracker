@@ -14,13 +14,13 @@ window.SCENARIOS['AssetMissingInPackagedBuild'] = {
                 {
                     text: "Action: [Check Logs/View Modes]",
                     type: 'correct',
-                    feedback: "You check the output log in the packaged build and see warnings that a mesh failed to load from a Soft Object Reference path. This tells you the Blueprint is trying to load something that isn’t actually present in the cooked content.",
+                    feedback: "You check the output log in the packaged build and see warnings that a mesh failed to load from a Soft Object Reference path. This tells you the Blueprint is trying to load something that isn't actually present in the cooked content.",
                     next: 'step-2'
                 },
                 {
                     text: "Action: [Wrong Guess]",
                     type: 'wrong',
-                    feedback: "You double-check collision, materials, and visibility settings, but everything looks fine. The mesh still doesn’t appear in the packaged build, so it’s probably not a simple rendering or visibility issue.",
+                    feedback: "You double-check collision, materials, and visibility settings, but everything looks fine. The mesh still doesn't appear in the packaged build, so it's probably not a simple rendering or visibility issue.",
                     next: 'step-1W'
                 }
             ]
@@ -28,7 +28,7 @@ window.SCENARIOS['AssetMissingInPackagedBuild'] = {
         'step-1W': {
             skill: 'asset_management',
             title: 'Dead End: Wrong Guess',
-            prompt: "You spent time tweaking materials, LODs, and visibility flags, but nothing fixed the missing mesh in the packaged build. Clearly this isn’t just a rendering flag problem.",
+            prompt: "You spent time tweaking materials, LODs, and visibility flags, but nothing fixed the missing mesh in the packaged build. Clearly this isn't just a rendering flag problem.",
             choices: [
                 {
                     text: "Action: [Revert and try again]",
@@ -52,7 +52,7 @@ window.SCENARIOS['AssetMissingInPackagedBuild'] = {
                 {
                     text: "Action: [Misguided Attempt]",
                     type: 'misguided',
-                    feedback: "You try replacing the mesh at runtime with another Soft Object Reference, or you rebuild the Blueprint, but the packaged build still can’t find the asset. The underlying problem—assets not being cooked—remains.",
+                    feedback: "You try replacing the mesh at runtime with another Soft Object Reference, or you rebuild the Blueprint, but the packaged build still can't find the asset. The underlying problem--assets not being cooked--remains.",
                     next: 'step-2M'
                 }
             ]
@@ -60,7 +60,7 @@ window.SCENARIOS['AssetMissingInPackagedBuild'] = {
         'step-2M': {
             skill: 'asset_management',
             title: 'Dead End: Misguided',
-            prompt: "Your changes didn’t help because the real issue is that the asset never gets cooked into the build. If it isn’t cooked, no amount of Blueprint logic will make it appear at runtime.",
+            prompt: "Your changes didn't help because the real issue is that the asset never gets cooked into the build. If it isn't cooked, no amount of Blueprint logic will make it appear at runtime.",
             choices: [
                 {
                     text: "Action: [Realize mistake]",
@@ -73,7 +73,7 @@ window.SCENARIOS['AssetMissingInPackagedBuild'] = {
         'step-3': {
             skill: 'asset_management',
             title: 'Step 3: The Fix',
-            prompt: "You now know the mesh is only ever referenced through a Soft Object Reference, so it’s not being cooked. How do you fix it so BP_PropContainer can load the mesh in a packaged build?",
+            prompt: "You now know the mesh is only ever referenced through a Soft Object Reference, so it's not being cooked. How do you fix it so BP_PropContainer can load the mesh in a packaged build?",
             choices: [
                 {
                     text: "Action: [Add directory to \"Additional Asset Directories to Cook\".]",
@@ -99,7 +99,7 @@ window.SCENARIOS['AssetMissingInPackagedBuild'] = {
         'conclusion': {
             skill: 'asset_management',
             title: 'Conclusion',
-            prompt: "Lesson: When loading meshes (or other assets) via Soft Object References or async loads, make sure those assets are cooked. If nothing hard-references them, add their folders to Project Settings > Packaging > \"Additional Asset Directories to Cook\" so they’re present in packaged builds.",
+            prompt: "Lesson: When loading meshes (or other assets) via Soft Object References or async loads, make sure those assets are cooked. If nothing hard-references them, add their folders to Project Settings > Packaging > \"Additional Asset Directories to Cook\" so they're present in packaged builds.",
             choices: []
         }
     }

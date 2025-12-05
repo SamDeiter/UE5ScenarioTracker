@@ -14,7 +14,7 @@ window.SCENARIOS['AnimNotifiesNotFiring'] = {
                 {
                     text: "Action: [Check Logs/View Modes]",
                     type: 'correct',
-                    feedback: "You enable animation debugging / notify visualization and log output. In the Animation Preview the notifies clearly fire, but in PIE you see no notify debug messages at all when the attack plays—suggesting the notifies aren’t being triggered in-game.",
+                    feedback: "You enable animation debugging / notify visualization and log output. In the Animation Preview the notifies clearly fire, but in PIE you see no notify debug messages at all when the attack plays--suggesting the notifies aren't being triggered in-game.",
                     next: 'step-2'
                 },
                 {
@@ -28,7 +28,7 @@ window.SCENARIOS['AnimNotifiesNotFiring'] = {
         'step-1W': {
             skill: 'asset_management',
             title: 'Dead End: Wrong Guess',
-            prompt: "You went down the VFX/audio rabbit hole—recompiling systems, swapping sounds—but nothing changed. The animation plays, yet no notifies fire in PIE.",
+            prompt: "You went down the VFX/audio rabbit hole--recompiling systems, swapping sounds--but nothing changed. The animation plays, yet no notifies fire in PIE.",
             choices: [
                 {
                     text: "Action: [Revert and try again]",
@@ -46,13 +46,13 @@ window.SCENARIOS['AnimNotifiesNotFiring'] = {
                 {
                     text: "Action: [Identify Root Cause]",
                     type: 'correct',
-                    feedback: "You discover that the notifies are configured as \"Montage Only\" (or their Notify Trigger Mode is set for a montage slot), but in-game the attack is being played as a raw sequence in the AnimGraph. Because it isn’t running through the montage system or the expected slot, those notifies never fire during PIE.",
+                    feedback: "You discover that the notifies are configured as \"Montage Only\" (or their Notify Trigger Mode is set for a montage slot), but in-game the attack is being played as a raw sequence in the AnimGraph. Because it isn't running through the montage system or the expected slot, those notifies never fire during PIE.",
                     next: 'step-3'
                 },
                 {
                     text: "Action: [Misguided Attempt]",
                     type: 'misguided',
-                    feedback: "You try re-adding the notifies, duplicating the animation, or reimporting the FX assets. The notifies still don’t fire in PIE because the way the animation is played (sequence vs montage / slot) and the Notify Trigger Mode are still mismatched.",
+                    feedback: "You try re-adding the notifies, duplicating the animation, or reimporting the FX assets. The notifies still don't fire in PIE because the way the animation is played (sequence vs montage / slot) and the Notify Trigger Mode are still mismatched.",
                     next: 'step-2M'
                 }
             ]
@@ -60,7 +60,7 @@ window.SCENARIOS['AnimNotifiesNotFiring'] = {
         'step-2M': {
             skill: 'asset_management',
             title: 'Dead End: Misguided',
-            prompt: "That didn’t work because the issue isn’t missing assets—it’s when and how the notifies are evaluated. If the animation is played as a sequence but the notifies are set up for montage-only triggering, they will never fire.",
+            prompt: "That didn't work because the issue isn't missing assets--it's when and how the notifies are evaluated. If the animation is played as a sequence but the notifies are set up for montage-only triggering, they will never fire.",
             choices: [
                 {
                     text: "Action: [Realize mistake]",

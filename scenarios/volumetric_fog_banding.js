@@ -9,7 +9,7 @@ window.SCENARIOS['FogBandingArtifacts'] = {
         'step-1': {
             skill: 'rendering',
             title: 'Step 1: The Symptom',
-            prompt: "Your volumetric fog doesn’t look smooth—it appears as distinct \"slices\" or bands in the distance, almost like horizontal layers stacked on top of each other. What do you check first?",
+            prompt: "Your volumetric fog doesn't look smooth--it appears as distinct \"slices\" or bands in the distance, almost like horizontal layers stacked on top of each other. What do you check first?",
             choices: [
                 {
                     text: "Action: [Check Logs/View Modes]",
@@ -28,12 +28,12 @@ window.SCENARIOS['FogBandingArtifacts'] = {
         'step-1W': {
             skill: 'rendering',
             title: 'Dead End: Wrong Guess',
-            prompt: "You went down the wrong path, assuming the banding came from bad fog color or density curves. Those changes didn’t remove the visible layers in the volumetric fog.",
+            prompt: "You went down the wrong path, assuming the banding came from bad fog color or density curves. Those changes didn't remove the visible layers in the volumetric fog.",
             choices: [
                 {
                     text: "Action: [Revert and try again]",
                     type: 'correct',
-                    feedback: "You revert the unnecessary color/density tweaks and refocus on how the volumetric fog grid is allocated—its view distance and resolution settings.",
+                    feedback: "You revert the unnecessary color/density tweaks and refocus on how the volumetric fog grid is allocated--its view distance and resolution settings.",
                     next: 'step-2'
                 }
             ]
@@ -52,7 +52,7 @@ window.SCENARIOS['FogBandingArtifacts'] = {
                 {
                     text: "Action: [Misguided Attempt]",
                     type: 'misguided',
-                    feedback: "You try increasing volumetric fog intensity and adding more lights, but the bands just become more obvious. Brightening the fog doesn’t change the underlying grid resolution or view distance mismatch.",
+                    feedback: "You try increasing volumetric fog intensity and adding more lights, but the bands just become more obvious. Brightening the fog doesn't change the underlying grid resolution or view distance mismatch.",
                     next: 'step-2M'
                 }
             ]
@@ -60,7 +60,7 @@ window.SCENARIOS['FogBandingArtifacts'] = {
         'step-2M': {
             skill: 'rendering',
             title: 'Dead End: Misguided',
-            prompt: "That didn’t work because you’re still using the same coarse volumetric grid over a huge view distance. The renderer is forced to slice the fog into big steps, which show up as visible layers.",
+            prompt: "That didn't work because you're still using the same coarse volumetric grid over a huge view distance. The renderer is forced to slice the fog into big steps, which show up as visible layers.",
             choices: [
                 {
                     text: "Action: [Realize mistake]",
@@ -78,7 +78,7 @@ window.SCENARIOS['FogBandingArtifacts'] = {
                 {
                     text: "Action: [Adjust r.VolumetricFog.GridPixelSize.]",
                     type: 'correct',
-                    feedback: "You tune the volumetric settings: either increase r.VolumetricFog.GridPixelSize to use fewer, larger pixels and bring the view distance back into a comfortable range, or reduce the Volumetric Fog View Distance so the existing grid resolution isn’t overextended. After balancing these settings, the fog volume is distributed more evenly and the obvious bands disappear.",
+                    feedback: "You tune the volumetric settings: either increase r.VolumetricFog.GridPixelSize to use fewer, larger pixels and bring the view distance back into a comfortable range, or reduce the Volumetric Fog View Distance so the existing grid resolution isn't overextended. After balancing these settings, the fog volume is distributed more evenly and the obvious bands disappear.",
                     next: 'step-4'
                 }
             ]
@@ -99,7 +99,7 @@ window.SCENARIOS['FogBandingArtifacts'] = {
         'conclusion': {
             skill: 'rendering',
             title: 'Conclusion',
-            prompt: "Lesson: If volumetric fog shows visible \"slices\" or bands, don’t just tweak color and density. Check the Volumetric Fog View Distance and r.VolumetricFog.GridPixelSize. Bringing the view distance down or adjusting the grid pixel size so the 3D fog grid isn’t stretched too far will eliminate banding and restore smooth fog.",
+            prompt: "Lesson: If volumetric fog shows visible \"slices\" or bands, don't just tweak color and density. Check the Volumetric Fog View Distance and r.VolumetricFog.GridPixelSize. Bringing the view distance down or adjusting the grid pixel size so the 3D fog grid isn't stretched too far will eliminate banding and restore smooth fog.",
             choices: []
         }
     }

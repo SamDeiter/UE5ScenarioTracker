@@ -20,7 +20,7 @@ window.SCENARIOS['MultiplayerDoorNotOpening'] = {
                 {
                     text: "Action: [Wrong Guess]",
                     type: 'wrong',
-                    feedback: "That didn’t help. The door still only opens for the server, and clients see no change.",
+                    feedback: "That didn't help. The door still only opens for the server, and clients see no change.",
                     next: 'step-1W'
                 }
             ]
@@ -28,7 +28,7 @@ window.SCENARIOS['MultiplayerDoorNotOpening'] = {
         'step-1W': {
             skill: 'blueprints',
             title: 'Dead End: Wrong Guess',
-            prompt: "You chased a non-network issue (like collision or mesh setup) and it didn’t fix the problem. You realize this is a replication issue and need to refocus.",
+            prompt: "You chased a non-network issue (like collision or mesh setup) and it didn't fix the problem. You realize this is a replication issue and need to refocus.",
             choices: [
                 {
                     text: "Action: [Revert and try again]",
@@ -41,18 +41,18 @@ window.SCENARIOS['MultiplayerDoorNotOpening'] = {
         'step-2': {
             skill: 'blueprints',
             title: 'Step 2: Investigation',
-            prompt: "You inspect the Blueprint. The door’s Open/Close logic runs from a trigger overlap, but clients don’t see it. What do you find?",
+            prompt: "You inspect the Blueprint. The door's Open/Close logic runs from a trigger overlap, but clients don't see it. What do you find?",
             choices: [
                 {
                     text: "Action: [Identify Root Cause]",
                     type: 'correct',
-                    feedback: "You find the issue: the IsOpen (DoorState) variable isn’t replicated, and the overlap event is not using a Run on Server RPC. The door only updates on the server.",
+                    feedback: "You find the issue: the IsOpen (DoorState) variable isn't replicated, and the overlap event is not using a Run on Server RPC. The door only updates on the server.",
                     next: 'step-3'
                 },
                 {
                     text: "Action: [Misguided Attempt]",
                     type: 'misguided',
-                    feedback: "You try to force the animation on the client only, but it still desyncs from the server and doesn’t fix the real replication problem.",
+                    feedback: "You try to force the animation on the client only, but it still desyncs from the server and doesn't fix the real replication problem.",
                     next: 'step-2M'
                 }
             ]
@@ -60,7 +60,7 @@ window.SCENARIOS['MultiplayerDoorNotOpening'] = {
         'step-2M': {
             skill: 'blueprints',
             title: 'Dead End: Misguided',
-            prompt: "That didn’t work because you’re only changing visuals locally. Without a replicated state, the server and clients disagree on whether the door is open.",
+            prompt: "That didn't work because you're only changing visuals locally. Without a replicated state, the server and clients disagree on whether the door is open.",
             choices: [
                 {
                     text: "Action: [Realize mistake]",
@@ -73,7 +73,7 @@ window.SCENARIOS['MultiplayerDoorNotOpening'] = {
         'step-3': {
             skill: 'blueprints',
             title: 'Step 3: The Fix',
-            prompt: "You know the cause: the door state isn’t replicated and the trigger isn’t calling the server. How do you fix it?",
+            prompt: "You know the cause: the door state isn't replicated and the trigger isn't calling the server. How do you fix it?",
             choices: [
                 {
                     text: "Action: [Use RepNotify variable for door state.]",

@@ -37,11 +37,35 @@
 
                 <!-- Debug Dropdown Menu (Visible only when Debug Mode is ON) -->
                 <div id="debug-dropdown"
-                    class="absolute top-16 right-8 w-64 p-4 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-50 space-y-3 hidden">
+                    class="absolute top-16 right-8 w-72 p-4 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-50 space-y-3 hidden">
                     <h4 class="text-lg font-semibold text-red-400 border-b border-gray-700 pb-2">Admin Tools</h4>
 
+                    <!-- Step Navigation -->
+                    <div class="space-y-2">
+                        <p class="text-xs text-gray-400 uppercase tracking-wide">Step Navigation</p>
+                        <div class="flex gap-2">
+                            <button id="debug-prev-step"
+                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                                ← Prev
+                            </button>
+                            <button id="debug-next-step"
+                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                                Next →
+                            </button>
+                        </div>
+                        <button id="debug-skip-to-end"
+                            class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all duration-200">
+                            Skip to Conclusion
+                        </button>
+                    </div>
+
+                    <!-- Current Step Display -->
+                    <div class="text-xs text-gray-400 bg-gray-700/50 p-2 rounded">
+                        <span>Current: </span><span id="debug-current-step" class="text-yellow-400">None</span>
+                    </div>
+
                     <!-- Hard Reset Button -->
-                    <div class="pt-3">
+                    <div class="pt-2 border-t border-gray-700">
                         <button id="hard-reset-btn"
                             class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all duration-200">
                             Clear Cache & Restart

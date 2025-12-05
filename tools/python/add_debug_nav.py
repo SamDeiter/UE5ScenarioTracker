@@ -1,127 +1,136 @@
 #!/usr/bin/env python3
 """
-Add debug navigation buttons to index.html
+Add debug navigation to the working app
 """
 import os
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(os.path.dirname(SCRIPT_DIR))
 INDEX_HTML = os.path.join(PROJECT_ROOT, 'index.html')
+GAME_JS = os.path.join(PROJECT_ROOT, 'game.js')  # Note: in root, not js/
 
-def main():
-    print("=" * 60)
-    print("Adding Debug Navigation to index.html")
-    print("=" * 60)
-    
-    # Read the file
+def add_to_html():
+    """Add debug navigation buttons to index.html"""
     with open(INDEX_HTML, 'r', encoding='utf-8') as f:
         content = f.read()
     
-    # Check if we already have debug navigation
     if 'debug-prev-step' in content:
-        print("✓ Debug navigation already exists in index.html")
+        print("✓ Debug nav already in HTML")
         return True
     
-    # Find and replace the debug dropdown section
-    # Look for the start marker
-    start_marker = '<!-- Debug Dropdown Menu (Visible only when Debug Mode is ON) -->'
-    end_marker = '</div>\n            </div>\n        </div>'  # Closes debug-dropdown, header-controls, header
-    
-    start_idx = content.find(start_marker)
-    if start_idx == -1:
-        print("❌ Could not find debug dropdown start marker")
-        return False
-    
-    # Find the end of the dropdown div (after hard-reset-btn's closing div)
-    # Search for the closing pattern after the start
-    search_start = start_idx + len(start_marker)
-    
-    # Find the closing </div> for debug-dropdown
-    # Count for: debug-dropdown div, then pt-3 div, then button, then /div, then /div
-    dropdown_end = content.find('</div>\n            </div>\n        </div>', search_start)
-    if dropdown_end == -1:
-        # Try with \r\n
-        dropdown_end = content.find('</div>\r\n            </div>\r\n        </div>', search_start)
-    
-    if dropdown_end == -1:
-        print("❌ Could not find debug dropdown end marker")
-        # Let's try a different approach - find the div closure pattern
-        print("Trying alternative approach...")
-    
-    # Alternative: just replace the specific old pattern with new
     old_dropdown = '''                <!-- Debug Dropdown Menu (Visible only when Debug Mode is ON) -->
-                <div id="debug-dropdown"
-                    class="absolute top-16 right-8 w-64 p-4 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-50 space-y-3 hidden">
+                <div id="debug-dropdown" class="absolute top-16 right-8 w-64 p-4 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-50 space-y-3 hidden">
                     <h4 class="text-lg font-semibold text-red-400 border-b border-gray-700 pb-2">Admin Tools</h4>
-
-                    <!-- Hard Reset Button -->
+                    
+                    <!-- 1. Hard Reset (ONLY KEEPING THIS) -->
                     <div class="pt-3">
-                        <button id="hard-reset-btn"
-                            class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all duration-200">
+                        <button id="hard-reset-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all duration-200">
                             Clear Cache & Restart
                         </button>
                     </div>
                 </div>'''
     
     new_dropdown = '''                <!-- Debug Dropdown Menu (Visible only when Debug Mode is ON) -->
-                <div id="debug-dropdown"
-                    class="absolute top-16 right-8 w-72 p-4 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-50 space-y-3 hidden">
+                <div id="debug-dropdown" class="absolute top-16 right-8 w-72 p-4 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-50 space-y-3 hidden">
                     <h4 class="text-lg font-semibold text-red-400 border-b border-gray-700 pb-2">Admin Tools</h4>
-
+                    
                     <!-- Step Navigation -->
                     <div class="space-y-2">
                         <p class="text-xs text-gray-400 uppercase tracking-wide">Step Navigation</p>
                         <div class="flex gap-2">
-                            <button id="debug-prev-step"
-                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all">
-                                ← Prev
-                            </button>
-                            <button id="debug-next-step"
-                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all">
-                                Next →
-                            </button>
+                            <button id="debug-prev-step" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 rounded-lg text-sm">← Prev</button>
+                            <button id="debug-next-step" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 rounded-lg text-sm">Next →</button>
                         </div>
-                        <button id="debug-skip-to-end"
-                            class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all">
-                            Skip to Conclusion
-                        </button>
+                        <button id="debug-skip-to-end" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-1.5 rounded-lg text-sm">Skip to Conclusion</button>
+                        <div class="text-xs text-gray-400 bg-gray-700/50 p-2 rounded">Current: <span id="debug-current-step" class="text-yellow-400">None</span></div>
                     </div>
-
-                    <!-- Current Step Display -->
-                    <div class="text-xs text-gray-400 bg-gray-700/50 p-2 rounded">
-                        <span>Current: </span><span id="debug-current-step" class="text-yellow-400">None</span>
-                    </div>
-
-                    <!-- Hard Reset Button -->
+                    
+                    <!-- Hard Reset -->
                     <div class="pt-2 border-t border-gray-700">
-                        <button id="hard-reset-btn"
-                            class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all">
+                        <button id="hard-reset-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all duration-200">
                             Clear Cache & Restart
                         </button>
                     </div>
                 </div>'''
     
-    # Normalize line endings for comparison
-    content_normalized = content.replace('\r\n', '\n')
-    old_dropdown_normalized = old_dropdown.replace('\r\n', '\n')
+    # Normalize for comparison
+    content_n = content.replace('\r\n', '\n')
+    old_n = old_dropdown.replace('\r\n', '\n')
     
-    if old_dropdown_normalized in content_normalized:
-        new_content = content_normalized.replace(old_dropdown_normalized, new_dropdown)
+    if old_n in content_n:
+        content_n = content_n.replace(old_n, new_dropdown)
         with open(INDEX_HTML, 'w', encoding='utf-8') as f:
-            f.write(new_content)
-        print("✅ Added debug navigation buttons to index.html")
+            f.write(content_n)
+        print("✅ Added debug nav to HTML")
         return True
     else:
-        print("❌ Could not match the exact dropdown pattern")
-        print("Attempting line-by-line search...")
-        
-        # Debug: print what we're looking for vs what's there
-        lines = content.split('\n')
-        for i, line in enumerate(lines):
-            if 'debug-dropdown' in line:
-                print(f"Line {i}: {repr(line[:80])}")
-        
+        print("❌ Could not find dropdown in HTML")
         return False
+
+def add_to_js():
+    """Add debug navigation functions to game.js"""
+    with open(GAME_JS, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    if 'debugNavigateStep' in content:
+        print("✓ Debug nav already in JS")
+        return True
+    
+    # Find the end of DOMContentLoaded and add functions before it
+    marker = "});  // End DOMContentLoaded"
+    
+    nav_code = '''
+    // --- DEBUG NAVIGATION ---
+    document.getElementById('debug-prev-step')?.addEventListener('click', () => debugNav('prev'));
+    document.getElementById('debug-next-step')?.addEventListener('click', () => debugNav('next'));
+    document.getElementById('debug-skip-to-end')?.addEventListener('click', () => debugNav('end'));
+
+    function debugNav(dir) {
+        if (!currentScenarioId) return;
+        const scenario = window.SCENARIOS[currentScenarioId];
+        if (!scenario?.steps) return;
+        const keys = Object.keys(scenario.steps);
+        const idx = keys.indexOf(currentStepId);
+        let newStep = currentStepId;
+        if (dir === 'prev' && idx > 0) newStep = keys[idx - 1];
+        if (dir === 'next' && idx < keys.length - 1) newStep = keys[idx + 1];
+        if (dir === 'end') newStep = scenario.steps['conclusion'] ? 'conclusion' : keys[keys.length - 1];
+        if (newStep !== currentStepId) {
+            currentStepId = newStep;
+            renderStep(currentScenarioId, currentStepId);
+            const el = document.getElementById('debug-current-step');
+            if (el) el.textContent = currentStepId;
+            console.log('🔧 Debug nav:', currentStepId);
+        }
+    }
+
+'''
+    
+    if marker in content:
+        content = content.replace(marker, nav_code + marker)
+        with open(GAME_JS, 'w', encoding='utf-8') as f:
+            f.write(content)
+        print("✅ Added debug nav to JS")
+        return True
+    else:
+        # Try alternate marker
+        alt_marker = "}); // End DOMContentLoaded"
+        if alt_marker in content:
+            content = content.replace(alt_marker, nav_code + alt_marker)
+            with open(GAME_JS, 'w', encoding='utf-8') as f:
+                f.write(content)
+            print("✅ Added debug nav to JS (alt)")
+            return True
+        print("❌ Could not find end marker in JS")
+        return False
+
+def main():
+    print("=" * 50)
+    print("Adding Debug Navigation")
+    print("=" * 50)
+    add_to_html()
+    add_to_js()
+    print("Done!")
 
 if __name__ == '__main__':
     main()

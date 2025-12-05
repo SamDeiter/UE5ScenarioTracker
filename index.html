@@ -37,13 +37,37 @@
 
                 <!-- Debug Dropdown Menu (Visible only when Debug Mode is ON) -->
                 <div id="debug-dropdown"
-                    class="absolute top-16 right-8 w-64 p-4 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-50 space-y-3 hidden">
+                    class="absolute top-16 right-8 w-72 p-4 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-50 space-y-3 hidden">
                     <h4 class="text-lg font-semibold text-red-400 border-b border-gray-700 pb-2">Admin Tools</h4>
 
+                    <!-- Step Navigation -->
+                    <div class="space-y-2">
+                        <p class="text-xs text-gray-400 uppercase tracking-wide">Step Navigation</p>
+                        <div class="flex gap-2">
+                            <button id="debug-prev-step"
+                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all">
+                                ← Prev
+                            </button>
+                            <button id="debug-next-step"
+                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all">
+                                Next →
+                            </button>
+                        </div>
+                        <button id="debug-skip-to-end"
+                            class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all">
+                            Skip to Conclusion
+                        </button>
+                    </div>
+
+                    <!-- Current Step Display -->
+                    <div class="text-xs text-gray-400 bg-gray-700/50 p-2 rounded">
+                        <span>Current: </span><span id="debug-current-step" class="text-yellow-400">None</span>
+                    </div>
+
                     <!-- Hard Reset Button -->
-                    <div class="pt-3">
+                    <div class="pt-2 border-t border-gray-700">
                         <button id="hard-reset-btn"
-                            class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all duration-200">
+                            class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all">
                             Clear Cache & Restart
                         </button>
                     </div>
@@ -144,45 +168,67 @@
     <script src="js/scorm12-helper.js" defer></script>
     <!-- Load Scenario Data FIRST (using defer) -->
     <script>window.SCENARIOS = window.SCENARIOS || {};</script>
-    <script src="scenarios/00_manifest.js?v=1764954253" defer></script>
-    <script src="scenarios/assetmanagement_advanced.js?v=1764954253" defer></script>
-    <script src="scenarios/assetmanagement_beginner.js?v=1764954253" defer></script>
-    <script src="scenarios/assetmanagement_intermediate.js?v=1764954253" defer></script>
-    <script src="scenarios/audio_concurrency.js?v=1764954253" defer></script>
-    <script src="scenarios/blueprint_infinite_loop.js?v=1764954253" defer></script>
-    <script src="scenarios/blueprintslogic_advanced.js?v=1764954253" defer></script>
-    <script src="scenarios/blueprintslogic_beginner.js?v=1764954253" defer></script>
-    <script src="scenarios/blueprintslogic_intermediate.js?v=1764954253" defer></script>
-    <script src="scenarios/dash.js?v=1764954253" defer></script>
-    <script src="scenarios/directional_light.js?v=1764954253" defer></script>
-    <script src="scenarios/generator.js?v=1764954253" defer></script>
-    <script src="scenarios/golem.js?v=1764954253" defer></script>
-    <script src="scenarios/inventory.js?v=1764954253" defer></script>
-    <script src="scenarios/lightingrendering_advanced.js?v=1764954253" defer></script>
-    <script src="scenarios/lightingrendering_beginner.js?v=1764954253" defer></script>
-    <script src="scenarios/lightingrendering_intermediate.js?v=1764954253" defer></script>
-    <script src="scenarios/lumen_gi.js?v=1764954253" defer></script>
-    <script src="scenarios/lumen_gi_failure.js?v=1764954253" defer></script>
-    <script src="scenarios/lumen_mesh_distance.js?v=1764954253" defer></script>
-    <script src="scenarios/materialsshaders_advanced.js?v=1764954253" defer></script>
-    <script src="scenarios/materialsshaders_beginner.js?v=1764954253" defer></script>
-    <script src="scenarios/materialsshaders_intermediate.js?v=1764954253" defer></script>
-    <script src="scenarios/nanite_wpo.js?v=1764954253" defer></script>
-    <script src="scenarios/nanite_wpo_failure.js?v=1764954253" defer></script>
-    <script src="scenarios/oversharpened_scene.js?v=1764954253" defer></script>
-    <script src="scenarios/physicscollisions_advanced.js?v=1764954253" defer></script>
-    <script src="scenarios/physicscollisions_beginner.js?v=1764954253" defer></script>
-    <script src="scenarios/physicscollisions_intermediate.js?v=1764954253" defer></script>
-    <script src="scenarios/sequencercinematics_advanced.js?v=1764954253" defer></script>
-    <script src="scenarios/sequencercinematics_beginner.js?v=1764954253" defer></script>
-    <script src="scenarios/sequencercinematics_intermediate.js?v=1764954253" defer></script>
-    <script src="scenarios/terminal.js?v=1764954253" defer></script>
-    <script src="scenarios/volumetric_fog_banding.js?v=1764954253" defer></script>
-    <script src="scenarios/volumetric_fog_material.js?v=1764954253" defer></script>
-    <script src="scenarios/world_partition.js?v=1764954253" defer></script>
-    <script src="scenarios/worldpartition_advanced.js?v=1764954253" defer></script>
-    <script src="scenarios/worldpartition_beginner.js?v=1764954253" defer></script>
-    <script src="scenarios/worldpartition_intermediate.js?v=1764954253" defer></script>
+    <script src="scenarios/00_manifest.js?v=1764964819" defer></script>
+    <script src="scenarios/BlackMaterialDueToEmissiveMiswiring.js?v=1764964819" defer></script>
+    <script src="scenarios/BlackMetallicObject.js?v=1764964819" defer></script>
+    <script src="scenarios/ComponentMobilityBlock.js?v=1764964819" defer></script>
+    <script src="scenarios/ConstraintDoorFail.js?v=1764964819" defer></script>
+    <script src="scenarios/DanglingAssetRedirectors.js?v=1764964819" defer></script>
+    <script src="scenarios/DataLayerStreamingOverride.js?v=1764964819" defer></script>
+    <script src="scenarios/DecalTextureAlphaMaskFailure.js?v=1764964819" defer></script>
+    <script src="scenarios/DestroyActorStopsExecutionFlow.js?v=1764964819" defer></script>
+    <script src="scenarios/EmissiveGILightingFix.js?v=1764964819" defer></script>
+    <script src="scenarios/ForcedDataLayerUnload.js?v=1764964819" defer></script>
+    <script src="scenarios/LockedCinematicCleanup.js?v=1764964819" defer></script>
+    <script src="scenarios/MaterialParameterAndAnimJitter.js?v=1764964819" defer></script>
+    <script src="scenarios/MismatchedSkeletonReference.js?v=1764964819" defer></script>
+    <script src="scenarios/NaniteVSMInstabilityOnMovement.js?v=1764964819" defer></script>
+    <script src="scenarios/PhysicsLeverFailure.js?v=1764964819" defer></script>
+    <script src="scenarios/RedirectorAndBulkLoadConflict.js?v=1764964819" defer></script>
+    <script src="scenarios/SecurityDoorLogicGap.js?v=1764964819" defer></script>
+    <script src="scenarios/SequencerLightRestoreStateIssue.js?v=1764964819" defer></script>
+    <script src="scenarios/VaultSequenceLockup.js?v=1764964819" defer></script>
+    <script src="scenarios/VolumetricShadowingPerformance.js?v=1764964819" defer></script>
+    <script src="scenarios/WorldPartitionDeepDive.js?v=1764964819" defer></script>
+    <script src="scenarios/assetmanagement_advanced.js?v=1764964819" defer></script>
+    <script src="scenarios/assetmanagement_beginner.js?v=1764964819" defer></script>
+    <script src="scenarios/assetmanagement_intermediate.js?v=1764964819" defer></script>
+    <script src="scenarios/audio_concurrency.js?v=1764964819" defer></script>
+    <script src="scenarios/blueprint_infinite_loop.js?v=1764964819" defer></script>
+    <script src="scenarios/blueprintslogic_advanced.js?v=1764964819" defer></script>
+    <script src="scenarios/blueprintslogic_beginner.js?v=1764964819" defer></script>
+    <script src="scenarios/blueprintslogic_intermediate.js?v=1764964819" defer></script>
+    <script src="scenarios/dash.js?v=1764964819" defer></script>
+    <script src="scenarios/directional_light.js?v=1764964819" defer></script>
+    <script src="scenarios/generator.js?v=1764964819" defer></script>
+    <script src="scenarios/golem.js?v=1764964819" defer></script>
+    <script src="scenarios/inventory.js?v=1764964819" defer></script>
+    <script src="scenarios/lightingrendering_advanced.js?v=1764964819" defer></script>
+    <script src="scenarios/lightingrendering_beginner.js?v=1764964819" defer></script>
+    <script src="scenarios/lightingrendering_intermediate.js?v=1764964819" defer></script>
+    <script src="scenarios/lumen_gi.js?v=1764964819" defer></script>
+    <script src="scenarios/lumen_gi_failure.js?v=1764964819" defer></script>
+    <script src="scenarios/lumen_mesh_distance.js?v=1764964819" defer></script>
+    <script src="scenarios/materialsshaders_advanced.js?v=1764964819" defer></script>
+    <script src="scenarios/materialsshaders_beginner.js?v=1764964819" defer></script>
+    <script src="scenarios/materialsshaders_intermediate.js?v=1764964819" defer></script>
+    <script src="scenarios/nanite_wpo.js?v=1764964819" defer></script>
+    <script src="scenarios/nanite_wpo_failure.js?v=1764964819" defer></script>
+    <script src="scenarios/oversharpened_scene.js?v=1764964819" defer></script>
+    <script src="scenarios/physicscollisions_advanced.js?v=1764964819" defer></script>
+    <script src="scenarios/physicscollisions_beginner.js?v=1764964819" defer></script>
+    <script src="scenarios/physicscollisions_intermediate.js?v=1764964819" defer></script>
+    <script src="scenarios/sequencercinematics_advanced.js?v=1764964819" defer></script>
+    <script src="scenarios/sequencercinematics_beginner.js?v=1764964819" defer></script>
+    <script src="scenarios/sequencercinematics_intermediate.js?v=1764964819" defer></script>
+    <script src="scenarios/terminal.js?v=1764964819" defer></script>
+    <script src="scenarios/volumetric_fog_banding.js?v=1764964819" defer></script>
+    <script src="scenarios/volumetric_fog_material.js?v=1764964819" defer></script>
+    <script src="scenarios/world_partition.js?v=1764964819" defer></script>
+    <script src="scenarios/worldpartition_advanced.js?v=1764964819" defer></script>
+    <script src="scenarios/worldpartition_beginner.js?v=1764964819" defer></script>
+    <script src="scenarios/worldpartition_intermediate.js?v=1764964819" defer></script>
+
     <!-- Load Game Logic SECOND (using defer, ensuring it runs after questions.js) -->
     <script src="js/game.js" defer></script>
 </body>

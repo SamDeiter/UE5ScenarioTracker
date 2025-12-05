@@ -559,6 +559,88 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.body.removeChild(modal);
                 });
             });
+        
+        // --- DEBUG NAVIGATION BUTTONS ---
+        const debugPrevStep = document.getElementById('debug-prev-step');
+        const debugNextStep = document.getElementById('debug-next-step');
+        const debugSkipToEnd = document.getElementById('debug-skip-to-end');
+
+        if (debugPrevStep) {
+            debugPrevStep.addEventListener('click', () => {
+                debugNavigateStep('prev');
+            });
+        }
+
+        if (debugNextStep) {
+            debugNextStep.addEventListener('click', () => {
+                debugNavigateStep('next');
+            });
+        }
+
+        if (debugSkipToEnd) {
+            debugSkipToEnd.addEventListener('click', () => {
+                debugNavigateStep('end');
+            });
+        }
+    }
+
+    /**
+     * Debug function to navigate between steps in the current scenario.
+     * @param {string} direction - 'prev', 'next', or 'end'
+     */
+    function debugNavigateStep(direction) {
+        if (!currentScenarioId) {
+            console.warn("No scenario selected");
+            return;
+        }
+
+        const scenario = window.SCENARIOS[currentScenarioId];
+        if (!scenario || !scenario.steps) {
+            console.warn("Invalid scenario");
+            return;
+        }
+
+        const stepKeys = Object.keys(scenario.steps);
+        const currentIndex = stepKeys.indexOf(currentStepId);
+
+        let newStepId = currentStepId;
+
+        if (direction === 'prev') {
+            if (currentIndex > 0) {
+                newStepId = stepKeys[currentIndex - 1];
+            }
+        } else if (direction === 'next') {
+            if (currentIndex < stepKeys.length - 1) {
+                newStepId = stepKeys[currentIndex + 1];
+            }
+        } else if (direction === 'end') {
+            // Find conclusion or last step
+            if (scenario.steps['conclusion']) {
+                newStepId = 'conclusion';
+            } else {
+                newStepId = stepKeys[stepKeys.length - 1];
+            }
+        }
+
+        if (newStepId !== currentStepId) {
+            currentStepId = newStepId;
+            renderStep(currentScenarioId, currentStepId);
+            updateDebugStepDisplay();
+            console.log(`🔧 Debug navigated to: ${currentStepId}`);
+        }
+    }
+
+    /**
+     * Updates the debug panel's current step display.
+     */
+    function updateDebugStepDisplay() {
+        const debugCurrentStep = document.getElementById('debug-current-step');
+        if (debugCurrentStep) {
+            if (currentScenarioId && currentStepId) {
+                debugCurrentStep.textContent = currentStepId;
+            } else {
+                debugCurrentStep.textContent = 'None';
+            }
         }
     }
 

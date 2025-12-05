@@ -399,14 +399,111 @@ JSON:"""
         
         return scenario
     
-    def generate_full_scenario(self, raw_scenario):
+    def generate_full_scenario(self, raw_scenario, single_pass=True):
         """
-        Complete two-pass generation
+        Generate complete scenario.
+        If single_pass=True (default), uses ONE API call for faster generation.
+        If single_pass=False, uses legacy two-pass system.
         Returns: Final scenario dict ready for .js conversion
         """
         print(f"\n🚀 Generating scenario: {raw_scenario['scenario']['title']}")
         print("=" * 80)
         
+        if single_pass:
+            return self._generate_single_pass(raw_scenario)
+        else:
+            return self._generate_two_pass(raw_scenario)
+    
+    def _generate_single_pass(self, raw_scenario):
+        """
+        SINGLE PASS: Generate complete scenario in one API call.
+        Faster and more reliable than two-pass.
+        """
+        print("\n📝 SINGLE PASS: Generating complete scenario...")
+        category = raw_scenario['scenario']['focus_area']
+        
+        prompt = f"""Convert this UE5 debugging scenario into a COMPLETE branching assessment.
+
+SCENARIO:
+Title: {raw_scenario['scenario']['title']}
+Problem: {raw_scenario['scenario']['problem_description']}
+Category: {category}
+Estimated Hours: {raw_scenario['scenario']['estimated_hours']}
+
+CORRECT STEPS ({len(raw_scenario['scenario']['correct_solution_steps'])} steps):
+{self._format_steps(raw_scenario['scenario']['correct_solution_steps'])}
+
+WRONG STEPS ({len(raw_scenario['scenario']['common_wrong_steps'])} steps):
+{self._format_wrong_steps(raw_scenario['scenario']['common_wrong_steps'])}
+
+CRITICAL RULES:
+✅ Console: stat unit, stat gpu, r.*, showflag.*
+✅ Editor: Details panel, Profiler, World Settings
+❌ NO external apps: Task Manager, RenderDoc, PIX
+
+THIS IS AN ASSESSMENT - prompts show SYMPTOMS only, not solutions!
+
+Generate COMPLETE JSON scenario with 20-30 steps:
+{{
+  "meta": {{
+    "title": "{raw_scenario['scenario']['title']}",
+    "description": "{raw_scenario['scenario']['problem_description'][:200]}",
+    "estimateHours": {raw_scenario['scenario']['estimated_hours']},
+    "category": "{category}"
+  }},
+  "start": "step-1",
+  "steps": {{
+    "step-1": {{
+      "skill": "{self._map_category_to_skill(category)}",
+      "title": "Step 1",
+      "prompt": "<p>Symptoms description here.</p><p><strong>What do you do next?</strong></p>",
+      "choices": [
+        {{"text": "<p>Correct action</p>", "type": "correct", "feedback": "<p>Optimal Time: +Xhrs. Why correct.</p>", "next": "step-2"}},
+        {{"text": "<p>Wrong action 1</p>", "type": "obvious", "feedback": "<p>Extended Time: +Xhrs. Consequence.</p>", "next": "step-1"}},
+        {{"text": "<p>Wrong action 2</p>", "type": "plausible", "feedback": "<p>Extended Time: +Xhrs. Consequence.</p>", "next": "step-1"}},
+        {{"text": "<p>Wrong action 3</p>", "type": "subtle", "feedback": "<p>Extended Time: +Xhrs. Consequence.</p>", "next": "step-1"}}
+      ]
+    }},
+    "conclusion": {{
+      "skill": "complete",
+      "title": "Scenario Complete",
+      "prompt": "<p>Congratulations! You have successfully completed this debugging scenario.</p>",
+      "choices": []
+    }}
+  }}
+}}
+
+RULES:
+- 20-30 main steps, each "next" points to next step or "conclusion"
+- 4 choices per step: 1 correct + 3 wrong (obvious, plausible, subtle)
+- Wrong choices loop back to same step or add small detour
+- Prompts: symptoms only, <150 chars
+- Return ONLY valid JSON, no markdown
+
+JSON:"""
+
+        response = self.model.generate_content(prompt)
+        self.log_tokens(prompt, response.text)
+        
+        scenario = self._extract_json(response.text)
+        
+        # Validate and save checkpoint
+        checkpoint = Path(__file__).parent.parent.parent / 'temp' / f"{raw_scenario['scenario']['scenario_id']}_complete.json"
+        checkpoint.parent.mkdir(exist_ok=True)
+        with open(checkpoint, 'w', encoding='utf-8') as f:
+            json.dump(scenario, f, indent=2)
+        print(f"💾 Checkpoint saved: {checkpoint}")
+        
+        step_count = len(scenario.get('steps', {})) - 1  # Exclude conclusion
+        print(f"✅ Generated {step_count} steps + conclusion")
+        
+        return scenario
+    
+    def _generate_two_pass(self, raw_scenario):
+        """
+        LEGACY: Two-pass generation (outline first, then details).
+        Kept for compatibility but single_pass is preferred.
+        """
         # Pass 1: Outline
         print("\n📝 PASS 1: Generating outline...")
         outline_checkpoint = Path(__file__).parent.parent.parent / 'temp' / f"{raw_scenario['scenario']['scenario_id']}_outline.json"

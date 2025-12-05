@@ -8,11 +8,13 @@ const API_BASE = 'http://localhost:5000/api';
 let scenarios = [];
 let selectedScenarios = new Set();
 let isGenerating = false;
+let selectedModel = null;
 
 // DOM Elements
 const elements = {
     apiStatus: document.getElementById('api-status'),
     refreshBtn: document.getElementById('refresh-btn'),
+    modelSelect: document.getElementById('model-select'),
     scenarioList: document.getElementById('scenario-list'),
     scenarioCount: document.getElementById('scenario-count'),
     generateSelectedBtn: document.getElementById('generate-selected-btn'),
@@ -41,6 +43,34 @@ function log(message, type = 'info') {
     entry.className = `log-entry ${type}`;
     entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
     elements.logContent.insertBefore(entry, elements.logContent.firstChild);
+}
+
+
+// Poll generation status
+let statusInterval = null;
+
+function startStatusPolling() {
+    statusInterval = setInterval(async () => {
+        try {
+            const status = await fetchApi('/generation-status', {}, 5000);
+            if (status.current_scenario) {
+                elements.currentScenario.textContent = status.current_scenario;
+            }
+            elements.tokensUsed.textContent = status.tokens_used.toLocaleString();
+            elements.estimatedCost.textContent = '$' + (status.tokens_used * 0.0000002).toFixed(4);
+            elements.progressCount.textContent = status.completed + '/' + status.total;
+            if (status.total > 0) {
+                elements.progressFill.style.width = (status.completed / status.total * 100) + '%';
+            }
+        } catch(e) {}
+    }, 1000);
+}
+
+function stopStatusPolling() {
+    if (statusInterval) {
+        clearInterval(statusInterval);
+        statusInterval = null;
+    }
 }
 
 // API Calls
@@ -72,6 +102,27 @@ async function checkApiStatus() {
     } catch {
         elements.apiStatus.textContent = '❌ Server offline';
         elements.apiStatus.className = 'status-badge error';
+    }
+}
+
+
+// Load models from API
+async function loadModels() {
+    try {
+        const data = await fetchApi('/models', {}, 15000);
+        if (data.models && data.models.length > 0) {
+            elements.modelSelect.innerHTML = '';
+            data.models.forEach((model, i) => {
+                const option = document.createElement('option');
+                option.value = model.id;
+                option.textContent = model.name;
+                elements.modelSelect.appendChild(option);
+            });
+            selectedModel = data.models[0].id;
+            log('Loaded ' + data.models.length + ' models', 'success');
+        }
+    } catch (e) {
+        log('Failed to load models: ' + e.message, 'error');
     }
 }
 
@@ -125,6 +176,10 @@ function getCategoryClass(category) {
     if (category.includes('Material')) return 'materials';
     if (category.includes('World')) return 'world';
     if (category.includes('Physics')) return 'physics';
+    if (category.includes('Asset')) return 'asset';
+    if (category.includes('Sequencer') || category.includes('Cinematic')) return 'sequencer';
+    if (category.includes('Audio')) return 'audio';
+    if (category.includes('Performance')) return 'performance';
     return '';
 }
 
@@ -224,6 +279,7 @@ async function generateScenarios(scenarioIds) {
 // Event Listeners
 elements.refreshBtn.addEventListener('click', () => {
     checkApiStatus();
+    loadModels();
     loadScenarios();
 });
 
@@ -248,5 +304,6 @@ elements.clearLogBtn.addEventListener('click', () => {
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     checkApiStatus();
+    loadModels();
     loadScenarios();
 });

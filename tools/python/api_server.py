@@ -169,6 +169,106 @@ def get_status():
     })
 
 
+@app.route('/api/models', methods=['GET'])
+def list_models():
+    """List available Gemini models - filtered to only text generation models"""
+    import requests
+    try:
+        api_key = get_gemini_key()
+        url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
+        resp = requests.get(url, timeout=10)
+        if resp.status_code == 200:
+            data = resp.json()
+            models = []
+            
+            # Only include the best models for JSON text generation
+            # Keep only: stable Flash and Pro models (no preview, experimental, TTS, lite, image)
+            excluded_keywords = ['embedding', 'aqa', 'imagen', 'veo', 'learnlm', 'thinking', 
+                                'tts', 'image', 'lite', 'banana', 'experimental', 'preview', '001']
+            preferred_order = ['2.5-flash', '2.5-pro', '2.0-flash', '1.5-pro', '1.5-flash']
+            
+            for m in data.get('models', []):
+                name = m['name'].replace('models/', '')
+                
+                # Must support generateContent
+                if 'generateContent' not in m.get('supportedGenerationMethods', []):
+                    continue
+                
+                # Skip excluded models
+                if any(kw in name.lower() for kw in excluded_keywords):
+                    continue
+                
+                # Only include gemini models (flash/pro)
+                if not name.startswith('gemini'):
+                    continue
+                    
+                models.append({
+                    'id': name,
+                    'name': m.get('displayName', name),
+                    'description': m.get('description', '')[:100]
+                })
+            
+            # Sort by preferred order
+            def sort_key(model):
+                for i, pref in enumerate(preferred_order):
+                    if pref in model['id']:
+                        return i
+                return 99
+            
+            models.sort(key=sort_key)
+            
+            return jsonify({'models': models})
+        return jsonify({'error': 'Failed to fetch models'}), 500
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/test-model', methods=['POST'])
+def test_model():
+    """Test if a model works with a simple prompt"""
+    import google.generativeai as genai
+    
+    data = request.json
+    model_id = data.get('model_id', 'gemini-2.0-flash')
+    
+    try:
+        api_key = get_gemini_key()
+        genai.configure(api_key=api_key)
+        
+        model = genai.GenerativeModel(model_id)
+        result = model.generate_content("Say 'OK' if you can respond.")
+        
+        return jsonify({
+            'success': True,
+            'model': model_id,
+            'response': result.text[:50],
+            'message': f'✅ Model {model_id} is working!'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'model': model_id,
+            'error': str(e),
+            'message': f'❌ Model {model_id} failed: {str(e)[:100]}'
+        }), 400
+
+
+
+# Global generation status
+generation_status = {
+    'is_generating': False,
+    'current_scenario': None,
+    'completed': 0,
+    'total': 0,
+    'tokens_used': 0
+}
+
+@app.route('/api/generation-status', methods=['GET'])
+def get_generation_status():
+    """Get current generation status for polling"""
+    return jsonify(generation_status)
+
+
 if __name__ == '__main__':
     print("🚀 Starting Scenario Generator API Server...")
     print(f"📂 Raw data: {RAW_DATA_PATH}")

@@ -2,943 +2,1035 @@
   "steps": [
     {
       "step_id": "step-1",
-      "prompt": "The metallic statue appears uniformly pitch black in the viewport. What's your first step to investigate?",
-      "correct_text": "Click on the black metallic statue directly in the viewport to select it.",
-      "correct_feedback": "Optimal Time: +0.015hrs. Selecting the object is crucial to access its properties.",
+      "prompt": "A highly metallic statue appears uniformly pitch black in the viewport. Other objects are fine. What's your first step to investigate this specific object?",
+      "correct_text": "Select the problematic Static Mesh Actor (the statue) in the viewport or World Outliner.",
+      "correct_feedback": "Optimal Time: +0.03hrs. Focusing on the specific object that exhibits the issue is the most direct and efficient starting point.",
       "wrong_choices": [
         {
-          "text": "Open the Character Blueprint for the statue and check its animation curves.",
-          "feedback": "Extended Time: +0.15hrs. The statue is a static mesh, not a character, and animation curves are unrelated to its rendering properties.",
-          "type": "obvious"
-        },
-        {
-          "text": "In the World Outliner, search for 'light' to find nearby light sources.",
-          "feedback": "Extended Time: +0.1hrs. While lighting is relevant, the immediate problem is the statue itself. Focusing on light sources before selecting the object is premature.",
+          "text": "Open the Project Settings (Edit -> Project Settings) to check global rendering options.",
+          "feedback": "Extended Time: +0.05hrs. While global settings are important, starting with the specific problematic actor is more efficient when only one object is affected. This leads to premature investigation of global settings.",
           "type": "plausible"
         },
         {
-          "text": "Right-click on the statue in the viewport and choose 'Edit Material Instance'.",
-          "feedback": "Extended Time: +0.05hrs. This shortcut requires the object to be selected first for the material instance to be easily accessible and contextually correct.",
+          "text": "Adjust the intensity of the Directional Light in the scene.",
+          "feedback": "Extended Time: +0.2hrs. Adjusting primary light intensity is unlikely to resolve a specific object's lack of *reflections* when other objects are correctly lit. This misdiagnoses the core problem.",
+          "type": "obvious"
+        },
+        {
+          "text": "Select the static mesh asset in the Content Browser.",
+          "feedback": "Extended Time: +0.05hrs. Selecting the asset will show its default properties, but you need to inspect the specific actor instance in the scene to check its overrides and component settings.",
           "type": "subtle"
+        }
+      ]
+    },
+    {
+      "step_id": "step-1W1",
+      "prompt": "The statue is black, and other objects are fine. You suspect the primary light source is too dim to produce reflections, rather than an issue with reflection setup. What's your first action?",
+      "correct_text": "Select the Directional Light actor in the World Outliner and increase its 'Intensity' property in the Details panel.",
+      "correct_feedback": "Extended Time: +0.2hrs. While increasing primary light might make the scene brighter, it won't resolve the lack of *reflections* on the metallic object, which is the core problem. This misdiagnoses the issue, wasting time on an irrelevant solution.",
+      "wrong_choices": [
+        {
+          "text": "Select the problematic Static Mesh Actor in the viewport.",
+          "feedback": "Extended Time: +0.05hrs. This is the optimal first step to address the issue, but you've chosen to focus on primary light instead, losing efficiency.",
+          "type": "subtle"
+        },
+        {
+          "text": "Open the Material Editor for the statue's material and add an 'Emissive Color' node.",
+          "feedback": "Extended Time: +0.25hrs. Adding emissive color would make the object self-illuminate but would not provide true environmental reflections, fundamentally avoiding the problem rather than solving it.",
+          "type": "obvious"
+        },
+        {
+          "text": "In the World Settings, enable 'Force No Precomputed Lighting'.",
+          "feedback": "Extended Time: +0.25hrs. This setting forces all lighting to be dynamic, which might seem related, but doesn't directly address reflection configuration and is a drastic change that could impact performance or visual quality elsewhere.",
+          "type": "plausible"
+        }
+      ]
+    },
+    {
+      "step_id": "step-1W2",
+      "prompt": "The statue is black, and other objects are fine. You decide to start by checking global lighting settings, assuming a broad problem, despite only one object being affected. What's your first action?",
+      "correct_text": "Open World Settings (Settings -> World Settings) to review global lighting and rendering configurations.",
+      "correct_feedback": "Extended Time: +0.05hrs. While global settings are important, starting with the specific problematic actor is more efficient when only one object is affected. This leads to premature investigation of global settings.",
+      "wrong_choices": [
+        {
+          "text": "Select the problematic Static Mesh Actor in the viewport or World Outliner.",
+          "feedback": "Extended Time: +0.05hrs. This is the optimal first step to address the issue, but you've chosen to focus on global settings instead, losing efficiency.",
+          "type": "subtle"
+        },
+        {
+          "text": "Open the 'Output Log' to search for rendering errors.",
+          "feedback": "Extended Time: +0.1hrs. While the Output Log can be useful, it's generally a reactive step for explicit errors, not the first proactive check for a visual discrepancy on a single object.",
+          "type": "plausible"
+        },
+        {
+          "text": "Delete the Sky Light from the scene and add a new one.",
+          "feedback": "Extended Time: +0.15hrs. This is a disruptive and unnecessary step without first diagnosing specific issues with the existing Sky Light or its settings.",
+          "type": "obvious"
         }
       ]
     },
     {
       "step_id": "step-2",
-      "prompt": "The statue is still black, and viewport selection can be tricky. You need to reliably select it. How do you ensure it's selected and ready for inspection?",
-      "correct_text": "In the World Outliner, locate the actor named 'SM_MetallicStatue' (or similar) and click on it to select it.",
-      "correct_feedback": "Optimal Time: +0.015hrs. The World Outliner provides a reliable way to select specific actors in complex scenes.",
+      "prompt": "You've selected the problematic statue. What's the next logical step to find and inspect its properties?",
+      "correct_text": "Inspect the 'Details' panel for the selected Static Mesh Actor.",
+      "correct_feedback": "Optimal Time: +0.005hrs. The Details panel is where all properties, components, and overridden settings for the selected actor are displayed.",
       "wrong_choices": [
         {
-          "text": "Open the Content Browser and search for 'black_texture' to see if it's applied.",
-          "feedback": "Extended Time: +0.15hrs. The problem states the material is metallic and reflective. Searching for a 'black_texture' directly is a misdiagnosis and irrelevant.",
+          "text": "Open the 'World Settings' panel.",
+          "feedback": "Extended Time: +0.05hrs. World Settings applies to the entire level and isn't relevant for inspecting properties of a single selected actor.",
           "type": "obvious"
         },
         {
-          "text": "In the viewport, try to select the statue again, but this time use a selection box to encompass it.",
-          "feedback": "Extended Time: +0.05hrs. While another attempt at viewport selection, it doesn't offer a truly alternative, more reliable method compared to the World Outliner.",
+          "text": "Right-click the actor and choose 'Edit Static Mesh'.",
+          "feedback": "Extended Time: +0.05hrs. This opens the Static Mesh Editor for the asset itself, not the actor instance in the scene, preventing inspection of actor-specific overrides.",
           "type": "plausible"
         },
         {
-          "text": "Use the 'Select All' button in the World Outliner to select every actor in the scene.",
-          "feedback": "Extended Time: +0.05hrs. This selects too many objects, making it difficult to isolate the statue and inspect its specific properties.",
-          "type": "subtle"
-        }
-      ]
-    },
-    {
-      "step_id": "step-2W_light",
-      "prompt": "Despite the description, you suspect the directional light is causing the blackness. What's your immediate action regarding the main light source?",
-      "correct_text": "Select the Directional Light in the World Outliner to inspect its properties, but do not change anything unless a problem is found.",
-      "correct_feedback": "Optimal Time: +0.2hrs. It's good to inspect, but the problem description indicated the level is well-lit. Making changes prematurely is risky.",
-      "wrong_choices": [
-        {
-          "text": "Delete the primary Directional Light actor from the scene entirely.",
-          "feedback": "Extended Time: +0.4hrs. Deleting the primary light source will plunge the entire scene into darkness, worsening the overall problem and making debugging much harder.",
-          "type": "obvious"
-        },
-        {
-          "text": "Modify the Directional Light's 'Light Color' to pure black to see if it affects anything.",
-          "feedback": "Extended Time: +0.3hrs. Setting the light color to black would predictably make everything darker, including other objects that were previously lit correctly, not just the statue.",
-          "type": "plausible"
-        },
-        {
-          "text": "Set the Directional Light's 'Intensity' to a very low value (e.g., 0.01) to test its contribution.",
-          "feedback": "Extended Time: +0.25hrs. While checking contribution, reducing intensity significantly will make the scene very dark, hindering visibility and making it harder to diagnose reflection issues.",
+          "text": "Browse the 'Components' tab in the World Outliner to find properties.",
+          "feedback": "Extended Time: +0.05hrs. While components are listed, the 'Details' panel consolidates all relevant properties, including those inherited or overridden, in a much more organized and searchable manner.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-3",
-      "prompt": "The statue is selected. You need to verify its material assignment. Where in the Details panel do you find the material slot?",
-      "correct_text": "In the Details panel, scroll down to the 'Materials' category under the Static Mesh Component and identify the material slot.",
-      "correct_feedback": "Optimal Time: +0.01hrs. Materials are assigned to mesh components within an actor's details.",
+      "prompt": "With the statue's 'Details' panel open, you need to verify its material. Where do you look first?",
+      "correct_text": "Locate the 'Materials' category in the Details panel, specifically 'Material Slot 0', and confirm the assigned Material Instance.",
+      "correct_feedback": "Optimal Time: +0.01hrs. Verifying the correct material is assigned to the mesh is a fundamental check for any material-related visual issues.",
       "wrong_choices": [
         {
-          "text": "Right-click on the statue in the viewport and select 'Convert Static Mesh to Skeletal Mesh'.",
-          "feedback": "Extended Time: +0.15hrs. This action fundamentally changes the mesh type, which is completely irrelevant to checking its material assignment and could lead to data loss.",
+          "text": "Search for 'Physics' settings to see if it's interfering.",
+          "feedback": "Extended Time: +0.05hrs. Physics settings are unrelated to material assignment or rendering properties that would cause an object to appear black.",
           "type": "obvious"
         },
         {
-          "text": "Open the Material Editor (Content Browser -> Materials) and search for 'DefaultMaterial'.",
-          "feedback": "Extended Time: +0.1hrs. This will open a generic material editor, but not necessarily the specific material instance applied to the statue, nor does it confirm its assignment.",
+          "text": "Browse the 'Content Browser' to find the Material Instance and check its properties directly.",
+          "feedback": "Extended Time: +0.05hrs. While you will eventually inspect the material, the first step is to confirm that the *correct* material is actually assigned to the actor's slot 0, as an incorrect assignment would be the primary issue.",
           "type": "plausible"
         },
         {
-          "text": "In the Details panel, look for a 'Material' property under the 'Rendering' section of the actor properties.",
-          "feedback": "Extended Time: +0.05hrs. While related to rendering, the specific material slots are usually found directly under the Static Mesh Component's properties, not a general 'Rendering' section for the actor itself.",
+          "text": "Check the 'Override Materials' array for special material assignments.",
+          "feedback": "Extended Time: +0.05hrs. While 'Override Materials' can be used, 'Material Slot 0' is the primary and most common assignment. You should check the default slot first before looking for overrides.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-4",
-      "prompt": "The material slot is identified, and it contains the 'M_MetallicStatue_Inst' material instance. How do you open this material instance to inspect its parameters?",
-      "correct_text": "Click the magnifying glass icon next to the material slot, or double-click the assigned Material Instance thumbnail, to open its editor.",
-      "correct_feedback": "Optimal Time: +0.01hrs. Opening the Material Instance Editor is the direct way to inspect and modify its parameters.",
+      "prompt": "You've confirmed the Material Instance assigned. Now, how do you verify its metallic parameter, which is crucial for reflections?",
+      "correct_text": "Double-click the Material Instance in Material Slot 0 to open it, then verify the 'Metallic' parameter is set to 1.0.",
+      "correct_feedback": "Optimal Time: +0.015hrs. Directly checking the Material Instance parameters confirms the material's properties, which are fundamental to its reflective appearance.",
       "wrong_choices": [
         {
-          "text": "Right-click the material slot and select 'Create New Material'.",
-          "feedback": "Extended Time: +0.15hrs. This would create a brand new material, discarding or ignoring the existing material instance and its settings.",
+          "text": "In the Material category, replace the assigned Material Instance with a new, known-good metallic material.",
+          "feedback": "Extended Time: +0.1hrs. While this might fix the immediate symptom, it's a destructive step that doesn't diagnose *why* the original material isn't working, making it hard to apply lessons learned.",
           "type": "obvious"
         },
         {
-          "text": "Drag the material from the Content Browser into the slot again.",
-          "feedback": "Extended Time: +0.05hrs. This action reassigns the material, but does not open its editor for inspection.",
+          "text": "Open the Parent Material of the Material Instance and check its metallic settings.",
+          "feedback": "Extended Time: +0.05hrs. While the parent material defines the parameter, the Material Instance is where the value is *set* and overridden. Checking the parent directly won't confirm the instance's specific value.",
           "type": "plausible"
         },
         {
-          "text": "Click the 'Reset to Default' button next to the material slot.",
-          "feedback": "Extended Time: +0.05hrs. This would reset the material assignment, potentially losing track of the problematic material or masking an issue if it was correct.",
+          "text": "Verify the 'Roughness' parameter is a low value (e.g., 0.1).",
+          "feedback": "Extended Time: +0.05hrs. While roughness is also critical, the prompt specifically asks about the metallic parameter first. Checking parameters in the optimal order is slightly more efficient.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-5",
-      "prompt": "Inside the Material Instance Editor, you need to confirm it's behaving like a metal. What's the key parameter to check for metallic appearance?",
-      "correct_text": "Locate the 'Metallic' parameter (checkbox or slider) and confirm its value is set to 1.0 (or fully enabled).",
-      "correct_feedback": "Optimal Time: +0.015hrs. A 'Metallic' value of 1.0 is essential for physically-based metallic rendering.",
+      "prompt": "You've confirmed the Metallic parameter is 1.0. What's the next material parameter to check for clear reflections?",
+      "correct_text": "Verify the 'Roughness' parameter in the Material Instance is a low value (e.g., 0.1).",
+      "correct_feedback": "Optimal Time: +0.015hrs. Low roughness is essential for clear, mirror-like reflections on metallic surfaces.",
       "wrong_choices": [
         {
-          "text": "Search for 'Tessellation Multiplier' and adjust it to a high value.",
-          "feedback": "Extended Time: +0.15hrs. Tessellation affects mesh detail, not the fundamental metallic appearance or reflectivity.",
+          "text": "In the Material Instance, set the 'Roughness' parameter to 1.0.",
+          "feedback": "Extended Time: +0.15hrs. Setting Roughness to 1.0 makes the material completely matte, effectively hiding the problem of missing reflections rather than solving it. This misdiagnoses the issue, as the goal is to *enable* reflections.",
           "type": "obvious"
         },
         {
-          "text": "Check the 'Base Color' parameter to see if it's set to black.",
-          "feedback": "Extended Time: +0.1hrs. While Base Color is important, a metallic material with 1.0 metallic will primarily show reflections, even with a dark base color. This isn't the primary check for *metallic* behavior.",
+          "text": "Check the 'Specular' parameter in the Material Instance.",
+          "feedback": "Extended Time: +0.05hrs. While Specular affects highlights, for physically based rendering (PBR), Roughness and Metallic are far more influential on overall reflection appearance, especially for metals.",
           "type": "plausible"
         },
         {
-          "text": "Ensure the 'Specular' parameter is enabled or set to a high value.",
-          "feedback": "Extended Time: +0.05hrs. Specular is related to reflections, but in a PBR workflow, 'Metallic' is the primary toggle for a metallic surface's reflection behavior.",
+          "text": "Verify the 'Opacity' parameter in the Material Instance is 1.0.",
+          "feedback": "Extended Time: +0.05hrs. Opacity affects transparency, not the reflective qualities of an opaque metallic surface. This is irrelevant to the current issue.",
+          "type": "subtle"
+        }
+      ]
+    },
+    {
+      "step_id": "step-5W1",
+      "prompt": "You've verified Metallic is 1.0. You consider changing the material to avoid reflections because they aren't working, even though the goal is to *enable* reflections. What action do you take?",
+      "correct_text": "In the Material Instance, set the 'Roughness' parameter to 1.0.",
+      "correct_feedback": "Extended Time: +0.15hrs. Setting Roughness to 1.0 makes the material completely matte, effectively hiding the problem of missing reflections rather than solving it. This misdiagnoses the issue and doesn't address the missing reflections.",
+      "wrong_choices": [
+        {
+          "text": "Change the statue's material to a non-metallic, diffuse material.",
+          "feedback": "Extended Time: +0.2hrs. This is an even more drastic measure that completely abandons the goal of having a metallic, reflective object. It entirely sidesteps the debugging challenge.",
+          "type": "obvious"
+        },
+        {
+          "text": "In the Material Instance, set the 'Metallic' parameter to 0.0.",
+          "feedback": "Extended Time: +0.15hrs. This would make the object non-metallic, which also bypasses the problem by changing the material type rather than fixing its reflection behavior.",
+          "type": "plausible"
+        },
+        {
+          "text": "Delete the Material Instance and create a new one from scratch.",
+          "feedback": "Extended Time: +0.1hrs. This is an unnecessary and time-consuming step without first confirming that the existing material settings themselves are the root cause.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-6",
-      "prompt": "The 'Metallic' parameter is correctly set to 1.0. Now, how do you ensure the statue is *highly reflective* rather than matte?",
-      "correct_text": "Verify the 'Roughness' parameter is set to a low value (e.g., 0.1) to allow for clear, mirror-like reflections.",
-      "correct_feedback": "Optimal Time: +0.015hrs. Low roughness values are critical for sharp, clear reflections on metallic surfaces.",
+      "prompt": "Material parameters seem correct. What important actor property affects how an object interacts with dynamic lighting and reflections, especially with Lumen?",
+      "correct_text": "In the 'Details' panel, find the 'Mobility' setting under the 'Transform' category.",
+      "correct_feedback": "Optimal Time: +0.02hrs. 'Mobility' is a critical setting that dictates how an actor interacts with the lighting system, especially for dynamic lighting solutions like Lumen.",
       "wrong_choices": [
         {
-          "text": "Adjust the 'Emissive Color' parameter to a bright value.",
-          "feedback": "Extended Time: +0.15hrs. Emissive color makes an object appear to glow, but does not contribute to its reflectivity.",
+          "text": "Locate the 'Collision' settings to see if they're interfering.",
+          "feedback": "Extended Time: +0.05hrs. Collision settings affect physical interaction, not visual rendering or dynamic lighting/reflections.",
           "type": "obvious"
         },
         {
-          "text": "Check the 'Normal Map' input to ensure it's connected and has detail.",
-          "feedback": "Extended Time: +0.05hrs. A normal map adds surface detail but doesn't control the overall *amount* or *clarity* of reflections.",
+          "text": "Look for 'Lightmap Resolution' under 'Lighting'.",
+          "feedback": "Extended Time: +0.05hrs. 'Lightmap Resolution' is for baked static lighting. The problem describes dynamic lighting and Lumen, making 'Mobility' more relevant.",
           "type": "plausible"
         },
         {
-          "text": "Set the 'Roughness' parameter to 0.5 to make it semi-glossy.",
-          "feedback": "Extended Time: +0.05hrs. While 0.5 is a valid roughness, the problem describes a 'highly reflective' object, which implies a much lower roughness than semi-glossy.",
-          "type": "subtle"
-        }
-      ]
-    },
-    {
-      "step_id": "step-6W_roughness",
-      "prompt": "You decide to make the statue less reflective, potentially thinking the current reflections are too harsh. What's your immediate adjustment to achieve a matte look?",
-      "correct_text": "Change the 'Roughness' parameter to 1.0 (matte) in the Material Instance Editor.",
-      "correct_feedback": "Optimal Time: +0.15hrs. Setting roughness to 1.0 makes a surface completely matte, preventing any clear reflections.",
-      "wrong_choices": [
-        {
-          "text": "Delete the Material Instance and assign a 'WorldGridMaterial' to the statue.",
-          "feedback": "Extended Time: +0.3hrs. This drastic action replaces the material entirely, losing all original settings and potentially breaking other visual aspects of the statue.",
-          "type": "obvious"
-        },
-        {
-          "text": "Set the 'Metallic' parameter to 0.0 (non-metallic).",
-          "feedback": "Extended Time: +0.2hrs. This would make the material non-metallic, changing its entire surface response, which is different from simply making a metallic material matte.",
-          "type": "plausible"
-        },
-        {
-          "text": "Increase the 'Roughness' parameter slightly to 0.3.",
-          "feedback": "Extended Time: +0.18hrs. While increasing roughness, 0.3 still allows some noticeable reflections; it doesn't achieve the 'matte' effect (1.0) for this detour's premise.",
+          "text": "Search for 'Visibility' directly in the search bar.",
+          "feedback": "Extended Time: +0.05hrs. While 'Visibility' is important, 'Mobility' is more fundamental for how an object *receives* dynamic reflections and indirect light.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-7",
-      "prompt": "Material properties (Metallic=1.0, Roughness=0.1) seem correct. You now suspect object-level rendering settings on the actor itself. Where do you start looking for fundamental object properties?",
-      "correct_text": "With the statue still selected, go to the Details panel and find the 'Transform' category.",
-      "correct_feedback": "Optimal Time: +0.01hrs. The 'Transform' category contains basic object properties like position, rotation, scale, and mobility.",
+      "prompt": "You've located the 'Mobility' setting. What value is required for an object to fully participate in dynamic Lumen GI and reflections?",
+      "correct_text": "Ensure 'Mobility' for the mesh is set to 'Movable'.",
+      "correct_feedback": "Optimal Time: +0.03hrs. 'Movable' actors fully interact with dynamic lighting and Lumen GI/reflections, making this a crucial setting.",
       "wrong_choices": [
         {
-          "text": "Open the level blueprint and search for any references to the statue.",
-          "feedback": "Extended Time: +0.15hrs. Level blueprints are for scripting game logic; fundamental object rendering properties are not typically found or changed there.",
+          "text": "Set 'Mobility' to 'Static'.",
+          "feedback": "Extended Time: +0.1hrs. 'Static' actors rely on baked lighting and precomputed reflection captures, which would prevent the statue from receiving dynamic Lumen reflections.",
           "type": "obvious"
         },
         {
-          "text": "In the Project Settings, navigate to the 'Physics' section.",
-          "feedback": "Extended Time: +0.1hrs. Physics settings are for collision and simulation, not directly for visual rendering properties of a static mesh.",
+          "text": "Set 'Mobility' to 'Stationary'.",
+          "feedback": "Extended Time: +0.05hrs. 'Stationary' offers some dynamic interaction but still has limitations with fully dynamic GI and reflections compared to 'Movable' actors, especially for highly reflective surfaces.",
           "type": "plausible"
         },
         {
-          "text": "In the World Outliner, right-click the statue and select 'Edit Bounding Box'.",
-          "feedback": "Extended Time: +0.05hrs. The bounding box defines the object's extents, but doesn't contain the rendering flags or mobility settings you need to check.",
+          "text": "Change the 'Physics Type' to 'Simulated'.",
+          "feedback": "Extended Time: +0.05hrs. 'Physics Type' controls physical simulation, which is unrelated to how the object renders visually or interacts with lighting for reflections.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-8",
-      "prompt": "You're checking fundamental rendering properties that might affect dynamic lighting and reflections. What's a critical setting under the 'Transform' category that impacts how an object interacts with dynamic light?",
-      "correct_text": "Under the 'Transform' category, locate 'Mobility' and ensure it is set to 'Movable' for full dynamic lighting and reflections with Lumen.",
-      "correct_feedback": "Optimal Time: +0.04hrs. 'Movable' mobility is essential for objects to fully interact with dynamic lighting systems like Lumen, including casting dynamic shadows and receiving dynamic global illumination and reflections.",
+      "prompt": "Mobility is set to 'Movable'. What general category of properties should you check next to ensure the object is properly rendered?",
+      "correct_text": "Expand the 'Rendering' category in the 'Details' panel.",
+      "correct_feedback": "Optimal Time: +0.01hrs. The 'Rendering' category contains numerous properties that directly control how an object is drawn and interacts with various rendering features.",
       "wrong_choices": [
         {
-          "text": "Change the statue's 'Scale' to 0.1 in all axes.",
-          "feedback": "Extended Time: +0.15hrs. Resizing the object won't resolve issues with its rendering or reflection properties, it will just make it smaller.",
+          "text": "Expand the 'Collision' category.",
+          "feedback": "Extended Time: +0.05hrs. Collision settings are for physical interaction and have no bearing on the visual rendering of the object.",
           "type": "obvious"
         },
         {
-          "text": "Set the 'Location' of the statue to (0,0,0).",
-          "feedback": "Extended Time: +0.1hrs. Moving the object to the origin won't resolve its rendering issue; it's a position adjustment, not a rendering property fix.",
+          "text": "Expand the 'Lighting' category.",
+          "feedback": "Extended Time: +0.05hrs. While related, the 'Rendering' category is more encompassing for general visibility and interaction with rendering features like ray tracing.",
           "type": "plausible"
         },
         {
-          "text": "Change 'Mobility' to 'Stationary'.",
-          "feedback": "Extended Time: +0.05hrs. 'Stationary' actors can utilize some static lighting data but have limited dynamic interaction compared to 'Movable', potentially hindering full Lumen reflections and GI.",
+          "text": "Search for 'Visible' directly in the Details panel search bar.",
+          "feedback": "Extended Time: +0.05hrs. While efficient for specific properties, expanding the category allows for a broader review of related settings that might be missed by a direct search.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-9",
-      "prompt": "Mobility is correct. Now you need to delve deeper into rendering-specific flags for this actor that control its visibility and interaction with rendering features. Where is the main place for these?",
-      "correct_text": "In the Details panel, scroll down and expand the 'Rendering' category.",
-      "correct_feedback": "Optimal Time: +0.01hrs. The 'Rendering' category contains crucial visibility and rendering feature flags for individual actors.",
+      "prompt": "With the 'Rendering' category expanded, what's the most basic property to check if an object is appearing black?",
+      "correct_text": "Verify the 'Visible' property (under 'Rendering') is checked.",
+      "correct_feedback": "Optimal Time: +0.015hrs. The 'Visible' property is fundamental for an object to be rendered at all. If unchecked, it will not appear in the scene.",
       "wrong_choices": [
         {
-          "text": "Open the 'Build' menu and select 'Build Lighting Only'.",
-          "feedback": "Extended Time: +0.15hrs. Building lighting is for static lightmaps, which are irrelevant for a dynamic Lumen setup and won't fix object-specific rendering flags.",
+          "text": "Check 'Editor Only Actor'.",
+          "feedback": "Extended Time: +0.05hrs. 'Editor Only Actor' causes the object to only be visible in the editor, but not in game. If it's black in the editor, this is not the issue.",
           "type": "obvious"
         },
         {
-          "text": "In the World Settings, look for 'Lightmass Settings'.",
-          "feedback": "Extended Time: +0.1hrs. Lightmass settings are specifically for baked static lighting, not dynamic rendering flags on an actor.",
+          "text": "Verify the 'Hidden in Game' property is unchecked.",
+          "feedback": "Extended Time: +0.05hrs. 'Hidden in Game' only affects visibility in PIE or packaged builds. The statue is black in the viewport, indicating a more fundamental visibility issue first.",
           "type": "plausible"
         },
         {
-          "text": "In the Details panel, expand the 'Physics' category.",
-          "feedback": "Extended Time: +0.05hrs. The 'Physics' category deals with collision and simulation, not direct visual rendering flags for the mesh.",
+          "text": "Verify 'Render in Main Pass' is checked.",
+          "feedback": "Extended Time: +0.05hrs. While important, 'Visible' is the overarching control. If 'Visible' is unchecked, 'Render in Main Pass' is effectively moot.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-10",
-      "prompt": "Under the 'Rendering' category, what's the most basic visibility check to ensure the object is rendered at all?",
-      "correct_text": "Confirm that the 'Visible' checkbox is enabled within the 'Rendering' category.",
-      "correct_feedback": "Optimal Time: +0.015hrs. If 'Visible' is unchecked, the object simply won't render in the scene.",
+      "prompt": "The statue is 'Visible'. What's another important rendering property to check that indicates proper interaction with light sources?",
+      "correct_text": "Verify the 'Cast Shadows' property (under 'Rendering') is checked.",
+      "correct_feedback": "Optimal Time: +0.015hrs. If an object casts shadows, it confirms it's interacting with the lighting system, which is a good indicator for further light interactions like reflections.",
       "wrong_choices": [
         {
-          "text": "Check the 'Collision Presets' to ensure it's set to 'BlockAll'.",
-          "feedback": "Extended Time: +0.15hrs. Collision settings control physical interaction, not whether an object is visually rendered.",
+          "text": "Verify 'Can Character Step On' is checked.",
+          "feedback": "Extended Time: +0.05hrs. 'Can Character Step On' is a collision property for navigation, not directly related to visual rendering or reflections.",
           "type": "obvious"
         },
         {
-          "text": "Verify 'Receives Decals' is checked.",
-          "feedback": "Extended Time: +0.1hrs. 'Receives Decals' allows decals to project onto the object, but doesn't control its fundamental visibility.",
+          "text": "Check 'Receives Decals'.",
+          "feedback": "Extended Time: +0.05hrs. While a rendering property, 'Receives Decals' is unrelated to global illumination or reflections causing a metallic object to appear black.",
           "type": "plausible"
         },
         {
-          "text": "Check 'Render CustomDepth Pass' is enabled.",
-          "feedback": "Extended Time: +0.05hrs. CustomDepth is for specific post-processing effects and doesn't affect general rendering visibility of the object itself.",
+          "text": "Verify 'Affects Distance Field Lighting' is checked.",
+          "feedback": "Extended Time: +0.05hrs. While relevant for certain GI methods, 'Cast Shadows' is a more fundamental and universal indicator of proper light interaction.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-11",
-      "prompt": "The statue is visible, but still appears black. Its interaction with light sources might be faulty. What setting under 'Rendering' affects how it participates in lighting calculations?",
-      "correct_text": "Confirm the 'Cast Shadows' checkbox is enabled in the 'Rendering' category.",
-      "correct_feedback": "Optimal Time: +0.015hrs. An object that doesn't cast shadows may not be fully integrated into the lighting environment, though this is less likely to cause a completely black object if other lights are present.",
+      "prompt": "The statue is visible and casts shadows. For Lumen-driven global illumination, what specific property ensures it fully participates?",
+      "correct_text": "Locate the 'Affects Global Illumination' property under the 'Rendering' category.",
+      "correct_feedback": "Optimal Time: +0.015hrs. This property is crucial for an object to both contribute to and receive indirect lighting from global illumination systems like Lumen.",
       "wrong_choices": [
         {
-          "text": "Disable 'Generate Overlap Events'.",
-          "feedback": "Extended Time: +0.15hrs. Overlap events are for gameplay logic and collision detection, completely unrelated to rendering or shadows.",
+          "text": "Locate 'Custom Depth Stencil Value'.",
+          "feedback": "Extended Time: +0.05hrs. Custom Depth is used for post-processing effects or highlighting, not for fundamental global illumination or reflections.",
           "type": "obvious"
         },
         {
-          "text": "Check 'Render in Main Pass' is enabled.",
-          "feedback": "Extended Time: +0.05hrs. 'Render in Main Pass' is usually enabled by default for all visible objects. While necessary, it's a more fundamental render pass than the specific shadow casting property.",
+          "text": "Search for 'Lumen' in the Details panel.",
+          "feedback": "Extended Time: +0.05hrs. While eventually useful, specifically identifying 'Affects Global Illumination' is more direct than a broad 'Lumen' search at this stage.",
           "type": "plausible"
         },
         {
-          "text": "Ensure 'Shadow Two Sided' is checked.",
-          "feedback": "Extended Time: +0.05hrs. 'Shadow Two Sided' is typically for thin meshes that need to cast shadows from both sides, not the primary cause of a thick, opaque object appearing black.",
+          "text": "Look for 'Volumetric Lightmap' properties.",
+          "feedback": "Extended Time: +0.05hrs. Volumetric Lightmaps are part of an older, baked global illumination system, whereas the problem states Lumen is enabled.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-12",
-      "prompt": "The statue is black despite being metallic and casting shadows. You suspect it's not receiving global illumination, which is key for indirect light. What specific setting controls this under 'Rendering'?",
-      "correct_text": "Within the 'Rendering' category, verify that 'Affects Global Illumination' is enabled.",
-      "correct_feedback": "Optimal Time: +0.04hrs. This setting dictates whether the object contributes to and receives global illumination, which is crucial for indirect lighting with Lumen.",
+      "prompt": "You've located 'Affects Global Illumination'. How do you ensure it's active for the statue?",
+      "correct_text": "Ensure 'Affects Global Illumination' is enabled (checked).",
+      "correct_feedback": "Optimal Time: +0.025hrs. Enabling this property ensures the object participates correctly in Lumen's global illumination calculations, which directly impacts indirect lighting and reflections.",
       "wrong_choices": [
         {
-          "text": "In the Project Settings, disable 'CPU Throttling'.",
-          "feedback": "Extended Time: +0.15hrs. CPU throttling is a performance optimization setting, entirely unrelated to whether an object receives global illumination.",
+          "text": "Disable 'Affects Global Illumination'.",
+          "feedback": "Extended Time: +0.1hrs. Disabling this property would prevent the object from receiving or contributing to global illumination, worsening the problem of it appearing black.",
           "type": "obvious"
         },
         {
-          "text": "Check if 'Use Emissive for Static Lighting' is enabled.",
-          "feedback": "Extended Time: +0.1hrs. This setting is specifically for baked static lighting and how emissive materials interact with it, not dynamic global illumination from Lumen.",
+          "text": "Adjust 'Global Illumination Bias'.",
+          "feedback": "Extended Time: +0.05hrs. The 'Bias' property fine-tunes GI contribution, but the primary issue would be if GI itself isn't enabled for the object.",
           "type": "plausible"
         },
         {
-          "text": "Confirm 'Lightmap Resolution' is set to a high value.",
-          "feedback": "Extended Time: +0.05hrs. Lightmap resolution is for the quality of baked static lighting, not for dynamic global illumination (Lumen).",
+          "text": "Only verify 'Contribute to Global Illumination' is checked.",
+          "feedback": "Extended Time: +0.05hrs. While contributing is important, the object also needs to *receive* GI, so ensuring the main 'Affects Global Illumination' is checked for both is critical.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-13",
-      "prompt": "Global Illumination seems enabled, but the statue remains black, implying issues with advanced rendering features like Ray Tracing (often used by Lumen). Where do you find the actor's specific setting for Ray Tracing visibility?",
-      "correct_text": "Scroll further down in the 'Rendering' category of the Details panel to locate the 'Visible in Ray Tracing' property.",
-      "correct_feedback": "Optimal Time: +0.03hrs. 'Visible in Ray Tracing' directly controls if the object is considered by ray tracing effects like Lumen reflections.",
+      "prompt": "Global Illumination is enabled for the object. Lumen's high-quality reflections often leverage ray tracing. What specific object property relates to this?",
+      "correct_text": "Locate the 'Visible in Ray Tracing' toggle in the 'Rendering' settings.",
+      "correct_feedback": "Optimal Time: +0.03hrs. Even without explicit hardware ray tracing enabled globally, Lumen often utilizes ray-traced scene data. This object-level flag is critical for objects to appear in these calculations.",
       "wrong_choices": [
         {
-          "text": "Open the Output Log and search for 'Ray Tracing' errors.",
-          "feedback": "Extended Time: +0.15hrs. While the Output Log can show errors, checking a specific setting directly is a more efficient first step than hunting for potential error messages.",
+          "text": "Search for 'Water' properties, assuming a visual artifact related to fluid rendering.",
+          "feedback": "Extended Time: +0.15hrs. 'Water' properties are completely unrelated to metallic reflections or global illumination, leading to an irrelevant and time-wasting investigation.",
           "type": "obvious"
         },
         {
-          "text": "In the 'Project Settings', navigate to the 'Ray Tracing' section to adjust global settings.",
-          "feedback": "Extended Time: +0.1hrs. Project settings are global, but you should first check the specific actor's settings before moving to a global configuration.",
+          "text": "Look for 'Use High Precision Tangent Basis'.",
+          "feedback": "Extended Time: +0.05hrs. This setting affects normal map precision, which is generally not the root cause of an object appearing entirely black due to missing reflections.",
           "type": "plausible"
         },
         {
-          "text": "Look for 'Supports Ray Tracing' under the Static Mesh asset's details in the Content Browser.",
-          "feedback": "Extended Time: +0.05hrs. That's a property of the mesh asset itself, while 'Visible in Ray Tracing' is an instance-specific override on the actor in the scene.",
+          "text": "Look for 'Ray Tracing Quality' settings in the 'Details' panel.",
+          "feedback": "Extended Time: +0.05hrs. 'Ray Tracing Quality' usually refers to global settings or specific light source properties, not a per-object toggle for visibility in ray tracing.",
           "type": "subtle"
         }
       ]
     },
     {
-      "step_id": "step-14",
-      "prompt": "You've found the 'Visible in Ray Tracing' setting. Given the problem (no reflections), what should its state be?",
-      "correct_text": "Confirm that the 'Visible in Ray Tracing' checkbox is enabled (checked).",
-      "correct_feedback": "Optimal Time: +0.05hrs. For Lumen reflections and global illumination to fully work, the object must be visible to ray tracing queries.",
+      "step_id": "step-13W1",
+      "prompt": "You've checked general rendering properties. You decide to skip 'Visible in Ray Tracing' because you believe Lumen handles reflections automatically without needing explicit ray tracing. What do you do next?",
+      "correct_text": "Proceed to open Project Settings (Edit -> Project Settings) to review global Lumen settings.",
+      "correct_feedback": "Extended Time: +0.1hrs. Skipping 'Visible in Ray Tracing' is a common mistake. Even with Lumen, this per-object flag is crucial as Lumen often leverages ray-traced data for its high-quality reflections and global illumination, especially for highly metallic surfaces. Ignoring it leads to further investigation of global settings that might already be correct.",
       "wrong_choices": [
         {
-          "text": "Disable 'Generate Mesh Distance Fields'.",
-          "feedback": "Extended Time: +0.15hrs. Mesh distance fields are used for various effects (like ambient occlusion, soft shadows), but disabling them won't fix a lack of ray-traced reflections.",
-          "type": "obvious"
+          "text": "Confirm 'Visible in Ray Tracing' is checked.",
+          "feedback": "Extended Time: +0.1hrs. This would be the optimal next step, confirming the specific property that might be causing the issue directly.",
+          "type": "subtle"
         },
         {
-          "text": "Set 'Light Propagation Volume' to a high intensity.",
-          "feedback": "Extended Time: +0.1hrs. Light Propagation Volume is an older global illumination technique, generally not used in conjunction with Lumen.",
+          "text": "Add a dedicated 'Reflection Capture' actor near the statue.",
+          "feedback": "Extended Time: +0.15hrs. While reflection captures are for reflections, they are a legacy solution superseded by Lumen. Adding them without diagnosing the Lumen setup would be inefficient.",
           "type": "plausible"
         },
         {
-          "text": "Ensure 'Cast Ray Traced Shadows' is checked.",
-          "feedback": "Extended Time: +0.05hrs. While important for shadows, 'Cast Ray Traced Shadows' only dictates if the object *casts* shadows via ray tracing, not if it's *visible* to rays for reflections or GI.",
+          "text": "Try rebuilding the level's lighting via 'Build -> Build Lighting Only'.",
+          "feedback": "Extended Time: +0.2hrs. Lumen is a real-time dynamic GI and reflection system, so rebuilding static lighting is irrelevant and time-consuming for this issue.",
+          "type": "obvious"
+        }
+      ]
+    },
+    {
+      "step_id": "step-14",
+      "prompt": "You've located 'Visible in Ray Tracing'. What action should you take to ensure the statue appears in ray-traced reflections?",
+      "correct_text": "Confirm 'Visible in Ray Tracing' is checked (enabled).",
+      "correct_feedback": "Optimal Time: +0.05hrs. This flag is critical for objects to be considered by ray-tracing pipelines, which Lumen leverages for high-quality reflections on metallic surfaces.",
+      "wrong_choices": [
+        {
+          "text": "Disable 'Visible in Ray Tracing'.",
+          "feedback": "Extended Time: +0.15hrs. Disabling this would ensure the object is *not* considered by ray tracing, directly preventing it from receiving proper Lumen reflections and worsening the problem.",
+          "type": "obvious"
+        },
+        {
+          "text": "Verify 'Evaluate World Position Offset in Ray Tracing' is checked.",
+          "feedback": "Extended Time: +0.1hrs. While relevant for WPO materials, this is a secondary setting. The primary 'Visible in Ray Tracing' must be enabled first for the object to appear at all.",
+          "type": "plausible"
+        },
+        {
+          "text": "Only enable 'Visible in Ray Tracing' for the 'Reflections' option if available.",
+          "feedback": "Extended Time: +0.1hrs. The 'Visible in Ray Tracing' checkbox usually applies globally. More granular options (if they exist) would be less fundamental than the main toggle.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-15",
-      "prompt": "The 'Visible in Ray Tracing' setting was unchecked. What's your immediate action?",
-      "correct_text": "Check the 'Visible in Ray Tracing' box to enable it.",
-      "correct_feedback": "Optimal Time: +0.01hrs. Enabling this setting allows the statue to participate in ray-traced lighting and reflections, which Lumen relies on.",
+      "prompt": "Enabling 'Visible in Ray Tracing' seems to have resolved the issue, and the statue now correctly reflects the scene. What's the final action to preserve these changes?",
+      "correct_text": "Save all modified assets and the current level.",
+      "correct_feedback": "Optimal Time: +0.015hrs. Saving all changes ensures your work is not lost and the fix persists.",
       "wrong_choices": [
         {
-          "text": "Restart the Unreal Engine editor to apply the change.",
-          "feedback": "Extended Time: +0.15hrs. Most changes in the Details panel are applied immediately in the editor; restarting is usually unnecessary for this type of setting.",
+          "text": "Restart the Unreal Engine editor.",
+          "feedback": "Extended Time: +0.05hrs. Restarting without saving will lose all your changes. Saving is the critical step.",
           "type": "obvious"
         },
         {
-          "text": "Change the 'Static Mesh' asset to a different one and then back again.",
-          "feedback": "Extended Time: +0.1hrs. This action is pointless; it won't affect the 'Visible in Ray Tracing' property on the actor instance.",
+          "text": "Rebuild all lighting in the level.",
+          "feedback": "Extended Time: +0.05hrs. Lumen is a dynamic system, so rebuilding static lighting is unnecessary and time-consuming after resolving a dynamic reflection issue.",
           "type": "plausible"
         },
         {
-          "text": "Enable 'Evaluate World Position Offset in Ray Tracing' instead.",
-          "feedback": "Extended Time: +0.05hrs. This setting is for specific mesh deformation (WPO) within ray tracing, not for the general visibility of the object to ray tracing rays.",
+          "text": "Close the editor without saving, assuming changes are auto-saved.",
+          "feedback": "Extended Time: +0.05hrs. Unreal Engine does not always auto-save all changes, especially to level actors. This risks losing the fix.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-16",
-      "prompt": "You've enabled 'Visible in Ray Tracing'. What's the next logical step to check if this resolved the issue?",
-      "correct_text": "Observe the statue in the viewport to see if it now correctly reflects the scene and receives indirect light.",
-      "correct_feedback": "Optimal Time: +0.02hrs. Directly observing the result in the viewport is the fastest way to confirm if a visual change has been effective.",
+      "prompt": "After applying the potential fix (Visible in Ray Tracing), how do you confirm the statue is now correctly reflecting the scene as expected?",
+      "correct_text": "Visually inspect the statue in the Editor Viewport to confirm it now shows correct reflections.",
+      "correct_feedback": "Optimal Time: +0.015hrs. Direct visual confirmation in the viewport is the most immediate way to verify the fix.",
       "wrong_choices": [
         {
-          "text": "Run a 'Shader Complexity' visualization.",
-          "feedback": "Extended Time: +0.15hrs. Shader complexity visualizes rendering cost, not whether reflections or lighting are correctly appearing.",
+          "text": "Delete the statue and re-add it to the scene to see if the problem recurs.",
+          "feedback": "Extended Time: +0.05hrs. This is a destructive and unnecessary step. If the problem is fixed, you should confirm it, not test if it breaks again immediately.",
           "type": "obvious"
         },
         {
-          "text": "Open the console and type 'stat fps'.",
-          "feedback": "Extended Time: +0.05hrs. Checking the frame rate is a performance metric, not a verification of visual correctness for the statue.",
+          "text": "Check the mesh's 'Polygon Count' to see if it's too high for reflections.",
+          "feedback": "Extended Time: +0.05hrs. Polygon count affects performance, not the fundamental presence or absence of reflections caused by rendering settings.",
           "type": "plausible"
         },
         {
-          "text": "Export the statue as an FBX file to inspect it in an external viewer.",
-          "feedback": "Extended Time: +0.1hrs. This is an unnecessarily drastic and time-consuming step for an in-editor visual check.",
+          "text": "Only launch 'Play In Editor' (PIE) mode to check the reflections.",
+          "feedback": "Extended Time: +0.05hrs. While PIE is a good final check, if the fix is visual, it should be immediately apparent in the editor viewport without launching PIE, saving time.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-17",
-      "prompt": "The statue is still black or not reflecting properly, even after enabling 'Visible in Ray Tracing'. You need to check global rendering configurations for Lumen. Where are these located?",
-      "correct_text": "Go to 'Edit' in the main menu bar and select 'Project Settings'.",
-      "correct_feedback": "Optimal Time: +0.015hrs. Project Settings contains global configurations for the entire game, including core rendering methods.",
+      "prompt": "The statue's individual settings seem correct, but reflections are still missing or incorrect. This suggests a global rendering issue. Where should you look first for global engine settings?",
+      "correct_text": "Open Project Settings (Edit -> Project Settings).",
+      "correct_feedback": "Optimal Time: +0.02hrs. Project Settings contains engine-wide configurations that affect rendering and global illumination.",
       "wrong_choices": [
         {
-          "text": "Open the 'Asset Actions' menu for the statue and select 'Export'.",
-          "feedback": "Extended Time: +0.15hrs. This action exports the asset, which is completely unrelated to checking global engine settings.",
+          "text": "Open Editor Preferences (Edit -> Editor Preferences).",
+          "feedback": "Extended Time: +0.05hrs. Editor Preferences configures the editor's UI and behavior, not global project-specific rendering settings.",
           "type": "obvious"
         },
         {
-          "text": "Go to 'Window' -> 'Output Log' to review recent engine messages.",
-          "feedback": "Extended Time: +0.05hrs. The Output Log displays messages and errors, but isn't where you would configure global rendering settings.",
+          "text": "Open World Settings (Settings -> World Settings).",
+          "feedback": "Extended Time: +0.05hrs. World Settings are specific to the current level, not global engine-wide rendering settings. While relevant, Project Settings are higher level.",
           "type": "plausible"
         },
         {
-          "text": "Open 'Editor Preferences' (Edit -> Editor Preferences).",
-          "feedback": "Extended Time: +0.05hrs. Editor Preferences configure the behavior of the editor itself, not the runtime rendering settings of the project.",
+          "text": "Open the console (tilde key) and start typing 'r.' commands.",
+          "feedback": "Extended Time: +0.05hrs. While console commands can modify rendering settings, Project Settings provide a structured, persistent way to configure global features like Lumen.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-18",
-      "prompt": "You're in Project Settings. Where do you find the core rendering methods, including those for Global Illumination and Reflections, for the entire project?",
-      "correct_text": "In the left-hand navigation pane of Project Settings, scroll down and select the 'Rendering' category.",
-      "correct_feedback": "Optimal Time: +0.015hrs. The 'Rendering' section within Project Settings holds all the major rendering configuration options.",
+      "prompt": "With Project Settings open, where do you navigate to find global rendering options, including Lumen configuration?",
+      "correct_text": "Navigate to the 'Rendering' section under 'Engine'.",
+      "correct_feedback": "Optimal Time: +0.015hrs. The 'Rendering' section in Project Settings holds the core global configurations for how the engine renders scenes.",
       "wrong_choices": [
         {
-          "text": "Navigate to 'Maps & Modes'.",
-          "feedback": "Extended Time: +0.15hrs. 'Maps & Modes' configure default levels and game modes, unrelated to rendering methods.",
+          "text": "Navigate to the 'Game' section.",
+          "feedback": "Extended Time: +0.05hrs. The 'Game' section contains settings related to gameplay, input, and packaging, not rendering.",
           "type": "obvious"
         },
         {
-          "text": "Search for 'Input' settings.",
-          "feedback": "Extended Time: +0.1hrs. Input settings manage user controls and key bindings, not rendering features.",
+          "text": "Navigate to 'Engine -> General Settings'.",
+          "feedback": "Extended Time: +0.05hrs. 'General Settings' are broad engine settings, but 'Rendering' is the specific category for visual output.",
           "type": "plausible"
         },
         {
-          "text": "Select 'Engine - General Settings'.",
-          "feedback": "Extended Time: +0.05hrs. While general engine settings, it's not as specific as the dedicated 'Rendering' category for these detailed options.",
+          "text": "Search for 'Lumen' directly in the Project Settings search bar.",
+          "feedback": "Extended Time: +0.05hrs. While effective for direct search, navigating to the category provides context and allows for review of related settings that might be missed by a narrow search.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-19",
-      "prompt": "In the Project Settings -> Rendering section, you need to verify the global illumination system is correctly set up for Lumen. What's the key setting to confirm?",
-      "correct_text": "Under the 'Global Illumination' category, confirm 'Global Illumination Method' is set to 'Lumen'.",
-      "correct_feedback": "Optimal Time: +0.02hrs. This is the primary setting to enable Lumen for global illumination across the entire project.",
+      "prompt": "In the 'Rendering' section of Project Settings, how do you verify Lumen is configured as the global illumination method?",
+      "correct_text": "Confirm 'Global Illumination Method' is set to 'Lumen'.",
+      "correct_feedback": "Optimal Time: +0.02hrs. This setting dictates the primary global illumination technique used across the project, which is fundamental for Lumen to function.",
       "wrong_choices": [
         {
-          "text": "Enable 'Motion Blur' to see if reflections improve.",
-          "feedback": "Extended Time: +0.15hrs. Motion blur is a post-processing effect and has no direct impact on the functionality of global illumination.",
+          "text": "Set 'Global Illumination Method' to 'None'.",
+          "feedback": "Extended Time: +0.1hrs. Setting GI to 'None' would disable all global illumination, directly causing the metallic object to appear black due to lack of indirect light.",
           "type": "obvious"
         },
         {
-          "text": "Set 'Ambient Occlusion Method' to 'SSAO'.",
-          "feedback": "Extended Time: +0.1hrs. SSAO (Screen Space Ambient Occlusion) is a separate, less advanced ambient occlusion method, not Lumen GI.",
+          "text": "Confirm 'Screen Space Global Illumination' is enabled.",
+          "feedback": "Extended Time: +0.05hrs. Screen Space GI is an older, less comprehensive GI method. The problem states Lumen is enabled, so verifying Lumen is the correct action.",
           "type": "plausible"
         },
         {
-          "text": "Ensure 'Ray Tracing Global Illumination' is enabled.",
-          "feedback": "Extended Time: +0.05hrs. While Lumen often uses ray tracing, 'Global Illumination Method' set to 'Lumen' is the overarching setting; 'Ray Tracing Global Illumination' is a sub-component within older ray tracing settings.",
+          "text": "Confirm 'Ray Tracing Global Illumination' is enabled.",
+          "feedback": "Extended Time: +0.05hrs. While Lumen uses ray tracing, 'Lumen' as the 'Global Illumination Method' is the overarching setting. Ray Tracing GI might be a sub-setting or a separate legacy path.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-20",
-      "prompt": "Global Illumination is confirmed to be Lumen. Now, for reflections across the entire project, what's the corresponding global setting to ensure Lumen is active?",
-      "correct_text": "Under the 'Reflections' category, confirm 'Reflection Method' is set to 'Lumen'.",
-      "correct_feedback": "Optimal Time: +0.02hrs. This is the primary setting to enable Lumen for reflections across the entire project.",
+      "prompt": "You've confirmed Lumen for Global Illumination. Now, how do you verify Lumen is used for reflections?",
+      "correct_text": "Confirm 'Reflection Method' (under 'Rendering' in Project Settings) is set to 'Lumen'.",
+      "correct_feedback": "Optimal Time: +0.015hrs. This setting ensures that Lumen's advanced reflection system is active project-wide, providing accurate real-time reflections.",
       "wrong_choices": [
         {
-          "text": "Increase the 'Max FPS' setting to a higher value.",
-          "feedback": "Extended Time: +0.15hrs. Max FPS is a performance cap, unrelated to the method used for reflections.",
+          "text": "Open the World Outliner and select 'Add Reflection Capture' from the Create dropdown, or adjust existing Reflection Capture Actors.",
+          "feedback": "Extended Time: +0.1hrs. With Lumen enabled and configured as the primary reflection method, adjusting or adding legacy Reflection Capture actors is generally unnecessary and less effective. Lumen provides a more dynamic and accurate global reflection solution. Focusing on these legacy systems wastes time and won't fix the underlying Lumen reflection issue.",
           "type": "obvious"
         },
         {
-          "text": "Enable 'Screen Space Reflections'.",
-          "feedback": "Extended Time: +0.1hrs. Screen Space Reflections (SSR) is an older, limited reflection method and generally superseded by Lumen for superior results.",
+          "text": "Confirm 'Screen Space Reflections' is enabled.",
+          "feedback": "Extended Time: +0.05hrs. Screen Space Reflections is an older, less accurate reflection method. Lumen should be the primary method for high-quality reflections.",
           "type": "plausible"
         },
         {
-          "text": "Set 'Ray Tracing Reflections' to 'Enabled'.",
-          "feedback": "Extended Time: +0.05hrs. Similar to GI, 'Reflection Method' set to 'Lumen' is the main control. 'Ray Tracing Reflections' is a sub-setting, often enabled automatically or within older RT configurations.",
+          "text": "Check 'Ray Tracing Reflections' is enabled in Project Settings.",
+          "feedback": "Extended Time: +0.05hrs. While Lumen leverages ray tracing, 'Lumen' as the 'Reflection Method' is the specific high-level setting that enables its comprehensive reflection system.",
           "type": "subtle"
         }
       ]
     },
     {
-      "step_id": "step-21",
-      "prompt": "Global Lumen settings are good. You need to ensure the environment light source that provides indirect lighting and reflections for Lumen is configured correctly. Which actor is crucial for this?",
-      "correct_text": "In the World Outliner, locate and select the 'Sky Light' actor.",
-      "correct_feedback": "Optimal Time: +0.01hrs. The Sky Light is responsible for capturing the overall environmental lighting and feeding it into Lumen for indirect illumination and reflections.",
+      "step_id": "step-20W1",
+      "prompt": "You've confirmed 'Global Illumination Method' is Lumen. You then look for Reflection Capture settings instead of Lumen Reflections, focusing on older techniques. What do you do?",
+      "correct_text": "Open World Outliner and select 'Add Reflection Capture' from the Create dropdown, or adjust existing Reflection Capture Actors in the scene.",
+      "correct_feedback": "Extended Time: +0.1hrs. With Lumen enabled and configured as the primary reflection method, adjusting or adding legacy Reflection Capture actors is generally unnecessary and less effective. Lumen provides a more dynamic and accurate global reflection solution. Focusing on these legacy systems wastes time and won't fix the underlying Lumen reflection issue.",
       "wrong_choices": [
         {
-          "text": "Select the 'Player Start' actor.",
-          "feedback": "Extended Time: +0.15hrs. The Player Start actor defines the spawn point for players and has no impact on environmental lighting or reflections.",
+          "text": "Confirm 'Reflection Method' is set to 'Lumen' in Project Settings.",
+          "feedback": "Extended Time: +0.1hrs. This would be the optimal next step, confirming the correct global reflection method for Lumen.",
+          "type": "subtle"
+        },
+        {
+          "text": "Disable all Sky Lights and then re-enable them.",
+          "feedback": "Extended Time: +0.15hrs. This is a disruptive and unlikely solution. It doesn't address the specific Lumen reflection configuration or the potential for legacy systems interfering.",
           "type": "obvious"
         },
         {
-          "text": "Select the 'Atmospheric Fog' actor.",
-          "feedback": "Extended Time: +0.05hrs. Atmospheric Fog affects the visual appearance of the sky and atmospheric density, but doesn't directly provide the global environmental lighting for Lumen.",
+          "text": "In the 'World Settings', set 'Force No Precomputed Lighting'.",
+          "feedback": "Extended Time: +0.15hrs. This setting forces all lighting dynamic, which is already the intent with Lumen, but doesn't specifically address the reflection method configuration.",
+          "type": "plausible"
+        }
+      ]
+    },
+    {
+      "step_id": "step-21",
+      "prompt": "Global Lumen settings are confirmed. What crucial environmental light source provides ambient lighting and global reflections, especially important for metallic objects?",
+      "correct_text": "Select the 'Sky Light' actor in the World Outliner.",
+      "correct_feedback": "Optimal Time: +0.015hrs. The Sky Light provides environmental lighting and reflections, which are critical for metallic surfaces to look correct.",
+      "wrong_choices": [
+        {
+          "text": "Select the 'Directional Light' actor.",
+          "feedback": "Extended Time: +0.05hrs. The Directional Light simulates the sun and provides direct light and shadows, but the Sky Light is responsible for ambient illumination and environmental reflections.",
+          "type": "obvious"
+        },
+        {
+          "text": "Add a new 'Reflection Capture' actor near the statue.",
+          "feedback": "Extended Time: +0.05hrs. While Reflection Captures provide reflections, the Sky Light is a more fundamental environmental light source for global ambient reflections, especially with Lumen.",
           "type": "plausible"
         },
         {
-          "text": "Select the 'Directional Light' actor.",
-          "feedback": "Extended Time: +0.05hrs. The Directional Light provides direct sunlight/moonlight. While crucial for overall scene lighting, the Sky Light is specifically responsible for the *environmental* reflections and indirect light that Lumen uses.",
+          "text": "Add a new 'Sky Light' to the scene.",
+          "feedback": "Extended Time: +0.05hrs. Adding a new Sky Light might create conflicts or duplicate effort if one already exists and just needs its settings adjusted.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-22",
-      "prompt": "With the Sky Light selected, you need to ensure it's capturing the scene dynamically for Lumen's needs. What property defines this capture method?",
-      "correct_text": "In the Sky Light's Details panel, verify that 'Source Type' is set to 'SLS Captured Scene'.",
-      "correct_feedback": "Optimal Time: +0.02hrs. 'SLS Captured Scene' ensures the Sky Light captures the dynamic environment, which is vital for Lumen's dynamic GI and reflections.",
+      "prompt": "With the Sky Light selected, what 'Source Type' setting ensures it dynamically captures the scene for global illumination and reflections with Lumen?",
+      "correct_text": "Verify Sky Light 'Source Type' is set to 'SLS Captured Scene'.",
+      "correct_feedback": "Optimal Time: +0.02hrs. 'SLS Captured Scene' enables the Sky Light to dynamically capture the environment, essential for providing real-time reflections and GI with Lumen.",
       "wrong_choices": [
         {
-          "text": "Change the 'Light Color' to black.",
-          "feedback": "Extended Time: +0.15hrs. Setting the light color to black would simply remove the Sky Light's contribution, making the scene darker and exacerbating the problem.",
+          "text": "Set Sky Light 'Source Type' to 'SLS Specified Cubemap'.",
+          "feedback": "Extended Time: +0.1hrs. 'SLS Specified Cubemap' uses a static cubemap, preventing dynamic scene reflections and significantly hindering Lumen's ability to provide accurate real-time GI/reflections.",
           "type": "obvious"
         },
         {
-          "text": "Enable 'Cast Shadows' for the Sky Light.",
-          "feedback": "Extended Time: +0.05hrs. Sky Lights generally contribute soft, ambient illumination; enabling 'Cast Shadows' typically has minimal or no desired effect for environmental reflections and GI.",
+          "text": "Adjust 'Lower Hemisphere Color' on the Sky Light.",
+          "feedback": "Extended Time: +0.05hrs. While important for environmental color, this setting won't resolve issues with the fundamental source type for dynamic scene capture.",
           "type": "plausible"
         },
         {
-          "text": "Verify 'Source Type' is 'SLS Specified Cubemap'.",
-          "feedback": "Extended Time: +0.05hrs. 'SLS Specified Cubemap' uses a static texture, preventing dynamic capture of the scene, which is less ideal for a fully dynamic Lumen setup.",
+          "text": "Verify 'Cast Shadows' is enabled for the Sky Light.",
+          "feedback": "Extended Time: +0.05hrs. While Sky Lights can cast shadows, it's less critical for environmental reflections than ensuring the correct 'Source Type' for dynamic scene capture.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-23",
-      "prompt": "Sky Light source type is correct ('SLS Captured Scene'). Is the Sky Light actually emitting enough light to contribute to reflections and indirect light?",
-      "correct_text": "Verify the 'Intensity' parameter of the Sky Light is a non-zero, sufficiently high value (e.g., 1.0).",
-      "correct_feedback": "Optimal Time: +0.02hrs. A Sky Light with zero intensity will contribute no environmental light or reflections, making metallic objects appear black.",
+      "prompt": "Sky Light 'Source Type' is correct. What about its brightness to ensure sufficient environmental light for reflections?",
+      "correct_text": "Confirm Sky Light 'Intensity' is a visible value (e.g., 1.0) and not zero.",
+      "correct_feedback": "Optimal Time: +0.015hrs. A sufficient Sky Light intensity is necessary to provide ambient light and environmental reflections to all objects, especially metallic ones.",
       "wrong_choices": [
         {
-          "text": "Delete the Sky Light actor from the scene.",
-          "feedback": "Extended Time: +0.15hrs. Removing the Sky Light entirely will eliminate all ambient and environmental reflections, making the problem worse.",
+          "text": "Set Sky Light 'Intensity' to 0.0.",
+          "feedback": "Extended Time: +0.1hrs. Setting the intensity to zero would completely remove ambient lighting and environmental reflections, making the metallic object appear black.",
           "type": "obvious"
         },
         {
-          "text": "Change the 'Cubemap Resolution' to 16.",
-          "feedback": "Extended Time: +0.1hrs. Setting the cubemap resolution too low would make the captured reflections very blurry, but it wouldn't fix an overall lack of intensity.",
+          "text": "Adjust 'Indirect Lighting Intensity' for the Sky Light.",
+          "feedback": "Extended Time: +0.05hrs. 'Indirect Lighting Intensity' scales the indirect contribution. The primary 'Intensity' must first be a positive value for there to be any light to scale.",
           "type": "plausible"
         },
         {
-          "text": "Set the 'Lower Hemisphere Color' to pure black.",
-          "feedback": "Extended Time: +0.05hrs. While this affects the bottom half of the environment, it wouldn't explain an overall black statue that isn't receiving any light from above either.",
-          "type": "subtle"
-        }
-      ]
-    },
-    {
-      "step_id": "step-23W_reflection_captures",
-      "prompt": "You incorrectly suspect the reflections are not working due to missing static reflection captures, despite Lumen being active. What's your immediate action to address this mistaken belief?",
-      "correct_text": "Add a Sphere Reflection Capture actor near the statue, then select 'Build Reflection Captures' from the Build menu.",
-      "correct_feedback": "Optimal Time: +0.1hrs. This action attempts to use a legacy reflection method. While it won't solve the Lumen issue, it fits the mistaken diagnosis for this detour.",
-      "wrong_choices": [
-        {
-          "text": "Disable Lumen entirely in Project Settings to force the use of static reflection captures.",
-          "feedback": "Extended Time: +0.3hrs. Disabling Lumen would degrade overall lighting quality and remove dynamic GI/reflections, a worse outcome than simply adding static captures.",
-          "type": "obvious"
-        },
-        {
-          "text": "Place a 'Planar Reflection' actor near the statue for more accurate reflections.",
-          "feedback": "Extended Time: +0.2hrs. Planar reflections are for specific flat surfaces (e.g., mirrors, water) and are very expensive; they are not a general solution for environmental reflections.",
-          "type": "plausible"
-        },
-        {
-          "text": "Increase the Sky Light 'Cubemap Resolution' to 2048 and recapture.",
-          "feedback": "Extended Time: +0.15hrs. While related to cubemaps, this only affects the Sky Light's capture resolution, not the placement and building of specific Reflection Capture actors.",
+          "text": "Check 'Volumetric Scattering Intensity' for the Sky Light.",
+          "feedback": "Extended Time: +0.05hrs. This setting controls scattering for volumetric fog, which is unrelated to the direct reflection contribution of the Sky Light.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-24",
-      "prompt": "Static checks are done, but the statue is still black. You need a visual debugging tool to inspect how reflections are actually being rendered in the engine. Where do you access these tools?",
-      "correct_text": "In the Editor Viewport toolbar (top left), click on the 'View Modes' dropdown.",
-      "correct_feedback": "Optimal Time: +0.015hrs. The 'View Modes' dropdown provides access to various visualization buffers and rendering modes.",
+      "prompt": "Sky Light settings seem correct. You want to visually inspect the reflection data in the viewport. How do you access specialized visualization modes?",
+      "correct_text": "In the Editor Viewport, click the 'View Modes' dropdown (usually top-left).",
+      "correct_feedback": "Optimal Time: +0.015hrs. The 'View Modes' dropdown provides access to various diagnostic and visualization overlays.",
       "wrong_choices": [
         {
-          "text": "Open the 'Sequencer' window to check animation tracks.",
-          "feedback": "Extended Time: +0.15hrs. Sequencer is for cinematic creation and animation, entirely unrelated to visualizing rendering buffers.",
+          "text": "Open the 'Content Browser' and search for reflection assets.",
+          "feedback": "Extended Time: +0.05hrs. The Content Browser manages assets, it doesn't provide real-time viewport visualization modes.",
           "type": "obvious"
         },
         {
-          "text": "Open 'Developer Tools' -> 'Widget Reflector'.",
-          "feedback": "Extended Time: +0.1hrs. The Widget Reflector is for debugging user interface elements, not scene rendering buffers.",
+          "text": "Click the 'Show' dropdown in the Editor Viewport.",
+          "feedback": "Extended Time: +0.05hrs. The 'Show' dropdown controls visibility of scene elements (e.g., lights, fog), not specialized buffer visualizations.",
           "type": "plausible"
         },
         {
-          "text": "Click the 'Show' dropdown in the viewport.",
-          "feedback": "Extended Time: +0.05hrs. The 'Show' dropdown controls visibility of various scene elements, but not the detailed 'Buffer Visualization' modes needed here.",
+          "text": "Open the console and type 'stat gpu' or 'stat unit'.",
+          "feedback": "Extended Time: +0.05hrs. These console commands show performance statistics, not visual buffer data for reflections.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-25",
-      "prompt": "From 'View Modes', where do you find the tools to inspect different rendering passes like reflections, base color, or normals?",
-      "correct_text": "From the 'View Modes' dropdown, hover over 'Buffer Visualization'.",
-      "correct_feedback": "Optimal Time: +0.015hrs. 'Buffer Visualization' contains a suite of modes to inspect different rendering buffers, which is ideal for diagnosing visual issues.",
+      "prompt": "You've clicked the 'View Modes' dropdown. Where do you find options to visualize rendering buffers like reflections?",
+      "correct_text": "Navigate to the 'Buffer Visualization' submenu.",
+      "correct_feedback": "Optimal Time: +0.015hrs. The 'Buffer Visualization' submenu contains a range of visual debugging tools to inspect how different data is rendered into buffers.",
       "wrong_choices": [
         {
-          "text": "Select 'Lit' to go back to the default view mode.",
-          "feedback": "Extended Time: +0.05hrs. You're likely already in 'Lit' mode; the goal is to delve deeper into rendering, not revert to the default.",
+          "text": "Select 'Shader Complexity' or 'Quad Overdraw' from the dropdown.",
+          "feedback": "Extended Time: +0.05hrs. While these modes are useful for performance optimization, they do not provide visual information about reflection data or its presence in the scene. Selecting them for this issue leads to an irrelevant investigation and delays finding the correct reflection buffer visualization.",
           "type": "obvious"
         },
         {
-          "text": "Select 'Collision' to see the statue's collision meshes.",
-          "feedback": "Extended Time: +0.1hrs. The 'Collision' view mode displays collision geometry, not rendering data relevant to reflections.",
+          "text": "Navigate to the 'Optimization Viewmodes' submenu.",
+          "feedback": "Extended Time: +0.05hrs. Optimization viewmodes (like 'Light Complexity') are for performance, not for inspecting rendering buffers like reflections.",
           "type": "plausible"
         },
         {
-          "text": "Hover over 'Show' and look for 'Reflections'.",
-          "feedback": "Extended Time: +0.05hrs. While 'Show' has a 'Reflections' toggle, it usually just controls if reflections are *drawn*, not allowing you to *visualize* the actual reflection buffer itself.",
+          "text": "Select 'Lit' from the main View Modes options.",
+          "feedback": "Extended Time: +0.05hrs. 'Lit' is the default rendering mode. You need a specialized visualization for reflection data, not the standard rendered view.",
           "type": "subtle"
         }
       ]
     },
     {
-      "step_id": "step-26",
-      "prompt": "Under 'Buffer Visualization', which mode will show you the reflection data specifically, to see if anything is being reflected onto the statue?",
-      "correct_text": "From the 'Buffer Visualization' submenu, select 'World Reflection' to inspect reflection data.",
-      "correct_feedback": "Optimal Time: +0.03hrs. 'World Reflection' buffer visualization directly displays the reflection data being sampled by objects in the scene.",
+      "step_id": "step-25W1",
+      "prompt": "You're in the 'View Modes' dropdown's 'Buffer Visualization' submenu. You choose to inspect performance-related modes, rather than reflection data directly. What do you select?",
+      "correct_text": "Select 'Shader Complexity' or 'Quad Overdraw'.",
+      "correct_feedback": "Extended Time: +0.05hrs. While these modes are useful for performance optimization, they do not provide visual information about reflection data or its presence in the scene. Selecting them for this issue leads to an irrelevant investigation and delays finding the correct reflection buffer visualization.",
       "wrong_choices": [
         {
-          "text": "Select 'Base Color' to see the statue's albedo.",
-          "feedback": "Extended Time: +0.15hrs. Base Color displays the material's diffuse color, not its reflections.",
+          "text": "Select 'World Reflection'.",
+          "feedback": "Extended Time: +0.05hrs. This would be the optimal choice for visualizing reflection data. Choosing performance modes instead wastes time.",
+          "type": "subtle"
+        },
+        {
+          "text": "Select 'Base Color'.",
+          "feedback": "Extended Time: +0.1hrs. 'Base Color' shows the raw albedo of materials, which is entirely unrelated to how reflections are being processed or rendered.",
           "type": "obvious"
         },
         {
-          "text": "Select 'Metallic' to see the metallic buffer.",
-          "feedback": "Extended Time: +0.1hrs. The 'Metallic' buffer shows the metallic property value, but not the actual reflected light from the environment.",
+          "text": "Select 'Roughness'.",
+          "feedback": "Extended Time: +0.1hrs. 'Roughness' shows the roughness value of materials, which affects reflection sharpness, but doesn't visualize the actual reflection data itself.",
+          "type": "plausible"
+        }
+      ]
+    },
+    {
+      "step_id": "step-26",
+      "prompt": "You're in the 'Buffer Visualization' submenu. Which option should you select to visually inspect the reflection data the engine is generating?",
+      "correct_text": "Select 'World Reflection' to visually inspect reflection data.",
+      "correct_feedback": "Optimal Time: +0.03hrs. The 'World Reflection' buffer visualization directly shows the reflection information that the engine is generating, allowing you to see if the statue is receiving any reflection data.",
+      "wrong_choices": [
+        {
+          "text": "Select 'Base Color'.",
+          "feedback": "Extended Time: +0.05hrs. 'Base Color' shows the raw color of the material (albedo), not how reflections are being computed or applied.",
+          "type": "obvious"
+        },
+        {
+          "text": "Select 'Roughness'.",
+          "feedback": "Extended Time: +0.05hrs. 'Roughness' visualizes the roughness property of surfaces, which influences reflection sharpness, but doesn't show the actual reflection *data*.",
           "type": "plausible"
         },
         {
-          "text": "Select 'Scene Depth' to inspect depth information.",
-          "feedback": "Extended Time: +0.05hrs. Scene Depth shows distance from the camera, which is related to rendering but not the direct reflection data.",
+          "text": "Select 'Specular'.",
+          "feedback": "Extended Time: +0.05hrs. 'Specular' shows specular highlights, which are related to reflections, but 'World Reflection' provides a more comprehensive view of the entire reflection buffer.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-27",
-      "prompt": "The 'World Reflection' buffer looks empty or incorrect around the statue. While Lumen uses dynamic reflections, legacy Reflection Capture actors can still sometimes interfere or provide fallback. Do you see any near the statue?",
-      "correct_text": "Visually inspect the viewport for any Sphere or Box Reflection Capture actors around the statue, or search for them in the World Outliner.",
-      "correct_feedback": "Optimal Time: +0.02hrs. Identifying any static reflection captures is important to ensure they aren't causing conflicts or overriding Lumen's dynamic system.",
+      "prompt": "Even with Lumen, your 'World Reflection' buffer shows no data around the statue. Are there any legacy reflection systems that might be present and interfering, or could be used as a fallback?",
+      "correct_text": "Check if dedicated 'Reflection Capture' actors are present near the statue in the World Outliner.",
+      "correct_feedback": "Optimal Time: +0.02hrs. Even with Lumen, sometimes legacy Reflection Captures can interfere or act as a fallback, so checking for their presence and configuration is a valid diagnostic step.",
       "wrong_choices": [
         {
-          "text": "Add a new 'Camera Actor' to the scene to get a different perspective.",
-          "feedback": "Extended Time: +0.15hrs. Adding a camera won't help identify existing reflection capture actors or diagnose their influence.",
+          "text": "Add more point lights to the scene to increase overall illumination.",
+          "feedback": "Extended Time: +0.1hrs. Adding more direct lights won't resolve an issue with missing *reflection data* on a metallic object. It misdiagnoses the problem.",
           "type": "obvious"
         },
         {
-          "text": "Check the 'Lightmass Importance Volume' for its bounds.",
-          "feedback": "Extended Time: +0.1hrs. The Lightmass Importance Volume defines the area for static lightmass calculations, unrelated to dynamic Lumen reflections or reflection capture actors.",
+          "text": "Check 'Lightmass' settings in World Settings.",
+          "feedback": "Extended Time: +0.05hrs. Lightmass is for baking static lighting. Lumen and the problem describe dynamic lighting, making Lightmass irrelevant here.",
           "type": "plausible"
         },
         {
-          "text": "Search for 'Volumetric Clouds' in the World Outliner.",
-          "feedback": "Extended Time: +0.05hrs. Volumetric Clouds are an environmental visual effect, not a source of local reflections for objects.",
+          "text": "Delete the existing Sky Light from the scene.",
+          "feedback": "Extended Time: +0.05hrs. This is a destructive action that would likely worsen ambient reflections rather than diagnose a problem with Reflection Captures.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-28",
-      "prompt": "You've found a Reflection Capture actor near the statue. What do you check next to determine its relevance?",
-      "correct_text": "Select the Reflection Capture actor and ensure its influence bounds encompass the statue.",
-      "correct_feedback": "Optimal Time: +0.03hrs. If a Reflection Capture exists, its influence bounds must cover the object for it to provide reflections (though with Lumen, these are often redundant).",
+      "prompt": "You've found Reflection Capture actors near the statue. How do you ensure they are correctly affecting the statue?",
+      "correct_text": "If present, verify the statue is fully contained within their influence bounds.",
+      "correct_feedback": "Optimal Time: +0.03hrs. Reflection Captures only provide reflections within their defined influence bounds. If the statue is outside, it won't receive reflections from them.",
       "wrong_choices": [
         {
-          "text": "Change the Reflection Capture actor's 'Light Channel' to 'Channel 3'.",
-          "feedback": "Extended Time: +0.15hrs. Light channels are for specific lighting groups, not for defining the physical influence area of a reflection capture.",
+          "text": "Delete all Reflection Capture actors, relying solely on Lumen.",
+          "feedback": "Extended Time: +0.1hrs. While Lumen is primary, deleting them without fully understanding their impact or whether they're acting as a fallback could worsen the situation or remove a potential solution.",
           "type": "obvious"
         },
         {
-          "text": "Set its 'Capture Distance' to 0.",
-          "feedback": "Extended Time: +0.1hrs. Setting the capture distance to 0 would make the reflection capture ineffective.",
+          "text": "Adjust the 'Brightness' property of the Reflection Captures.",
+          "feedback": "Extended Time: +0.05hrs. Adjusting brightness only changes the intensity of reflections *if* they are being applied. The primary concern is if the statue is *receiving* them at all.",
           "type": "plausible"
         },
         {
-          "text": "Recapture the reflection without checking its bounds first.",
-          "feedback": "Extended Time: +0.05hrs. Recapturing is pointless if the bounds don't cover the statue; it will still capture an irrelevant area.",
+          "text": "Rebuild 'Reflection Captures' via 'Build -> Build Reflection Captures'.",
+          "feedback": "Extended Time: +0.05hrs. Rebuilding only updates the capture. If the statue is outside the bounds, it still won't receive reflections even after a rebuild.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-29",
-      "prompt": "Reflection Captures (if any) are confirmed. Lumen relies heavily on Post Process Volumes for global rendering settings. You need to ensure the overall scene rendering is configured for Lumen. Which actor is key for this?",
-      "correct_text": "In the World Outliner, select the 'Post Process Volume' actor.",
-      "correct_feedback": "Optimal Time: +0.01hrs. Post Process Volumes are crucial for overriding or defining global rendering settings, including Lumen's specific parameters.",
+      "prompt": "Reflection captures are either absent or correctly configured. What global visual effect controller is left to check for Lumen settings?",
+      "correct_text": "Select the 'Post Process Volume' in the scene (or add one if none exist).",
+      "correct_feedback": "Optimal Time: +0.015hrs. Post Process Volumes are crucial for overriding or configuring global rendering effects, including Lumen GI and Reflections.",
       "wrong_choices": [
         {
-          "text": "Select the 'Blocking Volume' to see if it's obstructing anything.",
-          "feedback": "Extended Time: +0.15hrs. Blocking volumes are for collision, not rendering configuration.",
+          "text": "Select the 'Camera Actor' in the scene.",
+          "feedback": "Extended Time: +0.05hrs. While the camera renders the scene, Post Process Volumes are the primary means of controlling global rendering effects that affect the camera's view.",
           "type": "obvious"
         },
         {
-          "text": "Select the 'Exponential Height Fog' actor.",
-          "feedback": "Extended Time: +0.1hrs. Exponential Height Fog controls volumetric fog effects, not the core global illumination or reflection methods.",
+          "text": "Open World Settings again to review scene-wide rendering properties.",
+          "feedback": "Extended Time: +0.05hrs. While World Settings has some global rendering properties, Post Process Volumes offer more granular, localized, and commonly used controls for effects like Lumen.",
           "type": "plausible"
         },
         {
-          "text": "Select the 'Editor Sky Sphere' actor.",
-          "feedback": "Extended Time: +0.05hrs. The Sky Sphere is a visual representation of the sky, not a configurable rendering volume for Lumen.",
+          "text": "Add a new Post Process Volume immediately without checking for an existing one.",
+          "feedback": "Extended Time: +0.05hrs. Adding a new one might create duplicates or confusion if one is already active and just needs adjustment.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-30",
-      "prompt": "With the Post Process Volume selected, what's the first critical setting to ensure it applies its effects to the entire scene?",
-      "correct_text": "In its Details panel, verify 'Infinite Extent (Unbound)' is checked, or adjust the volume's bounds to cover the entire level.",
-      "correct_feedback": "Optimal Time: +0.03hrs. If the Post Process Volume isn't unbound or its bounds don't cover the scene, its Lumen settings won't be applied to the statue.",
+      "prompt": "You've selected the Post Process Volume. How do you ensure its settings are affecting the problematic statue?",
+      "correct_text": "Ensure the 'Unbound' property is checked, OR verify the statue is within the volume's physical bounds.",
+      "correct_feedback": "Optimal Time: +0.025hrs. A Post Process Volume only applies its effects to objects within its bounds, unless 'Unbound' is checked, making it apply to the entire scene.",
       "wrong_choices": [
         {
-          "text": "Adjust the 'Exposure Compensation' to a very low value.",
-          "feedback": "Extended Time: +0.15hrs. Exposure compensation affects brightness, not the coverage area of the post-process volume.",
+          "text": "Delete the Post Process Volume from the scene.",
+          "feedback": "Extended Time: +0.1hrs. Deleting the volume would remove all post-processing effects, including potentially crucial Lumen overrides, likely worsening the issue.",
           "type": "obvious"
         },
         {
-          "text": "Set the 'Blend Weight' to 0.",
-          "feedback": "Extended Time: +0.1hrs. Setting the blend weight to 0 would effectively disable the entire Post Process Volume's effects.",
+          "text": "Adjust the 'Exposure Compensation' setting.",
+          "feedback": "Extended Time: +0.05hrs. Exposure Compensation changes overall brightness, but doesn't address whether the volume's effects are actually *applied* to the statue.",
           "type": "plausible"
         },
         {
-          "text": "Set the 'Post Process Material' slot to a custom material.",
-          "feedback": "Extended Time: +0.05hrs. This would apply a custom post-process effect, but doesn't ensure the volume's fundamental coverage over the scene.",
+          "text": "Only check the 'Blend Weight' property is 1.0.",
+          "feedback": "Extended Time: +0.05hrs. Blend Weight controls the strength of the volume's effects, but if the volume isn't covering the statue or isn't 'Unbound', the weight is irrelevant.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-31",
-      "prompt": "The Post Process Volume is active and covers the scene. You need to verify its Lumen-specific settings. How do you quickly find them within the Details panel?",
-      "correct_text": "In the Post Process Volume's Details panel, use the search bar to type 'Lumen'.",
-      "correct_feedback": "Optimal Time: +0.01hrs. The search bar is the most efficient way to quickly locate specific settings within the extensive Post Process Volume properties.",
+      "prompt": "The Post Process Volume is active and covers the statue. How do you find its Lumen-specific settings efficiently?",
+      "correct_text": "In the Post Process Volume's 'Details' panel, use the search bar to search for 'Lumen'.",
+      "correct_feedback": "Optimal Time: +0.015hrs. Using the search bar is the most efficient way to quickly filter for specific settings within a crowded Details panel.",
       "wrong_choices": [
         {
-          "text": "Open the console and type 'stat gpu'.",
-          "feedback": "Extended Time: +0.15hrs. 'stat gpu' provides GPU performance statistics, not configuration settings for the Post Process Volume.",
+          "text": "Search for 'Fog' settings, assuming it's a fog-related issue.",
+          "feedback": "Extended Time: +0.05hrs. Fog settings are unrelated to Lumen's global illumination or reflection configurations, leading to an irrelevant search.",
           "type": "obvious"
         },
         {
-          "text": "Scroll through every single setting in the Details panel manually.",
-          "feedback": "Extended Time: +0.1hrs. While eventually effective, manually scrolling through hundreds of settings is inefficient and time-consuming.",
+          "text": "Manually scroll through all categories in the Details panel to find Lumen settings.",
+          "feedback": "Extended Time: +0.05hrs. While possible, this is much less efficient than using the search bar, especially in a Post Process Volume with many settings.",
           "type": "plausible"
         },
         {
-          "text": "Look under the 'Rendering Features' category for 'Ambient Occlusion'.",
-          "feedback": "Extended Time: +0.05hrs. While Ambient Occlusion is a rendering feature, it's not the specific 'Lumen' settings you're looking for to confirm GI and Reflections.",
+          "text": "Search for 'Global Illumination' in the Details panel.",
+          "feedback": "Extended Time: +0.05hrs. While correct, searching for 'Lumen' is more specific and often brings up all relevant Lumen-related settings in one go.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-32",
-      "prompt": "You've searched for Lumen settings within the Post Process Volume. Now, confirm its Global Illumination configuration.",
-      "correct_text": "Under the 'Lumen Global Illumination' section, verify 'Method' is 'Lumen' (or 'Final Gather' depending on engine version) and 'Intensity' is greater than 0.",
-      "correct_feedback": "Optimal Time: +0.02hrs. These settings ensure Lumen's Global Illumination is actively contributing to the scene through the Post Process Volume.",
+      "prompt": "You've found the Lumen settings in the Post Process Volume. How do you ensure global illumination through Lumen is active for reflections?",
+      "correct_text": "Confirm 'Global Illumination Method' under 'Lumen GI' is set to 'Lumen' (or 'Final Gather').",
+      "correct_feedback": "Optimal Time: +0.015hrs. This Post Process Volume setting can override the Project Settings, so confirming Lumen GI is active here is crucial for consistent global illumination.",
       "wrong_choices": [
         {
-          "text": "Set 'SSR Intensity' to 1.0.",
-          "feedback": "Extended Time: +0.15hrs. SSR (Screen Space Reflections) is a separate reflection method, not Lumen Global Illumination.",
+          "text": "Set 'Global Illumination Method' under Lumen GI to 'None'.",
+          "feedback": "Extended Time: +0.1hrs. Disabling Lumen GI here would prevent indirect light from reaching the statue, directly causing it to appear black.",
           "type": "obvious"
         },
         {
-          "text": "Change 'Lumen Final Gather Quality' to 'Low'.",
-          "feedback": "Extended Time: +0.1hrs. This only adjusts the quality, not whether Lumen GI is enabled or has a valid intensity, which are more critical for a black object.",
+          "text": "Adjust 'Lumen Scene View Distance' under Lumen GI.",
+          "feedback": "Extended Time: +0.05hrs. This setting affects the quality and range of Lumen's scene capture, but the primary issue would be if Lumen GI isn't enabled at all.",
           "type": "plausible"
         },
         {
-          "text": "Confirm 'Lumen Scene Lighting' is enabled.",
-          "feedback": "Extended Time: +0.05hrs. While related, the 'Method' and 'Intensity' parameters directly govern if Lumen GI is active and contributing, which is more crucial than just 'Lumen Scene Lighting'.",
+          "text": "Confirm 'Ray Tracing Global Illumination' is enabled under 'Lumen GI'.",
+          "feedback": "Extended Time: +0.05hrs. While Lumen uses ray tracing, 'Lumen' as the method is the high-level control. Ray Tracing GI might be a sub-setting, but the overarching method needs to be Lumen.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-33",
-      "prompt": "Lumen GI is confirmed. Now, confirm Lumen's reflection configuration within the Post Process Volume.",
-      "correct_text": "Under the 'Lumen Reflections' section, verify 'Method' is 'Lumen' (or 'Final Gather') and 'Intensity' is greater than 0.",
-      "correct_feedback": "Optimal Time: +0.02hrs. These settings ensure Lumen's dynamic reflections are actively contributing to the scene through the Post Process Volume.",
+      "prompt": "Lumen GI is confirmed in the Post Process Volume. What about Lumen reflections?",
+      "correct_text": "Confirm 'Reflections Method' under 'Lumen Reflections' is set to 'Lumen' (or 'Final Gather').",
+      "correct_feedback": "Optimal Time: +0.01hrs. Just like GI, the Post Process Volume can override project settings for reflections. Ensuring Lumen is active here for reflections is vital.",
       "wrong_choices": [
         {
-          "text": "Enable 'Bloom' with a high intensity.",
-          "feedback": "Extended Time: +0.15hrs. Bloom is a visual glow effect, entirely separate from the core reflection system.",
+          "text": "Set 'Reflections Method' under Lumen Reflections to 'None'.",
+          "feedback": "Extended Time: +0.1hrs. Disabling Lumen Reflections would directly cause the metallic object to appear black due to lack of environmental reflections.",
           "type": "obvious"
         },
         {
-          "text": "Set 'Lumen Max Trace Distance' to a very small value.",
-          "feedback": "Extended Time: +0.1hrs. While trace distance is important, setting it very low would limit reflections, not confirm they are active and functional with a positive intensity.",
+          "text": "Adjust 'Lumen Reflections Max Bounces'.",
+          "feedback": "Extended Time: +0.05hrs. This setting affects the quality and depth of reflections, but the primary issue is if Lumen Reflections themselves aren't enabled.",
           "type": "plausible"
         },
         {
-          "text": "Check 'Lumen Surface Cache'.",
-          "feedback": "Extended Time: +0.05hrs. The Surface Cache is an internal Lumen optimization, not the direct user-facing setting for enabling or intensifying reflections.",
+          "text": "Confirm 'Screen Space Reflections' under Lumen Reflections is enabled.",
+          "feedback": "Extended Time: +0.05hrs. Screen Space Reflections is an older method. You need to ensure Lumen's reflection method is specifically active for the highest quality.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-34",
-      "prompt": "Post Process Volume settings for Lumen are confirmed. You've made many global checks. Let's return to the specific object. What's the next step?",
-      "correct_text": "Re-select the black metallic statue actor in the viewport or World Outliner.",
-      "correct_feedback": "Optimal Time: +0.01hrs. After global changes, it's good practice to re-select the problematic actor to ensure you're viewing its current state and have its properties available.",
+      "prompt": "Both Lumen GI and Reflections methods are confirmed. What final check ensures they are actually having an effect?",
+      "correct_text": "Verify Lumen GI and Reflections intensity values (e.g., 'GI Intensity', 'Reflections Intensity') are not zero.",
+      "correct_feedback": "Optimal Time: +0.01hrs. Even if enabled, zero intensity values would prevent any visible effect, making the statue appear black.",
       "wrong_choices": [
         {
-          "text": "Close the project and reopen it.",
-          "feedback": "Extended Time: +0.15hrs. This is an unnecessary and time-consuming step for simply re-selecting an actor.",
+          "text": "Set Lumen GI and Reflections intensity values to zero.",
+          "feedback": "Extended Time: +0.1hrs. Setting intensities to zero would actively cause the problem you're trying to solve, making the object appear black.",
           "type": "obvious"
         },
         {
-          "text": "Select the Directional Light instead.",
-          "feedback": "Extended Time: +0.05hrs. The focus has shifted back to the statue after global checks; checking the directional light again is less relevant at this stage.",
+          "text": "Increase 'Reflections Brightness' to an extreme value.",
+          "feedback": "Extended Time: +0.05hrs. While increasing brightness can help, if the intensity is zero, increasing brightness will have no effect. It's secondary to a non-zero intensity.",
           "type": "plausible"
         },
         {
-          "text": "Select the statue's Static Mesh Asset in the Content Browser.",
-          "feedback": "Extended Time: +0.05hrs. This selects the asset, not the actor instance in the scene, meaning you won't have access to its scene-specific rendering properties.",
+          "text": "Only check the 'Lumen Scene Lighting' property.",
+          "feedback": "Extended Time: +0.05hrs. 'Lumen Scene Lighting' is a broader category; you need to check the specific intensity multipliers for GI and Reflections within that category.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-35",
-      "prompt": "With the statue re-selected, given all the checks made, what's a critical object-specific flag to double-check regarding advanced rendering that might have been inadvertently changed or overlooked?",
-      "correct_text": "In the Details panel for the statue, reconfirm that 'Visible in Ray Tracing' under the 'Rendering' category is still checked.",
-      "correct_feedback": "Optimal Time: +0.02hrs. This setting is frequently the cause of objects not appearing in Lumen's ray-traced effects; a double-check is prudent after many other changes.",
+      "prompt": "You've checked all global and environmental settings. It's prudent to quickly re-verify the specific object's properties that were initially checked. What do you do?",
+      "correct_text": "Re-select the problematic Static Mesh Actor in the viewport or World Outliner.",
+      "correct_feedback": "Optimal Time: +0.01hrs. A quick re-check of the object's fundamental properties is a good final confirmation after making global changes, ensuring no settings were inadvertently altered or missed.",
       "wrong_choices": [
         {
-          "text": "Change the 'Mobility' to 'Static'.",
-          "feedback": "Extended Time: +0.15hrs. Changing mobility to 'Static' would fundamentally prevent it from receiving dynamic Lumen GI and reflections, worsening the problem.",
+          "text": "Close the current level without saving and reopen it.",
+          "feedback": "Extended Time: +0.05hrs. This is a disruptive step and could lead to loss of recent changes if not saved, and doesn't directly help in re-verifying specific object properties.",
           "type": "obvious"
         },
         {
-          "text": "Check 'Receives Decals' again.",
-          "feedback": "Extended Time: +0.05hrs. This setting is for decal projection, not directly related to its visibility within ray-traced reflections.",
+          "text": "Open the Material Instance again to check metallic/roughness.",
+          "feedback": "Extended Time: +0.05hrs. While those are important, they were already thoroughly checked. The re-check should focus on actor-level rendering settings, which might have implicit dependencies.",
           "type": "plausible"
         },
         {
-          "text": "Verify 'Evaluate World Position Offset in Ray Tracing' is enabled.",
-          "feedback": "Extended Time: +0.05hrs. This specific setting is for World Position Offset effects, not general visibility to ray tracing, which is more critical for this problem.",
+          "text": "Re-select the Sky Light to confirm its intensity.",
+          "feedback": "Extended Time: +0.05hrs. The current task is to re-verify the *object's* specific properties, not global lights, which were just checked.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-36",
-      "prompt": "The statue still appears black in the editor. The original problem also stated it was black in PIE. What property might cause an object to be visible in the editor but hidden during gameplay?",
-      "correct_text": "In the Static Mesh Actor's Details panel, search for 'Hidden In Game' and ensure it is NOT checked.",
-      "correct_feedback": "Optimal Time: +0.02hrs. If 'Hidden In Game' is checked, the object will not render when playing the game, which aligns with the PIE problem description.",
+      "prompt": "With the problematic statue re-selected, what's a critical per-object rendering setting, vital for Lumen's reflections, to re-confirm?",
+      "correct_text": "Re-confirm 'Visible in Ray Tracing' is checked (enabled) under the 'Rendering' category.",
+      "correct_feedback": "Optimal Time: +0.02hrs. This flag is crucial for objects to be considered by Lumen's ray-tracing calculations. A final check ensures it remains active.",
       "wrong_choices": [
         {
-          "text": "Set the statue's 'Scale' to 0 in all axes.",
-          "feedback": "Extended Time: +0.15hrs. Setting the scale to 0 would make it effectively invisible in both editor and game, but it's not the 'hidden in game' specific flag.",
+          "text": "Disable 'Visible in Ray Tracing'.",
+          "feedback": "Extended Time: +0.1hrs. Disabling this would undo a critical step for Lumen reflections and actively cause the object to appear black.",
           "type": "obvious"
         },
         {
-          "text": "Check if 'Collision Enabled' is set to 'No Collision'.",
-          "feedback": "Extended Time: +0.05hrs. Collision settings control physical interaction, not visual rendering visibility in-game.",
+          "text": "Check 'Receives Ray Tracing Shadows'.",
+          "feedback": "Extended Time: +0.05hrs. While related to ray tracing, 'Visible in Ray Tracing' is the overarching flag for the object's presence in ray-traced reflections, making it more critical.",
           "type": "plausible"
         },
         {
-          "text": "Toggle the 'Visible' checkbox off and then back on.",
-          "feedback": "Extended Time: +0.05hrs. The 'Visible' checkbox primarily affects editor visibility, not the separate 'Hidden In Game' flag that specifically controls runtime visibility.",
+          "text": "Look for a specific 'Lumen override' for the object in the Details panel.",
+          "feedback": "Extended Time: +0.05hrs. 'Visible in Ray Tracing' is the primary object-level flag Lumen uses for reflection data, and there isn't typically a separate 'Lumen override' for this function.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-37",
-      "prompt": "You've checked numerous settings, and the statue is still black in the editor viewport. The original problem stated it's also black in PIE. What's the definitive next step to confirm behavior in a 'game-like' environment?",
-      "correct_text": "Click the 'Play' button in the toolbar to enter 'Play In Editor' (PIE) mode.",
-      "correct_feedback": "Optimal Time: +0.02hrs. Entering PIE mode is the most direct and efficient way to test runtime behavior within the editor.",
+      "prompt": "All settings seem correct in the editor, but what if the statue is specifically hidden during gameplay?",
+      "correct_text": "Verify the 'Hidden In Game' property of the mesh component is NOT checked (under 'Rendering').",
+      "correct_feedback": "Optimal Time: +0.02hrs. If 'Hidden In Game' is checked, the object will not render in Play In Editor (PIE) or packaged builds, even if visible in the editor.",
       "wrong_choices": [
         {
-          "text": "Launch a standalone game instance.",
-          "feedback": "Extended Time: +0.15hrs. While a valid test, launching a standalone game is typically slower and less convenient for quick debugging iterations than PIE.",
+          "text": "Verify 'Editor Only Actor' is checked.",
+          "feedback": "Extended Time: +0.05hrs. 'Editor Only Actor' would make it visible only in the editor, but the problem also describes it being black in PIE, so this is not the root cause.",
           "type": "obvious"
         },
         {
-          "text": "Build the project and run it from an executable.",
-          "feedback": "Extended Time: +0.2hrs. Building an executable is a very time-consuming step and overkill for this stage of debugging.",
+          "text": "Re-verify the 'Visible' property is checked.",
+          "feedback": "Extended Time: +0.05hrs. 'Visible' governs editor visibility. 'Hidden In Game' specifically targets runtime visibility, which is the context for this check.",
           "type": "plausible"
         },
         {
-          "text": "Click 'Simulate' in the viewport.",
-          "feedback": "Extended Time: +0.05hrs. 'Simulate' mode runs physics and blueprints in the editor, but often doesn't fully replicate the rendering environment and game logic of PIE mode.",
+          "text": "Verify 'Start with Tick Enabled' is checked for the actor.",
+          "feedback": "Extended Time: +0.05hrs. 'Tick Enabled' controls component updates, not direct rendering visibility. It's unrelated to 'Hidden In Game'.",
           "type": "subtle"
         }
       ]
     },
     {
       "step_id": "step-38",
-      "prompt": "You're in PIE. What is the final verification step to confirm the issue is resolved?",
-      "correct_text": "Observe the statue within PIE to confirm it now renders correctly with reflections and global illumination.",
-      "correct_feedback": "Optimal Time: +0.02hrs. The ultimate goal is to see the statue rendering correctly in the game environment, so direct observation is the final confirmation.",
+      "prompt": "All editor and scene settings have been meticulously verified. How do you confirm the statue now renders correctly with reflections in a runtime environment?",
+      "correct_text": "Launch 'Play In Editor' (PIE) mode to test the scene.",
+      "correct_feedback": "Optimal Time: +0.02hrs. PIE mode is the fastest way to simulate a runtime environment and confirm visual behavior, including reflections and lighting, under actual game conditions.",
       "wrong_choices": [
         {
-          "text": "Press 'P' to toggle the physics debug visualization.",
-          "feedback": "Extended Time: +0.15hrs. Physics visualization is unrelated to the visual rendering of reflections and global illumination.",
+          "text": "Launch a standalone game build.",
+          "feedback": "Extended Time: +0.1hrs. A standalone build takes significantly longer to compile and launch than PIE, making it inefficient for iterative debugging.",
           "type": "obvious"
         },
         {
-          "text": "Open the console and type 'show collision'.",
-          "feedback": "Extended Time: +0.05hrs. 'show collision' displays collision meshes, not the visual rendering state of the object.",
+          "text": "Take a high-resolution screenshot directly from the editor viewport.",
+          "feedback": "Extended Time: +0.05hrs. A screenshot only captures the editor's view, not the runtime behavior. Some issues only manifest in PIE/gameplay mode.",
           "type": "plausible"
         },
         {
-          "text": "Check the 'World Outliner' in PIE mode to ensure the statue is listed.",
-          "feedback": "Extended Time: +0.05hrs. While confirming its presence, this doesn't verify its visual rendering correctness, which is the actual problem.",
+          "text": "Rebuild all lighting in the level.",
+          "feedback": "Extended Time: +0.05hrs. Lumen is a dynamic system, so rebuilding static lighting is unnecessary and time-consuming for verifying real-time reflections in PIE.",
+          "type": "subtle"
+        }
+      ]
+    },
+    {
+      "step_id": "step-39",
+      "prompt": "You've launched PIE. How do you confirm the statue is now correctly reflecting the scene and appears as intended?",
+      "correct_text": "Visually inspect the statue within the PIE viewport to confirm it now renders correctly with reflections.",
+      "correct_feedback": "Optimal Time: +0.02hrs. Direct visual confirmation in PIE is the conclusive step to verify the problem is resolved in a runtime context.",
+      "wrong_choices": [
+        {
+          "text": "Close PIE immediately, assuming the problem is fixed because all settings were checked.",
+          "feedback": "Extended Time: +0.1hrs. Assuming a fix without visual confirmation is risky. Issues can persist or manifest differently in PIE, so verification is critical.",
+          "type": "obvious"
+        },
+        {
+          "text": "Open the console in PIE and check for 'Lumen' related errors.",
+          "feedback": "Extended Time: +0.05hrs. While checking logs can be useful for explicit errors, the primary goal here is visual confirmation of the reflection, which is more direct.",
+          "type": "plausible"
+        },
+        {
+          "text": "Only confirm reflections are working on other non-metallic objects in PIE.",
+          "feedback": "Extended Time: +0.05hrs. The problem was specific to the *metallic statue*. You must confirm the fix on the problematic object itself, not just general scene reflections.",
           "type": "subtle"
         }
       ]

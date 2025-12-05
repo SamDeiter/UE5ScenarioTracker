@@ -51,10 +51,7 @@ textarea,
 }
 
 /* === DEBUG & ANIMATION STYLES === */
-.debug-correct {
-    box-shadow: 0 0 15px 4px rgba(22, 163, 74, 0.5);
-    border-color: #16a34a;
-}
+/* debug-correct class moved to line 409 with full styling */
 
 .pulse-red {
     animation: pulse-red-animation 1.5s infinite;
@@ -136,12 +133,12 @@ code {
 }
 
 /* Ticket cards in backlog */
-#backlog-list > div {
+#backlog-list>div {
     background-color: #2d2d2d !important;
     border-color: #444 !important;
 }
 
-#backlog-list > div:hover {
+#backlog-list>div:hover {
     background-color: #333 !important;
 }
 
@@ -173,13 +170,15 @@ h1 {
 /* Keep column containers at gray-800, but make sure content areas inside are darker */
 #backlog-column,
 #ticket-view-column {
-    background-color: #1f2937 !important;  /* gray-800 - medium dark */
+    background-color: #1f2937 !important;
+    /* gray-800 - medium dark */
 }
 
 /* Make the actual content/placeholder areas darker */
 #ticket-placeholder,
 #ticket-content {
-    background-color: #1e1e1e !important;  /* Very dark for content */
+    background-color: #1e1e1e !important;
+    /* Very dark for content */
 }
 
 /* Make Start Ticket button more visible */
@@ -198,8 +197,7 @@ button:hover {
     background-color: #14b8a6 !important;
 }
 
-.w-full.max-w-7xl.mb-4.flex.justify-start {
-}
+.w-full.max-w-7xl.mb-4.flex.justify-start {}
 
 /* Fix backlog scrolling - remove max-height limit and ensure full visibility */
 #backlog-list {
@@ -218,14 +216,16 @@ button:hover {
 #ticket-view-column,
 .bg-gray-800,
 .bg-gray-700 {
-    background-color: #2d2d2d !important;  /* Neutral dark gray, no blue */
+    background-color: #2d2d2d !important;
+    /* Neutral dark gray, no blue */
 }
 
 /* Headers should be slightly lighter neutral gray */
 #backlog-column h2,
 #ticket-view-column h2,
 .bg-gray-700\/50 {
-    background-color: #3a3a3a !important;  /* Lighter neutral gray */
+    background-color: #3a3a3a !important;
+    /* Lighter neutral gray */
 }
 
 /* ==========================================================================
@@ -234,11 +234,16 @@ button:hover {
 
 :root {
     /* Colors derived from UE5 Theme Editor */
-    --ue5-bg: #151515;       /* Main window background */
-    --ue5-panel: #202020;    /* Panel background */
-    --ue5-header: #2a2a2a;   /* Header background */
-    --ue5-content: #1a1a1a;  /* Content/Input background */
-    --ue5-blue: #005d9e;     /* Primary Blue */
+    --ue5-bg: #151515;
+    /* Main window background */
+    --ue5-panel: #202020;
+    /* Panel background */
+    --ue5-header: #2a2a2a;
+    /* Header background */
+    --ue5-content: #1a1a1a;
+    /* Content/Input background */
+    --ue5-blue: #005d9e;
+    /* Primary Blue */
     --ue5-blue-hover: #0070e0;
     --ue5-text: #dddddd;
     --ue5-border: #333333;
@@ -297,16 +302,17 @@ button:hover {
 /* Progress Bar - UE5 Blue */
 #progress-bar {
     background: var(--ue5-blue) !important;
-    background-image: none !important; /* Remove gradient */
+    background-image: none !important;
+    /* Remove gradient */
 }
 
 /* Ticket Cards */
-#backlog-list > div {
+#backlog-list>div {
     background-color: var(--ue5-panel) !important;
     border: 1px solid var(--ue5-border) !important;
 }
 
-#backlog-list > div:hover {
+#backlog-list>div:hover {
     background-color: var(--ue5-header) !important;
 }
 
@@ -343,12 +349,18 @@ button:hover {
 #ticket-content button,
 .ue-btn,
 button {
-    font-size: 1rem !important;       /* Increase font size */
-    font-weight: 600 !important;      /* Make text bolder */
-    padding: 12px 20px !important;    /* More padding for better spacing */
-    line-height: 1.5 !important;      /* Better line height for multi-line text */
-    letter-spacing: 0.02em !important; /* Slight letter spacing */
-    text-align: left !important;      /* Left align text for better readability on long answers */
+    font-size: 1rem !important;
+    /* Increase font size */
+    font-weight: 600 !important;
+    /* Make text bolder */
+    padding: 12px 20px !important;
+    /* More padding for better spacing */
+    line-height: 1.5 !important;
+    /* Better line height for multi-line text */
+    letter-spacing: 0.02em !important;
+    /* Slight letter spacing */
+    text-align: left !important;
+    /* Left align text for better readability on long answers */
 }
 
 /* Center the "Start Ticket" button specifically if needed, but keep answers left-aligned */
@@ -371,10 +383,13 @@ button {
 #ticket-content button,
 .ue-btn,
 button {
-    background-color: #383838 !important;  /* Dark gray button */
-    color: #eeeeee !important;             /* Light gray text */
-    border: 1px solid #252525 !important;  /* Subtle border */
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05) !important;
+    background-color: #383838 !important;
+    /* Dark gray button */
+    color: #eeeeee !important;
+    /* Light gray text */
+    border: 1px solid #252525 !important;
+    /* Subtle border */
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
     text-shadow: none !important;
     transition: background-color 0.1s, color 0.1s !important;
 }
@@ -382,7 +397,8 @@ button {
 #ticket-content button:hover,
 .ue-btn:hover,
 button:hover {
-    background-color: #505050 !important;  /* Lighter gray on hover */
+    background-color: #505050 !important;
+    /* Lighter gray on hover */
     color: #ffffff !important;
     border-color: #606060 !important;
 }
@@ -391,13 +407,15 @@ button:hover {
 #ticket-content button:active,
 .ue-btn:active,
 button:active {
-    background-color: #005d9e !important; /* UE5 Blue only on click/active */
+    background-color: #005d9e !important;
+    /* UE5 Blue only on click/active */
     border-color: #005d9e !important;
 }
 
 /* Specific style for the "Start Ticket" button to make it stand out slightly more but still fit */
 #start-ticket-btn {
-    background-color: #005d9e !important; /* Keep Start button blue as primary action */
+    background-color: #005d9e !important;
+    /* Keep Start button blue as primary action */
     border: 1px solid #004d85 !important;
 }
 
@@ -407,7 +425,8 @@ button:active {
 
 /* === DEBUG & ANIMATION STYLES (Updated for Priority) === */
 .debug-correct {
-    background-color: rgba(22, 163, 74, 0.15) !important; /* Green background */
+    background-color: rgba(22, 163, 74, 0.15) !important;
+    /* Green background */
     box-shadow: 0 0 15px 4px rgba(22, 163, 74, 0.5) !important;
     border-color: #16a34a !important;
     border-width: 2px !important;

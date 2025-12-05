@@ -506,16 +506,51 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("✅ Hard Reset button found. Attaching listener.");
             hardResetBtn.addEventListener('click', () => {
                 console.log("🔘 Hard Reset button clicked!");
-                if (!confirm("WARNING: This will clear ALL progress, including saved completion data and the timer. Are you sure you want to restart the assessment completely?")) return;
 
-                localStorage.removeItem('ue5ScenarioTimer');
-                localStorage.removeItem('ue5ScenarioState');
-                localStorage.removeItem('ue5InterruptedSteps');
-                localStorage.removeItem('ue5ActiveScenario');
-                localStorage.removeItem('ue5ActiveStep');
-                localStorage.removeItem('ue5ScenarioOrder'); // Clear the randomized order so next session is fresh
+                // Create custom confirmation modal
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
+                modal.innerHTML = `
+                    <div class="bg-gray-800 p-8 rounded-lg shadow-2xl max-w-md border-2 border-red-600">
+                        <h3 class="text-2xl font-bold text-red-400 mb-4">⚠️ WARNING</h3>
+                        <p class="text-gray-200 mb-6">This will clear ALL progress, including:</p>
+                        <ul class="text-gray-300 mb-6 list-disc list-inside space-y-1">
+                            <li>All completed scenarios</li>
+                            <li>Timer data</li>
+                            <li>Saved progress</li>
+                            <li>Session order</li>
+                        </ul>
+                        <p class="text-yellow-400 font-semibold mb-6">Are you absolutely sure?</p>
+                        <div class="flex gap-4">
+                            <button id="confirm-reset" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg">
+                                Yes, Reset Everything
+                            </button>
+                            <button id="cancel-reset" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                `;
 
-                location.reload();
+                document.body.appendChild(modal);
+
+                // Handle confirmation
+                document.getElementById('confirm-reset').addEventListener('click', () => {
+                    console.log("✅ Hard reset confirmed!");
+                    localStorage.removeItem('ue5ScenarioTimer');
+                    localStorage.removeItem('ue5ScenarioState');
+                    localStorage.removeItem('ue5InterruptedSteps');
+                    localStorage.removeItem('ue5ActiveScenario');
+                    localStorage.removeItem('ue5ActiveStep');
+                    localStorage.removeItem('ue5ScenarioOrder');
+                    location.reload();
+                });
+
+                // Handle cancellation
+                document.getElementById('cancel-reset').addEventListener('click', () => {
+                    console.log("❌ Hard reset cancelled");
+                    document.body.removeChild(modal);
+                });
             });
         }
     }
@@ -579,7 +614,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function loadScenarioState() {
         console.log("Loading scenario state...");
-        
+
         if (!window.SCENARIOS || Object.keys(window.SCENARIOS).length === 0) {
             console.warn("Cannot load state: SCENARIOS not loaded yet.");
             return;
@@ -629,10 +664,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     Object.keys(newScenarioState[scenarioId].choicesMade).forEach(stepId => {
                         const originalIndex = newScenarioState[scenarioId].choicesMade[stepId];
                         // Safety check for valid step and choice index
-                        if (scenario.steps[stepId] && 
-                            scenario.steps[stepId].choices && 
+                        if (scenario.steps[stepId] &&
+                            scenario.steps[stepId].choices &&
                             scenario.steps[stepId].choices.length > originalIndex) {
-                            
+
                             const choiceType = scenario.steps[stepId].choices[originalIndex].type;
                             recalculateTime += getTimeCostForChoice(choiceType);
                         } else {
@@ -646,7 +681,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         scenarioState = newScenarioState;
         console.log("State loaded successfully:", scenarioState);
-        
+
         // Only save back if we actually loaded something valid, to avoid wiping on error
         // But we need to save to initialize defaults if nothing was there.
         saveScenarioState();
@@ -772,7 +807,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const progressPercent = totalScenarios > 0 ? (completedScenarios / totalScenarios) * 100 : 0;
         if (progressBar) {
             progressBar.style.width = progressPercent + '%';
-            
+
             // Color code the progress bar
             if (progressPercent >= 75) {
                 progressBar.className = 'h-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-500';

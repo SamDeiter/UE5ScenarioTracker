@@ -2,7 +2,7 @@ window.SCENARIOS['EventDispatcherRaceCondition'] = {
     meta: {
         title: "Event Dispatcher Not Firing",
         description: "Bound event never fires. Investigates initialization order (Race Condition) and binding lifecycle.",
-        estimateHours: 1.5
+        estimateHours: 4.0
     },
     start: "step-1",
     steps: {

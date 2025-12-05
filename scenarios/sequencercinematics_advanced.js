@@ -2,7 +2,7 @@ window.SCENARIOS['PlayerLockedAfterCinematic'] = {
     meta: {
         title: "Input Locked After Cinematic",
         description: "Player stuck after cutscene. Investigates Camera Cut track and OnFinished events.",
-        estimateHours: 1.5
+        estimateHours: 3.5
     },
     start: "step-1",
     steps: {

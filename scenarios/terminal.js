@@ -2,7 +2,8 @@ window.SCENARIOS['WidgetInputFailure'] = {
     meta: {
         title: "Widget Not Receiving Input",
         description: "Terminal UI ignores clicks. Investigates Input Mode Game and UI.",
-        estimateHours: 1.5
+        estimateHours: 1.5,
+        difficulty: "Intermediate"
     },
     start: "step-1",
     steps: {

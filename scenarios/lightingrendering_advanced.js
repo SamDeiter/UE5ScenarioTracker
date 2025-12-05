@@ -2,7 +2,7 @@ window.SCENARIOS['LumenLightLeaking'] = {
     meta: {
         title: "Lumen Light Leaking in Dark Room",
         description: "Light leaks through corners of a dark room using Lumen. Investigates geometry thickness and Lumen tracing limitations.",
-        estimateHours: 1.5
+        estimateHours: 3.5
     },
     start: "step-1",
     steps: {

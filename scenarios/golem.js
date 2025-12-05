@@ -3,7 +3,8 @@ window.SCENARIOS['golem'] = {
       title: "BP_GuardianGolem is Non-Functional: Full Debug Hunt",
       description:
         "Critical enemy asset fails to spawn, T-poses, leaks VFX memory, and breaks on the network.",
-      estimateHours: 14.0 // Adjusted for increased debugging complexity and dead ends
+      estimateHours: 14.0,
+        difficulty: "Advanced" // Adjusted for increased debugging complexity and dead ends
     },
     start: "step-1",
     steps:

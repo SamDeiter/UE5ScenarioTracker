@@ -2,7 +2,8 @@ window.SCENARIOS['GrainySharpening'] = {
     meta: {
         title: "Scene Looks Grainy/Sharpened",
         description: "Visuals are harsh. Investigates r.Tonemapper.Sharpen console variable.",
-        estimateHours: 1.5
+        estimateHours: 1.5,
+        difficulty: "Beginner"
     },
     start: "step-1",
     steps: {

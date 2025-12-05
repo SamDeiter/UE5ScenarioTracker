@@ -2,7 +2,7 @@ window.SCENARIOS['WPOShadowDetachment'] = {
     meta: {
         title: "Shadow Detached from WPO Mesh",
         description: "Shadow stays put while mesh moves with wind. Investigates Shadow Pass Switch and WPO shadows.",
-        estimateHours: 1.5
+        estimateHours: 4.0
     },
     start: "step-1",
     steps: {

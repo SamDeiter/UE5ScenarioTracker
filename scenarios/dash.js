@@ -3,7 +3,8 @@ window.SCENARIOS['dash'] = {
       title: "Player Dash Ability is Broken",
       description:
         "Traversal ability unresponsive. Covers input setup, cooldowns, movement, effects, and replication.",
-      estimateHours: 16.0 // Adjusted for a more realistic, yet efficient, completion target
+      estimateHours: 16.0,
+        difficulty: "Advanced" // Adjusted for a more realistic, yet efficient, completion target
     },
     start: "step-1",
     steps:

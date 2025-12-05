@@ -2,7 +2,8 @@ window.SCENARIOS['FogBandingArtifacts'] = {
     meta: {
         title: "Volumetric Fog Banding",
         description: "Fog looks sliced. Investigates GridPixelSize and View Distance.",
-        estimateHours: 1.5
+        estimateHours: 3.0,
+        difficulty: "Intermediate"
     },
     start: "step-1",
     steps: {

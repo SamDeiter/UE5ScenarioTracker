@@ -3,7 +3,8 @@ window.SCENARIOS['world_partition'] = {
       title: "World Partition: LODs, Streaming, and Memory Spikes",
       description:
         "Large environment is failing to stream correctly, leading to massive hitches, incorrect LOD transitions, and high memory usage. Focuses on WP configuration, data layers, and distance fields.",
-      estimateHours: 8.0 // Expanded estimate due to complexity
+      estimateHours: 8.0,
+        difficulty: "Advanced" // Expanded estimate due to complexity
     },
     start: "step-1",
     steps:

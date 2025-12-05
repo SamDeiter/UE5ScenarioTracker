@@ -2,7 +2,7 @@ window.SCENARIOS['DistantCityNotLoading'] = {
     meta: {
         title: "Distant City Not Loading",
         description: "City invisible until teleport. Investigates HLOD generation for World Partition.",
-        estimateHours: 1.5
+        estimateHours: 4.0
     },
     start: "step-1",
     steps: {

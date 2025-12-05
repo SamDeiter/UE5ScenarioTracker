@@ -2,7 +2,8 @@ window.SCENARIOS['GeneratorCrash'] = {
     meta: {
         title: "Generator Loop Crash",
         description: "Spawning 1000 actors freezes game. Investigates Time Slicing vs. Loops.",
-        estimateHours: 1.0
+        estimateHours: 1.0,
+        difficulty: "Beginner"
     },
     start: "step-1",
     steps: {

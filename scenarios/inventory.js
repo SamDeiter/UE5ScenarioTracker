@@ -3,7 +3,8 @@ window.SCENARIOS['inventory'] = {
       title: "Inventory System: Data Corruption, Replication, and UI Scaling",
       description:
         "Players report item duplication on load, inventory lag, missing tooltips, and data struct replication failures. Covers Save Games, Replication, Data Tables, and UI efficiency.",
-      estimateHours: 8.5 // Expanded estimate due to complexity
+      estimateHours: 8.5,
+        difficulty: "Intermediate" // Expanded estimate due to complexity
     },
     start: "step-1",
     steps:

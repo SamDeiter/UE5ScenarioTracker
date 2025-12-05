@@ -2,7 +2,8 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
     meta: {
         title: "Pitch Black Indoor GI",
         description: "No bounce light. Investigates Lumen settings and geometry thickness.",
-        estimateHours: 1.5
+        estimateHours: 3.0,
+        difficulty: "Intermediate"
     },
     start: "step-1",
     steps: {

@@ -407,6 +407,7 @@ button:active {
 
 /* === DEBUG & ANIMATION STYLES (Updated for Priority) === */
 .debug-correct {
+    background-color: rgba(22, 163, 74, 0.15) !important; /* Green background */
     box-shadow: 0 0 15px 4px rgba(22, 163, 74, 0.5) !important;
     border-color: #16a34a !important;
     border-width: 2px !important;

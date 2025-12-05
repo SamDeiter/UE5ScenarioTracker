@@ -87,26 +87,36 @@
                             <p class="sub">or generate new scenarios</p>
                         </div>
                         <div id="preview-content" class="preview-content hidden">
-                            <div class="preview-header">
-                                <h3 id="preview-title">-</h3>
-                                <span id="preview-category" class="category-badge">-</span>
+                            <div class="scenario-card">
+                                <div class="card-header">
+                                    <h2 id="preview-title">-</h2>
+                                    <span id="preview-category" class="category-badge">-</span>
+                                </div>
+                                <p id="preview-description" class="card-description">-</p>
+                                <div class="card-steps">
+                                    <h4>Steps:</h4>
+                                    <ol id="preview-steps-list"></ol>
+                                </div>
+                                <details class="debug-toggle">
+                                    <summary>Show Debug JSON</summary>
+                                    <div class="debug-meta">
+                                        <span>📊 <span id="preview-steps">0</span> steps</span>
+                                        <span>📦 <span id="preview-size">0</span> KB</span>
+                                    </div>
+                                    <pre id="preview-json" class="preview-json"></pre>
+                                </details>
                             </div>
-                            <div class="preview-meta">
-                                <span>📊 <span id="preview-steps">0</span> steps</span>
-                                <span>📦 <span id="preview-size">0</span> KB</span>
-                            </div>
-                            <pre id="preview-json" class="preview-json"></pre>
                         </div>
                     </div>
                 </div>
             </section>
         </main>
 
-        <!-- Log -->
-        <footer class="log-panel">
-            <div class="log-header">
-                <span>📝 Log</span>
-                <button id="clear-log-btn" class="btn btn-small">Clear</button>
+        <!-- Collapsible Log -->
+        <footer id="log-panel" class="log-panel collapsed">
+            <div class="log-bar" onclick="toggleLog()">
+                <span id="log-last-message">📝 Ready to generate scenarios...</span>
+                <button id="clear-log-btn" class="btn btn-small" onclick="event.stopPropagation()">Clear</button>
             </div>
             <div id="log-content" class="log-content">
                 <div class="log-entry info">Ready to generate scenarios...</div>

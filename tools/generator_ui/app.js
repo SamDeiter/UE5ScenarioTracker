@@ -37,8 +37,39 @@ const elements = {
     clearLogBtn: document.getElementById('clear-log-btn')
 };
 
-// Logging
+
+// Toggle log panel
+function toggleLog() {
+    const panel = document.getElementById('log-panel');
+    panel.classList.toggle('collapsed');
+    panel.classList.toggle('expanded');
+}
+
+// Update last log message in bar
+const originalLog = log;
 function log(message, type = 'info') {
+    const entry = document.createElement('div');
+    entry.className = `log-entry ${type}`;
+    entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+    elements.logContent.insertBefore(entry, elements.logContent.firstChild);
+
+    // Update status bar
+    const lastMsg = document.getElementById('log-last-message');
+    if (lastMsg) {
+        lastMsg.textContent = '📝 ' + message;
+    }
+
+    // Auto-expand on error
+    if (type === 'error') {
+        const panel = document.getElementById('log-panel');
+        panel.classList.add('has-error');
+        panel.classList.remove('collapsed');
+        panel.classList.add('expanded');
+    }
+}
+
+// Logging
+function log_old(message, type = 'info') {
     const entry = document.createElement('div');
     entry.className = `log-entry ${type}`;
     entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
@@ -62,7 +93,7 @@ function startStatusPolling() {
             if (status.total > 0) {
                 elements.progressFill.style.width = (status.completed / status.total * 100) + '%';
             }
-        } catch(e) {}
+        } catch (e) { }
     }, 1000);
 }
 
@@ -144,29 +175,69 @@ async function loadScenarios() {
 }
 
 // Render Scenario List
+// Render grouped scenario list
 function renderScenarioList() {
     elements.scenarioList.innerHTML = '';
 
+    // Group by category
+    const groups = {};
     scenarios.forEach(scenario => {
-        const item = document.createElement('div');
-        item.className = `scenario-item ${selectedScenarios.has(scenario.id) ? 'selected' : ''}`;
-        item.dataset.id = scenario.id;
+        const cat = scenario.category || 'Other';
+        if (!groups[cat]) groups[cat] = [];
+        groups[cat].push(scenario);
+    });
 
-        const categoryClass = getCategoryClass(scenario.category);
-        const sizeKB = (scenario.file_size / 1024).toFixed(1);
+    // Render each group
+    Object.keys(groups).sort().forEach(category => {
+        const group = document.createElement('div');
+        group.className = 'category-group collapsed';
 
-        item.innerHTML = `
-            <span class="status-icon">${scenario.generated ? '✅' : '⏳'}</span>
-            <div class="info">
-                <div class="title">${scenario.title}</div>
-                <div class="meta">${scenario.steps} steps • ${scenario.estimated_hours}h${scenario.generated ? ` • ${sizeKB}KB` : ''}</div>
+        const categoryClass = getCategoryClass(category);
+
+        group.innerHTML = `
+            <div class="category-group-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                <span class="toggle-icon">▼</span>
+                <span class="category-badge ${categoryClass}">${category}</span>
+                <span>(${groups[category].length})</span>
             </div>
-            <span class="category-badge ${categoryClass}">${scenario.category}</span>
+            <div class="category-items"></div>
         `;
 
-        item.addEventListener('click', () => toggleScenarioSelection(scenario));
+        const itemsContainer = group.querySelector('.category-items');
 
-        elements.scenarioList.appendChild(item);
+        groups[category].forEach(scenario => {
+            const item = document.createElement('div');
+            item.className = `scenario-item ${selectedScenarios.has(scenario.id) ? 'selected' : ''}`;
+            item.dataset.id = scenario.id;
+
+            const sizeKB = (scenario.file_size / 1024).toFixed(1);
+
+            item.innerHTML = `
+                <input type="checkbox" class="scenario-checkbox" ${selectedScenarios.has(scenario.id) ? 'checked' : ''}>
+                <span class="status-icon">${scenario.generated ? '✅' : '⏳'}</span>
+                <div class="info">
+                    <div class="title">${scenario.title}</div>
+                    <div class="meta">${scenario.steps} steps${scenario.generated ? ' • ' + sizeKB + 'KB' : ''}</div>
+                </div>
+            `;
+
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (e.target.type !== 'checkbox') {
+                    toggleScenarioSelection(scenario);
+                }
+            });
+
+            const checkbox = item.querySelector('.scenario-checkbox');
+            checkbox.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleScenarioSelection(scenario);
+            });
+
+            itemsContainer.appendChild(item);
+        });
+
+        elements.scenarioList.appendChild(group);
     });
 }
 
@@ -206,6 +277,7 @@ function updateButtons() {
 }
 
 // Preview
+// Show preview as styled card
 async function showPreview(scenarioId) {
     try {
         const data = await fetchApi(`/preview/${scenarioId}`);
@@ -213,11 +285,42 @@ async function showPreview(scenarioId) {
         elements.previewSection.querySelector('.preview-placeholder').classList.add('hidden');
         elements.previewContent.classList.remove('hidden');
 
-        elements.previewTitle.textContent = data.content.meta?.title || scenarioId;
-        elements.previewCategory.textContent = data.content.meta?.category || 'Unknown';
-        elements.previewSteps.textContent = Object.keys(data.content.steps || {}).length;
+        const content = data.content;
+        const meta = content.meta || {};
+
+        // Title and category
+        elements.previewTitle.textContent = meta.title || scenarioId;
+        elements.previewCategory.textContent = meta.category || 'Unknown';
+        elements.previewCategory.className = 'category-badge ' + getCategoryClass(meta.category || '');
+
+        // Description
+        const descEl = document.getElementById('preview-description');
+        if (descEl) {
+            descEl.textContent = meta.description || content.description || 'No description available.';
+        }
+
+        // Steps as list
+        const stepsList = document.getElementById('preview-steps-list');
+        if (stepsList && content.steps) {
+            stepsList.innerHTML = '';
+            const steps = Object.values(content.steps);
+            steps.forEach(step => {
+                const li = document.createElement('li');
+                li.textContent = step.title || step.action || 'Step';
+                stepsList.appendChild(li);
+            });
+            if (steps.length > 10) {
+                const li = document.createElement('li');
+                li.textContent = `... and ${steps.length - 10} more steps`;
+                li.style.color = 'var(--text-secondary)';
+                stepsList.appendChild(li);
+            }
+        }
+
+        // Debug info
+        elements.previewSteps.textContent = Object.keys(content.steps || {}).length;
         elements.previewSize.textContent = (data.file_size / 1024).toFixed(1);
-        elements.previewJson.textContent = JSON.stringify(data.content, null, 2);
+        elements.previewJson.textContent = JSON.stringify(content, null, 2);
 
     } catch (error) {
         log(`Failed to load preview: ${error.message}`, 'error');

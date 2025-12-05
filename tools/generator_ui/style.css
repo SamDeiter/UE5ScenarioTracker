@@ -593,3 +593,224 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--text-secondary);
 }
+/* ============ SCENARIO CARD (Right Panel) ============ */
+.scenario-card {
+    padding: 1.5rem;
+    background: var(--bg-dark);
+    border-radius: 12px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.card-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.3;
+    flex: 1;
+}
+
+.card-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.card-steps {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.card-steps h4 {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+}
+
+.card-steps ol {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.card-steps li {
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.debug-toggle {
+    margin-top: auto;
+    border-top: 1px solid var(--border);
+    padding-top: 0.75rem;
+}
+
+.debug-toggle summary {
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    padding: 0.5rem;
+}
+
+.debug-toggle summary:hover {
+    color: var(--accent-blue);
+}
+
+.debug-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 0.5rem 0;
+}
+
+/* ============ GROUPED CATEGORIES (Left Panel) ============ */
+.category-group {
+    margin-bottom: 0.5rem;
+}
+
+.category-group-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-hover);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.category-group-header:hover {
+    background: var(--border);
+}
+
+.category-group-header .toggle-icon {
+    transition: transform 0.2s;
+}
+
+.category-group.collapsed .toggle-icon {
+    transform: rotate(-90deg);
+}
+
+.category-group.collapsed .category-items {
+    display: none;
+}
+
+.category-items {
+    padding-left: 0.5rem;
+}
+
+.category-items .scenario-item {
+    border-left: 2px solid var(--border);
+    margin-left: 0.5rem;
+    padding-left: 0.75rem;
+}
+
+.category-items .scenario-item .category-badge {
+    display: none;
+}
+
+/* ============ COLLAPSIBLE LOG ============ */
+.log-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+    transition: height 0.3s ease;
+    z-index: 100;
+}
+
+.log-panel.collapsed {
+    height: 40px;
+}
+
+.log-panel.collapsed .log-content {
+    display: none;
+}
+
+.log-panel.expanded {
+    height: 200px;
+}
+
+.log-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.log-bar:hover {
+    background: var(--bg-hover);
+}
+
+#log-last-message {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.log-panel.has-error .log-bar {
+    background: rgba(248, 81, 73, 0.1);
+    color: var(--accent-red);
+}
+
+.log-panel.has-error {
+    height: 200px;
+}
+
+.log-panel.has-error .log-content {
+    display: block;
+}
+
+/* Adjust main content for fixed log */
+.app {
+    padding-bottom: 50px;
+}
+
+/* Fix flashing on collapse */
+.category-group {
+    overflow: hidden;
+}
+
+.category-items {
+    transition: max-height 0.3s ease, opacity 0.2s ease;
+    max-height: 1000px;
+    opacity: 1;
+}
+
+.category-group.collapsed .category-items {
+    max-height: 0;
+    opacity: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.log-content {
+    transition: max-height 0.3s ease;
+    overflow: hidden;
+}
+
+/* Two-column steps layout */
+.card-steps ol {
+    column-count: 2;
+    column-gap: 2rem;
+}
+
+.card-steps li {
+    break-inside: avoid;
+}

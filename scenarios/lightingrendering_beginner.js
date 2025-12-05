@@ -2,7 +2,8 @@ window.SCENARIOS['BlackMetallicObject'] = {
     meta: {
         title: "Metallic Asset Appears Pitch Black in Dynamic Scene",
         description: "A highly reflective metallic statue appears pitch black despite dynamic lighting. Investigates reflection environments, Lumen settings, and material properties.",
-        estimateHours: 1.5
+        estimateHours: 1.5,
+        category: "Lighting"
     },
     start: "step-1",
     steps: {

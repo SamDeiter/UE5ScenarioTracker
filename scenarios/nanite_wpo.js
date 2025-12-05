@@ -3,7 +3,8 @@ window.SCENARIOS['nanite_wpo'] = {
         title: "Nanite Mesh Turns Black in Distance",
         description: "A Nanite statue using World Position Offset (WPO) turns black when viewed from a distance. This scenario walks through a realistic debugging workflow using view modes, material inspection, Nanite settings, and Lumen verification.",
         estimateHours: 5.0,
-        difficulty: "Advanced" // rough optimal-path estimate
+        difficulty: "Advanced",
+        category: "Nanite" // rough optimal-path estimate
     },
     start: "step-1",
     steps: {

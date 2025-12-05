@@ -2,7 +2,8 @@ window.SCENARIOS['CinematicHandClipping'] = {
     meta: {
         title: "Hand Clips Through Prop",
         description: "Animation compression causes clipping. Investigates Control Rig additive layers in Sequencer.",
-        estimateHours: 1.5
+        estimateHours: 1.5,
+        category: "Cinematics"
     },
     start: "step-1",
     steps: {

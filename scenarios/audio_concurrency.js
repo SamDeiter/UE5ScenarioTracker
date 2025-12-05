@@ -3,7 +3,8 @@ window.SCENARIOS['audio_concurrency'] = {
         title: "Audio: Sound Effects Cutting Out",
         description: "Gunshot sounds are cutting out when rapid-firing, or other sounds are disappearing during intense combat. Investigates Sound Concurrency and Priority settings through a complete debugging journey.",
         estimateHours: 3.5,
-        difficulty: "Intermediate"
+        difficulty: "Intermediate",
+        category: "Audio"
     },
     start: "step-1",
     steps: {

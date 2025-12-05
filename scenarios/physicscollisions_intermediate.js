@@ -2,7 +2,8 @@ window.SCENARIOS['PhysicsCrateFallsThroughFloor'] = {
     meta: {
         title: "Physics Crate Falls Through Floor",
         description: "Simulating actor falls through ground. Investigates Complex vs Simple collision requirements for physics.",
-        estimateHours: 1.5
+        estimateHours: 1.5,
+        category: "Physics"
     },
     start: "step-1",
     steps: {

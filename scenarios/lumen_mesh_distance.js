@@ -3,7 +3,8 @@ window.SCENARIOS['MeshBlackAtDistance'] = {
         title: "Mesh Black at Distance (Lumen)",
         description: "Mesh turns black. Investigates Max Distance Field Replacement.",
         estimateHours: 3.0,
-        difficulty: "Intermediate"
+        difficulty: "Intermediate",
+        category: "Lighting"
     },
     start: "step-1",
     steps: {

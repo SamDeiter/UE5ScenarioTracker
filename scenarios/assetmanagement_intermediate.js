@@ -2,7 +2,8 @@ window.SCENARIOS['AssetMissingInPackagedBuild'] = {
     meta: {
         title: "Asset Missing in Packaged Build",
         description: "A Blueprint works in editor but fails to load a mesh in packaged build. Investigates Soft Object References and cooking settings.",
-        estimateHours: 1.5
+        estimateHours: 1.5,
+        category: "Asset Management"
     },
     start: "step-1",
     steps: {

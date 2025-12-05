@@ -4,7 +4,8 @@ window.SCENARIOS['golem'] = {
       description:
         "Critical enemy asset fails to spawn, T-poses, leaks VFX memory, and breaks on the network.",
       estimateHours: 14.0,
-        difficulty: "Advanced" // Adjusted for increased debugging complexity and dead ends
+        difficulty: "Advanced",
+        category: "AI/Gameplay" // Adjusted for increased debugging complexity and dead ends
     },
     start: "step-1",
     steps:

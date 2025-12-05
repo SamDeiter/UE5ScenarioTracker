@@ -3,7 +3,8 @@ window.SCENARIOS['InvisibleFogParticles'] = {
         title: "Particles Invisible in Fog",
         description: "Effects disappear in fog. Investigates \"Apply Volumetric Translucent Shadow\" and fog-compatible translucency.",
         estimateHours: 6.0,
-        difficulty: "Advanced"
+        difficulty: "Advanced",
+        category: "Materials"
     },
     start: "step-1",
     steps: {

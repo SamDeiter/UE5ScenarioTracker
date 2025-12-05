@@ -2,7 +2,8 @@ window.SCENARIOS['AnimNotifiesNotFiring'] = {
     meta: {
         title: "Anim Notifies Not Firing in PIE",
         description: "Attack animation plays but effects (Notifies) are missing in PIE. Investigates Montage vs Sequence playback and Notify Trigger Modes.",
-        estimateHours: 3.5
+        estimateHours: 3.5,
+        category: "Asset Management"
     },
     start: "step-1",
     steps: {

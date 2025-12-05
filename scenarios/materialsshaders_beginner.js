@@ -2,7 +2,8 @@ window.SCENARIOS['TextureStretching'] = {
     meta: {
         title: "Texture Stretching on Mesh",
         description: "Material looks distorted. Investigates UV scaling and Texture Coordinate nodes.",
-        estimateHours: 1.5
+        estimateHours: 1.5,
+        category: "Materials"
     },
     start: "step-1",
     steps: {

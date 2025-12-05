@@ -3,7 +3,8 @@ window.SCENARIOS['PitchBlackIndoorGI'] = {
         title: "Pitch Black Indoor GI (Lumen)",
         description: "Interior spaces remain pitch black despite bright exterior lighting. Investigates Lumen GI settings, geometry thickness, mesh distance fields, and proper verification workflow.",
         estimateHours: 3.0,
-        difficulty: "Intermediate"
+        difficulty: "Intermediate",
+        category: "Lighting"
     },
     start: "step-1",
     steps: {

@@ -2,7 +2,8 @@ window.SCENARIOS['FastProjectileTunneling'] = {
     meta: {
         title: "Projectile Tunneling Through Wall",
         description: "Fast object skips collision. Investigates Continuous Collision Detection (CCD).",
-        estimateHours: 3.5
+        estimateHours: 3.5,
+        category: "Physics"
     },
     start: "step-1",
     steps: {

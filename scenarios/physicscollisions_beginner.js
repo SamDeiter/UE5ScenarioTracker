@@ -2,7 +2,8 @@ window.SCENARIOS['NoCollisionOnRock'] = {
     meta: {
         title: "Player Walks Through Rock",
         description: "Character clips through mesh. Investigates Collision Presets and Simplified Collision.",
-        estimateHours: 1.5
+        estimateHours: 1.5,
+        category: "Physics"
     },
     start: "step-1",
     steps: {

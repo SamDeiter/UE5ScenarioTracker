@@ -4,7 +4,8 @@ window.SCENARIOS['dash'] = {
       description:
         "Traversal ability unresponsive. Covers input setup, cooldowns, movement, effects, and replication.",
       estimateHours: 16.0,
-        difficulty: "Advanced" // Adjusted for a more realistic, yet efficient, completion target
+        difficulty: "Advanced",
+        category: "Performance" // Adjusted for a more realistic, yet efficient, completion target
     },
     start: "step-1",
     steps:

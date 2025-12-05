@@ -2,7 +2,8 @@ window.SCENARIOS['MultiplayerDoorNotOpening'] = {
     meta: {
         title: "Door Not Opening for Clients",
         description: "Door opens for server but not clients. Investigates Replication, RepNotify, and Server RPCs.",
-        estimateHours: 1.5
+        estimateHours: 1.5,
+        category: "Blueprints"
     },
     start: "step-1",
     steps: {

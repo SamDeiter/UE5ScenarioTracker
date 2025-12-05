@@ -2,7 +2,8 @@ window.SCENARIOS['LightmapShadowBleeding'] = {
     meta: {
         title: "Lightmap Shadow Bleeding",
         description: "Static mesh has splotchy shadows despite high resolution. Investigates UV Channel overlaps and Lightmap Coordinate Index.",
-        estimateHours: 1.5
+        estimateHours: 1.5,
+        category: "Lighting"
     },
     start: "step-1",
     steps: {

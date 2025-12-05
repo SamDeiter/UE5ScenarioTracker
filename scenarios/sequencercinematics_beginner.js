@@ -2,7 +2,8 @@ window.SCENARIOS['SequencerLightReverts'] = {
     meta: {
         title: "Light Reverts After Cinematic",
         description: "Keyframed light resets after sequence. Investigates \"Restore State\" vs \"Keep State\".",
-        estimateHours: 1.5
+        estimateHours: 1.5,
+        category: "Cinematics"
     },
     start: "step-1",
     steps: {

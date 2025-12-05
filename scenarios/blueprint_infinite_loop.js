@@ -3,7 +3,8 @@ window.SCENARIOS['EditorFreezeLoop'] = {
         title: "Editor Freeze on Loop",
         description: "While Loop crashes editor. Investigates infinite loop conditions.",
         estimateHours: 1.5,
-        difficulty: "Beginner"
+        difficulty: "Beginner",
+        category: "Blueprints"
     },
     start: "step-1",
     steps: {

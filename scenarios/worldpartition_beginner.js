@@ -2,7 +2,8 @@ window.SCENARIOS['FoliagePoppingInTooClose'] = {
     meta: {
         title: "Foliage Popping In Too Close",
         description: "Actors load at 10m. Investigates Data Layers and Loading Range.",
-        estimateHours: 1.5
+        estimateHours: 1.5,
+        category: "World Partition"
     },
     start: "step-1",
     steps: {

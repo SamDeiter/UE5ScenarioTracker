@@ -2,7 +2,8 @@ window.SCENARIOS['TranslucencySortingIssue'] = {
     meta: {
         title: "Glass Sorting Incorrectly",
         description: "Objects behind glass disappear. Investigates Translucency Sort Priority and Blend Modes.",
-        estimateHours: 1.5
+        estimateHours: 1.5,
+        category: "Materials"
     },
     start: "step-1",
     steps: {

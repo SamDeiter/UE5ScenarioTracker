@@ -3,7 +3,8 @@ window.SCENARIOS['EventDispatcherRaceCondition'] = {
         title: "Event Dispatcher Race Condition (Advanced)",
         description: "A gameplay event dispatcher fires but the bound event never triggers. Investigates initialization order, object lifetime, garbage collection, and proper event binding patterns in Blueprint systems.",
         estimateHours: 4.0,
-        difficulty: "Advanced"
+        difficulty: "Advanced",
+        category: "Blueprints"
     },
     start: "step-1",
     steps: {

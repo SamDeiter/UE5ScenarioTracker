@@ -2,7 +2,8 @@ window.SCENARIOS['DestroyActorStopsExecutionFlow'] = {
     meta: {
         title: "Pickup Despawns Prematurely",
         description: "A speed boost pickup destroys itself before applying the speed buff. Investigates Blueprint execution flow and DestroyActor behavior.",
-        estimateHours: 1.5
+        estimateHours: 1.5,
+        category: "Blueprints"
     },
     start: "step-1",
     steps: {

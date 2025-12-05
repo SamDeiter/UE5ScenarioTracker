@@ -130,8 +130,9 @@ Create branching JSON outline with OPTIMAL PATH (25-40 steps) + DETOURS:
 
 CRITICAL - STEP ID FORMAT:
 - Main path: "step-1", "step-2", "step-3" etc. (NEVER "s1", "s2")
-- Detours: "step-1W", "step-2W" etc. for wrong choice detours
+- Detours: "step-1W", "step-2W" etc. for wrong choice detours  
 - Use EXACT format: "step-{{number}}" or "step-{{number}}W"
+- The "steps" array in detours must contain STEP IDs (e.g. ["step-1W"]), NOT action text!
 
 RULES:
 - Optimal path: 25-40 steps that sum to estimate_hours

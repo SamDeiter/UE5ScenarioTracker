@@ -1077,13 +1077,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // Force inline styles for debug mode to ensure visibility
             if (isDebugMode && isCorrect) {
                 console.log('🟢 DEBUG MODE: Applying GREEN styles to correct answer');
-                btn.style.backgroundColor = 'rgba(22, 163, 74, 0.25)';
-                btn.style.borderColor = '#16a34a';
-                btn.style.borderWidth = '3px';
-                btn.style.boxShadow = '0 0 15px 4px rgba(22, 163, 74, 0.6)';
+                btn.style.setProperty('background-color', 'rgba(22, 163, 74, 0.25)', 'important');
+                btn.style.setProperty('border-color', '#16a34a', 'important');
+                btn.style.setProperty('border-width', '3px', 'important');
+                btn.style.setProperty('box-shadow', '0 0 15px 4px rgba(22, 163, 74, 0.6)', 'important');
             } else if (isDebugMode) {
                 console.log('⚫ DEBUG MODE: Applying dark background to non-correct answer');
-                btn.style.backgroundColor = '#1a1a1a';
+                btn.style.setProperty('background-color', '#1a1a1a', 'important');
             } else {
                 console.log('❌ Debug mode is OFF - no special styling');
             }

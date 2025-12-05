@@ -563,22 +563,40 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Calculates the total ideal time (0.5 hours per step) across all scenarios.
-     * This is used to calculate the final efficiency score.
+     * Calculates the total ideal time based on the scenarios the user has actually attempted.
+     * Uses meta.estimateHours if available, or falls back to step count.
+     * @param {object} [stateToUse=scenarioState] - The state to filter by.
      * @returns {{totalSteps: number, idealTotalTime: number}} The calculated totals.
      */
-    function calculateTotalIdealTime() {
+    function calculateTotalIdealTime(stateToUse = scenarioState) {
         let totalSteps = 0;
+        let idealTotalTime = 0;
 
-        Object.values(window.SCENARIOS).forEach(scenario => {
-            if (scenario.steps) {
-                // Counting all steps, including dead ends, as they all represent an "ideal" 0.5hr time cost for a correct answer.
-                totalSteps += Object.keys(scenario.steps).length;
+        Object.keys(stateToUse).forEach(scenarioId => {
+            const state = stateToUse[scenarioId];
+            const scenario = window.SCENARIOS[scenarioId];
+
+            // Only include scenarios that have been started (loggedTime > 0) or completed
+            if (scenario && (state.loggedTime > 0 || state.completed)) {
+
+                // Use the manual estimate if available (Source of Truth)
+                if (scenario.meta && scenario.meta.estimateHours) {
+                    idealTotalTime += scenario.meta.estimateHours;
+                } else if (scenario.steps) {
+                    // Fallback: Estimate based on step count (excluding dead ends if possible, but we count all here for safety)
+                    const count = Object.keys(scenario.steps).length;
+                    idealTotalTime += count * 0.5;
+                }
+
+                if (scenario.steps) {
+                    totalSteps += Object.keys(scenario.steps).length;
+                }
             }
         });
+
         return {
             totalSteps: totalSteps,
-            idealTotalTime: totalSteps * 0.5
+            idealTotalTime: idealTotalTime
         };
     }
 
@@ -1436,13 +1454,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Note: calculateTotalIdealTime correctly uses the global SCENARIOS data
-            const { idealTotalTime } = calculateTotalIdealTime();
+            const { idealTotalTime } = calculateTotalIdealTime(stateToUse);
             const efficiencyScore = totalLoggedTime > 0 ? (idealTotalTime / totalLoggedTime) : 0;
             const finalEfficiencyPercent = Math.round(efficiencyScore * 100);
-            const passed = efficiencyScore >= PASS_THRESHOLD;
+            const passed = efficiencyScore >= CONFIG.PASS_THRESHOLD;
 
             // 2. Generate Test Key (Using the state that was passed in)
             const testKey = generateTestKey(stateToUse);
+
+            // --- SCORM / LMS REPORTING ---
+            // Reports the efficiency score and the unique test key (GUID) to the LMS (or listener).
+            if (typeof window.reportScoreAndGUIDToLMS12 === 'function') {
+                console.log("📡 Reporting Score & GUID to LMS...");
+                window.reportScoreAndGUIDToLMS12(finalEfficiencyPercent, testKey, 100, CONFIG.PASS_THRESHOLD * 100);
+            }
 
             mainTitle = passed ? "Assessment Passed" : "Assessment Completed";
             mainTitleColor = passed ? "text-green-500" : "text-yellow-500";

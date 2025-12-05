@@ -374,19 +374,13 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function attachEventListeners() {
         
-        // --- ADMIN ACCESS (CTRL + SHIFT + DELETE + Password Gate) ---
-        document.addEventListener('keydown', (e) => {
-            // Check for the combination: CTRL + SHIFT + DELETE (KeyCode 46 is Delete on most systems)
-            if (e.ctrlKey && e.shiftKey && (e.key === 'Delete' || e.keyCode === 46)) {
-                e.preventDefault();
-                // If Debug Mode is already on, the combination turns it off without a password
-                if (isDebugMode) {
-                    toggleDebugMode(true); // Force Disable
-                } else if (!debugAccessState.passwordModalVisible) {
-                    showPasswordModal();
-                }
-            }
-        });
+        // --- DEBUG TOGGLE (No Password Required) ---
+        // Debug checkbox now controls debug mode directly
+        if (debugToggle) {
+            debugToggle.addEventListener('change', () => {
+                toggleDebugMode();
+            });
+        }
 
         // Note: Hard Reset and Load Test Key buttons are removed from event listeners.
     }

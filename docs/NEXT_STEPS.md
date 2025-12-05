@@ -1,7 +1,7 @@
 # UE5 Scenario Tracker - Next Steps Plan
 
 ## ✅ Completed Today
-1. **Progress Tracker** - Visual progress bar showing completion (X/36) and efficiency score
+1. **Progress Tracker** - Visual progress bar showing completion (X/36) and efficiency score 
 2. **Scenario Loading** - Fixed all 36 scenarios loading properly
 3. **UI Improvements** - Lightened ticket backgrounds for better readability
 4. **Data Conversion Tools** - Scripts to convert JSON data to scenario format
@@ -78,10 +78,7 @@
 - Time efficiency charts
 - Recommendations for improvement
 
-### 11. **Historical Tracking**
-- Track progress over multiple sessions
-- Show improvement trends
-- Leaderboard (if multi-user)
+
 
 ---
 

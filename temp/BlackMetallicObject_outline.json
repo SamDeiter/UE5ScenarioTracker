@@ -1,0 +1,278 @@
+{
+  "scenario_id": "BlackMetallicObject",
+  "estimate_hours": 0.73,
+  "optimal_path": [
+    {
+      "step_id": "step-1",
+      "action": "Locate and select the black metallic statue in the viewport.",
+      "time_cost": 0.015,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-2",
+      "action": "Alternatively, find and select the statue in the World Outliner.",
+      "time_cost": 0.015,
+      "has_detours": true
+    },
+    {
+      "step_id": "step-3",
+      "action": "In the Details panel, identify the Material slot for the static mesh component.",
+      "time_cost": 0.01,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-4",
+      "action": "Click to open the Material Instance Editor.",
+      "time_cost": 0.01,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-5",
+      "action": "Verify the 'Metallic' parameter is set to 1.0.",
+      "time_cost": 0.015,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-6",
+      "action": "Verify the 'Roughness' parameter is set to a low value (e.g., 0.1).",
+      "time_cost": 0.015,
+      "has_detours": true
+    },
+    {
+      "step_id": "step-7",
+      "action": "In the Details panel (for the selected static mesh), locate the 'Transform' category.",
+      "time_cost": 0.01,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-8",
+      "action": "Check the 'Mobility' setting is set to 'Movable'.",
+      "time_cost": 0.04,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-9",
+      "action": "Expand the 'Rendering' category in the Details panel.",
+      "time_cost": 0.01,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-10",
+      "action": "Verify 'Visible' is checked.",
+      "time_cost": 0.015,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-11",
+      "action": "Verify 'Cast Shadows' is checked.",
+      "time_cost": 0.015,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-12",
+      "action": "Within the 'Rendering' category, verify 'Affects Global Illumination' is enabled.",
+      "time_cost": 0.04,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-13",
+      "action": "Scroll down in the 'Rendering' category to find 'Visible in Ray Tracing'.",
+      "time_cost": 0.03,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-14",
+      "action": "Confirm 'Visible in Ray Tracing' is checked.",
+      "time_cost": 0.05,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-15",
+      "action": "If 'Visible in Ray Tracing' was unchecked, enable it.",
+      "time_cost": 0.01,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-16",
+      "action": "Verify if the statue now appears correctly reflecting the scene.",
+      "time_cost": 0.02,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-17",
+      "action": "Open 'Project Settings' (Edit -> Project Settings).",
+      "time_cost": 0.015,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-18",
+      "action": "Navigate to the 'Rendering' section in Project Settings.",
+      "time_cost": 0.015,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-19",
+      "action": "Under 'Global Illumination', confirm 'Global Illumination Method' is set to 'Lumen'.",
+      "time_cost": 0.02,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-20",
+      "action": "Under 'Reflections', confirm 'Reflection Method' is set to 'Lumen'.",
+      "time_cost": 0.02,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-21",
+      "action": "Select the Sky Light actor in the World Outliner.",
+      "time_cost": 0.01,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-22",
+      "action": "In its Details panel, verify 'Source Type' is 'SLS Captured Scene'.",
+      "time_cost": 0.02,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-23",
+      "action": "Verify 'Intensity' is a non-zero, visible value (e.g., 1.0).",
+      "time_cost": 0.02,
+      "has_detours": true
+    },
+    {
+      "step_id": "step-24",
+      "action": "In the Editor Viewport toolbar, click 'View Modes'.",
+      "time_cost": 0.015,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-25",
+      "action": "Navigate to 'Buffer Visualization'.",
+      "time_cost": 0.015,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-26",
+      "action": "Select 'World Reflection' to inspect reflection data.",
+      "time_cost": 0.03,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-27",
+      "action": "Scan the scene/World Outliner for Reflection Capture actors near the statue.",
+      "time_cost": 0.02,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-28",
+      "action": "If found, select it and verify the statue is within its influence bounds.",
+      "time_cost": 0.03,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-29",
+      "action": "Select the Post Process Volume in the scene.",
+      "time_cost": 0.01,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-30",
+      "action": "In its Details panel, verify 'Unbound' is checked, or adjust bounds.",
+      "time_cost": 0.03,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-31",
+      "action": "In the Post Process Volume's Details panel, search for 'Lumen'.",
+      "time_cost": 0.01,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-32",
+      "action": "Confirm 'Global Illumination Method' under Lumen is 'Lumen'/'Final Gather' and intensity > 0.",
+      "time_cost": 0.02,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-33",
+      "action": "Confirm 'Reflection Method' under Lumen is 'Lumen'/'Final Gather' and intensity > 0.",
+      "time_cost": 0.02,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-34",
+      "action": "Re-select the problematic Static Mesh Actor.",
+      "time_cost": 0.01,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-35",
+      "action": "Reconfirm 'Visible in Ray Tracing' is checked.",
+      "time_cost": 0.02,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-36",
+      "action": "In the Static Mesh Actor's Details panel, verify 'Hidden In Game' is NOT checked.",
+      "time_cost": 0.02,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-37",
+      "action": "Enter 'Play In Editor' (PIE) mode.",
+      "time_cost": 0.02,
+      "has_detours": false
+    },
+    {
+      "step_id": "step-38",
+      "action": "Verify the statue renders correctly with reflections in PIE.",
+      "time_cost": 0.02,
+      "has_detours": false
+    }
+  ],
+  "detours": {
+    "step-2": [
+      {
+        "detour_id": "step-2W_light",
+        "trigger": "wrong",
+        "reason": "The problem description states the level is well-lit by a dynamic directional light, making direct manipulation of the primary directional light an unnecessary detour.",
+        "action": "Attempt to delete the Directional Light or modify its intensity to extreme values.",
+        "time_cost": 0.2,
+        "steps": [
+          "step-2W_light"
+        ],
+        "converges_to": "step-3",
+        "total_penalty": 0.2
+      }
+    ],
+    "step-6": [
+      {
+        "detour_id": "step-6W_roughness",
+        "trigger": "wrong",
+        "reason": "Modifying roughness to a high value turns the material matte, preventing metallic reflections and misdiagnosing the core issue related to reflections.",
+        "action": "Change the Material's roughness parameter to 1.0 (matte).",
+        "time_cost": 0.15,
+        "steps": [
+          "step-6W_roughness"
+        ],
+        "converges_to": "step-7",
+        "total_penalty": 0.15
+      }
+    ],
+    "step-23": [
+      {
+        "detour_id": "step-23W_reflection_captures",
+        "trigger": "wrong",
+        "reason": "Manually placing legacy Sphere Reflection Capture actors when Lumen is active wastes time on outdated techniques and may interfere with the dynamic GI system.",
+        "action": "Manually place multiple Sphere Reflection Capture actors across the scene and run 'Build Reflection Captures'.",
+        "time_cost": 0.1,
+        "steps": [
+          "step-23W_reflection_captures"
+        ],
+        "converges_to": "step-24",
+        "total_penalty": 0.1
+      }
+    ]
+  }
+}

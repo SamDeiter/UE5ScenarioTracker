@@ -559,31 +559,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.body.removeChild(modal);
                 });
             });
-        
+
         // --- DEBUG NAVIGATION BUTTONS ---
         const debugPrevStep = document.getElementById('debug-prev-step');
         const debugNextStep = document.getElementById('debug-next-step');
         const debugSkipToEnd = document.getElementById('debug-skip-to-end');
 
         if (debugPrevStep) {
-            debugPrevStep.addEventListener('click', () => {
-                debugNavigateStep('prev');
-            });
+            debugPrevStep.addEventListener('click', () => debugNavigateStep('prev'));
         }
-
         if (debugNextStep) {
-            debugNextStep.addEventListener('click', () => {
-                debugNavigateStep('next');
-            });
+            debugNextStep.addEventListener('click', () => debugNavigateStep('next'));
         }
-
         if (debugSkipToEnd) {
-            debugSkipToEnd.addEventListener('click', () => {
-                debugNavigateStep('end');
-            });
-        }
+            debugSkipToEnd.addEventListener('click', () => debugNavigateStep('end'));
+        }        }
     }
 
+    /**
+     * Calculates the total ideal time based on the scenarios the user has actually attempted.
+     * Uses meta.estimateHours if available, or falls back to step count.
+     * @param {object} [stateToUse=scenarioState] - The state to filter by.
+     * @returns {{totalSteps: number, idealTotalTime: number}} The calculated totals.
+     */
+    
     /**
      * Debug function to navigate between steps in the current scenario.
      * @param {string} direction - 'prev', 'next', or 'end'
@@ -593,64 +592,39 @@ document.addEventListener('DOMContentLoaded', () => {
             console.warn("No scenario selected");
             return;
         }
-
         const scenario = window.SCENARIOS[currentScenarioId];
         if (!scenario || !scenario.steps) {
             console.warn("Invalid scenario");
             return;
         }
-
         const stepKeys = Object.keys(scenario.steps);
         const currentIndex = stepKeys.indexOf(currentStepId);
-
         let newStepId = currentStepId;
 
-        if (direction === 'prev') {
-            if (currentIndex > 0) {
-                newStepId = stepKeys[currentIndex - 1];
-            }
-        } else if (direction === 'next') {
-            if (currentIndex < stepKeys.length - 1) {
-                newStepId = stepKeys[currentIndex + 1];
-            }
+        if (direction === 'prev' && currentIndex > 0) {
+            newStepId = stepKeys[currentIndex - 1];
+        } else if (direction === 'next' && currentIndex < stepKeys.length - 1) {
+            newStepId = stepKeys[currentIndex + 1];
         } else if (direction === 'end') {
-            // Find conclusion or last step
-            if (scenario.steps['conclusion']) {
-                newStepId = 'conclusion';
-            } else {
-                newStepId = stepKeys[stepKeys.length - 1];
-            }
+            newStepId = scenario.steps['conclusion'] ? 'conclusion' : stepKeys[stepKeys.length - 1];
         }
 
         if (newStepId !== currentStepId) {
             currentStepId = newStepId;
             renderStep(currentScenarioId, currentStepId);
             updateDebugStepDisplay();
-            console.log(`🔧 Debug navigated to: ${currentStepId}`);
+            console.log('🔧 Debug navigated to:', currentStepId);
         }
     }
 
-    /**
-     * Updates the debug panel's current step display.
-     */
     function updateDebugStepDisplay() {
-        const debugCurrentStep = document.getElementById('debug-current-step');
-        if (debugCurrentStep) {
-            if (currentScenarioId && currentStepId) {
-                debugCurrentStep.textContent = currentStepId;
-            } else {
-                debugCurrentStep.textContent = 'None';
-            }
+        const el = document.getElementById('debug-current-step');
+        if (el) {
+            el.textContent = (currentScenarioId && currentStepId) ? currentStepId : 'None';
         }
     }
 
-    /**
-     * Calculates the total ideal time based on the scenarios the user has actually attempted.
-     * Uses meta.estimateHours if available, or falls back to step count.
-     * @param {object} [stateToUse=scenarioState] - The state to filter by.
-     * @returns {{totalSteps: number, idealTotalTime: number}} The calculated totals.
-     */
-    function calculateTotalIdealTime(stateToUse = scenarioState) {
+function calculateTotalIdealTime(stateToUse = scenarioState) {
         let totalSteps = 0;
         let idealTotalTime = 0;
 
@@ -1047,9 +1021,8 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             const rawCategory = meta.category || SCENARIO_CATEGORIES[scenarioId] || 'General';
-            // Convert Category to translation key format: "Audio" -> "category.audio"
-            const categoryKey = 'category.' + rawCategory.toLowerCase().replace(' ', '_');
-            const categoryLabel = safeT(categoryKey);
+            // Use raw category name (truncated if too long)
+            const categoryLabel = rawCategory.length > 18 ? rawCategory.substring(0, 15) + '...' : rawCategory;
 
             // Unique color for each category
             const categoryColors = {

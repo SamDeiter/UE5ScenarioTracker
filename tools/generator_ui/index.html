@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UE5 Scenario Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1>🎮 UE5 Scenario Generator</h1>
+                <span id="api-status" class="status-badge">Checking...</span>
+            </div>
+            <div class="header-right">
+                <button id="refresh-btn" class="btn btn-secondary">🔄 Refresh</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Scenario List -->
+            <section class="panel scenario-list-panel">
+                <div class="panel-header">
+                    <h2>📦 Scenarios</h2>
+                    <span id="scenario-count" class="count-badge">0 / 0</span>
+                </div>
+                <div class="panel-content">
+                    <div id="scenario-list" class="scenario-list">
+                        <div class="loading">Loading scenarios...</div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <button id="generate-selected-btn" class="btn btn-primary" disabled>
+                        ⚡ Generate Selected
+                    </button>
+                    <button id="generate-all-btn" class="btn btn-accent">
+                        🚀 Generate All Missing
+                    </button>
+                </div>
+            </section>
+
+            <!-- Progress & Preview -->
+            <section class="panel preview-panel">
+                <div class="panel-header">
+                    <h2>📊 Status</h2>
+                </div>
+                <div class="panel-content">
+                    <!-- Progress Section -->
+                    <div id="progress-section" class="progress-section hidden">
+                        <div class="progress-header">
+                            <span id="progress-title">Generating...</span>
+                            <span id="progress-count">0/0</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="progress-fill" class="progress-fill"></div>
+                        </div>
+                        <div class="progress-stats">
+                            <div class="stat">
+                                <span class="stat-label">Current:</span>
+                                <span id="current-scenario" class="stat-value">-</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Tokens:</span>
+                                <span id="tokens-used" class="stat-value">0</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Cost:</span>
+                                <span id="estimated-cost" class="stat-value">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preview Section -->
+                    <div id="preview-section" class="preview-section">
+                        <div class="preview-placeholder">
+                            <p>👈 Select a scenario to preview</p>
+                            <p class="sub">or generate new scenarios</p>
+                        </div>
+                        <div id="preview-content" class="preview-content hidden">
+                            <div class="preview-header">
+                                <h3 id="preview-title">-</h3>
+                                <span id="preview-category" class="category-badge">-</span>
+                            </div>
+                            <div class="preview-meta">
+                                <span>📊 <span id="preview-steps">0</span> steps</span>
+                                <span>📦 <span id="preview-size">0</span> KB</span>
+                            </div>
+                            <pre id="preview-json" class="preview-json"></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Log -->
+        <footer class="log-panel">
+            <div class="log-header">
+                <span>📝 Log</span>
+                <button id="clear-log-btn" class="btn btn-small">Clear</button>
+            </div>
+            <div id="log-content" class="log-content">
+                <div class="log-entry info">Ready to generate scenarios...</div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

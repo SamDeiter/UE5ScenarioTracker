@@ -1,118 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UE5 Scenario Tracker</title>
-    <script src="https://cdn.tailwindcss.com?v=1764954253"></script>
-    <link rel="stylesheet" href="style.css?v=1764954253">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
-
-<body class="bg-ue-bg text-ue-text font-sans antialiased min-h-screen flex flex-col unselectable">
+<body class="bg-gray-900 text-gray-200 font-sans antialiased min-h-screen flex flex-col">
 
     <!-- Main Game -->
     <main id="game-container" class="flex-grow p-4 md:p-8 flex flex-col items-center">
 
         <!-- Header with Game Title & Controls -->
         <div class="w-full max-w-7xl mb-4 flex justify-between items-center flex-wrap gap-4">
-            <img src="assets/icons/UE-Icon-2023-White.svg" alt="UE5 Logo" class="h-10 w-10 mr-4 opacity-90">
-            <h1 class="text-3xl font-bold text-gray-100 mr-6">UE5 Scenario Tracker</h1>
-
+            <h1 class="text-3xl font-bold text-blue-400 mr-6">UE5 Scenario Tracker</h1>
+            
             <!-- Controls -->
             <div id="header-controls" class="flex-1 flex justify-end items-center space-x-4 min-w-[300px]">
-
+                
                 <!-- Countdown Timer -->
                 <div class="text-right">
                     <span class="text-sm uppercase text-gray-400">Time Remaining</span>
-                    <div id="countdown-timer" class="text-3xl font-bold text-gray-100">30:00</div>
+                    <div id="countdown-timer" class="text-3xl font-bold text-blue-300">30:00</div>
                 </div>
 
-                <!-- Debug Mode Toggle (Always Visible) -->
-                <div id="debug-controls-container" class="flex items-center space-x-2 pl-4 border-l border-gray-700">
-                    <input type="checkbox" id="debug-toggle"
-                        class="form-checkbox h-4 w-4 text-blue-500 bg-gray-700 border-gray-600 rounded focus:ring-blue-500">
+                <!-- Debug Mode Toggle Container (Hidden by default, activated by CTRL+SHIFT+DELETE) -->
+                <div id="debug-controls-container" class="flex items-center space-x-2 pl-4 border-l border-gray-700 hidden">
+                    <input type="checkbox" id="debug-toggle" class="form-checkbox h-4 w-4 text-blue-500 bg-gray-700 border-gray-600 rounded focus:ring-blue-500">
                     <label for="debug-toggle" class="text-sm font-medium text-gray-300">Debug Mode</label>
                 </div>
-
+                
                 <!-- Debug Dropdown Menu (Visible only when Debug Mode is ON) -->
-                <div id="debug-dropdown"
-                    class="absolute top-16 right-8 w-72 p-4 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-50 space-y-3 hidden">
+                <div id="debug-dropdown" class="absolute top-16 right-8 w-64 p-4 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-50 space-y-3 hidden">
                     <h4 class="text-lg font-semibold text-red-400 border-b border-gray-700 pb-2">Admin Tools</h4>
-
-                    <!-- Step Navigation -->
-                    <div class="space-y-2">
-                        <p class="text-xs text-gray-400 uppercase tracking-wide">Step Navigation</p>
-                        <div class="flex gap-2">
-                            <button id="debug-prev-step"
-                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all">
-                                ← Prev
-                            </button>
-                            <button id="debug-next-step"
-                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all">
-                                Next →
-                            </button>
-                        </div>
-                        <button id="debug-skip-to-end"
-                            class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all">
-                            Skip to Conclusion
-                        </button>
-                    </div>
-
-                    <!-- Current Step Display -->
-                    <div class="text-xs text-gray-400 bg-gray-700/50 p-2 rounded">
-                        <span>Current: </span><span id="debug-current-step" class="text-yellow-400">None</span>
-                    </div>
-
-                    <!-- Hard Reset Button -->
-                    <div class="pt-2 border-t border-gray-700">
-                        <button id="hard-reset-btn"
-                            class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all">
+                    
+                    <!-- 1. Hard Reset (ONLY KEEPING THIS) -->
+                    <div class="pt-3">
+                        <button id="hard-reset-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all duration-200">
                             Clear Cache & Restart
                         </button>
                     </div>
                 </div>
             </div>
         </div>
+        
 
-
-        <!-- Progress Tracker Row -->
-        <div class="w-full max-w-7xl grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
-            <div class="md:col-span-1">
-                <div id="progress-indicator"
-                    class="w-full flex items-center justify-between px-5 py-3 bg-ue-panel border border-gray-700 rounded-lg shadow-lg">
-                    <div class="flex items-center gap-4">
-                        <div class="flex flex-col">
-                            <span class="text-xs text-gray-500 uppercase tracking-wider mb-1">Completed</span>
-                            <div class="flex items-baseline gap-1">
-                                <span id="progress-completed" class="text-2xl font-bold text-green-400">0</span>
-                                <span class="text-gray-500 text-sm">/</span>
-                                <span id="progress-total" class="text-lg text-gray-400">0</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-1">
-                            <span class="text-xs text-gray-500 uppercase tracking-wider">Progress</span>
-                            <div class="w-32 h-3 bg-gray-700 rounded-full overflow-hidden border border-gray-600">
-                                <div id="progress-bar"
-                                    class="h-full bg-gradient-to-r from-blue-500 to-green-400 transition-all duration-500"
-                                    style="width: 0%"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="w-px h-10 bg-gray-700"></div>
-                    <div class="flex flex-col">
-                        <span class="text-xs text-gray-500 uppercase tracking-wider mb-1">Efficiency</span>
-                        <span id="progress-efficiency" class="text-2xl font-bold text-blue-400">--</span>
-                    </div>
-                </div>
-            </div>
-        </div>
         <!-- Main Jira-style Grid -->
         <div id="jira-board" class="w-full max-w-7xl grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow min-h-[70vh]">
-
+            
             <!-- Column 1: Backlog -->
-            <div id="backlog-column"
-                class="md:col-span-1 bg-gray-800 rounded-lg shadow-2xl overflow-hidden flex flex-col">
+            <div id="backlog-column" class="md:col-span-1 bg-gray-800 rounded-lg shadow-2xl overflow-hidden flex flex-col">
                 <h2 class="text-xl font-semibold text-gray-100 bg-gray-700/50 p-4 border-b border-gray-600">
                     Sprint Backlog
                 </h2>
@@ -122,16 +60,10 @@
             </div>
 
             <!-- Column 2: Ticket View -->
-            <div id="ticket-view-column"
-                class="md:col-span-2 bg-gray-800 rounded-lg shadow-2xl overflow-hidden flex flex-col">
+            <div id="ticket-view-column" class="md:col-span-2 bg-gray-800 rounded-lg shadow-2xl overflow-hidden flex flex-col">
                 <!-- Placeholder -->
-                <div id="ticket-placeholder"
-                    class="flex-grow flex flex-col items-center justify-center p-8 text-center">
-                    <svg class="w-24 h-24 text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
-                    </svg>
+                <div id="ticket-placeholder" class="flex-grow flex flex-col items-center justify-center p-8 text-center">
+                    <svg class="w-24 h-24 text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
                     <h3 class="text-xl font-semibold text-gray-400">Select a ticket</h3>
                     <p class="text-gray-500">Choose a ticket from the backlog on the left to get started.</p>
                 </div>
@@ -158,79 +90,14 @@
     </main>
 
     <!-- 'Time's Up' Screen / FINAL ASSESSMENT MODAL -->
-    <div id="times-up-screen"
-        class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 p-8 flex items-center justify-center z-50">
+    <div id="times-up-screen" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 p-8 flex items-center justify-center z-50">
         <!-- Content will be dynamically injected here by showAssessmentModal -->
     </div>
 
 
-    <script src="js/localization.js"></script>
-    <script src="js/scorm12-helper.js" defer></script>
     <!-- Load Scenario Data FIRST (using defer) -->
-    <script>window.SCENARIOS = window.SCENARIOS || {};</script>
-    <script src="scenarios/00_manifest.js?v=1764964819" defer></script>
-    <script src="scenarios/BlackMaterialDueToEmissiveMiswiring.js?v=1764964819" defer></script>
-    <script src="scenarios/BlackMetallicObject.js?v=1764964819" defer></script>
-    <script src="scenarios/ComponentMobilityBlock.js?v=1764964819" defer></script>
-    <script src="scenarios/ConstraintDoorFail.js?v=1764964819" defer></script>
-    <script src="scenarios/DanglingAssetRedirectors.js?v=1764964819" defer></script>
-    <script src="scenarios/DataLayerStreamingOverride.js?v=1764964819" defer></script>
-    <script src="scenarios/DecalTextureAlphaMaskFailure.js?v=1764964819" defer></script>
-    <script src="scenarios/DestroyActorStopsExecutionFlow.js?v=1764964819" defer></script>
-    <script src="scenarios/EmissiveGILightingFix.js?v=1764964819" defer></script>
-    <script src="scenarios/ForcedDataLayerUnload.js?v=1764964819" defer></script>
-    <script src="scenarios/LockedCinematicCleanup.js?v=1764964819" defer></script>
-    <script src="scenarios/MaterialParameterAndAnimJitter.js?v=1764964819" defer></script>
-    <script src="scenarios/MismatchedSkeletonReference.js?v=1764964819" defer></script>
-    <script src="scenarios/NaniteVSMInstabilityOnMovement.js?v=1764964819" defer></script>
-    <script src="scenarios/PhysicsLeverFailure.js?v=1764964819" defer></script>
-    <script src="scenarios/RedirectorAndBulkLoadConflict.js?v=1764964819" defer></script>
-    <script src="scenarios/SecurityDoorLogicGap.js?v=1764964819" defer></script>
-    <script src="scenarios/SequencerLightRestoreStateIssue.js?v=1764964819" defer></script>
-    <script src="scenarios/VaultSequenceLockup.js?v=1764964819" defer></script>
-    <script src="scenarios/VolumetricShadowingPerformance.js?v=1764964819" defer></script>
-    <script src="scenarios/WorldPartitionDeepDive.js?v=1764964819" defer></script>
-    <script src="scenarios/assetmanagement_advanced.js?v=1764964819" defer></script>
-    <script src="scenarios/assetmanagement_beginner.js?v=1764964819" defer></script>
-    <script src="scenarios/assetmanagement_intermediate.js?v=1764964819" defer></script>
-    <script src="scenarios/audio_concurrency.js?v=1764964819" defer></script>
-    <script src="scenarios/blueprint_infinite_loop.js?v=1764964819" defer></script>
-    <script src="scenarios/blueprintslogic_advanced.js?v=1764964819" defer></script>
-    <script src="scenarios/blueprintslogic_beginner.js?v=1764964819" defer></script>
-    <script src="scenarios/blueprintslogic_intermediate.js?v=1764964819" defer></script>
-    <script src="scenarios/dash.js?v=1764964819" defer></script>
-    <script src="scenarios/directional_light.js?v=1764964819" defer></script>
-    <script src="scenarios/generator.js?v=1764964819" defer></script>
-    <script src="scenarios/golem.js?v=1764964819" defer></script>
-    <script src="scenarios/inventory.js?v=1764964819" defer></script>
-    <script src="scenarios/lightingrendering_advanced.js?v=1764964819" defer></script>
-    <script src="scenarios/lightingrendering_beginner.js?v=1764964819" defer></script>
-    <script src="scenarios/lightingrendering_intermediate.js?v=1764964819" defer></script>
-    <script src="scenarios/lumen_gi.js?v=1764964819" defer></script>
-    <script src="scenarios/lumen_gi_failure.js?v=1764964819" defer></script>
-    <script src="scenarios/lumen_mesh_distance.js?v=1764964819" defer></script>
-    <script src="scenarios/materialsshaders_advanced.js?v=1764964819" defer></script>
-    <script src="scenarios/materialsshaders_beginner.js?v=1764964819" defer></script>
-    <script src="scenarios/materialsshaders_intermediate.js?v=1764964819" defer></script>
-    <script src="scenarios/nanite_wpo.js?v=1764964819" defer></script>
-    <script src="scenarios/nanite_wpo_failure.js?v=1764964819" defer></script>
-    <script src="scenarios/oversharpened_scene.js?v=1764964819" defer></script>
-    <script src="scenarios/physicscollisions_advanced.js?v=1764964819" defer></script>
-    <script src="scenarios/physicscollisions_beginner.js?v=1764964819" defer></script>
-    <script src="scenarios/physicscollisions_intermediate.js?v=1764964819" defer></script>
-    <script src="scenarios/sequencercinematics_advanced.js?v=1764964819" defer></script>
-    <script src="scenarios/sequencercinematics_beginner.js?v=1764964819" defer></script>
-    <script src="scenarios/sequencercinematics_intermediate.js?v=1764964819" defer></script>
-    <script src="scenarios/terminal.js?v=1764964819" defer></script>
-    <script src="scenarios/volumetric_fog_banding.js?v=1764964819" defer></script>
-    <script src="scenarios/volumetric_fog_material.js?v=1764964819" defer></script>
-    <script src="scenarios/world_partition.js?v=1764964819" defer></script>
-    <script src="scenarios/worldpartition_advanced.js?v=1764964819" defer></script>
-    <script src="scenarios/worldpartition_beginner.js?v=1764964819" defer></script>
-    <script src="scenarios/worldpartition_intermediate.js?v=1764964819" defer></script>
-
+    <script src="questions.js" defer></script>
     <!-- Load Game Logic SECOND (using defer, ensuring it runs after questions.js) -->
-    <script src="js/game.js" defer></script>
+    <script src="game.js" defer></script>
 </body>
-
 </html>

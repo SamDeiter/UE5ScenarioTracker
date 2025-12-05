@@ -4,7 +4,7 @@ window.SCENARIOS['WidgetInputFailure'] = {
         description: "Terminal UI ignores clicks. Investigates Input Mode Game and UI.",
         estimateHours: 1.5,
         difficulty: "Intermediate",
-        category: "UI/UX"
+        category: "UI"
     },
     start: "step-1",
     steps: {

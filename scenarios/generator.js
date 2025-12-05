@@ -4,7 +4,7 @@ window.SCENARIOS['GeneratorCrash'] = {
         description: "Spawning 1000 actors freezes game. Investigates Time Slicing vs. Loops.",
         estimateHours: 1.0,
         difficulty: "Beginner",
-        category: "Procedural Generation"
+        category: "Procedural"
     },
     start: "step-1",
     steps: {

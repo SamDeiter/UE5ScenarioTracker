@@ -951,35 +951,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const categoryKey = 'category.' + rawCategory.toLowerCase().replace(' ', '_');
             const categoryLabel = safeT(categoryKey);
 
-            let categoryColorClass = 'bg-gray-700 text-gray-300 border-gray-600'; // Default
-            // Purple: Rendering & Lighting
-            if (['Rendering', 'Lighting', 'PostProcess', 'Volumetrics', 'Nanite'].includes(rawCategory)) {
-                categoryColorClass = 'bg-purple-900/50 text-purple-200 border-purple-700';
-            }
-            // Blue: Blueprints & Gameplay
-            else if (['Blueprint', 'Blueprints', 'Gameplay', 'AI'].includes(rawCategory)) {
-                categoryColorClass = 'bg-blue-900/50 text-blue-200 border-blue-700';
-            }
-            // Orange: Audio & Effects
-            else if (['Audio', 'Cinematics'].includes(rawCategory)) {
-                categoryColorClass = 'bg-orange-900/50 text-orange-200 border-orange-700';
-            }
-            // Yellow: UI & Tools
-            else if (['UI', 'Tools'].includes(rawCategory)) {
-                categoryColorClass = 'bg-yellow-900/50 text-yellow-200 border-yellow-700';
-            }
-            // Red: Core Systems & World
-            else if (['Core', 'World', 'World Building'].includes(rawCategory)) {
-                categoryColorClass = 'bg-red-900/50 text-red-200 border-red-700';
-            }
-            // Green: Assets & Content
-            else if (['Assets', 'Materials', 'Physics'].includes(rawCategory)) {
-                categoryColorClass = 'bg-green-900/50 text-green-200 border-green-700';
-            }
-            // Cyan: Performance & Procedural
-            else if (['Performance', 'Procedural'].includes(rawCategory)) {
-                categoryColorClass = 'bg-cyan-900/50 text-cyan-200 border-cyan-700';
-            }
+            // Unique color for each category
+            const categoryColors = {
+                'AI': 'bg-blue-900/50 text-blue-200 border-blue-700',
+                'Assets': 'bg-green-900/50 text-green-200 border-green-700',
+                'Audio': 'bg-orange-900/50 text-orange-200 border-orange-700',
+                'Blueprints': 'bg-indigo-900/50 text-indigo-200 border-indigo-700',
+                'Cinematics': 'bg-pink-900/50 text-pink-200 border-pink-700',
+                'Core': 'bg-red-900/50 text-red-200 border-red-700',
+                'Gameplay': 'bg-cyan-900/50 text-cyan-200 border-cyan-700',
+                'Lighting': 'bg-purple-900/50 text-purple-200 border-purple-700',
+                'Materials': 'bg-emerald-900/50 text-emerald-200 border-emerald-700',
+                'Nanite': 'bg-violet-900/50 text-violet-200 border-violet-700',
+                'Performance': 'bg-amber-900/50 text-amber-200 border-amber-700',
+                'Physics': 'bg-teal-900/50 text-teal-200 border-teal-700',
+                'PostProcess': 'bg-fuchsia-900/50 text-fuchsia-200 border-fuchsia-700',
+                'Procedural': 'bg-lime-900/50 text-lime-200 border-lime-700',
+                'Rendering': 'bg-sky-900/50 text-sky-200 border-sky-700',
+                'Tools': 'bg-yellow-900/50 text-yellow-200 border-yellow-700',
+                'UI': 'bg-rose-900/50 text-rose-200 border-rose-700',
+                'Volumetrics': 'bg-slate-700/50 text-slate-200 border-slate-600',
+                'World': 'bg-orange-800/50 text-orange-200 border-orange-600'
+            };
+
+            let categoryColorClass = categoryColors[rawCategory] || 'bg-gray-700 text-gray-300 border-gray-600';
 
             const difficultyKey = estimate > 5 ? 'difficulty.long' : estimate > 2 ? 'difficulty.med' : 'difficulty.short';
             const difficultyLabel = safeT(difficultyKey);

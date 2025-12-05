@@ -1048,9 +1048,8 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             const rawCategory = meta.category || SCENARIO_CATEGORIES[scenarioId] || 'General';
-            // Convert Category to translation key format: "Audio" -> "category.audio"
-            const categoryKey = 'category.' + rawCategory.toLowerCase().replace(' ', '_');
-            const categoryLabel = safeT(categoryKey);
+            // Use the raw category name directly (truncate if too long)
+            const categoryLabel = rawCategory.length > 20 ? rawCategory.substring(0, 17) + '...' : rawCategory;
 
             // Unique color for each category
             const categoryColors = {
@@ -1146,10 +1145,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const stepNumber = stepIndex !== -1 ? stepIndex + 1 : 1;
         const totalSteps = stepKeys.length;
 
-        // Conditionally generate the step count prefix (visible only in debug mode)
-        const stepCountPrefix = isDebugMode
-            ? `Step ${stepNumber} / ${totalSteps}: `
-            : '';
+        // Conditionally generate the step count prefix (disabled to avoid redundancy with step titles)
+        const stepCountPrefix = '';
 
         // 5. Build the Step Prompt and Choices
         let imageHtml = '';

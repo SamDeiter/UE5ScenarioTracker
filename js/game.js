@@ -1067,6 +1067,16 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.className = `block w-full text-left p-4 rounded-md border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 unselectable text-sm md:text-base relative overflow-hidden ${debugClass} ${isDebugMode ? '' : 'bg-[#111111] border-[#333] text-gray-300 hover:bg-[#1a1a1a] hover:border-blue-500 hover:text-white hover:shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:-translate-y-0.5 active:translate-y-0 active:bg-blue-900/20'
                 }`;
 
+            // Force inline styles for debug mode to ensure visibility
+            if (isDebugMode && isCorrect) {
+                btn.style.backgroundColor = 'rgba(22, 163, 74, 0.25)';
+                btn.style.borderColor = '#16a34a';
+                btn.style.borderWidth = '3px';
+                btn.style.boxShadow = '0 0 15px 4px rgba(22, 163, 74, 0.6)';
+            } else if (isDebugMode) {
+                btn.style.backgroundColor = '#1a1a1a';
+            }
+
             btn.innerHTML = `<span class="font-bold">${choice.text}</span>`;
 
             // Attach minimal data to dataset

@@ -424,12 +424,19 @@ button:active {
 }
 
 /* === DEBUG & ANIMATION STYLES (Updated for Priority) === */
+/* Must come AFTER button styles to override them */
+button.debug-correct,
 .debug-correct {
-    background-color: rgba(22, 163, 74, 0.15) !important;
-    /* Green background */
-    box-shadow: 0 0 15px 4px rgba(22, 163, 74, 0.5) !important;
+    background-color: rgba(22, 163, 74, 0.2) !important;
+    /* Brighter green background */
+    box-shadow: 0 0 15px 4px rgba(22, 163, 74, 0.6) !important;
     border-color: #16a34a !important;
-    border-width: 2px !important;
+    border-width: 3px !important;
+}
+
+button.debug-correct:hover {
+    background-color: rgba(22, 163, 74, 0.3) !important;
+    /* Even brighter on hover */
 }
 
 /* Add other debug classes if they were missing from style.css or need overrides */

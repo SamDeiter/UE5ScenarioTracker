@@ -557,16 +557,14 @@ JSON:"""
 
 def main():
     """Example usage"""
-    import sys
+    from env_loader import get_gemini_key
     
-    # Get API key from environment or argument
-    api_key = os.getenv('GEMINI_API_KEY')
-    if not api_key and len(sys.argv) > 1:
-        api_key = sys.argv[1]
-    
-    if not api_key:
-        print("❌ Error: GEMINI_API_KEY environment variable not set")
-        print("Usage: python scenario_generator.py [API_KEY]")
+    # Get API key securely from .env file or environment
+    try:
+        api_key = get_gemini_key()
+        print(f"✅ API key loaded: {api_key[:8]}...")
+    except ValueError as e:
+        print(f"❌ Error: {e}")
         return
     
     # Initialize generator

@@ -25,7 +25,24 @@ pip install google-generativeai
 
 1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
 2. Create a new API key
-3. Set environment variable:
+3. **🔒 SECURE SETUP (Recommended)**: Store in `.env` file
+
+**Create a `.env` file in the project root:**
+
+```bash
+# Copy the example file
+Copy-Item .env.example .env
+
+# Edit .env and add your key:
+GEMINI_API_KEY=your-api-key-here
+```
+
+The `.env` file is automatically gitignored and will never be committed. ✅
+
+**Alternative: Set environment variable (less secure):**
+
+<details>
+<summary>Click to expand legacy environment variable setup</summary>
 
 **Windows (PowerShell):**
 
@@ -44,6 +61,10 @@ set GEMINI_API_KEY=your-api-key-here
 ```bash
 export GEMINI_API_KEY="your-api-key-here"
 ```
+
+</details>
+
+📖 **See [API_KEY_SECURITY.md](../docs/API_KEY_SECURITY.md) for full security documentation.**
 
 ## Usage
 

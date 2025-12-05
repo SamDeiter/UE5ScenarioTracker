@@ -108,7 +108,34 @@
 
     <!-- Load Scenario Data FIRST (using defer) -->
     <script src="questions.js" defer></script>
-    <!-- Load Game Logic SECOND (using defer, ensuring it runs after questions.js) -->
+    
+    <!-- Load Scenario Manifest (initializes window.SCENARIOS) -->
+    <script src="scenarios/00_manifest.js" defer></script>
+    
+    <!-- Load All Generated Scenarios -->
+    <script src="scenarios/BlackMetallicObject.js" defer></script>
+    <script src="scenarios/BlackMaterialDueToEmissiveMiswiring.js" defer></script>
+    <script src="scenarios/ComponentMobilityBlock.js" defer></script>
+    <script src="scenarios/ConstraintDoorFail.js" defer></script>
+    <script src="scenarios/DanglingAssetRedirectors.js" defer></script>
+    <script src="scenarios/DataLayerStreamingOverride.js" defer></script>
+    <script src="scenarios/DecalTextureAlphaMaskFailure.js" defer></script>
+    <script src="scenarios/DestroyActorStopsExecutionFlow.js" defer></script>
+    <script src="scenarios/EmissiveGILightingFix.js" defer></script>
+    <script src="scenarios/ForcedDataLayerUnload.js" defer></script>
+    <script src="scenarios/LockedCinematicCleanup.js" defer></script>
+    <script src="scenarios/MaterialParameterAndAnimJitter.js" defer></script>
+    <script src="scenarios/MismatchedSkeletonReference.js" defer></script>
+    <script src="scenarios/NaniteVSMInstabilityOnMovement.js" defer></script>
+    <script src="scenarios/PhysicsLeverFailure.js" defer></script>
+    <script src="scenarios/RedirectorAndBulkLoadConflict.js" defer></script>
+    <script src="scenarios/SecurityDoorLogicGap.js" defer></script>
+    <script src="scenarios/SequencerLightRestoreStateIssue.js" defer></script>
+    <script src="scenarios/VaultSequenceLockup.js" defer></script>
+    <script src="scenarios/VolumetricShadowingPerformance.js" defer></script>
+    <script src="scenarios/WorldPartitionDeepDive.js" defer></script>
+    
+    <!-- Load Game Logic SECOND (using defer, ensuring it runs after scenarios) -->
     <script src="game.js" defer></script>
 </body>
 </html>

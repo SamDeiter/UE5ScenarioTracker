@@ -195,13 +195,19 @@ function renderScenarioList() {
         const categoryClass = getCategoryClass(category);
 
         group.innerHTML = `
-            <div class="category-group-header" onclick="this.parentElement.classList.toggle('collapsed')">
+            <div class="category-group-header">
                 <span class="toggle-icon">▼</span>
                 <span class="category-badge ${categoryClass}">${category}</span>
                 <span>(${groups[category].length})</span>
             </div>
             <div class="category-items"></div>
         `;
+
+        // Add click handler only to header
+        group.querySelector('.category-group-header').addEventListener('click', (e) => {
+            e.stopPropagation();
+            group.classList.toggle('collapsed');
+        });
 
         const itemsContainer = group.querySelector('.category-items');
 
@@ -262,7 +268,14 @@ function toggleScenarioSelection(scenario) {
         selectedScenarios.add(scenario.id);
     }
 
-    renderScenarioList();
+    // Update just this item, not the whole list
+    const item = document.querySelector(`[data-id="${scenario.id}"]`);
+    if (item) {
+        item.classList.toggle('selected');
+        const checkbox = item.querySelector('.scenario-checkbox');
+        if (checkbox) checkbox.checked = selectedScenarios.has(scenario.id);
+    }
+
     updateButtons();
 
     // Show preview if only one selected
@@ -299,22 +312,38 @@ async function showPreview(scenarioId) {
             descEl.textContent = meta.description || content.description || 'No description available.';
         }
 
-        // Steps as list
+        // Steps as timeline - traverse linked list for correct order
         const stepsList = document.getElementById('preview-steps-list');
         if (stepsList && content.steps) {
             stepsList.innerHTML = '';
-            const steps = Object.values(content.steps);
-            steps.forEach(step => {
-                const li = document.createElement('li');
-                li.textContent = step.title || step.action || 'Step';
-                stepsList.appendChild(li);
-            });
-            if (steps.length > 10) {
-                const li = document.createElement('li');
-                li.textContent = `... and ${steps.length - 10} more steps`;
-                li.style.color = 'var(--text-secondary)';
-                stepsList.appendChild(li);
+
+            // Traverse linked list to get correct order
+            const orderedSteps = [];
+            let currentId = 'step-1'; // Start node
+            const visited = new Set();
+
+            while (currentId && content.steps[currentId] && !visited.has(currentId)) {
+                visited.add(currentId);
+                const step = content.steps[currentId];
+                orderedSteps.push({ id: currentId, ...step });
+                currentId = step.next;
             }
+
+            // Render as timeline
+            orderedSteps.forEach((step, index) => {
+                const div = document.createElement('div');
+                const isStart = index === 0;
+                const isEnd = index === orderedSteps.length - 1 || (step.title && step.title.includes('Complete'));
+
+                div.className = 'timeline-step ' + (isStart ? 'step-start' : isEnd ? 'step-end' : 'step-middle');
+
+                div.innerHTML = `
+                    <div class="timeline-title">${step.title || step.action || 'Step ' + (index + 1)}</div>
+                    <div class="timeline-prompt">${step.prompt || step.description || ''}</div>
+                `;
+
+                stepsList.appendChild(div);
+            });
         }
 
         // Debug info

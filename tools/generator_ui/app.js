@@ -226,7 +226,6 @@ function renderScenarioList() {
 
             item.innerHTML = `
                 <input type="checkbox" class="scenario-checkbox" ${selectedScenarios.has(scenario.id) ? 'checked' : ''}>
-                <span class="status-icon">${scenario.generated ? '✅' : '⏳'}</span>
                 <div class="info">
                     <div class="title">${scenario.title}</div>
                     <div class="meta">

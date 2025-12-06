@@ -52,8 +52,13 @@ def quiz():
 
 @app.route('/<path:path>')
 def static_files(path):
-    """Serve static files"""
-    return send_from_directory(app.static_folder, path)
+    """Serve static files from generator_ui or root"""
+    # Try generator_ui folder first
+    try:
+        return send_from_directory(app.static_folder, path)
+    except:
+        # Fall back to root directory
+        return send_from_directory(ROOT_DIR, path)
 
 
 @app.route('/api/scenarios', methods=['GET'])

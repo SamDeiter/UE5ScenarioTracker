@@ -273,10 +273,16 @@ function renderScenarioList() {
         groups[cat].push(scenario);
     });
 
+    // Check if any filter is active
+    const hasActiveFilter = currentFilters.search !== '' ||
+        currentFilters.status !== 'all' ||
+        currentFilters.category !== 'all';
+
     // Render each group
     Object.keys(groups).sort().forEach(category => {
         const group = document.createElement('div');
-        group.className = 'category-group collapsed';
+        // Auto-expand when filters are active, collapse when no filters
+        group.className = hasActiveFilter ? 'category-group' : 'category-group collapsed';
 
         const categoryClass = getCategoryClass(category);
 

@@ -55,11 +55,16 @@ function generateScenarioAssets(scenarioId) {
         console.log(`  Copied: ${script}`);
     }
 
-    // Build Unreal command
-        const tempSpecPath = path.join(process.env.TEMP || 'D:\temp', `${scenarioId}_spec.json`);
+    // Build Python command that imports module and calls function
+    const tempSpecPath = specPath;  // Use the exported spec path
     const unrealOutputPath = path.join(UE_PROJECT_PATH, 'Content', 'Scenarios');
     
-    const pythonCmd = `import sys; sys.path.append(r'${ueScriptsPath.replace(/\/g, '\\')}'); import AutoGenerateScenarios; AutoGenerateScenarios.generate_scenario_assets(r'${tempSpecPath.replace(/\/g, '\\')}', r'${unrealOutputPath.replace(/\/g, '\\')}')`;
+    // Build Python import command - avoid backslash issues by using forward slashes
+    const pyPath = ueScriptsPath.replace(/\\/g, '/');
+    const pySpec = tempSpecPath.replace(/\\/g, '/');
+    const pyOut = unrealOutputPath.replace(/\\/g, '/');
+    
+    const pythonCmd = `import sys; sys.path.append(r'${pyPath}'); import AutoGenerateScenarios; AutoGenerateScenarios.generate_scenario_assets(r'${pySpec}', r'${pyOut}')`;
     
     const args = [
         UE_PROJECT_FILE,

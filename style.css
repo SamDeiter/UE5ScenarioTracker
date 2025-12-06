@@ -3,10 +3,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom base styles */
+/* Custom base styles - UE5 Editor-inspired dark theme */
 body {
-    background-color: #1a202c;
-    /* bg-gray-900 */
+    background-color: #121212;
+    /* UE5 Editor dark background */
     color: #e2e8f0;
     /* text-gray-200 */
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";

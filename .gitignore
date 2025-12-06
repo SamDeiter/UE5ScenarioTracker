@@ -34,3 +34,8 @@ temp/
 *backup*/
 *_backup_*
 scenarios_backup*/
+
+# LMS Build Output (generated files, not source code)
+lms-build/
+*.zip
+build_log.txt

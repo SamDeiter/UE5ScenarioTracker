@@ -60,10 +60,10 @@ function generateScenarioAssets(scenarioId) {
 
     const args = [
         UE_PROJECT_FILE,
-        `-stdout`,
-        `-unattended`,
-        `-nopause`,
-        `-run=python "${path.join(ueScriptsPath, 'AutoGenerateScenarios.py')}"`
+        '-ExecutePythonScript=import sys; sys.path.append(r\'D:/UE5_Projects/UEScenarioFactory/Content/Python\'); import AutoGenerateScenarios; AutoGenerateScenarios.generate_scenario_assets(r\'C:/Users/SAMDEI~1/AppData/Local/Temp/directional_light_spec.json\', r\'D:/UE5_Projects/UEScenarioFactory/Content/Scenarios\')',
+        '-stdout',
+        '-unattended',
+        '-nopause'
     ];
 
     console.log(`\nUnreal Editor: ${UE_EDITOR_CMD}`);

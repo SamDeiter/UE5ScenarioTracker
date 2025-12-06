@@ -58,14 +58,19 @@ function generateScenarioAssets(scenarioId) {
     // Build Unreal command
     const pythonCmd = `execfile('${pythonScript.replace(/\\/g, '\\\\')}')`;
 
+        const tempSpecPath = path.join(process.env.TEMP || 'D:\temp', `${scenarioId}_spec.json`);
+    const unrealOutputPath = path.join(UE_PROJECT_PATH, 'Content', 'Scenarios');
+    
+    const pythonCmd = `import sys; sys.path.append(r'${ueScriptsPath.replace(/\/g, '\\')}'); import AutoGenerateScenarios; AutoGenerateScenarios.generate_scenario_assets(r'${tempSpecPath.replace(/\/g, '\\')}', r'${unrealOutputPath.replace(/\/g, '\\')}')`;
+    
     const args = [
         UE_PROJECT_FILE,
-        '-ExecutePythonScript=import sys; sys.path.append(r\'D:/UE5_Projects/UEScenarioFactory/Content/Python\'); import AutoGenerateScenarios; AutoGenerateScenarios.generate_scenario_assets(r\'C:/Users/SAMDEI~1/AppData/Local/Temp/directional_light_spec.json\', r\'D:/UE5_Projects/UEScenarioFactory/Content/Scenarios\')',
+        `-ExecutePythonScript=${pythonCmd}`,
         '-stdout',
         '-unattended',
         '-nopause'
     ];
-
+    
     console.log(`\nUnreal Editor: ${UE_EDITOR_CMD}`);
     console.log(`Project: ${UE_PROJECT_FILE}`);
     console.log(`Python Script: ${pythonScript}\n`);

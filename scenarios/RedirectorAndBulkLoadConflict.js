@@ -1,785 +1,475 @@
 window.SCENARIOS['RedirectorAndBulkLoadConflict'] = {
     "meta": {
         "title": "Corrupted Texture Reference After Migration",
-        "description": "A high-fidelity environmental prop (a large metallic statue) suddenly appears black and untextured in the level viewport, instead of its intended polished gold look. We recently moved the asset and it",
+        "description": "A high-fidelity environmental prop (a large metallic statue) suddenly appears black and untextured in the level viewport, instead of its intended polished gold look. We recently moved the asset and its associated textures to a new folder structure. Opening the Material Instance reveals that all scalar and vector parameters are correct, and the material asset appears to be assigned, but the visual preview in the Material Instance Editor is also incorrect, showing a dull grey reflection suggesting the base texture inputs are failing to load.",
         "estimateHours": 1.35,
         "category": "Asset Management",
-        "tokens_used": 10867
+        "tokens_used": 10502
     },
     "start": "step-1",
     "steps": {
         "step-1": {
             "skill": "general",
-            "title": "Step 1: Locate the Asset",
-            "prompt": "<p>A high-fidelity metallic statue appears black and untextured in the level viewport. Its Material Instance preview also shows a dull grey reflection. What's your first action?</p>",
+            "title": "Observe Untextured Statue",
+            "prompt": "<p>A large metallic statue appears black and untextured in the <strong>level viewport</strong>. Its <strong>Material Instance</strong> preview also shows a dull grey reflection. How do you investigate this?</p>",
             "choices": [
                 {
-                    "text": "<p>Locate the specific Static Mesh of the statue in the Level viewport or Outliner.</p>",
+                    "text": "<p>Locate the statue's <strong>Static Mesh</strong> in the <strong>Level Outliner</strong> and identify its assigned <strong>Material Instance</strong>.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.02hrs. Pinpointing the problematic asset is the essential first step.</p>",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. Starting with the direct object in the scene is the most logical first step to understand its assigned properties and trace the issue.</p>",
                     "next": "step-2"
                 },
                 {
-                    "text": "<p>Attempt to rebuild level lighting or reflection captures.</p>",
+                    "text": "<p>Attempt to rebuild <strong>level lighting</strong> and <strong>reflection captures</strong>, assuming it's a rendering issue.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.2hrs. The issue's description points to texture/material problems, not lighting, making this action irrelevant at this stage.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.2hrs. The issue manifests as missing textures, not incorrect lighting or reflections. Rebuilding lighting is time-consuming and won't fix a missing asset reference.</p>",
                     "next": "step-1"
                 },
                 {
-                    "text": "<p>Check the project's Output Log for general texture loading errors.</p>",
+                    "text": "<p>Check the <strong>Project Settings</strong> under 'Rendering' for any texture streaming errors.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. While logs can be useful, directly identifying the asset is more focused than a broad log search.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. While texture streaming can cause issues, the immediate symptom points to a specific asset's material. Global settings are unlikely to be the first point of failure for one isolated object after a folder move.</p>",
                     "next": "step-1"
                 },
                 {
-                    "text": "<p>Delete the statue from the level and re-add it from the Content Browser.</p>",
+                    "text": "<p>Inspect the <strong>Content Browser</strong> for the <strong>T_Statue_Normal</strong> texture directly, without checking the statue first.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. This is premature and doesn't address potential underlying asset reference problems that would persist.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. While the texture is the eventual culprit, it's better to confirm which material the statue uses first. You might be investigating the wrong texture if the material assignment itself was the problem (which it isn't, but you don't know that yet).</p>",
                     "next": "step-1"
                 }
             ]
         },
         "step-2": {
-            "skill": "general",
-            "title": "Step 2: Identify Material Instance",
-            "prompt": "<p>You've located the statue's Static Mesh. How do you find the Material Instance applied to it?</p>",
+            "skill": "asset_management",
+            "title": "Verify Material Instance Parameters",
+            "prompt": "<p>You've identified <strong>MI_Statue_Polished</strong> as the assigned <strong>Material Instance</strong>. Its preview sphere also appears dull and grey. What's your next move?</p>",
             "choices": [
                 {
-                    "text": "<p>Select the Static Mesh and identify the assigned Material Instance (MI_Statue_Polished) in its Details panel.</p>",
+                    "text": "<p>Double-click <strong>MI_Statue_Polished</strong> to open the <strong>Material Instance Editor</strong> and verify texture parameters.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.03hrs. The Details panel for the mesh instance is where you find its assigned materials.</p>",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.1hrs. Opening the <strong>Material Instance</strong> is essential to confirm its settings and see how it references its parent and textures. This is a critical next step after identifying the material.</p>",
                     "next": "step-3"
                 },
                 {
-                    "text": "<p>Check the World Settings panel for a list of materials used in the level.</p>",
+                    "text": "<p>Create a brand new <strong>Material Instance</strong> and try to assign the textures directly.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. World Settings are for level-wide configurations, not for individual mesh material assignments.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.3hrs. Creating a new <strong>Material Instance</strong> is premature and will not resolve underlying reference issues if the problem lies with the texture asset itself or its parent material. This can waste significant time if the root cause isn't addressed.</p>",
                     "next": "step-2"
                 },
                 {
-                    "text": "<p>Use the Content Browser to search for any material instances starting with 'MI_Statue'.</p>",
+                    "text": "<p>Right-click the <strong>MI_Statue_Polished</strong> asset in the <strong>Content Browser</strong> and choose 'Find References'.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. While it might find it, directly checking the mesh's details is more precise to confirm the *assigned* material.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.07hrs. While useful, 'Find References' shows where the MI is used, not *what* it uses or if its internal references are valid. Opening the editor is more direct for parameter inspection.</p>",
                     "next": "step-2"
                 },
                 {
-                    "text": "<p>Try dragging various materials from the Content Browser onto the statue in the viewport.</p>",
+                    "text": "<p>Check the <strong>MI_Statue_Polished</strong> properties in the <strong>Details panel</strong> of the <strong>Content Browser</strong>.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. This is trial-and-error and less efficient than inspecting the mesh's properties directly.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. The <strong>Details panel</strong> in the <strong>Content Browser</strong> offers limited information. The <strong>Material Instance Editor</strong> is specifically designed for detailed parameter inspection.</p>",
                     "next": "step-2"
                 }
             ]
         },
         "step-3": {
-            "skill": "general",
-            "title": "Step 3: Open Material Instance Editor",
-            "prompt": "<p>You've identified MI_Statue_Polished as the assigned Material Instance. What's your next step to investigate its internal state?</p>",
+            "skill": "material_editor",
+            "title": "Examine Parent Material Inputs",
+            "prompt": "<p>In the <strong>Material Instance Editor</strong>, all texture parameters (e.g., Normal Map, Base Color Texture) appear to be pointing to valid assets by name, but the preview sphere is still incorrect. How should you proceed?</p>",
             "choices": [
                 {
-                    "text": "<p>Double-click MI_Statue_Polished in the Content Browser to open the Material Instance Editor.</p>",
+                    "text": "<p>Navigate to the <strong>Parent Material (M_Master_Metal)</strong> from the <strong>Material Instance Editor</strong>.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.05hrs. Opening the Material Instance Editor allows you to inspect its parameters and preview directly.</p>",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.1hrs. Since the <strong>Material Instance</strong> itself looks correct, the next logical step is to investigate its parent, which defines how the textures are used and where the actual texture sample nodes reside.</p>",
                     "next": "step-4"
                 },
                 {
-                    "text": "<p>Create a brand new Material Instance and attempt to assign the texture.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.3hrs. The issue likely lies with the texture asset or its references, not just the Material Instance. This won't solve the core problem.</p>",
-                    "next": "step-3"
-                },
-                {
-                    "text": "<p>Right-click the MI_Statue_Polished and select 'Find References'.</p>",
+                    "text": "<p>Right-click on the problematic texture parameter in the <strong>Material Instance Editor</strong> and choose 'Browse To Asset'.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. While useful later, at this stage, you need to understand the material's internal configuration, not its external dependencies.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.07hrs. While 'Browse To Asset' is useful, the problem might not be with the texture *asset* itself initially, but how the <strong>Parent Material</strong> handles the reference or its internal settings. Checking the parent material is more holistic.</p>",
                     "next": "step-3"
                 },
                 {
-                    "text": "<p>Re-save the MI_Statue_Polished without making any changes.</p>",
+                    "text": "<p>Change a scalar parameter value to see if the preview updates.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. Changing scalar values won't fix a problem with texture *references* failing to load, as the base inputs are already incorrect. It's a distraction from the core issue.</p>",
+                    "next": "step-3"
+                },
+                {
+                    "text": "<p>Close the <strong>Material Instance Editor</strong> and reopen it to refresh.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.02hrs. Saving won't reveal any configuration issues; you need to inspect the editor itself.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.03hrs. Reopening might refresh simple UI glitches, but for a deeper asset reference issue originating higher up the material hierarchy, it's unlikely to resolve the problem at this stage.</p>",
                     "next": "step-3"
                 }
             ]
         },
         "step-4": {
-            "skill": "material",
-            "title": "Step 4: Verify MI Texture Parameters",
-            "prompt": "<p>Inside the Material Instance Editor, what's the first thing you should check regarding textures?</p>",
+            "skill": "material_editor",
+            "title": "Identify Failing Texture Sample Node",
+            "prompt": "<p>You are now in the <strong>Parent Material (M_Master_Metal)</strong>. What do you observe about the <strong>Texture Sample</strong> nodes?</p>",
             "choices": [
                 {
-                    "text": "<p>Verify that all texture parameters (Normal Map, Base Color Texture, etc.) are pointing to valid assets by name.</p>",
+                    "text": "<p>Observe that the <strong>Texture Sample</strong> node for <strong>T_Statue_Normal</strong> is defaulting to 'None' or showing an error.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.05hrs. Confirming that the MI *thinks* it has valid textures assigned is crucial for deeper diagnosis.</p>",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. This is a critical observation. It confirms that the engine is failing to resolve the texture reference at the <strong>Parent Material</strong> level, despite the <strong>Material Instance</strong>'s explicit assignment, pointing to an issue with the texture asset itself or its path.</p>",
                     "next": "step-5"
                 },
                 {
-                    "text": "<p>Change the Base Color Texture parameter to a default engine texture.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. Prematurely changing parameters prevents diagnosing the original issue.</p>",
-                    "next": "step-4"
-                },
-                {
-                    "text": "<p>Adjust the scalar and vector parameters to see if they affect the visual.</p>",
+                    "text": "<p>Check the <strong>Material Domain</strong> to ensure it's set to 'Surface'.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. Scalar and vector parameters control numeric properties, not the presence or absence of a texture itself.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. The <strong>Material Domain</strong> rarely changes unexpectedly, and if it were incorrect, the entire material would likely be broken, not just a specific texture input failing to load.</p>",
                     "next": "step-4"
                 },
                 {
-                    "text": "<p>Look for any missing texture warnings in the Output Log window.</p>",
+                    "text": "<p>Attempt to manually re-assign <strong>T_Statue_Normal</strong> to the <strong>Texture Sample</strong> node in the <strong>Parent Material</strong>.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. While this might temporarily 'fix' it, it doesn't address *why* the reference broke and could lead to issues with other assets referencing the same texture. It's better to understand the root cause before attempting a manual fix that doesn't solve the core problem.</p>",
+                    "next": "step-4"
+                },
+                {
+                    "text": "<p>Inspect the output pins of the <strong>Texture Sample</strong> nodes for visual errors.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. While the log might have warnings, a direct visual check in the MI editor is more immediate.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.03hrs. If the input texture itself is 'None' or erroring, the output pins will naturally be empty or also erroring. The issue is at the input source, not how the material processes it.</p>",
                     "next": "step-4"
                 }
             ]
         },
         "step-5": {
-            "skill": "material",
-            "title": "Step 5: Observe Material Instance Preview",
-            "prompt": "<p>The MI texture parameters *appear* correct by name, but the statue is still black. What is the immediate visual symptom you observe in the Material Instance Editor?</p>",
+            "skill": "asset_management",
+            "title": "Inspect Texture References",
+            "prompt": "<p>The <strong>Texture Sample</strong> node for <strong>T_Statue_Normal</strong> in the <strong>Parent Material</strong> is showing 'None', indicating a reference lookup failure. How do you investigate this texture's dependencies?</p>",
             "choices": [
                 {
-                    "text": "<p>The visual preview in the Material Instance Editor is incorrect, showing a dull grey reflection instead of the intended gold.</p>",
+                    "text": "<p>Search the <strong>Content Browser</strong> for <strong>T_Statue_Normal</strong>, right-click, and select 'Reference Viewer'.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.05hrs. This confirms the problem extends to the material preview itself, indicating a deeper texture loading issue.</p>",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.15hrs. The <strong>Reference Viewer</strong> is the definitive tool for understanding asset dependencies and identifying broken redirectors, which are very common after asset moves and can cause reference lookup failures.</p>",
                     "next": "step-6"
                 },
                 {
-                    "text": "<p>The Material Instance Editor crashes when you try to apply the material to the preview sphere.</p>",
+                    "text": "<p>Delete the <strong>T_Statue_Normal</strong> texture and manually re-import it into the correct folder.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. While a crash indicates a severe problem, the scenario describes a dull grey reflection, not a crash.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.4hrs. Deleting and re-importing without fixing redirectors means other assets might still point to the old, invalid path. This can exacerbate the problem rather than solve it.</p>",
                     "next": "step-5"
                 },
                 {
-                    "text": "<p>The preview sphere shows a checkerboard pattern, indicating a missing texture.</p>",
+                    "text": "<p>Open the <strong>T_Statue_Normal</strong> texture in the <strong>Texture Editor</strong> to check its properties.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. While a checkerboard is a common sign of a missing texture, the scenario specifies a 'dull grey reflection', which points to a different failure mode (e.g., texture reference failing to load, resulting in a black input).</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. While you will eventually do this, the immediate problem is *how* other assets reference it, not its internal properties yet. The <strong>Reference Viewer</strong> is more appropriate for diagnosing dependency and path issues after a move.</p>",
                     "next": "step-5"
                 },
                 {
-                    "text": "<p>The Base Color texture parameter appears red in the editor.</p>",
+                    "text": "<p>Run a full project content audit from the 'Tools' menu.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. If a parameter were truly broken or invalid, it might appear red. However, the prompt states it 'appears correct by name', implying no immediate visual error on the parameter itself.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. A full project audit is too broad for a specific texture issue. The <strong>Reference Viewer</strong> provides a focused and efficient view of dependencies for that particular asset.</p>",
                     "next": "step-5"
                 }
             ]
         },
         "step-6": {
-            "skill": "material",
-            "title": "Step 6: Navigate to Parent Material",
-            "prompt": "<p>The Material Instance parameters are correct by name, but the preview is still wrong. This suggests the issue is deeper. Where do you investigate next?</p>",
+            "skill": "asset_management",
+            "title": "Identify Broken Redirectors",
+            "prompt": "<p>The <strong>Reference Viewer</strong> for <strong>T_Statue_Normal</strong> shows a complex graph, with some nodes indicating redirector chains pointing back to an old, invalid directory structure. Which approach do you choose?</p>",
             "choices": [
                 {
-                    "text": "<p>Navigate to the Parent Material (M_Master_Metal) from within the Material Instance Editor.</p>",
+                    "text": "<p>Identify the specific folder(s) in the <strong>Reference Viewer</strong> that still contain these broken redirectors (often the source folder prior to the move).</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.05hrs. The Parent Material defines how textures are sampled and processed, making it the next logical place to investigate a loading failure.</p>",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.1hrs. Pinpointing the exact folders with obsolete redirectors is crucial for a targeted and effective cleanup operation.</p>",
                     "next": "step-7"
                 },
                 {
-                    "text": "<p>Attempt to rebuild level lighting or reflection captures again.</p>",
+                    "text": "<p>Manually delete all redirector assets found in the old folder structure.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.2hrs. This is a repeated incorrect action; the problem is with asset referencing, not scene lighting.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. Manually deleting redirectors without using 'Fix Up Redirectors in Folder' can leave references completely broken instead of resolving them to the new path, causing more widespread issues.</p>",
                     "next": "step-6"
                 },
                 {
-                    "text": "<p>Right-click the texture parameter in the MI and select 'Browse to Asset'.</p>",
+                    "text": "<p>Try moving the <strong>T_Statue_Normal</strong> texture back to its original location temporarily.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.02hrs. While you could browse, the core issue is likely how the Parent Material *uses* the texture, not just its location. Inspecting the Parent Material directly is more revealing.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.12hrs. This undoes the migration and doesn't solve the problem of having a clean folder structure. It's a workaround, not a permanent fix, and would likely reintroduce the issue later.</p>",
                     "next": "step-6"
                 },
                 {
-                    "text": "<p>Close and reopen the Material Instance Editor.</p>",
+                    "text": "<p>Re-save all assets that currently reference <strong>T_Statue_Normal</strong>.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.02hrs. This might refresh the view but won't fix an underlying asset loading issue within the engine's reference system.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.1hrs. Re-saving dependent assets won't fix the underlying redirector problem. The assets would still be trying to resolve through the broken path, perpetuating the issue.</p>",
                     "next": "step-6"
                 }
             ]
         },
         "step-7": {
-            "skill": "material",
-            "title": "Step 7: Examine Parent Material Texture Samples",
-            "prompt": "<p>You're in the Parent Material (M_Master_Metal) editor. What specific nodes should you focus on to diagnose the texture loading issue?</p>",
+            "skill": "asset_management",
+            "title": "Fix Redirectors in Folder",
+            "prompt": "<p>You've identified the folder(s) that contain broken redirectors. What action do you take to resolve them?</p>",
             "choices": [
                 {
-                    "text": "<p>Examine the Texture Sample nodes that are failing to render, specifically focusing on the T_Statue_Normal texture input.</p>",
+                    "text": "<p>In the <strong>Content Browser</strong>, right-click the identified folder(s) and select 'Fix Up Redirectors in Folder'.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.05hrs. The Texture Sample nodes are where the material attempts to load and use texture assets, making them critical for diagnosis.</p>",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.15hrs. This command safely resolves obsolete reference paths, updating all assets that point to the redirectors to the correct new location. It's the standard and safest method.</p>",
                     "next": "step-8"
                 },
                 {
-                    "text": "<p>Check the material's 'Usage' flags in the Details panel.</p>",
+                    "text": "<p>Drag the <strong>T_Statue_Normal</strong> texture out of its current folder and back into it to force an update.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. Usage flags are important for shader compilation but are unlikely to cause a texture reference failure at this stage.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. This action might create new redirectors or confusion and will not 'fix' existing broken ones pointing to the asset from *other* locations. It's an ineffective and potentially harmful action.</p>",
                     "next": "step-7"
                 },
                 {
-                    "text": "<p>Review the material's blend mode and shading model settings.</p>",
+                    "text": "<p>Use the 'Migrate' tool on the <strong>T_Statue_Normal</strong> texture again.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. These settings affect how the material renders, but wouldn't cause a texture to fail to load entirely.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. 'Migrate' is for moving assets to *other* projects or locations, not for fixing references within the current project after a move. It would essentially repeat the initial action that caused the problem.</p>",
                     "next": "step-7"
                 },
                 {
-                    "text": "<p>Look for any commented-out sections in the material graph.</p>",
+                    "text": "<p>Manually edit the <strong>.uasset</strong> file for the texture to update its path.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.02hrs. Commented sections are inactive and thus irrelevant to a live rendering issue.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.2hrs. Directly editing <strong>.uasset</strong> files outside the editor is risky, unsupported, and highly prone to corruption. The 'Fix Up Redirectors' tool handles this safely and is the correct approach.</p>",
                     "next": "step-7"
                 }
             ]
         },
         "step-8": {
-            "skill": "material",
-            "title": "Step 8: Confirm Texture Sample Node Error",
-            "prompt": "<p>You're examining the T_Statue_Normal Texture Sample node in the Parent Material. What specific symptom do you observe?</p>",
+            "skill": "asset_management",
+            "title": "Verify Redirector Fix",
+            "prompt": "<p>After running 'Fix Up Redirectors in Folder', the <strong>Reference Viewer</strong> graph for <strong>T_Statue_Normal</strong> looks cleaner, but the statue still renders incorrectly. How do you proceed?</p>",
             "choices": [
                 {
-                    "text": "<p>The Texture Sample node defaults to 'None' or produces an error, indicating the reference lookup is failing.</p>",
+                    "text": "<p>Verify the <strong>Reference Viewer</strong> again to confirm the redirectors are truly resolved, acknowledging the issue persists.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.05hrs. This visual cue in the Parent Material confirms that the engine cannot locate or load the texture asset, despite the MI's reference.</p>",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. It's important to confirm the redirector fix was successful, even if it wasn't the complete solution, before moving on to other potential causes. This confirms a partial success.</p>",
                     "next": "step-9"
                 },
                 {
-                    "text": "<p>The texture appears as a solid pink color on the node.</p>",
+                    "text": "<p>Assume the redirector fix was ineffective and revert the texture move.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. Pink usually indicates a shader compilation error or a texture format mismatch, not a complete reference failure.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. Reverting is a drastic step and would undo progress. The problem persisting indicates an additional, separate issue, not that the redirector fix was completely useless.</p>",
                     "next": "step-8"
                 },
                 {
-                    "text": "<p>The Texture Sample node is connected to an incorrect input pin.</p>",
+                    "text": "<p>Reopen the <strong>Material Instance</strong> to see if it refreshed its texture input.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. This would cause incorrect visuals but not a 'None' or error state on the texture node itself, assuming the asset is found.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.07hrs. While refreshing the MI is a good idea, the current issue likely lies deeper than a simple editor refresh can fix, given that the redirectors were only part of the problem. A deeper investigation into the texture asset itself is warranted.</p>",
                     "next": "step-8"
                 },
                 {
-                    "text": "<p>The node's preview displays a low-resolution version of the texture.</p>",
+                    "text": "<p>Check the <strong>Output Log</strong> for new errors related to asset loading.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.02hrs. Low resolution indicates LOD issues or streaming, not a failure to find/load the base asset.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. The <strong>Output Log</strong> is useful, but at this point, the symptom points to an issue with the texture asset itself rather than a general engine error. A more direct investigation of the texture asset is needed.</p>",
                     "next": "step-8"
                 }
             ]
         },
         "step-9": {
-            "skill": "asset management",
-            "title": "Step 9: Infer Reference Lookup Failure",
-            "prompt": "<p>The Texture Sample node for T_Statue_Normal shows 'None' or an error in the Parent Material, even though the Material Instance specifies it. What is the precise conclusion you draw from this?</p>",
+            "skill": "asset_editor",
+            "title": "Open Texture Asset Editor",
+            "prompt": "<p>The redirectors are fixed, but the <strong>T_Statue_Normal</strong> texture still isn't loading correctly in the <strong>Parent Material</strong>. What's your next move?</p>",
             "choices": [
                 {
-                    "text": "<p>The engine's reference lookup for the texture asset is failing on asset load.</p>",
+                    "text": "<p>Double-click the <strong>T_Statue_Normal</strong> texture asset in the <strong>Content Browser</strong> to open the <strong>Texture Editor</strong>.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.05hrs. This confirms the problem isn't a simple misassignment, but a deeper issue with how the engine resolves the asset's path.</p>",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.1hrs. Since redirectors are resolved, the problem likely resides within the texture asset's own settings or internal loading behavior, necessitating opening its dedicated editor.</p>",
                     "next": "step-10"
                 },
                 {
-                    "text": "<p>The shader for M_Master_Metal is compiled incorrectly.</p>",
+                    "text": "<p>Attempt to manually re-assign the texture within the <strong>Material Instance Editor</strong>.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. If it were a shader compilation issue, you'd likely see clear error messages in the output log or a red node, not a 'None' texture.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. Re-assigning won't fix an underlying loading issue within the texture asset itself, it would just assign the same problematic reference again without addressing the root cause.</p>",
                     "next": "step-9"
                 },
                 {
-                    "text": "<p>The Material Instance is incorrectly overriding the texture parameter.</p>",
+                    "text": "<p>Right-click the texture in the <strong>Content Browser</strong> and choose 'Validate Assets'.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. The MI *is* specifying the texture by name; the problem is the engine failing to *find* it, not a misconfiguration within the MI itself.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. 'Validate Assets' primarily checks for basic data integrity and dependency issues, which the <strong>Reference Viewer</strong> already largely covered. It's unlikely to reveal specific internal loading flags or subtle asset corruption.</p>",
                     "next": "step-9"
                 },
                 {
-                    "text": "<p>The texture asset itself is corrupted on disk and unreadable.</p>",
+                    "text": "<p>Open the <strong>T_Statue_Normal</strong> in an external image editor to check for corruption.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. While possible, reference lookup failure often points to pathing issues first, especially after migration, before assuming corruption.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. The prompt specifies 'NO external apps'. The issue is within UE5's handling of the texture, not its raw image data, as the texture *appears* to be there by name. Using external tools is outside the scope of this assessment.</p>",
                     "next": "step-9"
                 }
             ]
         },
         "step-10": {
-            "skill": "asset management",
-            "title": "Step 10: Search for the Texture Asset",
-            "prompt": "<p>Knowing the texture reference lookup is failing after a folder migration, how do you begin investigating its path dependencies?</p>",
+            "skill": "asset_editor",
+            "title": "Locate Texture Loading Settings",
+            "prompt": "<p>You are in the <strong>Texture Editor</strong> for <strong>T_Statue_Normal</strong>. Where do you look for settings that might affect how the texture is loaded by the engine?</p>",
             "choices": [
                 {
-                    "text": "<p>Search the Content Browser for the texture asset T_Statue_Normal.</p>",
+                    "text": "<p>In the <strong>Details panel</strong>, search for the 'Loading' section.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.05hrs. Locating the asset in the Content Browser is the first step before inspecting its references.</p>",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. The 'Loading' section specifically contains parameters that govern how the texture data is handled by the engine at runtime and editor load time, making it the most relevant place for this type of issue.</p>",
                     "next": "step-11"
                 },
                 {
-                    "text": "<p>Delete the T_Statue_Normal texture and manually re-import it into the new folder.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.4hrs. This fails to address underlying redirectors, which will likely still exist and point other assets to the old path, causing the problem to reappear.</p>",
-                    "next": "step-10"
-                },
-                {
-                    "text": "<p>Manually navigate through folders in the Content Browser to find the texture.</p>",
+                    "text": "<p>Check the 'Compression Settings' section for any unusual compression types.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. Searching by name is much faster and more reliable than manual navigation, especially in large projects.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. While compression settings are important, they usually affect visual quality or memory footprint, not whether the texture *loads* at all, especially when other textures use the same settings without issue.</p>",
                     "next": "step-10"
                 },
                 {
-                    "text": "<p>Check the texture asset's 'Dependencies' list in its Details panel.</p>",
+                    "text": "<p>Look for 'Texture Group' settings in the <strong>Details panel</strong>.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.03hrs. 'Texture Group' affects texture streaming and resolution LODs, not the fundamental ability of the texture to be referenced and loaded as an input to a material.</p>",
+                    "next": "step-10"
+                },
+                {
+                    "text": "<p>Examine the 'Source Art' section for the original file path.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. The 'Dependencies' panel shows what an asset *uses*, not what *uses* the asset, and doesn't reveal redirector chains as effectively as the Reference Viewer.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.03hrs. The 'Source Art' path is used for re-importing the texture from its original source file. It won't reveal or address internal engine loading flags that might be preventing display.</p>",
                     "next": "step-10"
                 }
             ]
         },
         "step-11": {
-            "skill": "asset management",
-            "title": "Step 11: Open Reference Viewer",
-            "prompt": "<p>You've found T_Statue_Normal in the Content Browser. What tool should you use to check its dependency graph for obsolete paths?</p>",
+            "skill": "asset_editor",
+            "title": "Observe Force Bulk Load Setting",
+            "prompt": "<p>In the 'Loading' section of the <strong>Texture Editor</strong> <strong>Details panel</strong>, what do you observe about the <code>Force Bulk Load</code> setting?</p>",
             "choices": [
                 {
-                    "text": "<p>Right-click T_Statue_Normal and select 'Reference Viewer'.</p>",
+                    "text": "<p>Observe that the <code>Force Bulk Load</code> checkbox is currently enabled.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.05hrs. The Reference Viewer is the primary tool for diagnosing broken asset paths and redirectors after a folder move.</p>",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.15hrs. This specific setting, especially in combination with a history of redirectors and asset moves, can prevent reliable path resolution at editor load time, as the engine attempts to load it aggressively without proper dependency resolution.</p>",
                     "next": "step-12"
                 },
                 {
-                    "text": "<p>Right-click and select 'Asset Actions' -> 'Find in Explorer'.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. This opens the asset's location on disk but doesn't show its internal engine references or redirectors.</p>",
-                    "next": "step-11"
-                },
-                {
-                    "text": "<p>Open the texture and check the 'Path' property in its Details panel.</p>",
+                    "text": "<p>Observe that <code>Never Stream</code> is enabled.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. The Details panel will show its current *valid* path, but not the broken redirectors that other assets might still be pointing to.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. <code>Never Stream</code> can increase memory usage by preventing the texture from being unloaded, but generally doesn't prevent a texture from loading entirely or cause it to appear as 'None' in a material.</p>",
                     "next": "step-11"
                 },
                 {
-                    "text": "<p>Use the 'Audit Asset' tool from the Content Browser.</p>",
+                    "text": "<p>Observe that the texture resolution is set too high.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. High resolution might cause performance issues or a warning, but it doesn't prevent the texture from loading as a black or 'None' input in a material.</p>",
+                    "next": "step-11"
+                },
+                {
+                    "text": "<p>Observe that the 'Sampler Type' is set incorrectly.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. Asset Audit provides historical data, but the Reference Viewer is for live dependency inspection.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.07hrs. An incorrect 'Sampler Type' might cause material compilation errors or visual artifacts (e.g., if a normal map is sampled as a color), but not typically a complete failure to load the texture into the <strong>Texture Sample</strong> node itself.</p>",
                     "next": "step-11"
                 }
             ]
         },
         "step-12": {
-            "skill": "asset management",
-            "title": "Step 12: Inspect Redirector Chains",
-            "prompt": "<p>You've opened the Reference Viewer for T_Statue_Normal. What specifically are you looking for to diagnose the migration issue?</p>",
+            "skill": "asset_editor",
+            "title": "Disable Force Bulk Load",
+            "prompt": "<p>You've identified that <code>Force Bulk Load</code> is enabled, which can interfere with reliable texture path resolution. What action do you take?</p>",
             "choices": [
                 {
-                    "text": "<p>Inspect its dependency graph for redirector chains pointing back to the old, invalid directory structure.</p>",
+                    "text": "<p>Uncheck the <code>Force Bulk Load</code> checkbox.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.1hrs. Redirector chains are strong indicators of broken references after an asset move.</p>",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. Disabling this setting allows the engine to resolve texture dependencies more gracefully, especially after asset moves and redirector fixes have been performed, resolving the conflict.</p>",
                     "next": "step-13"
                 },
                 {
-                    "text": "<p>Check if the texture is referenced by any unused assets.</p>",
+                    "text": "<p>Enable <code>Never Stream</code> instead.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. While good for cleanup, this doesn't directly address a broken *loading* reference for a currently used asset.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.03hrs. Enabling <code>Never Stream</code> addresses a different concern (texture streaming behavior) and would not fix a broken loading path caused by <code>Force Bulk Load</code>.</p>",
                     "next": "step-12"
                 },
                 {
-                    "text": "<p>Look for assets that are excessively referencing the texture, indicating performance issues.</p>",
+                    "text": "<p>Change the 'Max Texture Size' to a lower value.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. Performance is not the current problem; it's a failure to load the texture at all.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. Adjusting texture size helps with memory optimization and streaming, but doesn't resolve a loading flag issue like <code>Force Bulk Load</code> that prevents the texture from appearing at all.</p>",
                     "next": "step-12"
                 },
                 {
-                    "text": "<p>Verify the total memory footprint of the texture and its referencers.</p>",
+                    "text": "<p>Close the <strong>Texture Editor</strong> without making changes, assuming it's not the issue.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. Memory footprint is a performance concern, not a reference resolution issue.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. Dismissing a potentially problematic setting without testing the change would be a missed opportunity to fix the issue, forcing you to re-evaluate or try other, less direct solutions.</p>",
                     "next": "step-12"
                 }
             ]
         },
         "step-13": {
-            "skill": "asset management",
-            "title": "Step 13: Identify Redirector Folder",
-            "prompt": "<p>The Reference Viewer clearly shows broken redirectors pointing back to an old folder. What's your next action before fixing them?</p>",
+            "skill": "asset_editor",
+            "title": "Save Modified Texture Asset",
+            "prompt": "<p>You have unchecked the <code>Force Bulk Load</code> checkbox. What's your next move?</p>",
             "choices": [
                 {
-                    "text": "<p>Identify the specific folder in the Content Browser that still contains these broken redirectors (often the source folder prior to the move).</p>",
+                    "text": "<p>Save the modified <strong>T_Statue_Normal</strong> texture asset.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.1hrs. Pinpointing the source of the redirectors is necessary before you can execute the 'Fix Up Redirectors' command.</p>",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. Saving the asset is crucial to persist the changes made in the <strong>Texture Editor</strong>. Without saving, the change would be lost.</p>",
                     "next": "step-14"
                 },
                 {
-                    "text": "<p>Ignore the redirectors, assuming they are just warnings and not the root cause.</p>",
+                    "text": "<p>Exit the <strong>Texture Editor</strong> without saving, assuming the change applies immediately.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.2hrs. Redirectors are often the primary cause of broken references after asset moves. Ignoring them will prevent resolution.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.03hrs. Changes made in asset editors are not permanent until explicitly saved. Exiting without saving would discard your fix, meaning you'd have to re-do this step.</p>",
                     "next": "step-13"
                 },
                 {
-                    "text": "<p>Manually attempt to delete individual redirector assets displayed in the Reference Viewer.</p>",
+                    "text": "<p>Right-click the texture in the <strong>Content Browser</strong> and select 'Reimport'.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. This is inefficient and prone to error. Unreal has a built-in tool for fixing redirectors that is much safer and faster.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.07hrs. 'Reimport' fetches the original source file from disk. It would reset the editor-specific settings you just changed (like <code>Force Bulk Load</code>) back to their defaults, undoing your work.</p>",
                     "next": "step-13"
                 },
                 {
-                    "text": "<p>Immediately restart the Unreal Editor, hoping it will resolve the redirectors on startup.</p>",
+                    "text": "<p>Run 'Fix Up Redirectors in Folder' again, just in case.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. While restarting can sometimes help with caching issues, it won't actively fix orphaned redirector files on disk.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. Redirectors were already fixed earlier in the process. Running it again is redundant at this stage and won't help with the texture's internal loading flag, wasting valuable time.</p>",
                     "next": "step-13"
                 }
             ]
         },
         "step-14": {
-            "skill": "asset management",
-            "title": "Step 14: Access Fix Up Redirectors",
-            "prompt": "<p>You've identified the folder with broken redirectors. How do you access the command to fix them?</p>",
+            "skill": "editor_workflow",
+            "title": "Force Material Instance Reload",
+            "prompt": "<p>The <strong>T_Statue_Normal</strong> texture asset is saved. The statue, however, still appears black. How should you proceed to force the engine to recognize the change?</p>",
             "choices": [
                 {
-                    "text": "<p>In the Content Browser, right-click the identified folder.</p>",
+                    "text": "<p>Close and reopen the <strong>Material Instance (MI_Statue_Polished)</strong> to force a reload of its dependency structure.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.05hrs. The 'Fix Up Redirectors' command is accessed via the right-click context menu of the folder containing them.</p>",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.1hrs. Closing and reopening the dependent asset (the <strong>Material Instance</strong>) is often necessary for the engine to fully refresh its internal references and apply updated asset properties after an underlying dependency has changed.</p>",
                     "next": "step-15"
                 },
                 {
-                    "text": "<p>Select 'Tools' -> 'Audit' -> 'Fix Redirectors' from the main menu.</p>",
+                    "text": "<p>Restart the entire <strong>Unreal Engine 5</strong> editor.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. There isn't a direct menu item for fixing redirectors in this manner. It's a context-menu action.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.3hrs. Restarting the editor is a heavy-handed approach and unnecessary for a single asset refresh. It wastes a lot of time compared to just reopening the specific asset that relies on the modified texture.</p>",
                     "next": "step-14"
                 },
                 {
-                    "text": "<p>Select the T_Statue_Normal texture itself and right-click to find the option.</p>",
+                    "text": "<p>Compile the <strong>Parent Material (M_Master_Metal)</strong> again.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. 'Fix Up Redirectors' is a folder-level operation, not an asset-level one.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. While compiling the parent material can refresh its state, reopening the <strong>Material Instance</strong> (which directly uses the problematic texture via its parameters) is more direct for ensuring its dependencies are re-evaluated and changes are propagated.</p>",
                     "next": "step-14"
                 },
                 {
-                    "text": "<p>Type 'FixRedirectors' into the Console Command line.</p>",
+                    "text": "<p>Move the statue <strong>Static Mesh</strong> in the level to force a visual update.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. While some commands exist, 'Fix Up Redirectors in Folder' is primarily an editor UI function.</p>",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.03hrs. Moving objects might trigger a scene refresh, but it won't necessarily force a re-evaluation of the <strong>Material Instance's</strong> underlying texture references at a deeper engine level. This is generally insufficient for asset-level changes.</p>",
                     "next": "step-14"
                 }
             ]
         },
         "step-15": {
-            "skill": "asset management",
-            "title": "Step 15: Execute Fix Up Redirectors",
-            "prompt": "<p>You've right-clicked the folder with broken redirectors. What context menu option do you select?</p>",
+            "skill": "verification",
+            "title": "Verify Resolved Texture",
+            "prompt": "<p>After closing and reopening the <strong>Material Instance</strong>, what is your final verification?</p>",
             "choices": [
                 {
-                    "text": "<p>Select 'Fix Up Redirectors in Folder' to resolve the obsolete reference paths.</p>",
+                    "text": "<p>Verify that the statue now renders correctly in the <strong>level viewport</strong> and the texture preview in the <strong>Material Instance Editor</strong> is accurate.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.1hrs. This is the standard and most reliable method to resolve redirectors, ensuring all references are updated to the correct paths.</p>",
-                    "next": "step-16"
-                },
-                {
-                    "text": "<p>Select 'Delete' to remove the old folder, assuming redirectors will also disappear.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. This is dangerous and can lead to irreversible data loss or further broken references if assets are still within the folder or the redirectors aren't cleaned properly.</p>",
-                    "next": "step-15"
-                },
-                {
-                    "text": "<p>Select 'Migrate' to move the folder again.</p>",
-                    "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. 'Migrate' is for moving assets to *other projects*, not for fixing internal references within the current project.</p>",
-                    "next": "step-15"
-                },
-                {
-                    "text": "<p>Select 'Resave All' from the context menu.</p>",
-                    "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. 'Resave All' only saves current assets; it doesn't actively fix redirector files on disk.</p>",
-                    "next": "step-15"
-                }
-            ]
-        },
-        "step-16": {
-            "skill": "asset management",
-            "title": "Step 16: Verify Redirector Fix",
-            "prompt": "<p>You've run 'Fix Up Redirectors in Folder'. How do you confirm the redirectors are resolved?</p>",
-            "choices": [
-                {
-                    "text": "<p>Verify the Reference Viewer for T_Statue_Normal again; the dependency chain should now look cleaner.</p>",
-                    "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.05hrs. Checking the Reference Viewer is the direct way to confirm that redirectors have been successfully resolved.</p>",
-                    "next": "step-17"
-                },
-                {
-                    "text": "<p>Check the Content Browser for 'Fix Up Redirectors' confirmation pop-ups.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.02hrs. While there might be output, visual confirmation in the Reference Viewer is more reliable.</p>",
-                    "next": "step-16"
-                },
-                {
-                    "text": "<p>Restart the Unreal Editor and check if it still complains about redirectors.</p>",
-                    "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. This is an indirect and slower method of verification than the Reference Viewer.</p>",
-                    "next": "step-16"
-                },
-                {
-                    "text": "<p>Inspect the file system for orphaned `.uasset` files.</p>",
-                    "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. While eventually useful, the Reference Viewer is the engine's real-time view of asset relationships.</p>",
-                    "next": "step-16"
-                }
-            ]
-        },
-        "step-17": {
-            "skill": "general",
-            "title": "Step 17: Confirm Remaining Issue",
-            "prompt": "<p>The Reference Viewer is clean, but the statue still renders incorrectly in the level, and the MI preview is dull grey. What does this tell you?</p>",
-            "choices": [
-                {
-                    "text": "<p>The redirectors were a problem, but not the only one; another issue is preventing texture loading.</p>",
-                    "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.05hrs. This critical observation narrows down the problem to something inherent in the texture asset itself, rather than just its path.</p>",
-                    "next": "step-18"
-                },
-                {
-                    "text": "<p>The redirectors were never the problem; the issue is still lighting-related.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.2hrs. If the Reference Viewer is clean, the redirectors *were* fixed. Dismissing this progress is incorrect.</p>",
-                    "next": "step-17"
-                },
-                {
-                    "text": "<p>The Material Instance (MI_Statue_Polished) itself is corrupted.</p>",
-                    "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. While possible, the symptoms point more to the texture failing to load *into* the material, rather than the MI being corrupt itself.</p>",
-                    "next": "step-17"
-                },
-                {
-                    "text": "<p>The engine requires a full project re-cook after redirector fixes.</p>",
-                    "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. A re-cook is usually for deployed builds; editor issues usually resolve without one.</p>",
-                    "next": "step-17"
-                }
-            ]
-        },
-        "step-18": {
-            "skill": "asset management",
-            "title": "Step 18: Open Texture Editor",
-            "prompt": "<p>Redirectors are clean, but the texture still won't load. This suggests an issue *with the texture asset itself*. What's your next move?</p>",
-            "choices": [
-                {
-                    "text": "<p>Double-click the T_Statue_Normal texture asset itself to open the Texture Editor.</p>",
-                    "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.1hrs. Directly inspecting the texture asset's properties is the next logical step when reference paths are resolved but the asset still fails to load.</p>",
-                    "next": "step-19"
-                },
-                {
-                    "text": "<p>Delete the T_Statue_Normal texture and manually re-import it again.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.4hrs. This is a repeat of a previously wrong step and won't fix an internal setting within the texture asset if it's consistently applied upon import.</p>",
-                    "next": "step-18"
-                },
-                {
-                    "text": "<p>Attempt to open the texture in an external image editing application.</p>",
-                    "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. While it confirms image data integrity, it won't reveal engine-specific loading properties.</p>",
-                    "next": "step-18"
-                },
-                {
-                    "text": "<p>Check the Content Browser's 'Asset Audit' log for the texture.</p>",
-                    "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. The Asset Audit provides useful history, but direct examination of the texture's current settings in the editor is more efficient for immediate troubleshooting.</p>",
-                    "next": "step-18"
-                }
-            ]
-        },
-        "step-19": {
-            "skill": "general",
-            "title": "Step 19: Locate Loading Settings",
-            "prompt": "<p>You're in the Texture Editor for T_Statue_Normal. You need to find settings related to how the texture loads. Where do you look?</p>",
-            "choices": [
-                {
-                    "text": "<p>In the Texture Editor's Details panel, search for the 'Loading' section.</p>",
-                    "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.05hrs. The 'Loading' section specifically contains parameters that influence how a texture is streamed and loaded into memory.</p>",
-                    "next": "step-20"
-                },
-                {
-                    "text": "<p>Examine the 'Compression Settings' within the Details panel.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. Incorrect compression settings usually cause visual artifacts or performance issues, not a complete failure to load the texture.</p>",
-                    "next": "step-19"
-                },
-                {
-                    "text": "<p>Look for rendering settings in the Texture Editor's 'View Options' dropdown.</p>",
-                    "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. These options control *how you view* the texture in the editor, not *how the engine loads* it at runtime.</p>",
-                    "next": "step-19"
-                },
-                {
-                    "text": "<p>Inspect the 'LOD Group' settings in the Details panel.</p>",
-                    "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. LOD settings affect texture quality at different distances, but generally wouldn't prevent the base texture from loading entirely.</p>",
-                    "next": "step-19"
-                }
-            ]
-        },
-        "step-20": {
-            "skill": "asset management",
-            "title": "Step 20: Identify 'Force Bulk Load'",
-            "prompt": "<p>In the 'Loading' section, you find a setting that, combined with past redirector issues, could cause loading problems. What is it, and what's its state?</p>",
-            "choices": [
-                {
-                    "text": "<p>You observe that 'Force Bulk Load' is currently enabled.</p>",
-                    "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.1hrs. This setting, especially with previous reference issues, can prevent reliable path resolution during asset loading.</p>",
-                    "next": "step-21"
-                },
-                {
-                    "text": "<p>You observe that 'Never Stream' is currently enabled.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. While 'Never Stream' can increase memory usage, it typically doesn't cause a texture to fail loading entirely; it forces it into memory.</p>",
-                    "next": "step-20"
-                },
-                {
-                    "text": "<p>You observe that 'Virtual Texture' is currently enabled.</p>",
-                    "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. If incorrectly set for a non-virtual texture, it might cause issues, but 'Force Bulk Load' is a more direct loading-related problem.</p>",
-                    "next": "step-20"
-                },
-                {
-                    "text": "<p>You observe that 'Has Alpha Channel' is unchecked when it should be checked.</p>",
-                    "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. This setting relates to how alpha data is handled, which would typically cause visual corruption or incorrect blending, not a complete failure to load the texture.</p>",
-                    "next": "step-20"
-                }
-            ]
-        },
-        "step-21": {
-            "skill": "asset management",
-            "title": "Step 21: Disable 'Force Bulk Load'",
-            "prompt": "<p>You've identified 'Force Bulk Load' as the culprit. What is the immediate corrective action?</p>",
-            "choices": [
-                {
-                    "text": "<p>Uncheck the 'Force Bulk Load' checkbox.</p>",
-                    "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.05hrs. Disabling this setting allows the engine to resolve texture paths more reliably, especially after folder migrations.</p>",
-                    "next": "step-22"
-                },
-                {
-                    "text": "<p>Change the 'Never Stream' setting to enabled.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. This setting is unrelated to the 'Force Bulk Load' problem and would likely increase memory usage without solving the loading issue.</p>",
-                    "next": "step-21"
-                },
-                {
-                    "text": "<p>Set the texture's 'Max Texture Size' to a very low value, like 32.</p>",
-                    "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. This would severely degrade texture quality and is not related to the reference loading problem caused by 'Force Bulk Load'.</p>",
-                    "next": "step-21"
-                },
-                {
-                    "text": "<p>Right-click the texture in the Content Browser and select 'Recompile'.</p>",
-                    "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. Directly changing the internal setting is the necessary action here, not a generic recompile command.</p>",
-                    "next": "step-21"
-                }
-            ]
-        },
-        "step-22": {
-            "skill": "general",
-            "title": "Step 22: Save Texture Asset",
-            "prompt": "<p>You've unchecked 'Force Bulk Load' for T_Statue_Normal. What's the critical next step to ensure this change takes effect?</p>",
-            "choices": [
-                {
-                    "text": "<p>Save the modified T_Statue_Normal texture asset.</p>",
-                    "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.05hrs. Any changes to asset properties must be saved to disk for them to take effect and be recognized by the engine.</p>",
-                    "next": "step-23"
-                },
-                {
-                    "text": "<p>Close the Texture Editor without saving, assuming changes are auto-applied.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. Changes to asset properties in Unreal Engine are generally not auto-saved and will be lost if not explicitly saved.</p>",
-                    "next": "step-22"
-                },
-                {
-                    "text": "<p>Immediately close and reopen the Material Instance (MI_Statue_Polished).</p>",
-                    "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. This action is premature. If the texture itself isn't saved, the Material Instance will still be trying to load the texture with the old, incorrect setting.</p>",
-                    "next": "step-22"
-                },
-                {
-                    "text": "<p>Run a full 'Save All' operation for the entire project.</p>",
-                    "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. While not incorrect, it's more efficient to save only the specific asset you've modified, as a full 'Save All' can be time-consuming.</p>",
-                    "next": "step-22"
-                }
-            ]
-        },
-        "step-23": {
-            "skill": "general",
-            "title": "Step 23: Force Material Instance Reload",
-            "prompt": "<p>The texture is saved with 'Force Bulk Load' disabled. What do you do to see if the fix worked in the material?</p>",
-            "choices": [
-                {
-                    "text": "<p>Close and reopen the Material Instance (MI_Statue_Polished) to force the engine to reload its dependency structure.</p>",
-                    "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.1hrs. Closing and reopening the Material Instance forces it to re-evaluate its dependencies, ensuring it picks up the newly saved texture settings.</p>",
-                    "next": "step-24"
-                },
-                {
-                    "text": "<p>Attempt to rebuild level lighting or reflection captures (again).</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.2hrs. This is a repeated, irrelevant action. The issue is with asset loading, not lighting.</p>",
-                    "next": "step-23"
-                },
-                {
-                    "text": "<p>Restart the Unreal Editor entirely.</p>",
-                    "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.15hrs. While this would work, it's overkill and time-consuming. Simply reloading the affected asset is more efficient.</p>",
-                    "next": "step-23"
-                },
-                {
-                    "text": "<p>Recompile only the M_Master_Metal material.</p>",
-                    "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. Recompiling the material might not necessarily force a reload of the texture's *loading properties* if the material asset itself hasn't changed.</p>",
-                    "next": "step-23"
-                }
-            ]
-        },
-        "step-24": {
-            "skill": "general",
-            "title": "Step 24: Verify Level Viewport",
-            "prompt": "<p>You've reloaded the Material Instance. What's the immediate visual verification you should perform in the level?</p>",
-            "choices": [
-                {
-                    "text": "<p>Verify that the statue now renders correctly with its polished gold look in the level viewport.</p>",
-                    "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.05hrs. This confirms the fix has taken effect in the actual game world.</p>",
-                    "next": "step-25"
-                },
-                {
-                    "text": "<p>Delete all temporary files and caches from the Unreal Engine project directory.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. This is an unnecessary and potentially disruptive action if the problem has already been resolved.</p>",
-                    "next": "step-24"
-                },
-                {
-                    "text": "<p>Open the Content Browser and search for 'missing texture' assets.</p>",
-                    "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.02hrs. The most direct verification is visual inspection of the statue itself, not a broader search.</p>",
-                    "next": "step-24"
-                },
-                {
-                    "text": "<p>Test the project on a different machine to see if the issue reappears.</p>",
-                    "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. This is a deployment/testing step, not a verification of your immediate fix within the editor.</p>",
-                    "next": "step-24"
-                }
-            ]
-        },
-        "step-25": {
-            "skill": "general",
-            "title": "Step 25: Verify MI Editor Preview",
-            "prompt": "<p>The statue looks correct in the level viewport. What final verification step should you take regarding the Material Instance itself?</p>",
-            "choices": [
-                {
-                    "text": "<p>Confirm that the texture preview in the Material Instance Editor is also accurate and shows the intended polished gold look.</p>",
-                    "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.05hrs. This ensures the problem is fully resolved for both runtime and editor contexts.</p>",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.1hrs. Confirming both the in-level visual (the primary symptom) and the <strong>Material Instance</strong> preview ensures the issue is fully resolved and the material dependencies are correctly loaded.</p>",
                     "next": "conclusion"
                 },
                 {
-                    "text": "<p>Send a bug report to Epic Games about the asset migration process.</p>",
+                    "text": "<p>Assume it's fixed and move on to the next task.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. While sometimes necessary, reporting is premature if the issue has been resolved. The focus is on verifying your fix.</p>",
-                    "next": "step-25"
+                    "feedback": "<p><strong>Extended Time:</strong> +0.01hrs. Never assume! Always verify your fixes, especially in debugging scenarios, to prevent recurrence or hidden issues later on.</p>",
+                    "next": "step-15"
                 },
                 {
-                    "text": "<p>Perform a full 'Save All' operation for the entire project.</p>",
+                    "text": "<p>Check the texture memory usage in the <strong>Profiler</strong>.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. While a good general practice, it's not a *verification* step itself. The visual check is the verification.</p>",
-                    "next": "step-25"
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. While useful for optimization, checking memory isn't the primary verification for a visual texture loading issue being resolved. Visual confirmation is the direct proof of the fix.</p>",
+                    "next": "step-15"
                 },
                 {
-                    "text": "<p>Close the Unreal Editor and reopen it to ensure persistence.</p>",
+                    "text": "<p>Review the <strong>Output Log</strong> for any new warnings.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. While a restart can sometimes resolve caching, the explicit save in Step 22 should already guarantee persistence; this is an unnecessary double-check.</p>",
-                    "next": "step-25"
+                    "feedback": "<p><strong>Extended Time:</strong> +0.03hrs. While good practice to check for new errors, the direct visual confirmation in the viewport and editor is the most critical and immediate verification for this specific problem.</p>",
+                    "next": "step-15"
                 }
             ]
         },

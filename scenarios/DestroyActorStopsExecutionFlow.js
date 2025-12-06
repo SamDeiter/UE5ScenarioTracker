@@ -1,722 +1,722 @@
 window.SCENARIOS['DestroyActorStopsExecutionFlow'] = {
     "meta": {
         "title": "Pickup Despawns Prematurely, Preventing Buff Application",
-        "description": "A PowerUp pickup (BP_SpeedBoost) is designed to grant the player a temporary speed increase upon overlap and then destroy itself. When testing, the player overlaps the item, and the item immediately vanishes. However, the player's movement speed never changes. Debugging shows the initial 'On Component Begin Overlap' event fires successfully, and the character reference is valid right before the logic path splits, but the 'Set Max Walk Speed' node is never reached or executed.",
+        "description": "PowerUp despawns on overlap, but player speed buff isn't applied. 'Set Max Walk Speed' never reached.",
         "estimateHours": 0.75,
         "category": "Blueprints & Logic",
-        "tokens_used": 11436
+        "tokens_used": 12892
     },
     "start": "step-1",
     "steps": {
         "step-1": {
             "skill": "blueprintslogic",
-            "title": "Step 1: Investigate Blueprint",
-            "prompt": "The BP_SpeedBoost item despawns on overlap, but the speed buff isn't applied. 'On Component Begin Overlap' fires, and the character reference is valid. 'Set Max Walk Speed' isn't reached. What's the first step to investigate?",
+            "title": "Reproduce the Reported Issue",
+            "prompt": "<p><strong>BP_SpeedBoost</strong> despawns, player speed unchanged. Overlap fires. How do you investigate?</p>",
             "choices": [
                 {
-                    "text": "Enter the BP_SpeedBoost Blueprint and navigate to the Event Graph, focusing on the 'On Component Begin Overlap' node logic.",
+                    "text": "<p>Start a <strong>Play In Editor (PIE)</strong> session and attempt to reproduce the described behavior.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.03hrs. Starting directly at the relevant event in the pickup's blueprint is the most efficient initial approach.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.02hrs. Reproducing the bug in a controlled environment is the crucial first step to confirm its existence and observe its exact symptoms.</p>",
                     "next": "step-2"
                 },
                 {
-                    "text": "Check the Character Blueprint's 'Max Walk Speed' default value, believing the buff isn't high enough.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.15hrs. The problem states the 'Set Max Walk Speed' node is *never reached*, so adjusting the target value won't solve the execution issue.",
-                    "next": "step-1"
-                },
-                {
-                    "text": "Add excessive 'Print String' nodes throughout the Character Blueprint to track speed changes.",
+                    "text": "<p>Open the <strong>Character Blueprint</strong> and check the default <code>Max Walk Speed</code> value.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. While 'Print String' can be useful, the current issue is specific to the *pickup* blueprint and its execution flow, not necessarily the character's state.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. While checking character settings might be relevant for <em>buff strength</em>, the report states the buff is <em>never applied</em>, making this a premature investigation into the wrong aspect of the problem.</p>",
                     "next": "step-1"
                 },
                 {
-                    "text": "Immediately replace the 'On Component Begin Overlap' with an 'Event Tick' node to ensure constant execution.",
+                    "text": "<p>Review the entire project's <strong>Project Settings</strong> for any global physics or overlap settings.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. This is too broad. The issue is specific to a single Blueprint's interaction, not a global project misconfiguration.</p>",
+                    "next": "step-1"
+                },
+                {
+                    "text": "<p>Immediately add multiple <strong>Print String</strong> nodes in the <strong>BP_SpeedBoost</strong> to trace execution.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.08hrs. This would drastically change the intended behavior, leading to continuous buff application, and bypass the overlap event entirely, masking the original problem.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. While <strong>Print String</strong> is a useful debugging tool, it's generally better to first observe the high-level behavior directly in PIE before diving into code. You might not know where to place them effectively yet.</p>",
                     "next": "step-1"
                 }
             ]
         },
         "step-2": {
             "skill": "blueprintslogic",
-            "title": "Step 2: Trace Execution Flow",
-            "prompt": "Inside the BP_SpeedBoost Event Graph, with the 'On Component Begin Overlap' node visible, what's your next move to pinpoint why 'Set Max Walk Speed' isn't executing?",
+            "title": "Observe Player Movement Speed",
+            "prompt": "<p>After overlapping <strong>BP_SpeedBoost</strong> in <strong>PIE</strong>, it despawns. What do you observe about player speed?</p>",
             "choices": [
                 {
-                    "text": "Trace the execution flow starting from the successful 'Cast To Player Character' node, observing where its output pin leads.",
+                    "text": "<p>The player's movement speed does not change from its original value.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. The problem description confirms the cast is successful, so tracing from there is the logical next step to see where execution goes next.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.01hrs. This confirms the core symptom: the buff isn't applied.</p>",
                     "next": "step-3"
                 },
                 {
-                    "text": "Verify the 'Collision Presets' of the pickup's mesh to ensure it's set to 'OverlapAll'.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. The problem explicitly states 'On Component Begin Overlap' fires successfully, indicating collision settings are likely correct.",
-                    "next": "step-2"
-                },
-                {
-                    "text": "Examine the 'Event BeginPlay' node in BP_SpeedBoost to see if any initial setup is interfering.",
+                    "text": "<p>The player's movement speed increases briefly, then immediately returns to normal.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.04hrs. The issue occurs on overlap, not at the start of the game, so 'Event BeginPlay' is unlikely to be the direct cause.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. This would indicate the buff *is* applied, but its duration is zero or extremely short, which contradicts the report that it's never applied.</p>",
                     "next": "step-2"
                 },
                 {
-                    "text": "Add a 'Print String' immediately after 'Set Max Walk Speed' to confirm if it fires.",
+                    "text": "<p>The player's movement speed decreases, suggesting a negative buff was applied.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. This is an incorrect observation, as the bug report specifically states a speed *increase* is intended.</p>",
+                    "next": "step-2"
+                },
+                {
+                    "text": "<p>The player's movement speed increases, but the <strong>BP_SpeedBoost</strong> doesn't despawn.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.06hrs. The problem states 'Set Max Walk Speed' is never reached, so adding a print string *after* it won't yield new information about *why* it's not reached.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. This contradicts part of the initial bug report, which clearly stated the item despawns immediately.</p>",
                     "next": "step-2"
                 }
             ]
         },
         "step-3": {
             "skill": "blueprintslogic",
-            "title": "Step 3: Identify Node After Cast",
-            "prompt": "Following the execution pin from 'Cast To Player Character' (which is successful), what type of node do you observe it immediately connects to?",
+            "title": "Confirm Pickup Despawn Behavior",
+            "prompt": "<p>Player speed unchanged. <strong>BP_SpeedBoost</strong> despawns on overlap. What's its despawn timing?</p>",
             "choices": [
                 {
-                    "text": "Identify that the execution pin immediately connects to a 'Sequence' node.",
+                    "text": "<p>The <strong>BP_SpeedBoost</strong> despawns immediately upon overlap, as reported.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.03hrs. Recognizing the 'Sequence' node is key to understanding the potential for split and ordered execution paths.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.01hrs. This confirms the other half of the core symptom and the timing issue.</p>",
                     "next": "step-4"
                 },
                 {
-                    "text": "Identify that it connects to a 'Branch' node checking a boolean condition.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.03hrs. A 'Branch' node would have a condition, which isn't described in the initial problem or visible in the flow you're tracing.",
-                    "next": "step-3"
-                },
-                {
-                    "text": "Identify that it connects directly to the 'Set Max Walk Speed' node.",
+                    "text": "<p>The <strong>BP_SpeedBoost</strong> remains in the world after overlap, not despawning.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.04hrs. If it connected directly, the 'Set Max Walk Speed' node should be firing, which contradicts the problem description.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. This contradicts the initial bug report. Carefully re-observe the behavior.</p>",
                     "next": "step-3"
                 },
                 {
-                    "text": "Identify that it connects to a 'For Each Loop' node.",
+                    "text": "<p>The <strong>BP_SpeedBoost</strong> despawns only after a noticeable delay.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. This is incorrect. The report states it despawns immediately, and your observation should confirm this.</p>",
+                    "next": "step-3"
+                },
+                {
+                    "text": "<p>The <strong>BP_SpeedBoost</strong> reappears shortly after despawning.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. A 'For Each Loop' would imply iterating over an array, which is not relevant to handling a single player character reference here.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. This is not part of the reported bug or observed behavior. Focus on the direct symptoms.</p>",
                     "next": "step-3"
                 }
             ]
         },
         "step-4": {
             "skill": "blueprintslogic",
-            "title": "Step 4: Trace Sequence Pin 0",
-            "prompt": "You've identified a 'Sequence' node immediately after the successful 'Cast To Player Character'. What is connected to 'Sequence Pin 0'?",
+            "title": "Locate Relevant Blueprint",
+            "prompt": "<p>Symptoms: despawns immediately, no buff. Issue in <strong>BP_SpeedBoost</strong>. How do you examine its logic?</p>",
             "choices": [
                 {
-                    "text": "Observe that 'Sequence Pin 0' connects directly to the 'Destroy Actor' node.",
+                    "text": "<p>Locate the <strong>BP_SpeedBoost</strong> asset in the <strong>Content Browser</strong> and open it.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. This is a critical observation, as the 'Destroy Actor' node is directly linked to the premature despawn.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.02hrs. Directly accessing the affected Blueprint is the next logical step to understand its internal logic.</p>",
                     "next": "step-5"
                 },
                 {
-                    "text": "Observe that 'Sequence Pin 0' connects to the 'Set Max Walk Speed' node.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.04hrs. If this were the case, the buff should be applied. Re-examine the connections in your Blueprint.",
-                    "next": "step-4"
-                },
-                {
-                    "text": "Observe that 'Sequence Pin 0' connects to a 'Delay' node.",
+                    "text": "<p>Check the <strong>World Outliner</strong> for a <strong>BP_SpeedBoost</strong> instance and examine its <strong>Details</strong> panel.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. A 'Delay' node wouldn't explain the immediate despawn unless it's set to 0 seconds, which is unlikely for a buff duration.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. While inspecting an instance can reveal overridden properties, the problem is with the Blueprint's fundamental logic, which requires opening the Blueprint asset itself.</p>",
                     "next": "step-4"
                 },
                 {
-                    "text": "Observe that 'Sequence Pin 0' is not connected to anything.",
+                    "text": "<p>Add more <strong>BP_SpeedBoost</strong> pickups to the level to see if it's an instance-specific problem.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. The issue is described as a general bug, not an instance-specific one. Adding more won't help diagnose the logic.</p>",
+                    "next": "step-4"
+                },
+                {
+                    "text": "<p>Use the <strong>Console</strong> command <code>obj list class=Blueprint</code> to list all Blueprints.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.03hrs. If it were unconnected, the 'Destroy Actor' node would need to be connected elsewhere or wouldn't fire, contradicting the despawn symptom.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. While this command lists Blueprints, it's an indirect and inefficient way to find a specific known Blueprint you can easily search for in the <strong>Content Browser</strong>.</p>",
                     "next": "step-4"
                 }
             ]
         },
         "step-5": {
             "skill": "blueprintslogic",
-            "title": "Step 5: Trace Sequence Pin 1",
-            "prompt": "Knowing 'Sequence Pin 0' leads to 'Destroy Actor', where does 'Sequence Pin 1' of the 'Sequence' node lead?",
+            "title": "Navigate to Event Graph",
+            "prompt": "<p>You've opened <strong>BP_SpeedBoost</strong>. Where do you find the interaction logic for an overlap event?</p>",
             "choices": [
                 {
-                    "text": "Observe that 'Sequence Pin 1' connects to the remainder of the logic, including 'Set Max Walk Speed' and any subsequent flow.",
+                    "text": "<p>Open the <strong>Event Graph</strong>, as this is where execution logic for events like overlap resides.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.04hrs. This confirms the intended buff logic is indeed on the second path of the sequence.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.03hrs. The <strong>Event Graph</strong> is the correct place to find the 'On Component Begin Overlap' logic.</p>",
                     "next": "step-6"
                 },
                 {
-                    "text": "Observe that 'Sequence Pin 1' is also connected to 'Destroy Actor'.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.03hrs. If both pins led to 'Destroy Actor', there would be no path for the buff logic at all. Re-examine the Blueprint's connections.",
-                    "next": "step-5"
-                },
-                {
-                    "text": "Observe that 'Sequence Pin 1' is unconnected.",
+                    "text": "<p>Check the <strong>Components</strong> panel to verify the collision settings of the root component.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.04hrs. If unconnected, the buff logic would never be initiated from the sequence, but the nodes might still exist in the graph.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. While collision settings are important, the bug report confirms the 'On Component Begin Overlap' event *fires*, meaning collision itself is likely set up correctly. The problem is what happens *after* the event.</p>",
                     "next": "step-5"
                 },
                 {
-                    "text": "Observe that 'Sequence Pin 1' connects to a 'Print String' node only.",
+                    "text": "<p>Review the <strong>Construction Script</strong> to ensure proper initialization of variables.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. The <strong>Construction Script</strong> runs only in the editor or on spawn, not typically for runtime interaction logic that's failing after overlap.</p>",
+                    "next": "step-5"
+                },
+                {
+                    "text": "<p>Examine the <strong>Macros</strong> and <strong>Functions</strong> graph for any custom buff application logic.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. While a Print String might be present, the problem states 'Set Max Walk Speed' is never reached, implying more intended logic than just a simple print.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. While custom logic might be encapsulated in functions, the entry point for the overlap event will still be in the <strong>Event Graph</strong>. It's best to start there.</p>",
                     "next": "step-5"
                 }
             ]
         },
         "step-6": {
             "skill": "blueprintslogic",
-            "title": "Step 6: Identify Problematic Node",
-            "prompt": "You've traced the sequence: Pin 0 to 'Destroy Actor', Pin 1 to 'Set Max Walk Speed'. Given the symptoms (immediate despawn, no buff), which node is the most likely culprit for the issue?",
+            "title": "Locate Overlap Event",
+            "prompt": "<p>In <strong>BP_SpeedBoost Event Graph</strong>. Which node starts the problematic overlap logic?</p>",
             "choices": [
                 {
-                    "text": "Identify the 'Destroy Actor' node placed on 'Sequence Pin 0' as the problematic element.",
+                    "text": "<p>Locate the <strong>On Component Begin Overlap</strong> node, as the issue occurs upon overlap.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. Its position in the sequence, firing before the buff logic, is highly suspicious and aligns with the observed symptoms.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.02hrs. This is the correct entry point for the interaction logic.</p>",
                     "next": "step-7"
                 },
                 {
-                    "text": "Identify the 'Sequence' node itself as inherently flawed for this use case.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. 'Sequence' nodes are valid for executing multiple paths; the issue is *how* it's being used here, not the node itself.",
-                    "next": "step-6"
-                },
-                {
-                    "text": "Identify the 'Set Max Walk Speed' node as being misconfigured or having an incorrect target value.",
+                    "text": "<p>Search for the <strong>Event Tick</strong> node, as speed changes often happen every frame.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.08hrs. The problem states 'Set Max Walk Speed' is *never reached*, so its configuration isn't the primary problem at this stage.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. While <strong>Event Tick</strong> can manage ongoing effects, the *initial* application of the buff is tied to the overlap event, not a continuous tick.</p>",
                     "next": "step-6"
                 },
                 {
-                    "text": "Identify the 'On Component Begin Overlap' node as failing to properly trigger.",
+                    "text": "<p>Find any <strong>Custom Events</strong> that might be responsible for despawning.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. While custom events might be used, the primary trigger is the overlap, making 'On Component Begin Overlap' the most direct starting point.</p>",
+                    "next": "step-6"
+                },
+                {
+                    "text": "<p>Look for the <strong>Begin Play</strong> node to ensure initial setup is correct.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.06hrs. The problem explicitly states 'On Component Begin Overlap' fires successfully, so this is not the issue.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. <strong>Begin Play</strong> handles initial setup, but the problem occurs during interaction after the actor has already spawned and begun play.</p>",
                     "next": "step-6"
                 }
             ]
         },
         "step-7": {
             "skill": "blueprintslogic",
-            "title": "Step 7: Understand 'Destroy Actor' Behavior",
-            "prompt": "What is the typical behavior of the 'Destroy Actor' node when it executes within a Blueprint's event graph?",
+            "title": "Trace Cast to Player Character",
+            "prompt": "<p>Found <strong>On Component Begin Overlap</strong>. 'Cast To Player Character' succeeds. How to trace execution?</p>",
             "choices": [
                 {
-                    "text": "Understand the synchronous nature of 'Destroy Actor': upon execution, it immediately terminates the blueprint's execution context.",
+                    "text": "<p>Trace the execution wire connected to the 'Cast To Player Character' node's 'Cast Successful' output pin.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. This is crucial knowledge. When 'Destroy Actor' fires, the blueprint instance ceases to exist, stopping all its active logic.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. Following the successful cast ensures you are examining the logic path relevant to the player receiving the buff.</p>",
                     "next": "step-8"
                 },
                 {
-                    "text": "Believe 'Destroy Actor' only makes the actor invisible, and blueprint logic continues in the background.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. This is incorrect. 'Destroy Actor' removes the actor from the world and stops its script execution.",
-                    "next": "step-7"
-                },
-                {
-                    "text": "Assume 'Destroy Actor' puts the actor into a 'pending kill' state, allowing current logic to finish before destruction.",
+                    "text": "<p>Trace the execution wire connected to the 'Cast To Player Character' node's 'Cast Failed' output pin.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.08hrs. While some systems queue destruction, 'Destroy Actor' in Blueprints is largely synchronous and halts further execution for that specific instance.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. The report states the cast *succeeds*, so tracing the 'Cast Failed' path is irrelevant to the current problem.</p>",
                     "next": "step-7"
                 },
                 {
-                    "text": "Assume the 'Sequence' node allows both pins to complete independently, even if one destroys the actor.",
+                    "text": "<p>Check the collision settings on the character's <strong>Capsule Component</strong>.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. The 'On Component Begin Overlap' event *is* firing and the cast *is* successful, indicating collision setup is not the problem.</p>",
+                    "next": "step-7"
+                },
+                {
+                    "text": "<p>Add a <strong>Print String</strong> node directly after the 'Cast To Player Character'.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.07hrs. This is a common misconception. A 'Sequence' node executes pins sequentially. If an early pin destroys the actor, later pins *within that blueprint instance* will not run.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. The bug report already states the character reference is valid. While debugging, it's good to trust reported intermediate states unless you have reason to doubt them. Focus on the *flow* now.</p>",
                     "next": "step-7"
                 }
             ]
         },
         "step-8": {
             "skill": "blueprintslogic",
-            "title": "Step 8: Articulate the Problem",
-            "prompt": "Now that you understand the sequence flow and 'Destroy Actor' behavior, clearly state *why* the 'Set Max Walk Speed' node isn't reached.",
+            "title": "Identify Initial Logic Split",
+            "prompt": "<p>Tracing from successful 'Cast To Player Character'. What is the immediate next node?</p>",
             "choices": [
                 {
-                    "text": "Articulate the immediate consequence: When 'Destroy Actor' executes on Sequence Pin 0, it terminates the execution context of the owning blueprint, preventing any subsequent nodes (even on Pin 1) from executing.",
+                    "text": "<p>Identify that the execution pin connects immediately to a <strong>Sequence</strong> node.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.1hrs. This is the precise problem statement. The blueprint is destroyed before it can apply the buff, because the sequence executes its pins in order.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.03hrs. The <strong>Sequence</strong> node is critical to understanding the current logic flow problem.</p>",
                     "next": "step-9"
                 },
                 {
-                    "text": "Conclude that the 'Sequence' node is executing both pins simultaneously, causing a race condition where Destroy Actor always wins.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.08hrs. 'Sequence' nodes execute pins in order, not simultaneously. While it's a 'race' in outcome, the root cause is synchronous destruction, not simultaneous execution.",
-                    "next": "step-8"
-                },
-                {
-                    "text": "Conclude that 'Set Max Walk Speed' is not firing because the character reference is somehow becoming invalid between the Cast and the Set node.",
+                    "text": "<p>Observe that it connects directly to the <strong>Set Max Walk Speed</strong> node.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.07hrs. The problem states the character reference is valid right before the split. Re-evaluate the core issue based on the 'Destroy Actor' placement.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. This would be the ideal scenario, but it's not what's currently implemented, according to the problem description.</p>",
                     "next": "step-8"
                 },
                 {
-                    "text": "Conclude that the overlap event is firing twice, causing a bug that interrupts the flow.",
+                    "text": "<p>Note that it connects to a <strong>Branch</strong> node checking a boolean variable.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. A <strong>Branch</strong> node evaluates a condition. While possible, the problem description implies a more direct flow issue related to execution order, not conditional logic.</p>",
+                    "next": "step-8"
+                },
+                {
+                    "text": "<p>See that it connects to a <strong>Delay</strong> node.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.06hrs. While double-firing can happen, it's not the primary explanation for the consistent 'no buff' behavior when 'Destroy Actor' is firing so early.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. A <strong>Delay</strong> node is often used for buff duration, but not typically as the immediate first node after a cast for applying the buff itself.</p>",
                     "next": "step-8"
                 }
             ]
         },
         "step-9": {
             "skill": "blueprintslogic",
-            "title": "Step 9: Confirm Unreached Node",
-            "prompt": "You've confirmed the 'Destroy Actor' is cutting off the buff logic. What's the primary action to resolve the execution flow issue?",
+            "title": "Examine Sequence Pin 0 Output",
+            "prompt": "<p>A <strong>Sequence</strong> node follows the cast. What node is connected to <strong>Sequence Pin 0</strong>?</p>",
             "choices": [
                 {
-                    "text": "Determine that the 'Destroy Actor' node needs to be moved to execute *after* the buff application and duration management.",
+                    "text": "<p>Observe that <strong>Sequence Pin 0</strong> connects directly to the <strong>Destroy Actor</strong> node.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. For the buff to be applied, the destruction of the pickup must occur *last* in the logic flow.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. This is a crucial observation for identifying the root cause of the problem.</p>",
                     "next": "step-10"
                 },
                 {
-                    "text": "Remove the 'Sequence' node entirely and try to reconnect everything in a single linear path.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. While removing the sequence is part of the solution, the *core* determination is about the order of 'Destroy Actor'.",
-                    "next": "step-9"
-                },
-                {
-                    "text": "Encapsulate the 'Set Max Walk Speed' logic within a custom event and call it from the Sequence Pin 1.",
+                    "text": "<p>Note that <strong>Sequence Pin 0</strong> connects to the <strong>Set Max Walk Speed</strong> node.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.08hrs. This wouldn't change the fundamental issue of the blueprint being destroyed *before* the sequence can even call the custom event from Pin 1.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. If this were the case, the buff *would* apply. Re-examine the connections carefully.</p>",
                     "next": "step-9"
                 },
                 {
-                    "text": "Add another 'Sequence' node before the current one, with Pin 0 for buff and Pin 1 for destroy.",
+                    "text": "<p>Identify that <strong>Sequence Pin 0</strong> is not connected to anything.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. An unconnected pin usually means incomplete logic. Re-examine the graph visually.</p>",
+                    "next": "step-9"
+                },
+                {
+                    "text": "<p>It connects to a <strong>Print String</strong> node for debugging.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.07hrs. This would just recreate the same problem if 'Destroy Actor' is placed on an early pin of *any* sequence.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. While often used for debugging, this is unlikely to be the primary intended logic path for despawning. Focus on core functionality.</p>",
                     "next": "step-9"
                 }
             ]
         },
         "step-10": {
             "skill": "blueprintslogic",
-            "title": "Step 10: Remove Sequence Node",
-            "prompt": "To restructure the flow and ensure 'Destroy Actor' fires last, what's the first physical modification you should make to the existing nodes?",
+            "title": "Examine Sequence Pin 1 Output",
+            "prompt": "<p><strong>Sequence Pin 0</strong> leads to <strong>Destroy Actor</strong>. What does <strong>Sequence Pin 1</strong> connect to?</p>",
             "choices": [
                 {
-                    "text": "Remove the existing 'Sequence' node from the execution path by deleting it and disconnecting its pins.",
+                    "text": "<p>Observe that <strong>Sequence Pin 1</strong> connects to the remainder of the logic, including <strong>Set Max Walk Speed</strong> and any subsequent flow.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.02hrs. The 'Sequence' node, in its current configuration, is detrimental to the desired execution order. Removing it allows for a linear, controlled flow.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.04hrs. This confirms that the buff application logic is intended to run via this pin.</p>",
                     "next": "step-11"
                 },
                 {
-                    "text": "Immediately move the 'Destroy Actor' node to the very end of the graph, leaving its old connections.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. Moving a node without disconnecting it first can create messy wires or compiler errors. It's better to clean up first.",
-                    "next": "step-10"
-                },
-                {
-                    "text": "Add a new 'Custom Event' node and move all buff logic into it.",
+                    "text": "<p>Note that <strong>Sequence Pin 1</strong> is also connected to the <strong>Destroy Actor</strong> node.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.06hrs. While good for organization, this doesn't resolve the immediate problem of the 'Destroy Actor' severing the flow.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. If both pins led to <strong>Destroy Actor</strong>, there would be no buff logic. Re-examine the graph.</p>",
                     "next": "step-10"
                 },
                 {
-                    "text": "Add a 'Do N' node to prevent the overlap from firing multiple times.",
+                    "text": "<p>Identify that <strong>Sequence Pin 1</strong> is not connected to anything.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. An unconnected pin for critical buff logic would be a clear oversight. Re-examine the visual flow.</p>",
+                    "next": "step-10"
+                },
+                {
+                    "text": "<p>It connects to a separate <strong>On End Overlap</strong> event.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.04hrs. This would prevent re-triggering, but doesn't address the primary issue of the 'Destroy Actor' node interrupting the *first* execution.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. The <strong>Sequence</strong> node processes pins sequentially *from the same input event*. Connecting to a different event wouldn't make sense here.</p>",
                     "next": "step-10"
                 }
             ]
         },
         "step-11": {
             "skill": "blueprintslogic",
-            "title": "Step 11: Disconnect Destroy Actor",
-            "prompt": "After removing the 'Sequence' node, what should you do with the 'Destroy Actor' node that was previously connected to Sequence Pin 0?",
+            "title": "Articulate the Problem",
+            "prompt": "<p>Pin 0 to <strong>Destroy Actor</strong>, Pin 1 to buff logic. What prevents the buff from applying?</p>",
             "choices": [
                 {
-                    "text": "Disconnect the 'Destroy Actor' node from its current position and set it aside for later reconnection.",
+                    "text": "<p>The <strong>Destroy Actor</strong> node, when executed, immediately terminates the Blueprint's execution context.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.03hrs. It needs to be reconnected at the very end of the logic flow, so isolating it for now is correct.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.1hrs. This is the correct understanding. <strong>Destroy Actor</strong> is a synchronous operation that invalidates the Blueprint instance, halting all further execution within it.</p>",
                     "next": "step-12"
                 },
                 {
-                    "text": "Delete the 'Destroy Actor' node, as it's causing the problem.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. The pickup is designed to destroy itself. Deleting it would break that intended functionality.",
-                    "next": "step-11"
-                },
-                {
-                    "text": "Connect the 'Destroy Actor' node directly to 'On Component Begin Overlap' to ensure it fires reliably.",
+                    "text": "<p>The <strong>Sequence</strong> node only allows one pin to execute per event, ignoring <strong>Sequence Pin 1</strong>.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.06hrs. This would bring you back to the original problem, as it would still fire before any buff logic could execute.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. This is incorrect. A <strong>Sequence</strong> node executes all its pins in order. The problem is not that Pin 1 is ignored, but that the Blueprint is destroyed before Pin 1 has a chance to execute.</p>",
                     "next": "step-11"
                 },
                 {
-                    "text": "Wrap the 'Destroy Actor' node in a 'Custom Event' to control its execution more precisely.",
+                    "text": "<p>The <strong>Destroy Actor</strong> node has a hidden 'reset speed' function built-in.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. This is speculative and incorrect. <strong>Destroy Actor</strong> simply removes the actor; it doesn't manipulate player properties.</p>",
+                    "next": "step-11"
+                },
+                {
+                    "text": "<p>The buff application logic on <strong>Sequence Pin 1</strong> is missing a 'Target' input for <strong>Set Max Walk Speed</strong>.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.07hrs. While a Custom Event can be useful, it doesn't solve the core issue of *when* the destruction happens relative to other logic.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. While a missing target would prevent the buff, the more immediate problem is that the entire logic on Pin 1 is never reached due to the actor's destruction.</p>",
                     "next": "step-11"
                 }
             ]
         },
         "step-12": {
             "skill": "blueprintslogic",
-            "title": "Step 12: Disconnect Buff Logic Start",
-            "prompt": "With the 'Sequence' node removed, what should you do with the 'Set Max Walk Speed' node and its associated buff logic that was on Sequence Pin 1?",
+            "title": "Prepare for Blueprint Modification",
+            "prompt": "<p>The <strong>Sequence</strong> node causes early <strong>Destroy Actor</strong>. How do you start correcting this?</p>",
             "choices": [
                 {
-                    "text": "Disconnect the 'Set Max Walk Speed' node from its current position, preparing it to be rewired.",
+                    "text": "<p>Remove the existing <strong>Sequence</strong> node from the execution path.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.03hrs. It needs to be reconnected directly after the successful cast, so isolating it is necessary.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.02hrs. Removing the incorrectly placed <strong>Sequence</strong> node is the first step to re-ordering the logic flow.</p>",
                     "next": "step-13"
                 },
                 {
-                    "text": "Delete the 'Set Max Walk Speed' node and all buff logic, as it wasn't working anyway.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. The goal is to make the buff work, not remove it. The logic itself might be correct, just executed at the wrong time.",
-                    "next": "step-12"
-                },
-                {
-                    "text": "Connect the 'Set Max Walk Speed' node directly to 'Event BeginPlay'.",
+                    "text": "<p>Try dragging the execution wires on the <strong>Sequence</strong> node to change their order.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.06hrs. This would apply the buff at game start, not on overlap, and to an unspecified player if not handled carefully.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. While you can re-order pins, the fundamental problem is that <strong>Destroy Actor</strong> should not be on any pin that executes *before* the buff is applied. Removing the <strong>Sequence</strong> is a cleaner solution here.</p>",
                     "next": "step-12"
                 },
                 {
-                    "text": "Wrap the 'Set Max Walk Speed' node in a 'Function' for better modularity.",
+                    "text": "<p>Replace the <strong>Destroy Actor</strong> node with a <strong>Set Actor Hidden In Game</strong> node.</p>",
+                    "type": "wrong",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. This is a common wrong turn. While it stops the actor from being destroyed, it doesn't address the *order of operations* and adds an unnecessary intermediate step to hiding the actor instead of proper destruction.</p>",
+                    "next": "step-12"
+                },
+                {
+                    "text": "<p>Add another <strong>Sequence</strong> node to re-route the logic more complexly.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.07hrs. Good practice for modularity, but doesn't directly solve the execution flow problem here.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. Adding more complexity to a faulty structure is generally not the solution. Simplicity and correct ordering are key.</p>",
                     "next": "step-12"
                 }
             ]
         },
         "step-13": {
             "skill": "blueprintslogic",
-            "title": "Step 13: Rewire Apply Buff",
-            "prompt": "Now that you've isolated the key nodes, how do you correctly initiate the buff application logic?",
+            "title": "Rewire Buff Application Start",
+            "prompt": "<p>You've removed the <strong>Sequence</strong> node. How do you rewire to ensure buff application runs first?</p>",
             "choices": [
                 {
-                    "text": "Rewire the execution flow: Connect the successful 'Cast To Player Character' output directly to the 'Set Max Walk Speed' node (for buff application).",
+                    "text": "<p>Connect the successful 'Cast To Player Character' output directly to the first node of the buff application logic (e.g., <strong>Set Max Walk Speed</strong>).</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.06hrs. This ensures the buff logic fires immediately after a valid player character is found and before anything else, like destruction.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.06hrs. This ensures the buff logic is the immediate next step after confirming the player character.</p>",
                     "next": "step-14"
                 },
                 {
-                    "text": "Connect the 'Set Max Walk Speed' node directly to 'On Component End Overlap'.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. This would apply the buff when the player *leaves* the pickup, which isn't the intended behavior.",
-                    "next": "step-13"
-                },
-                {
-                    "text": "Connect the 'Set Max Walk Speed' node to a 'Gate' node to control its entry.",
+                    "text": "<p>Connect the successful 'Cast To Player Character' output to <strong>Destroy Actor</strong>, then its output to buff logic.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.07hrs. A 'Gate' node isn't necessary here, as the direct connection provides the desired immediate execution without complex conditions.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. This would still result in the actor being destroyed before the buff is applied, as <strong>Destroy Actor</strong> has no execution output pin to continue logic within the same blueprint instance.</p>",
                     "next": "step-13"
                 },
                 {
-                    "text": "Connect the 'Set Max Walk Speed' to a 'Custom Event' and then call that event.",
+                    "text": "<p>Connect the <strong>On Component Begin Overlap</strong> directly to the <strong>Set Max Walk Speed</strong>, bypassing the cast.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. Bypassing the cast would mean the buff could be applied to non-player actors, or potentially fail if the 'Other Actor' isn't a character, leading to new bugs.</p>",
+                    "next": "step-13"
+                },
+                {
+                    "text": "<p>Add a new <strong>Delay</strong> node right after the cast, then connect to the buff logic.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.08hrs. While functional, it adds an unnecessary layer of indirection for this simple, direct flow.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. While a delay might be used for buff duration, it's not needed *before* applying the buff itself. It just adds an unnecessary pause.</p>",
                     "next": "step-13"
                 }
             ]
         },
         "step-14": {
             "skill": "blueprintslogic",
-            "title": "Step 14: Verify Player Character Ref",
-            "prompt": "You've connected 'Cast To Player Character' to 'Set Max Walk Speed'. What's an important detail to ensure for the 'Set Max Walk Speed' node?",
+            "title": "Verify Target Reference for Buff",
+            "prompt": "<p>Connected 'Cast To Player Character' to <strong>Set Max Walk Speed</strong>. Which input must you verify?</p>",
             "choices": [
                 {
-                    "text": "Ensure the 'Set Max Walk Speed' node uses the Player Character reference acquired from the successful cast (the 'As Player Character' output).",
+                    "text": "<p>Ensure the <strong>Set Max Walk Speed</strong> node uses the <strong>Player Character</strong> reference from the cast as its 'Target'.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. This ensures the speed is applied to the specific player who overlapped the pickup, avoiding issues in multiplayer or with multiple characters.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. Passing the correct target reference ensures the buff is applied to the player character, not to the pickup itself or a default target.</p>",
                     "next": "step-15"
                 },
                 {
-                    "text": "Make sure the 'Set Max Walk Speed' node has 'Is Local Player Controller' checked.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.04hrs. 'Set Max Walk Speed' targets a Character (Pawn), not a Player Controller. The reference from the cast is sufficient.",
-                    "next": "step-14"
-                },
-                {
-                    "text": "Set the 'New Max Walk Speed' value to a very high number to confirm the buff works.",
+                    "text": "<p>Verify the 'New Walk Speed' input value is sufficiently high.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.06hrs. While testing values is good, the primary focus is ensuring the *correct target* is being modified before worrying about the exact value.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. While the speed value is important, the immediate task is to ensure the node is targeting the correct actor. The value itself is a later fine-tuning step.</p>",
                     "next": "step-14"
                 },
                 {
-                    "text": "Add an 'IsValid' check after the 'As Player Character' pin to prevent errors.",
+                    "text": "<p>Check if the 'Player Character' reference is also connected to a <strong>Print String</strong>.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. This is unnecessary debugging now that the execution flow is being corrected. The core problem is not about verifying the reference's existence.</p>",
+                    "next": "step-14"
+                },
+                {
+                    "text": "<p>Confirm the <strong>Set Max Walk Speed</strong> node is set to 'Local' rather than 'World' speed.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.07hrs. The problem states the 'Cast To Player Character' is successful and the reference is valid *right before the logic split*. While 'IsValid' is good practice, it's redundant here and not the most critical next step.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. <strong>Max Walk Speed</strong> is inherently a character-local property. This concept doesn't apply to it in the same way as, for example, 'Add Impulse' or 'Set Location'.</p>",
                     "next": "step-14"
                 }
             ]
         },
         "step-15": {
             "skill": "blueprintslogic",
-            "title": "Step 15: Connect to Buff Duration",
-            "prompt": "The player's speed buff is now applied. What's the next logical step to ensure the buff is temporary as intended?",
+            "title": "Connect Buff Duration Logic",
+            "prompt": "<p><strong>Set Max Walk Speed</strong> targeted. How to manage buff duration before pickup despawns?</p>",
             "choices": [
                 {
-                    "text": "Connect the execution output pin of the 'Set Max Walk Speed' node to a 'Delay' node (for buff duration management).",
+                    "text": "<p>Connect the execution output pin of <strong>Set Max Walk Speed</strong> to the start of any <strong>Buff Duration Management</strong> logic.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.04hrs. A 'Delay' node is a common and simple way to manage temporary effects in Blueprints, holding execution for a set time.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.06hrs. This places the buff duration logic immediately after the buff application, ensuring the buff is active for the intended period.</p>",
                     "next": "step-16"
                 },
                 {
-                    "text": "Immediately connect the 'Set Max Walk Speed' node to a second 'Set Max Walk Speed' node to reset the speed.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. This would reset the speed instantly, making the buff imperceptible. A delay is needed to allow the buff to be active.",
-                    "next": "step-15"
-                },
-                {
-                    "text": "Connect the 'Set Max Walk Speed' node to a 'Timeline' node to control the speed over time.",
+                    "text": "<p>Connect the execution output directly to <strong>Destroy Actor</strong>, assuming duration is handled elsewhere.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.06hrs. A 'Timeline' is a valid option for more complex, interpolated buffs, but a simple 'Delay' is sufficient for a fixed duration and easier to implement for this scenario.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. If duration isn't handled here, the buff would be permanent or immediately removed. The pickup's destruction shouldn't be the *only* end to the buff.</p>",
                     "next": "step-15"
                 },
                 {
-                    "text": "Connect the 'Set Max Walk Speed' node to a 'Do Once' node.",
+                    "text": "<p>Add a new <strong>Branch</strong> node to decide if a buff duration is needed.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. The scenario clearly states the buff is temporary, so duration management is a definite requirement, not a conditional one.</p>",
+                    "next": "step-15"
+                },
+                {
+                    "text": "<p>Disconnect <strong>Set Max Walk Speed</strong> and move it to a separate custom event.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. A 'Do Once' would prevent re-triggering, but doesn't manage the *duration* of the buff or its eventual reset.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. While custom events can organize logic, moving the core application out of the primary flow at this stage would disrupt current debugging efforts.</p>",
                     "next": "step-15"
                 }
             ]
         },
         "step-16": {
             "skill": "blueprintslogic",
-            "title": "Step 16: Set Delay Duration",
-            "prompt": "You've added a 'Delay' node for buff duration. What is an important next step for this node?",
+            "title": "Review Buff Duration Implementation",
+            "prompt": "<p>Connected to <strong>Buff Duration Management</strong>. What's commonly used for a temporary buff reversion?</p>",
             "choices": [
                 {
-                    "text": "Determine and set the appropriate duration for the 'Delay' node based on the desired buff length.",
+                    "text": "<p>A <strong>Delay</strong> node followed by logic to revert the speed, or a <strong>Timeline</strong>.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.03hrs. The 'Delay' node's 'Duration' input defines how long the buff will last before the next part of the logic executes.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.03hrs. Both <strong>Delay</strong> and <strong>Timeline</strong> are common and effective methods for managing temporary effects over time in Blueprints.</p>",
                     "next": "step-17"
                 },
                 {
-                    "text": "Connect the 'Delay' node's 'Completed' output back to 'On Component Begin Overlap'.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. This would create an infinite loop and unintended re-triggering.",
-                    "next": "step-16"
-                },
-                {
-                    "text": "Add a 'Branch' node after the 'Delay' to check if the player is still overlapping.",
+                    "text": "<p>A <strong>DoOnce</strong> node to prevent the buff from being applied multiple times.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.06hrs. While an interesting thought, the buff should simply expire after its duration. The pickup will be destroyed shortly, so continued overlap isn't relevant to the buff's internal timer.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. A <strong>DoOnce</strong> prevents re-entry, but doesn't manage duration or revert the buff after a set time.</p>",
                     "next": "step-16"
                 },
                 {
-                    "text": "Ensure the 'Delay' node has its 'Is Latent' property unchecked.",
+                    "text": "<p>An <strong>Event Tick</strong> constantly checking the buff's elapsed time.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. While functional, using <strong>Event Tick</strong> for simple delays is often less efficient and harder to manage than a dedicated <strong>Delay</strong> or <strong>Timeline</strong> node.</p>",
+                    "next": "step-16"
+                },
+                {
+                    "text": "<p>A custom C++ function that handles all buff timing.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.04hrs. 'Delay' nodes are inherently latent, and this property is not usually user-configurable or relevant to its basic function.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. While C++ is powerful, the scenario specifies Blueprints. Sticking to Blueprint solutions is the immediate goal.</p>",
                     "next": "step-16"
                 }
             ]
         },
         "step-17": {
             "skill": "blueprintslogic",
-            "title": "Step 17: Connect Reset Speed",
-            "prompt": "After the delay for the buff duration, what logic is needed to revert the player's speed to its original state?",
+            "title": "Implement Buff Reversion (if not using Timeline for full cycle)",
+            "prompt": "<p>Using a <strong>Delay</strong> for duration. What should follow the <strong>Delay</strong> to revert the buff?</p>",
             "choices": [
                 {
-                    "text": "Connect the 'On Completed' output of the 'Delay' node to a new 'Set Max Walk Speed' node to reset the player's speed to default.",
+                    "text": "<p>A second <strong>Set Max Walk Speed</strong> node, connected to revert the player's speed to its original value.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.06hrs. This ensures the player's speed returns to normal after the buff expires, completing the temporary effect.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. After the delay, the speed should be set back to normal to make the buff truly temporary.</p>",
                     "next": "step-18"
                 },
                 {
-                    "text": "Connect the 'On Completed' output of the 'Delay' node directly to the 'Destroy Actor' node.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. This would destroy the actor, but the player's speed would remain permanently buffed, which isn't the intended temporary effect.",
-                    "next": "step-17"
-                },
-                {
-                    "text": "Add a 'Do Once' node after the 'Delay' to ensure the reset only happens once.",
+                    "text": "<p>Another <strong>Delay</strong> node for additional buff stages.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.04hrs. The 'Delay' node's 'On Completed' will only fire once after its duration, so a 'Do Once' is redundant here.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. This would extend the buff duration or add another stage, but wouldn't revert the initial buff, making it effectively permanent.</p>",
                     "next": "step-17"
                 },
                 {
-                    "text": "Connect the 'On Completed' output to a 'Print String' to confirm the delay finished.",
+                    "text": "<p>A <strong>Print String</strong> node to announce the buff has ended.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. While useful for debugging, this doesn't implement the core functionality of reverting the buff.</p>",
+                    "next": "step-17"
+                },
+                {
+                    "text": "<p>A <strong>Destroy Actor</strong> node for the player character.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.03hrs. While useful for debugging, this doesn't implement the necessary game logic for resetting the speed.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. This would destroy the player, which is definitely not the intended behavior for a speed buff!</p>",
                     "next": "step-17"
                 }
             ]
         },
         "step-18": {
             "skill": "blueprintslogic",
-            "title": "Step 18: Configure Reset Speed",
-            "prompt": "You've added the second 'Set Max Walk Speed' node for resetting speed. What's crucial for its proper configuration?",
+            "title": "Connect Pickup Destruction",
+            "prompt": "<p>Buff applied, duration managed. What's the final step for the <strong>BP_SpeedBoost</strong> pickup?</p>",
             "choices": [
                 {
-                    "text": "Ensure the new 'Set Max Walk Speed' node uses the Player Character reference (from the initial cast) and sets the original default speed.",
+                    "text": "<p>Connect the final execution output pin of the Buff Duration logic to the <strong>Destroy Actor</strong> node.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. It's vital to target the correct player and restore their speed to the intended baseline for a true temporary buff.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.07hrs. This ensures the pickup is removed from the world only after all its intended effects have been applied and managed.</p>",
                     "next": "step-19"
                 },
                 {
-                    "text": "Set the 'New Max Walk Speed' to 0 to stop the player entirely after the buff.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. This would halt the player, which is not the intention of a temporary speed buff; it should revert to normal movement.",
-                    "next": "step-18"
-                },
-                {
-                    "text": "Hardcode a new speed value that is slightly lower than the initial default speed.",
+                    "text": "<p>Connect the <strong>Destroy Actor</strong> node back to the <strong>On Component Begin Overlap</strong> event for a loop.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.06hrs. This would leave the player with a permanent slight speed reduction, which is unintended. It should revert to the *original* default.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. This would create an infinite loop that would likely crash the editor or result in unexpected behavior.</p>",
                     "next": "step-18"
                 },
                 {
-                    "text": "Connect the 'Target' pin of the 'Set Max Walk Speed' to 'Get Player Character' directly.",
+                    "text": "<p>Add another <strong>Delay</strong> before the <strong>Destroy Actor</strong> node for aesthetic purposes.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. While cosmetic delays are possible, the core logic requires destruction *after* buff management, not an arbitrary additional delay.</p>",
+                    "next": "step-18"
+                },
+                {
+                    "text": "<p>Disconnect the <strong>Destroy Actor</strong> node entirely, as it seems problematic.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.07hrs. While 'Get Player Character' works for a single-player game, using the already established and valid reference from the initial cast is more efficient and robust.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. The pickup *is* intended to despawn. Removing <strong>Destroy Actor</strong> would prevent proper cleanup, leading to other issues.</p>",
                     "next": "step-18"
                 }
             ]
         },
         "step-19": {
             "skill": "blueprintslogic",
-            "title": "Step 19: Connect Destroy Actor",
-            "prompt": "With the buff applied and reset logic in place, when should the pickup finally destroy itself?",
+            "title": "Review Final Execution Flow",
+            "prompt": "<p>Logic rewired. What's the correct conceptual order after overlap for <strong>BP_SpeedBoost</strong>?</p>",
             "choices": [
                 {
-                    "text": "Connect the final execution output pin of the speed reset node to the 'Destroy Actor' node.",
+                    "text": "<p><strong>Cast</strong> -> <strong>Apply Buff</strong> -> <strong>Manage Duration</strong> -> <strong>Destroy Actor</strong>.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.07hrs. This ensures the pickup is destroyed only after all its intended effects (buff application, duration, and speed reset) have completed.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. This is the correct, sequential flow that addresses all requirements: target validation, buff application, duration management, and then cleanup.</p>",
                     "next": "step-20"
                 },
                 {
-                    "text": "Connect 'Destroy Actor' to 'Event Begin Play' to ensure it's removed from the start.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. This would remove the pickup immediately at game start, making it unusable for the player.",
-                    "next": "step-19"
-                },
-                {
-                    "text": "Connect 'Destroy Actor' to the 'On Component End Overlap' event.",
+                    "text": "<p><strong>Apply Buff</strong> -> <strong>Destroy Actor</strong> -> <strong>Manage Duration</strong> -> <strong>Cast</strong>.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.08hrs. This would destroy the actor as soon as the player steps off it, potentially cutting off the buff duration or reset logic if it's not timed perfectly with the buff's end.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. This order is completely nonsensical; you need to cast first, then the buff cannot be applied after destruction, and duration management requires an active buff.</p>",
                     "next": "step-19"
                 },
                 {
-                    "text": "Add a separate 'Delay' before 'Destroy Actor' to give it a moment after reset.",
+                    "text": "<p><strong>Destroy Actor</strong> -> <strong>Cast</strong> -> <strong>Apply Buff</strong> -> <strong>Manage Duration</strong>.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. This is the original faulty logic, where destruction occurs first, preventing any subsequent steps from running within the Blueprint.</p>",
+                    "next": "step-19"
+                },
+                {
+                    "text": "<p><strong>Cast</strong> -> <strong>Destroy Actor</strong> -> <strong>Apply Buff</strong> -> <strong>Manage Duration</strong>.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.06hrs. This is unnecessary. The destruction can happen immediately after the speed reset, as all intended logic for the player is complete.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. This still has <strong>Destroy Actor</strong> executing prematurely, immediately after the cast, which would prevent the buff application and duration management.</p>",
                     "next": "step-19"
                 }
             ]
         },
         "step-20": {
             "skill": "blueprintslogic",
-            "title": "Step 20: Verify New Flow",
-            "prompt": "You've rewired the blueprint. Take a moment to mentally (or visually) review the entire execution path. What should the correct sequence of events now be?",
+            "title": "Compile the Blueprint",
+            "prompt": "<p>Rewired <strong>BP_SpeedBoost</strong> logic. What's the next step to activate these changes?</p>",
             "choices": [
                 {
-                    "text": "Verify the new flow: Cast -> Apply Buff -> Delay -> Reset Speed -> Destroy Actor.",
+                    "text": "<p><strong>Compile</strong> the <strong>BP_SpeedBoost</strong> Blueprint to apply the changes.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. This correct sequence ensures the buff is applied, lasts for its duration, the speed is reset, and then the pickup is removed.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.03hrs. Compiling a Blueprint is essential for the engine to recognize and use the modified logic.</p>",
                     "next": "step-21"
                 },
                 {
-                    "text": "Verify the new flow: Delay -> Apply Buff -> Reset Speed -> Cast -> Destroy Actor.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. This order is incorrect. The buff must be applied *after* casting to the player, and the delay comes after the buff.",
-                    "next": "step-20"
-                },
-                {
-                    "text": "Verify the new flow: Cast -> Destroy Actor -> Apply Buff -> Delay -> Reset Speed.",
+                    "text": "<p>Run a <strong>PIE</strong> session immediately to test the changes.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.08hrs. This is essentially the original problematic flow, where 'Destroy Actor' would cut off all subsequent logic.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. Running PIE before compiling would mean the engine is still using the old, uncompiled version of the Blueprint, and your changes would not be present.</p>",
                     "next": "step-20"
                 },
                 {
-                    "text": "Verify the new flow: Apply Buff -> Cast -> Delay -> Destroy Actor -> Reset Speed.",
+                    "text": "<p>Close the Blueprint Editor and reopen it.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. Closing and reopening might refresh the editor view, but it does not compile the Blueprint's logic.</p>",
+                    "next": "step-20"
+                },
+                {
+                    "text": "<p>Delete old <strong>BP_SpeedBoost</strong> instances from the level and re-add them.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.07hrs. 'Cast' must happen before 'Apply Buff', and 'Destroy Actor' should be the last step, after speed is reset.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. This is unnecessary. Instances in the level will update automatically once the Blueprint asset is compiled.</p>",
                     "next": "step-20"
                 }
             ]
         },
         "step-21": {
             "skill": "blueprintslogic",
-            "title": "Step 21: Compile Blueprint",
-            "prompt": "The Blueprint logic is complete. What is the necessary next step before testing?",
+            "title": "Save the Blueprint Changes",
+            "prompt": "<p>Blueprint compiled. What's next to permanently store these changes?</p>",
             "choices": [
                 {
-                    "text": "Compile the BP_SpeedBoost Blueprint.",
+                    "text": "<p><strong>Save</strong> the <strong>BP_SpeedBoost</strong> Blueprint asset.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.03hrs. Compiling applies your changes and checks for basic errors, making the new logic active.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.04hrs. Saving the Blueprint ensures that your compiled changes are persisted to disk and won't be lost if the editor closes.</p>",
                     "next": "step-22"
                 },
                 {
-                    "text": "Close the Blueprint editor immediately and return to the level.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.03hrs. Changes are not applied without compiling and saving first. Closing would discard your work.",
-                    "next": "step-21"
-                },
-                {
-                    "text": "Validate all referenced assets within the Blueprint's 'Asset References' tab.",
+                    "text": "<p><strong>Compile</strong> it again to be absolutely sure.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.04hrs. While 'Validate Assets' is a tool, it's not a standard step after every logic change and isn't required for compilation.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.02hrs. While harmless, compiling again immediately after a successful compile is redundant if no further changes have been made.</p>",
                     "next": "step-21"
                 },
                 {
-                    "text": "Restart the Unreal Engine editor to ensure changes are picked up.",
+                    "text": "<p>Generate <strong>Blueprint Nativization</strong> data for performance.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. Blueprint nativization is a packaging optimization, not a step for saving working changes during development.</p>",
+                    "next": "step-21"
+                },
+                {
+                    "text": "<p>Export the Blueprint to a text file as a backup.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. Restarting the editor is generally not necessary for Blueprint changes; compiling and saving are sufficient.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. While backups are good practice, the primary method for saving changes within UE5 is the 'Save' button. Exporting is not the standard workflow for persisting active edits.</p>",
                     "next": "step-21"
                 }
             ]
         },
         "step-22": {
-            "skill": "editor",
-            "title": "Step 22: Save Blueprint",
-            "prompt": "You've compiled the Blueprint. What should you do next to ensure your changes persist?",
+            "skill": "blueprintslogic",
+            "title": "Return to Level Editor",
+            "prompt": "<p><strong>BP_SpeedBoost</strong> compiled and saved. Where do you go next to test the fix?</p>",
             "choices": [
                 {
-                    "text": "Save the Blueprint and return to the Level Editor.",
+                    "text": "<p>Return to the <strong>Level Editor</strong> (viewport) to prepare for testing.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.04hrs. Saving prevents losing your work, and returning to the editor prepares for testing in the game environment.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.02hrs. The <strong>Level Editor</strong> is where you initiate <strong>Play In Editor</strong> sessions to test gameplay.</p>",
                     "next": "step-23"
                 },
                 {
-                    "text": "Revert the Blueprint to its last saved state, just in case.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. Reverting would undo all your hard work. You should only revert if you intend to discard changes.",
-                    "next": "step-22"
-                },
-                {
-                    "text": "Export the Blueprint as a text file for backup.",
+                    "text": "<p>Open the <strong>Project Settings</strong> to verify input mappings.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.06hrs. While backups are good, saving the asset within the editor is the standard and necessary step.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. Input mappings are unlikely to be related to this fix, as the bug was about the internal logic of the pickup, not player controls.</p>",
                     "next": "step-22"
                 },
                 {
-                    "text": "Push the changes to source control without testing.",
+                    "text": "<p>Open the <strong>Output Log</strong> to check for new warnings.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. While checking logs is good practice, it's not the immediate next step after making changes and saving; testing in-game is the priority.</p>",
+                    "next": "step-22"
+                },
+                {
+                    "text": "<p>Start a new editor window to avoid potential conflicts.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.07hrs. Always test your changes locally before committing them to source control, to avoid breaking the team's build.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. This is unnecessary. Editor conflicts are generally not an issue when dealing with single Blueprint modifications and proper saving.</p>",
                     "next": "step-22"
                 }
             ]
         },
         "step-23": {
-            "skill": "testing",
-            "title": "Step 23: Test in PIE",
-            "prompt": "The Blueprint is compiled and saved. What is the final step to confirm the fix?",
+            "skill": "blueprintslogic",
+            "title": "Perform Final Test in PIE",
+            "prompt": "<p>Back in <strong>Level Editor</strong>. What's the final step to confirm the fix?</p>",
             "choices": [
                 {
-                    "text": "Run the PIE session and test the overlap, confirming the player receives the speed buff *before* the item successfully despawns.",
+                    "text": "<p>Run a <strong>Play In Editor (PIE)</strong> session and test the overlap, confirming the player receives the speed buff *before* the item despawns.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.07hrs. This crucial step validates the entire fix end-to-end, ensuring the intended behavior is now achieved.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.07hrs. This is the crucial final validation step to ensure the buff is applied correctly and the pickup despawns at the appropriate time.</p>",
                     "next": "conclusion"
                 },
                 {
-                    "text": "Check the project settings for any global speed multipliers that might be interfering.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. The problem was an execution flow issue within the pickup blueprint, not a global setting. This would be a wasted diversion.",
-                    "next": "step-23"
-                },
-                {
-                    "text": "Open the output log and search for 'SpeedBoost' messages.",
+                    "text": "<p>Use the <strong>Console</strong> command <code>stat game</code> to check the game's performance metrics.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.04hrs. While logs are useful, a direct functional test in the game world is needed to confirm the intended visual and gameplay behavior.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. While performance is important, it's not the primary check for *functional correctness* of the buff application logic.</p>",
                     "next": "step-23"
                 },
                 {
-                    "text": "Deploy the project to a mobile device for a final test.",
+                    "text": "<p>Re-examine the <strong>BP_SpeedBoost</strong> Blueprint to look for any overlooked details.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. You've already made and saved the changes. The next step is to test them, not to second-guess the blueprint without new information.</p>",
+                    "next": "step-23"
+                },
+                {
+                    "text": "<p>Create a dedicated <strong>Unit Test</strong> Blueprint to programmatically verify the speed change.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.08hrs. This is premature and overly complex. Basic functionality should always be confirmed in PIE (Play In Editor) first, which is much faster.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. While automated testing is valuable, for a quick bug fix, a direct manual test in PIE is faster and sufficient to confirm the fix.</p>",
                     "next": "step-23"
                 }
             ]
@@ -724,7 +724,7 @@ window.SCENARIOS['DestroyActorStopsExecutionFlow'] = {
         "conclusion": {
             "skill": "complete",
             "title": "Scenario Complete",
-            "prompt": "Congratulations! You have successfully completed this debugging scenario. The BP_SpeedBoost now correctly applies the temporary speed buff before destroying itself, functioning as intended.",
+            "prompt": "<p>Congratulations! You have successfully completed this debugging scenario. The <strong>BP_SpeedBoost</strong> now correctly applies the speed buff before despawning, providing the intended player experience.</p>",
             "choices": []
         }
     }

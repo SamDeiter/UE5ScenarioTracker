@@ -242,14 +242,16 @@ function renderScenarioList() {
                 </div>
             `;
 
-            // Click on item (not checkbox) to toggle
+            // Click on item (not checkbox) to show preview only
             item.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (e.target.type !== 'checkbox') {
-                    toggleScenarioSelection(scenario);
-                    // Manually update checkbox since we're toggling programmatically
-                    const checkbox = item.querySelector('.scenario-checkbox');
-                    checkbox.checked = selectedScenarios.has(scenario.id);
+                    // Just show preview, don't toggle selection
+                    if (scenario.generated) {
+                        showPreview(scenario.id);
+                    } else {
+                        log(`Scenario "${scenario.title}" not generated yet`, 'info');
+                    }
                 }
             });
 

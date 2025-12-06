@@ -298,7 +298,8 @@ JSON:"""
                 "title": raw_scenario['scenario']['title'],
                 "description": raw_scenario['scenario']['problem_description'],
                 "estimateHours": raw_scenario['scenario']['estimated_hours'],
-                "category": raw_scenario['scenario']['focus_area']
+                "category": raw_scenario['scenario']['focus_area'],
+                "tokens_used": self.token_count
             },
             "start": "step-1",
             "steps": {}
@@ -486,6 +487,11 @@ JSON:"""
         self.log_tokens(prompt, response.text)
         
         scenario = self._extract_json(response.text)
+        
+        # Add tokens_used to meta if not already present
+        if 'meta' not in scenario:
+            scenario['meta'] = {}
+        scenario['meta']['tokens_used'] = self.token_count
         
         # Validate and save checkpoint
         checkpoint = Path(__file__).parent.parent.parent / 'temp' / f"{raw_scenario['scenario']['scenario_id']}_complete.json"

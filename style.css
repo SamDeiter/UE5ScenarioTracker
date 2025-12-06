@@ -84,3 +84,45 @@ code {
 .prose code::after {
     content: none !important;
 }
+
+/* Question text styling - make questions stand out in red/pink */
+#ticket-step-prompt strong:last-of-type,
+.question-text {
+    color: #f87171;
+    /* text-red-400 - distinctive question color */
+    font-weight: 600;
+}
+
+/* Style paragraphs that end with "?" as questions */
+#ticket-step-prompt p:has(strong:last-child),
+#ticket-step-prompt > strong {
+    color: #f87171;
+    /* text-red-400 */
+}
+
+/* Choice button styling - add left border accent for visual consistency */
+#ticket-step-choices button {
+    border-left: 4px solid #f59e0b;
+    /* amber-500 accent border */
+    background-color: rgba(55, 65, 81, 0.5);
+    /* gray-700/50 */
+}
+
+#ticket-step-choices button:hover {
+    border-left-color: #fbbf24;
+    /* amber-400 on hover */
+    background-color: rgba(55, 65, 81, 0.8);
+}
+
+/* Ensure feedback modal text has proper formatting */
+#choice-feedback-overlay strong {
+    color: #93c5fd;
+    /* text-blue-300 */
+}
+
+#choice-feedback-overlay code {
+    background-color: #374151;
+    color: #90cdf4;
+    padding: 2px 6px;
+    border-radius: 4px;
+}

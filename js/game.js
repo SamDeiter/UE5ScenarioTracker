@@ -463,7 +463,9 @@ window.SCORM_Tracker = (function () {
 
         // 2. Load data from local storage (this loads a default clean state if the state was just cleared above)
         // --- SCENARIO RANDOMIZATION LOGIC ---
-        const allKeys = Object.keys(window.SCENARIOS);
+        // Filter scenarios to only include those in the MANIFEST
+        const manifestKeys = (window.MANIFEST && Array.isArray(window.MANIFEST)) ? window.MANIFEST : Object.keys(window.SCENARIOS);
+        const allKeys = manifestKeys.filter(id => window.SCENARIOS[id]);
         let storedOrder = JSON.parse(StorageManager.load(StorageManager.KEYS.SCENARIO_ORDER) || '[]');
 
         // Filter stored order to remove deleted scenarios

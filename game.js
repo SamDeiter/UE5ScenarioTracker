@@ -85,11 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
         countdownTimer.textContent = formatTime(timeRemaining);
 
         // 2. Update Color/Pulse based on time left
-        countdownTimer.classList.remove('pulse-red', 'text-blue-300', 'text-yellow-400', 'text-orange-400', 'text-green-500');
+        countdownTimer.classList.remove('pulse-red', 'text-neutral-200', 'text-yellow-400', 'text-orange-400', 'text-green-500');
         if (timeRemaining <= LOW_TIME_WARNING_SECONDS && timeRemaining > 0) {
             countdownTimer.classList.add('text-yellow-400', 'pulse-red');
         } else if (timeRemaining > 0) {
-            countdownTimer.classList.add('text-blue-300');
+            countdownTimer.classList.add('text-neutral-200');
         }
 
         // 3. Time's Up Check
@@ -205,15 +205,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const modalHtml = `
             <div id="password-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-[999] flex items-center justify-center">
                 <div class="bg-gray-800 p-8 rounded-xl shadow-2xl text-center max-w-sm w-full">
-                    <h3 class="text-xl font-bold text-blue-400 mb-4">Administrator Access Required</h3>
+                    <h3 class="text-xl font-bold text-neutral-100 mb-4">Administrator Access Required</h3>
                     <p class="text-gray-300 mb-6">Enter the password to enable Debug Mode:</p>
                     <input type="password" id="password-input" placeholder="Password..." 
-                           class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-yellow-300 focus:ring-blue-500 focus:border-blue-500 text-center mb-4">
+                           class="w-full p-3 rounded-lg bg-neutral-700 border border-neutral-600 text-yellow-300 focus:ring-emerald-500 focus:border-emerald-500 text-center mb-4">
                     <div class="flex justify-around space-x-3">
                         <button id="submit-password" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition-all duration-200">
                             Enable
                         </button>
-                        <button id="cancel-password" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 rounded-lg transition-all duration-200">
+                        <button id="cancel-password" class="flex-1 bg-neutral-600 hover:bg-neutral-700 text-white font-semibold py-2 rounded-lg transition-all duration-200">
                             Cancel
                         </button>
                     </div>
@@ -608,10 +608,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const isActive = currentScenarioId === scenarioId && !state.completed;
 
             card.className = `p-4 rounded-lg border-l-4 cursor-pointer transition-all duration-200 ${state.completed
-                ? 'bg-gray-700/50 border-green-600'
+                ? 'bg-neutral-700/50 border-green-600'
                 : isActive
-                    ? 'bg-blue-900/40 border-blue-400 ring-2 ring-blue-400'
-                    : 'bg-gray-700 hover:bg-gray-600/80 border-blue-500'
+                    ? 'bg-emerald-900/40 border-emerald-500 ring-2 ring-emerald-500'
+                    : 'bg-neutral-700 hover:bg-neutral-600/80 border-emerald-500'
                 }`;
             card.dataset.scenarioId = scenarioId;
 
@@ -641,7 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     `;
                 } else {
-                    statusSpan = `<span class="text-xs font-semibold text-blue-400">NOT STARTED</span>`;
+                    statusSpan = `<span class="text-xs font-semibold text-neutral-100">NOT STARTED</span>`;
                     loggedTimeDisplay = `
                         <div class="text-sm text-gray-400">
                             Est. Time: <span class="font-bold text-green-400">${estimate.toFixed(1)} hrs</span>
@@ -653,7 +653,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const html = `
                 <h4 class="font-bold ${state.completed ? 'text-gray-400 line-through' : 'text-gray-100'}">${title}</h4>
                 <p class="text-xs text-gray-400 mt-1">${description}</p>
-                <div class="mt-3 pt-3 border-t border-gray-600">
+                <div class="mt-3 pt-3 border-t border-neutral-600">
                     ${statusSpan}
                     ${loggedTimeDisplay}
                 </div>
@@ -764,17 +764,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Build feedback HTML for debug mode
                 const timeLabel = choice.type === 'correct' ? 'Optimal Time:' : 'Extended Time:';
                 feedbackHtml = `
-                    <div class="mt-3 pt-3 border-t border-gray-600">
+                    <div class="mt-3 pt-3 border-t border-neutral-600">
                         <p class="text-xs italic text-gray-400">${timeLabel} +${timeCost.toFixed(2)}hrs. ${choice.feedback || ''}</p>
                     </div>
                 `;
             } else {
                 // Normal mode: neutral styling
-                debugClass = 'border border-gray-600 hover:border-blue-500';
+                debugClass = 'border border-neutral-600 hover:border-emerald-500';
             }
 
             // Build button classes
-            btn.className = `block w-full text-left p-4 rounded-lg transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 ${debugClass}`;
+            btn.className = `block w-full text-left p-4 rounded-lg transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${debugClass}`;
 
             // Build button innerHTML
             if (isDebugMode) {
@@ -880,7 +880,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="text-gray-200 text-sm leading-relaxed prose prose-sm prose-invert">${choice.feedback || 'That answer was not correct.'}</div>
                         </div>
                     </div>
-                    <button id="feedback-continue-btn" class="mt-6 w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                    <button id="feedback-continue-btn" class="mt-6 w-full bg-neutral-700 hover:bg-neutral-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
                         Continue
                     </button>
                 </div>
@@ -1010,7 +1010,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h3 class="text-3xl font-bold ${timeColorClass} mb-6">Ticket Resolved</h3>
                 <p class="text-lg text-gray-300 mb-8">${summaryMessage}</p>
 
-                <div class="max-w-md mx-auto bg-gray-700/50 p-6 rounded-lg">
+                <div class="max-w-md mx-auto bg-neutral-700/50 p-6 rounded-lg">
                     <h4 class="text-xl font-semibold text-gray-100 mb-4">Ticket Time Breakdown (Step Cost)</h4>
                     <div class="space-y-3 text-left">
                         <div class="flex justify-between text-gray-300">
@@ -1028,7 +1028,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
 
-                <button id="${buttonId}" class="mt-8 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md transition-all duration-200">
+                <button id="${buttonId}" class="mt-8 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md transition-all duration-200">
                     ${buttonText}
                 </button>
             </div>
@@ -1065,7 +1065,7 @@ document.addEventListener('DOMContentLoaded', () => {
             timerContainer.classList.add('hidden');
         }
 
-        countdownTimer.classList.remove('pulse-red', 'text-blue-300', 'text-yellow-400');
+        countdownTimer.classList.remove('pulse-red', 'text-neutral-200', 'text-yellow-400');
         countdownTimer.classList.add('text-orange-400');
         countdownTimer.textContent = "00:00";
 
@@ -1086,7 +1086,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Ensure no low-time colors here
-        countdownTimer.classList.remove('pulse-red', 'text-blue-300', 'text-yellow-400', 'text-orange-400');
+        countdownTimer.classList.remove('pulse-red', 'text-neutral-200', 'text-yellow-400', 'text-orange-400');
         countdownTimer.classList.add('text-green-500');
         countdownTimer.textContent = "Complete!";
     }
@@ -1143,7 +1143,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 4. Assemble Final Stats HTML (Reproducible Key added back)
             finalStatsHtml = `
-                <div class="mt-4 border-t border-gray-600 pt-4">
+                <div class="mt-4 border-t border-neutral-600 pt-4">
                     <h4 class="text-xl font-bold ${mainTitleColor} mb-3">Final Time Report</h4>
                     <div class="space-y-2 text-left max-w-sm mx-auto">
                         <div class="flex justify-between text-sm text-gray-200">
@@ -1162,17 +1162,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 
-                <div class="mt-4 border-t border-gray-600 pt-4">
+                <div class="mt-4 border-t border-neutral-600 pt-4">
                     <h4 class="text-xl font-bold text-gray-100 mb-3">Reproducible Test Key</h4>
                     <p class="text-sm text-gray-400 mb-2">Copy this key to recreate this exact test path and results.</p>
                     
                     <div class="flex justify-center">
-                        <span id="test-key-display" class="font-mono text-xs md:text-sm bg-gray-700/70 p-3 rounded-lg break-all max-w-full inline-block text-yellow-300">
+                        <span id="test-key-display" class="font-mono text-xs md:text-sm bg-neutral-700/70 p-3 rounded-lg break-all max-w-full inline-block text-yellow-300">
                             ${testKey}
                         </span>
                     </div>
                     
-                    <button id="copy-key-btn" class="mt-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-all duration-200">
+                    <button id="copy-key-btn" class="mt-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-all duration-200">
                         Copy Key
                     </button>
                 </div>

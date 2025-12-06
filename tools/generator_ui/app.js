@@ -467,35 +467,39 @@ async function generateScenarios(scenarioIds) {
 }
 
 // Event Listeners
-elements.refreshBtn.addEventListener('click', () => {
-    checkApiStatus();
-    loadModels();
-    loadScenarios();
-});
+// Event Listeners
+function setupEventListeners() {
+    elements.refreshBtn.addEventListener('click', () => {
+        checkApiStatus();
+        loadModels();
+        loadScenarios();
+    });
 
-elements.generateSelectedBtn.addEventListener('click', () => {
-    const ids = Array.from(selectedScenarios);
-    generateScenarios(ids);
-});
+    elements.generateSelectedBtn.addEventListener('click', () => {
+        const ids = Array.from(selectedScenarios);
+        generateScenarios(ids);
+    });
 
-elements.generateAllBtn.addEventListener('click', () => {
-    console.log('Generate All Missing clicked');
-    const missing = scenarios.filter(s => !s.generated).map(s => s.id);
-    console.log(`Found ${missing.length} missing scenarios:`, missing.slice(0, 5));
-    if (missing.length === 0) {
-        log('All scenarios already generated!', 'success');
-        return;
-    }
-    log(`Starting batch generation of ${missing.length} scenarios...`, 'info');
-    generateScenarios(missing);
-});
+    elements.generateAllBtn.addEventListener('click', () => {
+        console.log('Generate All Missing clicked');
+        const missing = scenarios.filter(s => !s.generated).map(s => s.id);
+        console.log(`Found ${missing.length} missing scenarios:`, missing.slice(0, 5));
+        if (missing.length === 0) {
+            log('All scenarios already generated!', 'success');
+            return;
+        }
+        log(`Starting batch generation of ${missing.length} scenarios...`, 'info');
+        generateScenarios(missing);
+    });
 
-elements.clearLogBtn.addEventListener('click', () => {
-    elements.logContent.innerHTML = '<div class="log-entry info">Log cleared</div>';
-});
+    elements.clearLogBtn.addEventListener('click', () => {
+        elements.logContent.innerHTML = '<div class="log-entry info">Log cleared</div>';
+    });
+}
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    setupEventListeners();
     checkApiStatus();
     loadModels();
     loadScenarios();

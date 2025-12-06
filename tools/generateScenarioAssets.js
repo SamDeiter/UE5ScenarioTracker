@@ -15,7 +15,7 @@ const { extractSceneSetups } = require('./exportSceneSpecs');
 
 // Configuration
 const UE_PROJECT_PATH = process.env.UESCENARIO_FACTORY || 'D:\\UE5_Projects\\UEScenarioFactory';
-const UE_EDITOR_CMD = path.join(UE_PROJECT_PATH, '..', '..', 'Engine', 'Binaries', 'Win64', 'UnrealEditor-Cmd.exe');
+const UE_EDITOR_CMD = process.env.UE_EDITOR_PATH || 'D:\\Fortnite\\UE_5.6\\Engine\\Binaries\\Win64\\UnrealEditor-Cmd.exe';
 const UE_PROJECT_FILE = path.join(UE_PROJECT_PATH, 'UEScenarioFactory.uproject');
 
 function generateScenarioAssets(scenarioId) {

@@ -10,17 +10,39 @@
         tailwind.config = {
             theme: {
                 extend: {
+                    colors: {
+                        // UE5 Background Colors
+                        'ue-darkest': 'var(--ue-bg-darkest)',
+                        'ue-darker': 'var(--ue-bg-darker)',
+                        'ue-dark': 'var(--ue-bg-dark)',
+                        'ue-medium': 'var(--ue-bg-medium)',
+                        'ue-lighter': 'var(--ue-bg-lighter)',
+                        'ue-code': 'var(--ue-bg-code)',
+                        // UE5 Border Colors
+                        'ue-border-dark': 'var(--ue-border-dark)',
+                        'ue-border-base': 'var(--ue-border-base)',
+                        'ue-border-hover': 'var(--ue-border-hover)',
+                        // UE5 Text Colors
+                        'ue-text-primary': 'var(--ue-text-primary)',
+                        'ue-text-secondary': 'var(--ue-text-secondary)',
+                        'ue-text-tertiary': 'var(--ue-text-tertiary)',
+                        'ue-text-muted': 'var(--ue-text-muted)',
+                    },
+                    boxShadow: {
+                        'ue-neutral-glow': '0 0 15px var(--ue-neutral-glow)',
+                        'ue-success-glow': '0 0 15px 4px var(--ue-success-glow)',
+                    },
                     typography: {
                         DEFAULT: {
                             css: {
-                                color: '#d1d5db',
+                                color: 'var(--ue-text-tertiary)',
                                 strong: {
-                                    color: '#93c5fd',
+                                    color: 'var(--ue-text-primary)',
                                     fontWeight: '700',
                                 },
                                 code: {
-                                    color: '#90cdf4',
-                                    backgroundColor: '#2d3748',
+                                    color: 'var(--ue-text-secondary)',
+                                    backgroundColor: 'var(--ue-bg-code)',
                                     padding: '2px 6px',
                                     borderRadius: '4px',
                                     fontWeight: '400',
@@ -35,9 +57,9 @@
                         },
                         invert: {
                             css: {
-                                color: '#d1d5db',
+                                color: 'var(--ue-text-tertiary)',
                                 strong: {
-                                    color: '#93c5fd',
+                                    color: 'var(--ue-text-primary)',
                                 },
                             },
                         },

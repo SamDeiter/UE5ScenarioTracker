@@ -3,21 +3,65 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   UE5 COLOR SYSTEM - CSS CUSTOM PROPERTIES
+   Centralized color palette for maintainability
+   ============================================ */
+:root {
+    /* Background Colors */
+    --ue-bg-darkest: #111111;
+    /* Darkest backgrounds */
+    --ue-bg-darker: #121212;
+    /* Main app background */
+    --ue-bg-dark: #1e1e1e;
+    /* Dark panels */
+    --ue-bg-medium: #2a2a2a;
+    /* Active/hover states */
+    --ue-bg-lighter: #252525;
+    /* Medium hover */
+    --ue-bg-code: #3a3a3a;
+    /* Code backgrounds */
+
+    /* Border Colors */
+    --ue-border-base: #4a4a4a;
+    /* Neutral borders */
+    --ue-border-hover: #6a6a6a;
+    /* Hover borders */
+    --ue-border-dark: #333333;
+    /* Dark borders */
+
+    /* Text Colors */
+    --ue-text-primary: #ffffff;
+    /* Pure white for emphasis */
+    --ue-text-secondary: #e5e5e5;
+    /* Light gray for code */
+    --ue-text-tertiary: #d1d5db;
+    /* Body text */
+    --ue-text-muted: #e2e8f0;
+    /* Muted text */
+
+    /* Semantic Colors */
+    --ue-success: #16a34a;
+    /* Success/correct (green-600) */
+    --ue-success-glow: rgba(22, 163, 74, 0.7);
+    --ue-success-bg: rgba(22, 163, 74, 0.25);
+    --ue-success-shadow: rgba(22, 163, 74, 0.6);
+
+    /* Neutral Glow/Shadow */
+    --ue-neutral-glow: rgba(115, 115, 115, 0.2);
+}
+
 /* Custom base styles - UE5 Editor-inspired dark theme */
 body {
-    background-color: #121212;
-    /* UE5 Editor dark background */
-    color: #e2e8f0;
-    /* text-gray-200 */
+    background-color: var(--ue-bg-darker);
+    color: var(--ue-text-muted);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 /* Custom class for the glowing border on correct answers in debug mode */
 .debug-correct {
-    box-shadow: 0 0 15px 4px rgba(22, 163, 74, 0.7);
-    /* Green-600 glow */
-    border-color: #16a34a;
-    /* green-600 */
+    box-shadow: 0 0 15px 4px var(--ue-success-glow);
+    border-color: var(--ue-success);
 }
 
 /* Custom class for the pulsing red timer */
@@ -41,10 +85,8 @@ body {
 
 /* Custom styles for code blocks inside prompts/feedback */
 code {
-    background-color: #2d3748;
-    /* bg-gray-700 */
-    color: #90cdf4;
-    /* text-blue-300 */
+    background-color: var(--ue-bg-code);
+    color: var(--ue-text-secondary);
     padding: 2px 6px;
     border-radius: 4px;
     font-family: "Fira Code", "Courier New", monospace;
@@ -56,24 +98,22 @@ code {
 #ticket-step-prompt p,
 #ticket-step-feedback p {
     margin-bottom: 1rem;
-    color: #d1d5db;
-    /* text-gray-300 */
+    color: var(--ue-text-tertiary);
 }
 
 /* Custom styles for strong tags inside prompts/feedback */
 #ticket-step-content strong,
 #ticket-step-prompt strong,
 #ticket-step-feedback strong {
-    color: #93c5fd;
-    /* text-blue-300 */
+    color: var(--ue-text-primary);
     font-weight: 700;
 }
 
 /* Ensure code elements inside prose look correct */
 .prose code,
 #ticket-step-content code {
-    background-color: #2d3748 !important;
-    color: #90cdf4 !important;
+    background-color: var(--ue-bg-code) !important;
+    color: var(--ue-text-secondary) !important;
     padding: 2px 6px !important;
     border-radius: 4px;
     font-family: "Fira Code", "Courier New", monospace;
@@ -86,60 +126,35 @@ code {
 }
 
 /* ============================================
-   UE5-ALIGNED SEMANTIC COLOR SYSTEM
-   Based on Blueprint color conventions:
-   - Blue: Objects/Assets (matches UE5 object pins)
-   - Green: Properties/Settings (matches boolean/get nodes)
-   - Orange: Actions/Operations (matches Transform pins)
-   - Cyan: Code/Commands (matches code styling)
+   COMPONENT-SPECIFIC STYLES
    ============================================ */
-
-/* Default strong tags = White for emphasis (UE5 editor uses white text) */
-#ticket-step-content strong,
-#ticket-step-prompt strong,
-#ticket-step-feedback strong {
-    color: #ffffff;
-    /* Pure white for emphasis */
-    font-weight: 700;
-}
-
-/* Code tags = Light gray for code/values */
-#ticket-step-content code,
-#ticket-step-prompt code,
-.prose code {
-    background-color: #3a3a3a;
-    /* Neutral dark gray background */
-    color: #e5e5e5;
-    /* Light gray text */
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: "Fira Code", "Consolas", monospace;
-    font-size: 0.9em;
-}
 
 /* Choice button styling - neutral gray with subtle accent */
 #ticket-step-choices button {
-    border-left: 4px solid #4a4a4a;
-    /* Neutral gray accent border */
-    background-color: #1e1e1e;
-    /* UE5-style dark panel */
+    border-left: 4px solid var(--ue-border-base);
+    background-color: var(--ue-bg-dark);
 }
 
 #ticket-step-choices button:hover {
-    border-left-color: #6a6a6a;
-    /* Lighter gray on hover */
-    background-color: #2a2a2a;
+    border-left-color: var(--ue-border-hover);
+    background-color: var(--ue-bg-medium);
 }
 
 /* Ensure feedback modal text has proper formatting */
 #choice-feedback-overlay strong {
-    color: #ffffff;
-    /* Pure white */
+    color: var(--ue-text-primary);
 }
 
 #choice-feedback-overlay code {
-    background-color: #3a3a3a;
-    color: #e5e5e5;
+    background-color: var(--ue-bg-code);
+    color: var(--ue-text-secondary);
     padding: 2px 6px;
     border-radius: 4px;
+}
+
+/* Sprint Backlog Scrollable Container */
+#backlog-list {
+    max-height: calc(100vh - 300px);
+    flex: 1;
+    overflow-y: auto;
 }

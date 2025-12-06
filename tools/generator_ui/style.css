@@ -1,18 +1,40 @@
-/* UE5 Scenario Generator - Modern Dark Theme */
+/* UE5 Scenario Generator - UE5-Aligned Dark Theme */
 
 :root {
-    --bg-dark: #0d1117;
-    --bg-card: #161b22;
-    --bg-hover: #21262d;
-    --border: #30363d;
-    --text-primary: #e6edf3;
-    --text-secondary: #8b949e;
-    --accent-blue: #58a6ff;
-    --accent-green: #3fb950;
-    --accent-orange: #d29922;
-    --accent-red: #f85149;
-    --accent-purple: #a371f7;
+    /* Match main tracker app colors */
+    --bg-dark: #111111;
+    --bg-card: #1e1e1e;
+    --bg-hover: #2a2a2a;
+    --border: #3a3a3a;
+    --text-primary: #ffffff;
+    --text-secondary: #e5e5e5;
+    --accent-blue: #3b82f6;
+    --accent-green: #16a34a;
+    --accent-orange: #f97316;
+    --accent-red: #ef4444;
+    --accent-purple: #a855f7;
     --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+    --accent-green-light: #22c55e;
+    --divider-gray: #71717a;
+    --btn-blue-hover: #60a5fa;
+
+    /* Category badge colors - UE5 aligned */
+    --category-lighting: #f59e0b;
+    --category-blueprints: #3b82f6;
+    --category-materials: #a855f7;
+    --category-world: #10b981;
+    --category-physics: #ef4444;
+    --category-asset: #06b6d4;
+    --category-sequencer: #ec4899;
+    --category-audio: #f97316;
+    --category-performance: #84cc16;
+
+    /* Form/Button colors */
+    --form-primary: #3b82f6;
+    --form-success: #10b981;
+    --form-warning: #f59e0b;
+    --form-warning-light: #fbbf24;
 }
 
 * {
@@ -167,13 +189,23 @@ body {
 }
 
 .status-bar.complete .progress-fill {
-    background: linear-gradient(90deg, var(--accent-green), #56d364);
+    background: linear-gradient(90deg, var(--accent-green), var(--accent-green-light));
 }
 
 .header-left {
     display: flex;
     align-items: center;
     gap: 1rem;
+}
+
+.header .ue-logo {
+    height: 32px;
+    margin-right: 12px;
+}
+
+.header .divider {
+    color: var(--divider-gray);
+    margin: 0 12px;
 }
 
 .header h1 {
@@ -266,7 +298,7 @@ body {
 }
 
 .btn-primary:hover:not(:disabled) {
-    background: #79b8ff;
+    background: var(--btn-blue-hover);
 }
 
 .btn-secondary {
@@ -503,63 +535,63 @@ body {
 /* Lighting - Warm Yellow/Gold */
 .category-badge.lighting {
     background: rgba(255, 193, 7, 0.25);
-    color: #ffc107;
+    color: var(--category-lighting);
     border-color: rgba(255, 193, 7, 0.5);
 }
 
 /* Blueprints - Electric Blue */
 .category-badge.blueprints {
     background: rgba(0, 123, 255, 0.25);
-    color: #4dabff;
+    color: var(--category-blueprints);
     border-color: rgba(0, 123, 255, 0.5);
 }
 
 /* Materials - Vibrant Purple */
 .category-badge.materials {
     background: rgba(156, 39, 176, 0.25);
-    color: #ce93d8;
+    color: var(--category-materials);
     border-color: rgba(156, 39, 176, 0.5);
 }
 
 /* World Partition - Forest Green */
 .category-badge.world {
     background: rgba(76, 175, 80, 0.25);
-    color: #81c784;
+    color: var(--category-world);
     border-color: rgba(76, 175, 80, 0.5);
 }
 
 /* Physics - Bold Red */
 .category-badge.physics {
     background: rgba(244, 67, 54, 0.25);
-    color: #ef5350;
+    color: var(--category-physics);
     border-color: rgba(244, 67, 54, 0.5);
 }
 
 /* Asset Management - Teal/Cyan */
 .category-badge.asset {
     background: rgba(0, 188, 212, 0.25);
-    color: #4dd0e1;
+    color: var(--category-asset);
     border-color: rgba(0, 188, 212, 0.5);
 }
 
 /* Sequencer - Magenta/Pink */
 .category-badge.sequencer {
     background: rgba(233, 30, 99, 0.25);
-    color: #f48fb1;
+    color: var(--category-sequencer);
     border-color: rgba(233, 30, 99, 0.5);
 }
 
 /* Audio - Deep Orange */
 .category-badge.audio {
     background: rgba(255, 87, 34, 0.25);
-    color: #ff8a65;
+    color: var(--category-audio);
     border-color: rgba(255, 87, 34, 0.5);
 }
 
 /* Performance - Lime Green */
 .category-badge.performance {
     background: rgba(139, 195, 74, 0.25);
-    color: #aed581;
+    color: var(--category-performance);
     border-color: rgba(139, 195, 74, 0.5);
 }
 
@@ -594,7 +626,7 @@ body {
 }
 
 .progress-fill.complete {
-    background: linear-gradient(90deg, var(--accent-green), #56d364);
+    background: linear-gradient(90deg, var(--accent-green), var(--accent-green-light));
 }
 
 .progress-section.complete {
@@ -1214,7 +1246,7 @@ body {
 }
 
 .btn-primary:hover:not(:disabled) {
-    background: #2980b9;
+    background: var(--form-primary);
     box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
 }
 
@@ -1231,7 +1263,7 @@ body {
 }
 
 .btn-accent:hover {
-    background: #27ae60;
+    background: var(--form-success);
     box-shadow: 0 4px 12px rgba(46, 213, 115, 0.4);
 }
 
@@ -1243,7 +1275,7 @@ body {
 
 /* Not generated - Yellow accent */
 .scenario-item:not(.completed) {
-    border-left-color: #f39c12;
+    border-left-color: var(--form-warning);
 }
 
 /* Completed - subtle styling only */
@@ -1251,12 +1283,12 @@ body {
     border-left-color: var(--border);
 }
 
-/* Completed icon inline with title - gray by default */
+/* Completed icon inline with title - green for generated scenarios */
 .completed-icon {
     margin-left: 0.5rem;
-    color: var(--text-secondary);
+    color: var(--accent-green);
     font-size: 0.85rem;
-    opacity: 0.6;
+    opacity: 0.9;
 }
 
 /* Selected - highlight with blue accent */
@@ -1414,7 +1446,7 @@ body {
 
 /* Subtle = almost right (yellow/amber) */
 .choice-item.type-subtle {
-    border-left-color: #f1c40f;
+    border-left-color: var(--form-warning-light);
     background: rgba(241, 196, 15, 0.08);
 }
 

@@ -3,9 +3,15 @@ Flask API Server for Scenario Generator GUI
 Provides REST endpoints for listing, generating, and previewing scenarios.
 """
 import json
+import threading
 from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
+try:
+    from filelock import FileLock
+except ImportError:
+    print("⚠️  Warning: filelock not installed. Install with: pip install filelock")
+    FileLock = None
 
 # Import our existing modules
 from scenario_generator import ScenarioGenerator
@@ -14,22 +20,45 @@ from env_loader import get_gemini_key
 app = Flask(__name__, static_folder='../generator_ui')
 CORS(app)
 
+# Security: Limit request size to prevent DoS
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB limit
+
 # Paths
 ROOT_DIR = Path(__file__).parent.parent.parent
 RAW_DATA_PATH = ROOT_DIR / 'raw_data.json'
 SCENARIOS_DIR = ROOT_DIR / 'scenarios'
 
-# Cache for raw data
+# Security limits
+MAX_SCENARIO_SIZE = 10 * 1024 * 1024  # 10MB limit
+
+# Thread safety
 _raw_data_cache = None
+_cache_lock = threading.Lock()
+_raw_data_lock = FileLock(str(RAW_DATA_PATH) + '.lock') if FileLock else None
 
 
 def get_raw_data():
-    """Load and cache raw_data.json"""
+    """Load and cache raw_data.json with thread safety"""
     global _raw_data_cache
-    if _raw_data_cache is None:
-        with open(RAW_DATA_PATH, 'r', encoding='utf-8') as f:
-            _raw_data_cache = json.load(f)
-    return _raw_data_cache
+    
+    with _cache_lock:
+        if _raw_data_cache is None:
+            with open(RAW_DATA_PATH, 'r', encoding='utf-8') as f:
+                _raw_data_cache = json.load(f)
+        return _raw_data_cache
+
+
+def safe_read_scenario(path):
+    """Safely read scenario file with size limits"""
+    if not path.exists():
+        return None
+    
+    file_size = path.stat().st_size
+    if file_size > MAX_SCENARIO_SIZE:
+        raise ValueError(f'Scenario file too large: {file_size} bytes')
+    
+    with open(path, 'r', encoding='utf-8') as f:
+        return f.read()
 
 
 @app.route('/')
@@ -159,12 +188,12 @@ def preview_scenario(scenario_id):
     """Get the generated scenario content"""
     output_path = SCENARIOS_DIR / f"{scenario_id}.js"
     
-    if not output_path.exists():
-        return jsonify({'error': 'Scenario not generated yet'}), 404
-    
-    # Read the JS file and extract the JSON
-    with open(output_path, 'r', encoding='utf-8') as f:
-        content = f.read()
+    try:
+        content = safe_read_scenario(output_path)
+        if content is None:
+            return jsonify({'error': 'Scenario not generated yet'}), 404
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 413  # Payload Too Large
     
     # Extract JSON from: window.SCENARIOS['id'] = {...};
     try:
@@ -334,21 +363,26 @@ def create_scenario():
         ]
     
     try:
-        # Load current raw_data.json
-        with open(RAW_DATA_PATH, 'r', encoding='utf-8') as f:
-            raw_data = json.load(f)
+        if not _raw_data_lock:
+            return jsonify({'error': 'File locking not available - install filelock package'}), 500
         
-        # Check if scenario_id already exists
-        for item in raw_data:
-            if item['scenario']['scenario_id'] == scenario['scenario_id']:
-                return jsonify({'error': f'Scenario {scenario["scenario_id"]} already exists'}), 409
-        
-        # Add the new scenario
-        raw_data.append({'scenario': scenario})
-        
-        # Save back to file
-        with open(RAW_DATA_PATH, 'w', encoding='utf-8') as f:
-            json.dump(raw_data, f, indent=2)
+        # ATOMIC OPERATION - File locking prevents race conditions
+        with _raw_data_lock:
+            # Load current raw_data.json
+            with open(RAW_DATA_PATH, 'r', encoding='utf-8') as f:
+                raw_data = json.load(f)
+            
+            # Check if scenario_id already exists
+            for item in raw_data:
+                if item['scenario']['scenario_id'] == scenario['scenario_id']:
+                    return jsonify({'error': f'Scenario {scenario["scenario_id"]} already exists'}), 409
+            
+            # Add the new scenario
+            raw_data.append({'scenario': scenario})
+            
+            # Save back to file
+            with open(RAW_DATA_PATH, 'w', encoding='utf-8') as f:
+                json.dump(raw_data, f, indent=2)
         
         # Clear cache so new scenario is picked up
         _raw_data_cache = None

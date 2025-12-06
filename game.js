@@ -382,7 +382,21 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Note: Hard Reset and Load Test Key buttons are removed from event listeners.
+        // --- HARD RESET (Clear Cache & Restart) ---
+        const hardResetBtn = document.getElementById('hard-reset-btn');
+        if (hardResetBtn) {
+            hardResetBtn.addEventListener('click', () => {
+                // Clear all app-related localStorage keys
+                localStorage.removeItem('ue5ScenarioState');
+                localStorage.removeItem('ue5ScenarioTimer');
+                localStorage.removeItem('ue5ActiveScenario');
+                localStorage.removeItem('ue5ActiveStep');
+                localStorage.removeItem('ue5InterruptedSteps');
+                
+                // Reload the page to restart fresh
+                window.location.reload();
+            });
+        }
     }
     
     /**
@@ -716,17 +730,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const btn = document.createElement('button');
             
-            // Determine button styling (Debug Mode only shows hint colors)
+            // Determine button styling (Debug Mode only highlights the correct answer)
             let debugClass = '';
             if (isDebugMode) {
                 if (isCorrect) {
+                     // Only highlight the correct answer in debug mode
                      debugClass = 'border-green-600 debug-correct';
-                } else if (choice.type === 'partial') {
-                     debugClass = 'border-yellow-600';
-                } else if (choice.type === 'misguided') {
-                     debugClass = 'border-orange-600';
                 } else {
-                     debugClass = 'border-red-600';
+                     // All other answers look neutral (same as normal mode)
+                     debugClass = 'border-gray-600 hover:border-blue-500';
                 }
             } else {
                 debugClass = 'border-gray-600 hover:border-blue-500';

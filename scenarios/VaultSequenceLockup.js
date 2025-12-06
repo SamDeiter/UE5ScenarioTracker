@@ -4,564 +4,564 @@ window.SCENARIOS['VaultSequenceLockup'] = {
         "description": "When the player interacts with the Security Console (BP_Console), the vault opening sequence initiates. Audible feedback confirms the system is running (lights flash, countdown SFX begins), and the 8.0-second countdown is internally triggered. However, once the timer expires, the heavy vault door (BP_VaultDoor) remains completely shut, and the final 'Open Door' function (including animation and final SFX) never executes. The Output Log shows no runtime errors related to the failure, indicating a logic or reference breakdown across multiple actors (BP_Console, BP_SecuritySystem, BP_PowerRelay, and BP_VaultDoor).",
         "estimateHours": 3.1,
         "category": "Blueprints & Logic",
-        "tokens_used": 10799
+        "tokens_used": 12496
     },
     "start": "step-1",
     "steps": {
         "step-1": {
             "skill": "blueprintslogic",
-            "title": "Step 1: Confirm Sequence Start",
-            "prompt": "<p>The vault fails to open after console interaction & countdown. No log errors. Sequence initiation is the first suspect. What do you do?</p>",
+            "title": "Verify Sequence Initiation",
+            "prompt": "Interacting with the <strong>BP_Console</strong> plays sounds and flashes lights, but the vault door stays shut. The <strong>Output Log</strong> is clean. How do you confirm the sequence properly starts?",
             "choices": [
                 {
-                    "text": "<p>Place Print String nodes after the interaction event in BP_Console and BP_SecuritySystem to confirm the sequence starts and ED_SequenceStart is called.</p>",
+                    "text": "Add <strong>Print String</strong> nodes in <strong>BP_Console</strong> and <strong>BP_SecuritySystem</strong> after interaction and the <strong>Event Dispatcher</strong> call.",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.1hrs. Confirming the initial trigger and dispatcher call is a crucial first step to isolate where the breakdown occurs.</p>",
+                    "feedback": "<strong>Optimal Time:</strong> +0.1hrs. Placing <strong>Print Strings</strong> at key execution points is a fundamental way to confirm code path execution without disrupting game flow. This confirms the start of the sequence and dispatcher call.",
                     "next": "step-2"
                 },
                 {
-                    "text": "<p>Check character movement settings in the Player Controller, assuming the player input isn't being registered correctly.</p>",
+                    "text": "Check <code>stat unit</code> in the console, looking for frame spikes.",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.25hrs. Character movement is unrelated to a vault opening sequence. Focus on the involved actors.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.15hrs. While performance issues can cause unexpected behavior, a logic failure where a door simply doesn't open is unlikely to be diagnosed purely through performance stats without other symptoms. This is a premature step. Re-evaluate.",
                     "next": "step-1"
                 },
                 {
-                    "text": "<p>Re-compile all blueprints in the project, assuming there might be a compiler error or stale blueprint data.</p>",
+                    "text": "Inspect the <strong>BP_VaultDoor</strong>'s <strong>Static Mesh</strong> to ensure it isn't set to <code>NoCollision</code>.",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.3hrs. While a good general troubleshooting step, it's not diagnostic. You need to gather specific information about the current state.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.10hrs. The problem states the door remains shut, not that it's physically blocked or passes through. Checking collision at this stage is a guess, not based on observed symptoms. Re-evaluate.",
                     "next": "step-1"
                 },
                 {
-                    "text": "<p>Adjust animation playback speed or blend settings within the BP_VaultDoor's timeline, assuming the animation is hanging up physically.</p>",
+                    "text": "Re-compile all <strong>Blueprints</strong> to ensure no outdated code is running.",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.75hrs. The problem states the animation never executes, not that it's playing incorrectly. Debug the logic flow first. (Penalty: 0.75hrs)</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.08hrs. While good practice, the problem description implies a logic issue, not a compile error. This doesn't directly help confirm execution flow. Re-evaluate.",
                     "next": "step-1"
                 }
             ]
         },
         "step-2": {
             "skill": "blueprintslogic",
-            "title": "Step 2: Verify Vault Door Timer",
-            "prompt": "<p>Console interaction and dispatcher calls are confirmed. Now, investigate the BP_VaultDoor. How do you verify it's receiving the start signal?</p>",
+            "title": "Trace Door Logic Activation",
+            "prompt": "<strong>Print Strings</strong> confirm the sequence starts, and <strong>ED_SequenceStart</strong> is called. The vault door remains unresponsive. How do you check if <strong>BP_VaultDoor</strong> reacts to the event?",
             "choices": [
                 {
-                    "text": "<p>In BP_VaultDoor, confirm the binding to ED_SequenceStart is active. Trace the execution flow to confirm a Timer is set for `HandleOpening` at 8.0 seconds.</p>",
+                    "text": "In <strong>BP_VaultDoor</strong>, verify the binding to <strong>ED_SequenceStart</strong> is active. Trace the execution flow to confirm a <strong>Timer</strong> is successfully set for <code>HandleOpening</code> (8.0 seconds).",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.2hrs. This directly confirms the door's reaction to the dispatcher and the timer setup, which is central to the problem.</p>",
+                    "feedback": "<strong>Optimal Time:</strong> +0.2hrs. Confirming the binding and the subsequent <strong>Timer</strong> setup is crucial. If the door isn't reacting, either the binding is missing, or the logic after it is flawed.",
                     "next": "step-3"
                 },
                 {
-                    "text": "<p>Delete and recreate the Timer node in BP_VaultDoor, assuming the timer handle is corrupt, without investigating the logical failure branch.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.5hrs. This is a destructive step that doesn't diagnose the actual cause. You need to observe the current behavior. (Penalty: 0.5hrs)</p>",
-                    "next": "step-2"
-                },
-                {
-                    "text": "<p>Adjust animation playback speed or blend settings within the BP_VaultDoor's timeline, assuming the animation is hanging up physically.</p>",
+                    "text": "Delete and recreate the <strong>Timer</strong> node in <strong>BP_VaultDoor</strong>, assuming the timer handle is corrupt.",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.75hrs. The animation isn't playing at all. This step is premature and misdirected. (Penalty: 0.75hrs)</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.5hrs. This is a destructive action based on an assumption about corruption, not investigation. It bypasses proper debugging and could mask the true cause. Re-evaluate.",
                     "next": "step-2"
                 },
                 {
-                    "text": "<p>Directly call the `HandleOpening` function from `BeginPlay` in BP_VaultDoor to see if the function itself works.</p>",
+                    "text": "Add a <strong>Looping Sound Component</strong> to <strong>BP_VaultDoor</strong> to confirm it's being spawned correctly.",
+                    "type": "obvious",
+                    "feedback": "<strong>Extended Time:</strong> +0.15hrs. The issue isn't about the door's existence or basic audio, but its opening logic. This action is irrelevant to the problem. Re-evaluate.",
+                    "next": "step-2"
+                },
+                {
+                    "text": "Check if the <strong>BP_VaultDoor</strong>'s <strong>Root Component</strong> has <code>Simulate Physics</code> enabled.",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.25hrs. While it tests the function, it bypasses the actual event flow, which is where the problem lies. Focus on the sequence.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.08hrs. Physics simulation is generally not involved in simple door opening animations triggered by logic unless specified. This isn't the primary path for a logic issue. Re-evaluate.",
                     "next": "step-2"
                 }
             ]
         },
         "step-3": {
             "skill": "blueprintslogic",
-            "title": "Step 3: Debug HandleOpening Logic",
-            "prompt": "<p>The BP_VaultDoor receives the start, and its timer is set. What's the next logical step to understand why the door isn't opening when the timer expires?</p>",
+            "title": "Debug Door Opening Function",
+            "prompt": "The <strong>Timer</strong> is correctly set in <strong>BP_VaultDoor</strong> to call <code>HandleOpening</code>. However, the door still doesn't open. What's your next move to pinpoint the failure within the door's logic?",
             "choices": [
                 {
-                    "text": "<p>Set a Breakpoint inside BP_VaultDoor's `HandleOpening` function and observe execution. Confirm the flow fails at the initial Branch node checking `bSecurityFlagReady` (currently False).</p>",
+                    "text": "Set a <strong>Breakpoint</strong> inside <strong>BP_VaultDoor</strong>'s <code>HandleOpening</code> function and observe execution. Confirm the flow fails at the initial <strong>Branch</strong> node checking <code>bSecurityFlagReady</code> (currently False).",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.3hrs. A breakpoint allows you to step through the logic and identify the exact point of failure within the `HandleOpening` function.</p>",
+                    "feedback": "<strong>Optimal Time:</strong> +0.3hrs. Using a <strong>Breakpoint</strong> to step through the `HandleOpening` function will immediately reveal the exact point of failure, in this case, the <strong>Branch</strong> condition.",
                     "next": "step-4"
                 },
                 {
-                    "text": "<p>Increase the 8.0-second timer to 20.0 seconds in BP_VaultDoor, assuming the previous duration was too short for the door to react.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.4hrs. This is a blind guess, not a diagnostic step. You need to understand *why* it's failing, not just delay it.</p>",
-                    "next": "step-3"
-                },
-                {
-                    "text": "<p>Check BP_SecuritySystem for other Event Dispatchers or events that might need to be called, assuming multiple signals are required.</p>",
+                    "text": "Adjust the animation playback speed or blend settings within the <strong>BP_VaultDoor</strong>'s timeline, assuming the animation is hanging up.",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.3hrs. While possible, the problem is currently isolated to `HandleOpening`'s internal logic. Focus on the immediate failure point.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.75hrs. The problem states the 'Open Door' function never executes, meaning the animation isn't even starting. Modifying animation settings is premature and addresses a symptom that isn't occurring. Re-evaluate.",
                     "next": "step-3"
                 },
                 {
-                    "text": "<p>Add a Print String node immediately after the Branch node in `HandleOpening` to confirm whether the branch is taken.</p>",
+                    "text": "Change the <strong>BP_VaultDoor</strong>'s <strong>Static Mesh Material</strong> to a simple debug color.",
+                    "type": "obvious",
+                    "feedback": "<strong>Extended Time:</strong> +0.15hrs. Changing materials affects appearance, not logic or functionality. This action is entirely unrelated to the door's failure to open. Re-evaluate.",
+                    "next": "step-3"
+                },
+                {
+                    "text": "Add a <strong>Delay</strong> node before the <strong>Branch</strong> to give more time for other systems.",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.2hrs. A Print String can confirm the branch, but a breakpoint gives more detailed execution flow and variable inspection. It's less efficient for pinpointing exact failure.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.08hrs. While timing can be an issue, adding a generic <strong>Delay</strong> without understanding the specific condition doesn't diagnose the problem and could introduce new issues. Re-evaluate.",
                     "next": "step-3"
                 }
             ]
         },
         "step-4": {
             "skill": "blueprintslogic",
-            "title": "Step 4: Trace Security Flag Logic",
-            "prompt": "<p>Execution in `HandleOpening` halts because `bSecurityFlagReady` is False. How do you find what's supposed to set this flag?</p>",
+            "title": "Investigate Security Flag Control",
+            "prompt": "The door's <code>HandleOpening</code> function is blocked because <code>bSecurityFlagReady</code> is False. How do you find what logic is supposed to set this flag to True?",
             "choices": [
                 {
-                    "text": "<p>Identify the logic that sets `bSecurityFlagReady` to True. Trace it to the Custom Event `ReceiveSecurityGrant`, which is called externally via BPI_GrantAccess Blueprint Interface.</p>",
+                    "text": "Identify the logic that sets <code>bSecurityFlagReady</code> to True. Trace it to the <strong>Custom Event</strong> <code>ReceiveSecurityGrant</code>, which is called externally via the <strong>BPI_GrantAccess Blueprint Interface</strong>.",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.1hrs. Tracing the variable's setter leads directly to the mechanism responsible for granting access, pointing to the next actor to investigate.</p>",
+                    "feedback": "<strong>Optimal Time:</strong> +0.1hrs. Tracing the variable's 'Set' references directly points to the event responsible for its state change and reveals the <strong>Blueprint Interface</strong> being used.",
                     "next": "step-5"
                 },
                 {
-                    "text": "<p>Assume `bSecurityFlagReady` should always be true by default and change its default value in BP_VaultDoor.</p>",
+                    "text": "Manually set <code>bSecurityFlagReady</code> to True in the <strong>BP_VaultDoor</strong>'s <strong>Details panel</strong> during play.",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.4hrs. This bypasses the security system logic entirely and would create an insecure vault. You must understand the intended flow.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.15hrs. This only bypasses the problem temporarily; it doesn't solve the underlying logic failure. It's a test, not a fix. Re-evaluate.",
                     "next": "step-4"
                 },
                 {
-                    "text": "<p>Search for all references to `bSecurityFlagReady` across all blueprints using the Reference Viewer.</p>",
+                    "text": "Create a new <strong>Custom Event</strong> in <strong>BP_VaultDoor</strong> to manually set <code>bSecurityFlagReady</code>.",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.2hrs. While a valid approach, tracing the specific 'set' logic is usually more direct than a broad search, especially when you know it's a 'setter'.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.10hrs. This creates redundant logic and doesn't trace the original intended flow for setting the flag. It's an unnecessary modification. Re-evaluate.",
                     "next": "step-4"
                 },
                 {
-                    "text": "<p>Add a default value of True to `bSecurityFlagReady` in the Details panel of BP_VaultDoor to test if the door opens.</p>",
+                    "text": "Search for all references of <code>bSecurityFlagReady</code> within <strong>BP_VaultDoor</strong> only.",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.3hrs. This might make the door open, but it's a temporary bypass, not a solution, and doesn't reveal the true failure point in the security grant.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.08hrs. The flag is set externally via an <strong>Interface</strong>. Limiting the search to only the <strong>BP_VaultDoor</strong> would miss the critical external call. Re-evaluate.",
                     "next": "step-4"
                 }
             ]
         },
         "step-5": {
             "skill": "blueprintslogic",
-            "title": "Step 5: Inspect Power Relay Participation",
-            "prompt": "<p>`bSecurityFlagReady` is set by `ReceiveSecurityGrant` via `BPI_GrantAccess`. Which actor likely grants access, and how do you check its participation?</p>",
+            "title": "Examine Authorization System",
+            "prompt": "The <strong>Custom Event</strong> <code>ReceiveSecurityGrant</code>, an <strong>Interface Message</strong>, is supposed to set <code>bSecurityFlagReady</code>. Which actor is most likely responsible for sending this <strong>Interface Message</strong>?",
             "choices": [
                 {
-                    "text": "<p>Inspect BP_PowerRelay (the security authorization actor) and confirm it is also bound to ED_SequenceStart.</p>",
+                    "text": "Inspect <strong>BP_PowerRelay</strong> (the security authorization actor) and confirm it is also bound to <strong>ED_SequenceStart</strong>.",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.1hrs. Given its role as a 'security authorization actor', checking its binding to the sequence start dispatcher is the logical next step.</p>",
+                    "feedback": "<strong>Optimal Time:</strong> +0.1hrs. Given its role as a 'Power Relay' and authorization, it's the logical candidate. Confirming its binding ensures it's part of the sequence.",
                     "next": "step-6"
                 },
                 {
-                    "text": "<p>Delete `BPI_GrantAccess` blueprint interface, assuming it's faulty and needs to be recreated.</p>",
+                    "text": "Check if <strong>BP_Console</strong> has an output pin for 'Security Granted'.",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.5hrs. Deleting core assets is destructive and completely unjustified at this stage. You need to diagnose, not destroy.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.15hrs. The <strong>BP_Console</strong> merely initiates the sequence, it's unlikely to be the granular authorization actor. This is a misdirection. Re-evaluate.",
                     "next": "step-5"
                 },
                 {
-                    "text": "<p>Check `BP_Console` again for any `ReceiveSecurityGrant` calls, assuming the console is responsible for granting access directly.</p>",
+                    "text": "Add a <strong>Print String</strong> to the <code>ReceiveSecurityGrant</code> event in <strong>BP_VaultDoor</strong> to see if it ever fires.",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.2hrs. The console initiates the sequence; it's unlikely to be the granular authorization actor. Focus on `BP_PowerRelay` as indicated.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.10hrs. While this would confirm if it fires, it doesn't identify the *source* that's supposed to call it, which is the current investigative need. Re-evaluate.",
                     "next": "step-5"
                 },
                 {
-                    "text": "<p>Search for `ReceiveSecurityGrant` calls within `BP_SecuritySystem`, assuming it directly manages all security aspects.</p>",
+                    "text": "Look for a <strong>Blueprint Interface</strong> asset named <code>BPI_SecurityGranting</code> in the <strong>Content Browser</strong>.",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.2hrs. While `BP_SecuritySystem` is involved, `BP_PowerRelay` is explicitly mentioned as the *authorization* actor, making it the primary suspect for granting.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.08hrs. You know the interface name (<strong>BPI_GrantAccess</strong>). The goal is to find the *caller* of that interface, not the interface asset itself. Re-evaluate.",
                     "next": "step-5"
                 }
             ]
         },
         "step-6": {
             "skill": "blueprintslogic",
-            "title": "Step 6: Analyze Power Relay Logic",
-            "prompt": "<p>BP_PowerRelay is confirmed to receive `ED_SequenceStart`. What's the next step to understand why it isn't granting access in time?</p>",
+            "title": "Analyze Power Relay Granting Logic",
+            "prompt": "<strong>BP_PowerRelay</strong> is bound to <strong>ED_SequenceStart</strong>. It should be granting access. How do you determine why it isn't granting access in time, causing <code>bSecurityFlagReady</code> to be False?",
             "choices": [
                 {
-                    "text": "<p>Analyze the granting logic in BP_PowerRelay triggered by the dispatcher. Note the presence of a Delay node (set to 10.0 seconds) immediately preceding the Interface Message (BPI_GrantAccess) execution.</p>",
+                    "text": "Analyze the granting logic in <strong>BP_PowerRelay</strong> triggered by the dispatcher. Note the presence of a <strong>Delay</strong> node (set to 10.0 seconds) immediately preceding the <strong>Interface Message</strong> (<strong>BPI_GrantAccess</strong>) execution.",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.2hrs. Examining the execution flow within `BP_PowerRelay` reveals the critical Delay node, which is highly suspicious given the timer issue.</p>",
+                    "feedback": "<strong>Optimal Time:</strong> +0.2hrs. Examining the <strong>BP_PowerRelay</strong>'s event graph after the dispatcher binding will reveal the flow, including any timing nodes like <strong>Delay</strong>.",
                     "next": "step-7"
                 },
                 {
-                    "text": "<p>Try to fix the race condition by changing the door's opening function to use an Event Tick or looping function instead of a single Timer execution.</p>",
+                    "text": "Increase the 'Time to Open' variable in <strong>BP_VaultDoor</strong> to 15.0 seconds.",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +1.0hrs. This is a drastic architectural change to the door, assuming the timer itself is the problem, without diagnosing the authorization logic. (Penalty: 1hr)</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.15hrs. This is an arbitrary change without understanding the root cause. You're reacting to a symptom, not fixing the underlying problem. Re-evaluate.",
                     "next": "step-6"
                 },
                 {
-                    "text": "<p>Add a `Print String` node immediately before the `BPI_GrantAccess` call in BP_PowerRelay to confirm execution reaches that point.</p>",
+                    "text": "Check if <strong>BP_SecuritySystem</strong> has an 'Authorization Granted' output.",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.2hrs. While helpful, a direct inspection of the logic (especially for timing nodes) is more efficient here than just confirming execution flow.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.10hrs. You've narrowed it down to <strong>BP_PowerRelay</strong>. Investigating another actor before thoroughly checking the current suspect is inefficient. Re-evaluate.",
                     "next": "step-6"
                 },
                 {
-                    "text": "<p>Re-implement the `BPI_GrantAccess` interface in BP_VaultDoor, assuming there might be an issue with the interface itself.</p>",
+                    "text": "Ensure the <strong>BP_PowerRelay</strong>'s 'Activation Range' is large enough for the player.",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.4hrs. Re-implementing interfaces is rarely the first step unless there's a clear indication of a broken interface. Focus on the calling logic.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.08hrs. The problem states the sequence initiates, implying activation isn't the issue. Focus on the internal logic now. Re-evaluate.",
                     "next": "step-6"
                 }
             ]
         },
         "step-7": {
             "skill": "blueprintslogic",
-            "title": "Step 7: Identify Timing Race Condition",
-            "prompt": "<p>You've found a 10.0-second Delay in BP_PowerRelay before BPI_GrantAccess, while the BP_VaultDoor timer is 8.0 seconds. What is the fundamental problem here?</p>",
+            "title": "Identify Timing Mismatch",
+            "prompt": "The door attempts to open at 8.0 seconds, but <strong>BP_PowerRelay</strong> delays authorization until 10.0 seconds. What is the immediate, glaring problem causing the door to remain shut?",
             "choices": [
                 {
-                    "text": "<p>Identify the first root cause: a timing race condition. The door attempts to open at 8.0 seconds, but the authorization is delayed until 10.0 seconds, leading to premature failure in the door logic.</p>",
+                    "text": "Identify the first root cause: a timing race condition. The door attempts to open at 8.0 seconds, but the authorization is delayed until 10.0 seconds, leading to premature failure in the door logic.",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.4hrs. Correctly identifying the race condition is crucial. The authorization is arriving too late for the door's timed logic.</p>",
+                    "feedback": "<strong>Optimal Time:</strong> +0.4hrs. This correctly identifies the direct conflict between the door's opening timer and the authorization delay, leading to the door checking its flag too early.",
                     "next": "step-8"
                 },
                 {
-                    "text": "<p>The Delay node is broken and needs replacing or troubleshooting, as it's causing an unexpected pause.</p>",
+                    "text": "Assume the <strong>Delay</strong> node itself is broken and requires replacement.",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.3hrs. Delay nodes are fundamental and rarely 'broken'. The issue is their *value* in relation to other timings.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.15hrs. <strong>Delay</strong> nodes are generally reliable. Assuming a component is broken without evidence is a poor diagnostic step. Re-evaluate.",
                     "next": "step-7"
                 },
                 {
-                    "text": "<p>The BP_VaultDoor timer needs to be increased to 11.0 seconds to accommodate the delay.</p>",
+                    "text": "Determine if the <strong>BP_VaultDoor</strong> should instead query authorization continuously using <strong>Event Tick</strong>.",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.5hrs. This would fix the immediate symptom but doesn't address the fact that the authorization is fundamentally slow. It's a reactive, not proactive, solution.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.10hrs. While it might 'work', changing to <strong>Event Tick</strong> for a single event is inefficient and would mask the existing timing problem, not solve it. Re-evaluate.",
                     "next": "step-7"
                 },
                 {
-                    "text": "<p>The Event Dispatcher isn't reliable enough for precise timing and should be replaced with a different communication method.</p>",
+                    "text": "Verify <strong>BP_SecuritySystem</strong> is correctly outputting the initial 8.0-second countdown value.",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.75hrs. Event Dispatchers are reliable for signaling. The problem is the explicit delay *after* the signal, not the signal itself.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.08hrs. The scenario states the 8.0-second countdown is internally triggered and audible feedback confirms it. The focus is on the delay mismatch, not the initial countdown value. Re-evaluate.",
                     "next": "step-7"
                 }
             ]
         },
         "step-8": {
             "skill": "blueprintslogic",
-            "title": "Step 8: Adjust Power Relay Delay",
-            "prompt": "<p>You've identified the timing race condition. How should you adjust the BP_PowerRelay's `Delay` node to fix this issue?</p>",
+            "title": "Adjust Authorization Timing",
+            "prompt": "Recognizing the timing race condition, with authorization happening after the door tries to open, what's your immediate adjustment to try and fix this?",
             "choices": [
                 {
-                    "text": "<p>Adjust the Delay in BP_PowerRelay from 10.0 seconds to 7.5 seconds to attempt to beat the door timer.</p>",
+                    "text": "Adjust the <strong>Delay</strong> in <strong>BP_PowerRelay</strong> from 10.0 seconds to 7.5 seconds to attempt to beat the door timer.",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.1hrs. Setting the delay to be less than the door's opening timer is the direct way to resolve the race condition.</p>",
+                    "feedback": "<strong>Optimal Time:</strong> +0.1hrs. This is the logical first step to address the identified timing mismatch directly by setting the authorization to occur before the door's check.",
                     "next": "step-9"
                 },
                 {
-                    "text": "<p>Set the Delay in BP_PowerRelay to 0.1 seconds, making the authorization almost immediate.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.25hrs. While it would 'beat' the timer, such a short delay might remove intended gameplay pacing or cause issues with other timed events. It's too drastic.</p>",
-                    "next": "step-8"
-                },
-                {
-                    "text": "<p>Change the BP_VaultDoor's timer to 11.0 seconds, allowing more time for the power relay to authorize.</p>",
+                    "text": "Trying to fix the race condition by changing the door's opening function to use an <strong>Event Tick</strong> or looping function.",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.4hrs. This puts the burden on the door. It's better to fix the source of the delay (the relay) to ensure timely authorization, rather than making the door wait longer.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +1.0hrs. While this might bypass the immediate timing issue, it's an inefficient solution that consumes more resources than necessary and doesn't address the elegance of the timed authorization. Re-evaluate.",
                     "next": "step-8"
                 },
                 {
-                    "text": "<p>Remove the Delay node in BP_PowerRelay entirely, making authorization instant upon sequence start.</p>",
+                    "text": "Remove the <strong>Delay</strong> node entirely from <strong>BP_PowerRelay</strong>.",
+                    "type": "obvious",
+                    "feedback": "<strong>Extended Time:</strong> +0.15hrs. The <strong>Delay</strong> is likely intentional, perhaps for visual feedback. Removing it outright might introduce other unintended side effects or break visual cues. Re-evaluate.",
+                    "next": "step-8"
+                },
+                {
+                    "text": "Add another <strong>Delay</strong> node to <strong>BP_VaultDoor</strong> before the <strong>Branch</strong>, set to 3.0 seconds.",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.3hrs. The delay might be intentional for visual or narrative pacing. Removing it entirely without understanding its original purpose could break other elements.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.08hrs. This just pushes the problem later and doesn't address the source of the authorization delay. It's an unnecessary modification to the door's existing correct timer. Re-evaluate.",
                     "next": "step-8"
                 }
             ]
         },
         "step-9": {
             "skill": "blueprintslogic",
-            "title": "Step 9: Test Initial Fix",
-            "prompt": "<p>You've adjusted the BP_PowerRelay delay to 7.5 seconds. What is the crucial next step to verify your change?</p>",
+            "title": "Re-test System Functionality",
+            "prompt": "After adjusting the <strong>Delay</strong> in <strong>BP_PowerRelay</strong> to 7.5 seconds, you re-run the system. The door still doesn't open. What does this observation suggest?",
             "choices": [
                 {
-                    "text": "<p>Test the system. Observe that the problem persists, or the Interface Message fails to execute its target, indicating an issue beyond simple timing.</p>",
+                    "text": "Test the system. Observe that the problem persists, or the <strong>Interface Message</strong> fails to execute its target, indicating an issue beyond simple timing.",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.2hrs. Always test after a change. Observing the *new* failure mode is key to identifying the next problem.</p>",
+                    "feedback": "<strong>Optimal Time:</strong> +0.2hrs. A persistent failure after a seemingly correct timing adjustment strongly suggests a deeper, underlying issue, such as a broken reference or communication failure.",
                     "next": "step-10"
                 },
                 {
-                    "text": "<p>Assume the timing is now correct and proceed to implement a success animation for the vault door.</p>",
+                    "text": "Change the <strong>Delay</strong> in <strong>BP_PowerRelay</strong> again, this time to 5.0 seconds.",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.5hrs. Never assume a fix without verifying it. This is a critical mistake in debugging.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.15hrs. Blindly adjusting numbers without further debugging is inefficient. The persistence of the issue implies timing isn't the *only* problem. Re-evaluate.",
                     "next": "step-9"
                 },
                 {
-                    "text": "<p>Add more Print Strings throughout the door's `HandleOpening` logic, just in case something else is now failing there.</p>",
+                    "text": "Assume there's another hidden <strong>Delay</strong> node elsewhere causing interference.",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.2hrs. While Print Strings are useful, a full system test is more immediate. New Print Strings should be targeted based on *new* symptoms.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.10hrs. Making assumptions about 'hidden' logic without concrete evidence diverts from systematic debugging. Focus on the existing identified paths. Re-evaluate.",
                     "next": "step-9"
                 },
                 {
-                    "text": "<p>Increase the BP_VaultDoor timer to 9.0 seconds, thinking 7.5 seconds might still be too tight for authorization.</p>",
+                    "text": "Check if the <strong>BP_Console</strong>'s interaction component is still active after one use.",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.3hrs. This indicates a lack of confidence in the previous change and distracts from finding a potential deeper issue if the first fix didn't work.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.08hrs. The problem states the sequence initiates (sounds, lights), confirming the console interaction is working. This is a diversion. Re-evaluate.",
                     "next": "step-9"
                 }
             ]
         },
         "step-10": {
             "skill": "blueprintslogic",
-            "title": "Step 10: Debug Interface Target Reference",
-            "prompt": "<p>The timing adjustment didn't resolve the issue, or BPI_GrantAccess is still failing. What's the next critical area to inspect in BP_PowerRelay?</p>",
+            "title": "Diagnose Interface Message Failure",
+            "prompt": "The door remains shut, and the <strong>Interface Message</strong> (<strong>BPI_GrantAccess</strong>) isn't reaching its target, even with adjusted timing. What crucial component should you investigate now?",
             "choices": [
                 {
-                    "text": "<p>Debug the target reference used by BP_PowerRelay to send BPI_GrantAccess (the variable `TargetVault`). Confirm the variable is NULL or an invalid reference when the BPI call executes after the delay.</p>",
+                    "text": "Debug the target reference used by <strong>BP_PowerRelay</strong> to send <strong>BPI_GrantAccess</strong> (the variable <code>TargetVault</code>). Confirm the variable is NULL or an invalid reference when the <strong>BPI</strong> call executes after the delay.",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.3hrs. Interface messages often fail silently if the target reference is invalid. Checking `TargetVault` is crucial.</p>",
+                    "feedback": "<strong>Optimal Time:</strong> +0.3hrs. If an <strong>Interface Message</strong> isn't reaching its target, the most common reason is that the target reference itself is invalid or NULL. This is a critical next step.",
                     "next": "step-11"
                 },
                 {
-                    "text": "<p>Revert the delay change in BP_PowerRelay back to 10.0 seconds, assuming the initial delay wasn't the problem after all.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.4hrs. While the timing wasn't the *only* problem, reverting doesn't help diagnose the *new* symptom (BPI failure). Move forward, not backward.</p>",
-                    "next": "step-10"
-                },
-                {
-                    "text": "<p>Focus only on the 8.0s vs 10.0s timing mismatch and failing to diagnose the underlying null reference causing the Interface message failure.</p>",
+                    "text": "Focus only on the 8.0s vs 10.0s timing mismatch and failing to diagnose the underlying null reference causing the Interface message failure.",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +1.5hrs. This leads to tunnel vision, preventing the discovery of the true underlying issue. (Penalty: 1.5hrs)</p>",
+                    "feedback": "<strong>Extended Time:</strong> +1.5hrs. This is a critical error! Obsessing over the timing mismatch when the interface call itself isn't working is a significant tunnel vision mistake. It prevents you from finding the true root cause. Re-evaluate.",
                     "next": "step-10"
                 },
                 {
-                    "text": "<p>Check BP_SecuritySystem for a new Event Dispatcher or a different event to call, assuming the communication chain needs a complete overhaul.</p>",
+                    "text": "Add more <strong>Print Strings</strong> inside <strong>BPI_GrantAccess</strong>'s event in <strong>BP_VaultDoor</strong>.",
+                    "type": "obvious",
+                    "feedback": "<strong>Extended Time:</strong> +0.15hrs. You already know the interface isn't being called on the door. More <strong>Print Strings</strong> *inside* it won't reveal *why* it's not being called. Re-evaluate.",
+                    "next": "step-10"
+                },
+                {
+                    "text": "Check the <strong>BP_VaultDoor</strong>'s <strong>Replication Settings</strong> in case it's a multiplayer issue.",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.5hrs. The problem is localized to `BP_PowerRelay`'s attempt to grant access. Don't immediately overhaul the entire system.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.08hrs. There's no indication this is a multiplayer-specific bug; it manifests in a single-player scenario. This is a premature and likely irrelevant check. Re-evaluate.",
                     "next": "step-10"
                 }
             ]
         },
         "step-11": {
             "skill": "blueprintslogic",
-            "title": "Step 11: Trace TargetVault Initialization",
-            "prompt": "<p>`TargetVault` in BP_PowerRelay is NULL when BPI_GrantAccess is called. How do you investigate how this variable is initialized and why it's failing?</p>",
+            "title": "Trace Target Vault Reference Origin",
+            "prompt": "The <code>TargetVault</code> reference in <strong>BP_PowerRelay</strong> is NULL, causing the <strong>Interface Message</strong> to fail. How was this reference initially supposed to be set?",
             "choices": [
                 {
-                    "text": "<p>Trace back the initialization of `TargetVault` in BP_PowerRelay. Confirm it relies on an unreliable `Get All Actors of Class (BP_VaultDoor)` node executed during `BeginPlay`.</p>",
+                    "text": "Trace back the initialization of <code>TargetVault</code> in <strong>BP_PowerRelay</strong>. Confirm it relies on an unreliable <code>Get All Actors of Class (BP_VaultDoor)</code> node executed during <strong>BeginPlay</strong>.",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.2hrs. Identifying the source of the reference and its method of acquisition is key to understanding why it's null.</p>",
+                    "feedback": "<strong>Optimal Time:</strong> +0.2hrs. Tracing the variable's initialization reveals the method used. <code>Get All Actors of Class</code> at <strong>BeginPlay</strong> is a known source of unreliable references, especially if actors spawn out of order.",
                     "next": "step-12"
                 },
                 {
-                    "text": "<p>Manually set `TargetVault` to an instance of `BP_VaultDoor` directly in the BP_PowerRelay blueprint's Details panel.</p>",
+                    "text": "Convert <code>TargetVault</code> to a <strong>Soft Object Reference</strong> instead of a direct <strong>Object Reference</strong>.",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.3hrs. This is a temporary editor-only fix that won't apply to new levels or packaged builds. It doesn't solve the underlying programmatic issue.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.15hrs. While <strong>Soft References</strong> have benefits, converting it won't magically solve a NULL reference problem if the initial assignment method is flawed. Re-evaluate.",
                     "next": "step-11"
                 },
                 {
-                    "text": "<p>Add `IsValid` checks before every usage of `TargetVault` in BP_PowerRelay.</p>",
+                    "text": "Add an <code>IsValid</code> check before calling the <strong>Interface Message</strong>.",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.25hrs. While good practice, `IsValid` checks only prevent errors; they don't fix a consistently null reference. You need to fix how it's acquired.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.10hrs. While good practice, adding a check doesn't fix the underlying NULL problem; it just prevents an error. The goal is to make the reference valid. Re-evaluate.",
                     "next": "step-11"
                 },
                 {
-                    "text": "<p>Try calling `Get Actor Of Class (BP_VaultDoor)` in `Event Tick` to update `TargetVault` continuously.</p>",
+                    "text": "Try casting <code>TargetVault</code> to <strong>Actor</strong> before using it.",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.4hrs. Calling `Get Actor Of Class` on `Event Tick` is highly inefficient and still relies on an unreliable method that could return NULL or an incorrect instance, especially in complex scenarios.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.08hrs. Casting a NULL reference won't make it valid; it will still fail. The issue is the reference itself, not its type. Re-evaluate.",
                     "next": "step-11"
                 }
             ]
         },
         "step-12": {
             "skill": "blueprintslogic",
-            "title": "Step 12: Identify Reference Root Cause",
-            "prompt": "<p>`TargetVault` is initialized using `Get All Actors of Class (BP_VaultDoor)` on `BeginPlay`, which often returns an unreliable reference. What is the fundamental flaw here?</p>",
+            "title": "Identify Unreliable Reference Acquisition",
+            "prompt": "The <code>TargetVault</code> is acquired using <code>Get All Actors of Class</code> during <strong>BeginPlay</strong>, often returning a NULL reference. What is the fundamental issue with this approach for a critical reference?",
             "choices": [
                 {
-                    "text": "<p>Identify the second root cause: The reference must be explicitly passed at runtime, not cached using an unreliable method.</p>",
+                    "text": "Identify the second root cause: The reference must be explicitly passed at runtime, not cached using an unreliable method like <code>Get All Actors of Class</code> on <strong>BeginPlay</strong>.",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.2hrs. The core issue is the unreliable reference acquisition. Explicitly passing the reference ensures it's always valid and correctly linked.</p>",
+                    "feedback": "<strong>Optimal Time:</strong> +0.2hrs. Relying on `Get All Actors of Class` at <strong>BeginPlay</strong> is problematic for guaranteed references because actors might not be fully initialized or present. Explicit passing is robust.",
                     "next": "step-13"
                 },
                 {
-                    "text": "<p>The `BeginPlay` event is executing too late in the actor lifecycle for `BP_PowerRelay`.</p>",
+                    "text": "Assume <strong>BP_VaultDoor</strong> is being destroyed before <strong>BP_PowerRelay</strong> can get its reference.",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.3hrs. While execution order can be an issue, the primary flaw here is the unreliability of `Get All Actors of Class` for a single, specific target, not the `BeginPlay` timing itself.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.15hrs. There's no evidence of destruction. Making assumptions without debugging steps is counterproductive. Re-evaluate.",
                     "next": "step-12"
                 },
                 {
-                    "text": "<p>The `BP_VaultDoor` actor is being garbage collected prematurely by the engine.</p>",
+                    "text": "Modify the <code>Get All Actors of Class</code> node to include a loop and check if any actor is valid.",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.4hrs. Unlikely for a persistent actor in a loaded level. Garbage collection usually happens when references are lost or actors are explicitly destroyed.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.10hrs. This only makes the unreliable method slightly more robust; it doesn't solve the core problem of a potentially empty array or improper timing during <strong>BeginPlay</strong>. A reliable method is needed. Re-evaluate.",
                     "next": "step-12"
                 },
                 {
-                    "text": "<p>The variable `TargetVault` in `BP_PowerRelay` should be made `public` so it can be assigned in the editor.</p>",
+                    "text": "Add a <strong>Delay</strong> before <code>Get All Actors of Class</code> in <strong>BP_PowerRelay</strong> to ensure all actors are spawned.",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.25hrs. While making it public might allow an editor assignment, it doesn't solve the problem of dynamic, reliable assignment at runtime when the system initiates.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.08hrs. This is a workaround, not a fix for the inherent unreliability of fetching all actors at a specific moment. A more robust, direct passing method is better. Re-evaluate.",
                     "next": "step-12"
                 }
             ]
         },
         "step-13": {
             "skill": "blueprintslogic",
-            "title": "Step 13: Modify Event Dispatcher",
-            "prompt": "<p>The root cause is an unreliable `TargetVault` reference. To pass it explicitly at runtime, what's the first step in BP_SecuritySystem where `ED_SequenceStart` is declared?</p>",
+            "title": "Enhance Event Dispatcher Communication",
+            "prompt": "To reliably pass the <strong>BP_VaultDoor</strong> reference at runtime, you decide to modify the <strong>ED_SequenceStart Event Dispatcher</strong> in <strong>BP_SecuritySystem</strong>. How do you do this?",
             "choices": [
                 {
-                    "text": "<p>Modify the ED_SequenceStart Event Dispatcher in BP_SecuritySystem to include a new input parameter: an Object Reference of type BP_VaultDoor.</p>",
+                    "text": "Modify the <strong>ED_SequenceStart Event Dispatcher</strong> in <strong>BP_SecuritySystem</strong> to include a new input parameter: an <strong>Object Reference</strong> of type <strong>BP_VaultDoor</strong>.",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.1hrs. The dispatcher is the communication hub. Adding the reference as a parameter allows it to be passed along the chain.</p>",
+                    "feedback": "<strong>Optimal Time:</strong> +0.1hrs. Adding the <strong>BP_VaultDoor</strong> reference as a parameter to the <strong>Event Dispatcher</strong> is the correct way to explicitly pass the necessary reference to all bound listeners.",
                     "next": "step-14"
                 },
                 {
-                    "text": "<p>Create a new Event Dispatcher named `ED_GrantAccess` in BP_SecuritySystem.</p>",
+                    "text": "Create a new <strong>Global Blueprint Interface</strong> to solely handle passing the <strong>BP_VaultDoor</strong> reference.",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.3hrs. This is an unnecessary duplication of dispatchers and doesn't directly address passing the vault door reference in the existing sequence.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.15hrs. Creating a new global interface just for one reference is overkill and introduces unnecessary complexity. The existing <strong>Event Dispatcher</strong> can be extended. Re-evaluate.",
                     "next": "step-13"
                 },
                 {
-                    "text": "<p>Add a new variable to BP_PowerRelay specifically to store the `BP_VaultDoor` reference.</p>",
+                    "text": "Add a variable of type <strong>BP_VaultDoor Object Reference</strong> directly to <strong>BP_SecuritySystem</strong> and expose it for binding.",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.2hrs. While a variable is needed, the first step is to enable the *passing* of the reference from the source (BP_SecuritySystem) to the receiver.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.10hrs. While this would make the reference available in <strong>BP_SecuritySystem</strong>, it doesn't automatically pass it to other actors. The dispatcher needs to carry it. Re-evaluate.",
                     "next": "step-13"
                 },
                 {
-                    "text": "<p>Directly cast `BP_SecuritySystem` to `BP_VaultDoor` to get the reference.</p>",
+                    "text": "Change the <strong>ED_SequenceStart Event Dispatcher</strong> to instead take a <strong>Generic Actor Reference</strong> as input.",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.25hrs. These are unrelated actors; a direct cast will fail. The `BP_SecuritySystem` needs to *have* a reference to the `BP_VaultDoor` to pass it.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.08hrs. While generic, this would require a cast on the receiving end. Being specific with the type (<strong>BP_VaultDoor</strong>) is better for type safety and clarity. Re-evaluate.",
                     "next": "step-13"
                 }
             ]
         },
         "step-14": {
             "skill": "blueprintslogic",
-            "title": "Step 14: Populate Dispatcher Parameter",
-            "prompt": "<p>You've added a BP_VaultDoor object reference parameter to `ED_SequenceStart`. What's the next step in BP_SecuritySystem to ensure this parameter is populated correctly?</p>",
+            "title": "Provide Explicit Vault Reference",
+            "prompt": "You've added the new <strong>BP_VaultDoor</strong> reference parameter to <strong>ED_SequenceStart</strong>. What's the next step to utilize this new parameter at the dispatcher's call site?",
             "choices": [
                 {
-                    "text": "<p>In BP_SecuritySystem, update the ED_SequenceStart call site, feeding the explicit reference of the Target Vault Door (obtained via a reliable Get Actor Of Class or stored variable) into the new input pin.</p>",
+                    "text": "In <strong>BP_SecuritySystem</strong>, update the <strong>ED_SequenceStart</strong> call site, feeding the explicit reference of the <strong>Target Vault Door</strong> (obtained via a reliable <code>Get Actor Of Class</code> or stored variable) into the new input pin.",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.1hrs. The dispatcher now expects a parameter, so you must provide a valid reference at the point where the dispatcher is called.</p>",
+                    "feedback": "<strong>Optimal Time:</strong> +0.1hrs. The dispatcher must receive the valid reference when it's called. This ensures the reference is part of the event payload for all listeners.",
                     "next": "step-15"
                 },
                 {
-                    "text": "<p>Drag a `BP_VaultDoor` directly from the Content Browser into the graph and connect it to the pin.</p>",
+                    "text": "Create a new variable in <strong>BP_PowerRelay</strong> to store the <strong>BP_VaultDoor</strong> reference.",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.2hrs. This creates a new instance (or a static reference to the asset) which is not the same as referencing the *specific actor* in the world.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.15hrs. While <strong>BP_PowerRelay</strong> will eventually store it, the immediate next step is to ensure the dispatcher *sends* it from its call site. Re-evaluate.",
                     "next": "step-14"
                 },
                 {
-                    "text": "<p>Create a `Get All Actors of Class (BP_VaultDoor)` node at the call site for `ED_SequenceStart` to retrieve the reference.</p>",
+                    "text": "Add a <code>Make Array</code> node to the <strong>ED_SequenceStart</strong> call to pass multiple vault door references.",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.3hrs. This reintroduces the unreliable method of reference acquisition that you're trying to fix. Avoid `Get All Actors of Class` for singular, known targets.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.10hrs. The scenario only involves one vault door. Adding an array for a single object is unnecessary complexity. Re-evaluate.",
                     "next": "step-14"
                 },
                 {
-                    "text": "<p>Make the `BP_VaultDoor` reference parameter in `ED_SequenceStart` optional, so it doesn't require a connection.</p>",
+                    "text": "Try dragging a direct reference from the <strong>World Outliner</strong> into the <strong>BP_SecuritySystem</strong> graph.",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.2hrs. Making it optional bypasses the intended fix. The goal is to *ensure* the reference is passed, not to avoid passing it.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.08hrs. While this can create a direct reference, the most robust way to get it at runtime is typically <code>Get Actor Of Class</code> (if only one exists) or from a setup variable. Re-evaluate.",
                     "next": "step-14"
                 }
             ]
         },
         "step-15": {
             "skill": "blueprintslogic",
-            "title": "Step 15: Receive Reference in Power Relay",
-            "prompt": "<p>The BP_SecuritySystem now passes the BP_VaultDoor reference via `ED_SequenceStart`. What must you do in BP_PowerRelay to receive this reference?</p>",
+            "title": "Receive Vault Reference in Power Relay",
+            "prompt": "The <strong>Event Dispatcher</strong> now carries the <strong>BP_VaultDoor</strong> reference as a parameter. How does <strong>BP_PowerRelay</strong>, which is bound to this dispatcher, access this new information?",
             "choices": [
                 {
-                    "text": "<p>In BP_PowerRelay's binding node for ED_SequenceStart, refresh the node or re-bind to receive the BP_VaultDoor reference from the execution payload.</p>",
+                    "text": "In <strong>BP_PowerRelay</strong>'s binding node for <strong>ED_SequenceStart</strong>, receive the <strong>BP_VaultDoor</strong> reference from the execution payload.",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.1hrs. When a dispatcher's signature changes, its bound event nodes need to be refreshed or re-created to expose the new parameters.</p>",
+                    "feedback": "<strong>Optimal Time:</strong> +0.1hrs. When an <strong>Event Dispatcher</strong> is called with parameters, any bound events will receive those parameters as input pins on their respective custom events.",
                     "next": "step-16"
                 },
                 {
-                    "text": "<p>Create a brand new `BP_VaultDoor` object variable in BP_PowerRelay to store the reference.</p>",
+                    "text": "Use a new <code>Get Actor Of Class (BP_VaultDoor)</code> node in <strong>BP_PowerRelay</strong> again.",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.2hrs. You already have `TargetVault`. The goal is to populate that or use the received one, not create redundant variables.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.15hrs. This defeats the purpose of passing the reference explicitly and reintroduces the unreliable method you're trying to fix. Re-evaluate.",
                     "next": "step-15"
                 },
                 {
-                    "text": "<p>Re-bind `BP_PowerRelay` to `ED_SequenceStart` from scratch in BP_SecuritySystem, assuming the old binding is corrupted.</p>",
+                    "text": "Call a new <strong>Custom Event</strong> in <strong>BP_VaultDoor</strong> from <strong>BP_PowerRelay</strong> to ask for its own reference.",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.25hrs. While sometimes necessary, usually refreshing the existing binding node is sufficient. Recreating from scratch is more work than needed.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.10hrs. This is an overly complex and circular method. The dispatcher is already providing the reference. Re-evaluate.",
                     "next": "step-15"
                 },
                 {
-                    "text": "<p>Add a `Print String` node immediately after the binding to ensure execution continues.</p>",
+                    "text": "Set up a <strong>Game Instance</strong> variable to hold the <strong>BP_VaultDoor</strong> reference, accessible from anywhere.",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.1hrs. This only confirms execution, not that the new parameter is being successfully received. You need to inspect the node itself.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.08hrs. While a <strong>Game Instance</strong> can hold references, it's typically for global, persistent data. Using the existing dispatcher is a more direct and appropriate solution for this specific event. Re-evaluate.",
                     "next": "step-15"
                 }
             ]
         },
         "step-16": {
             "skill": "blueprintslogic",
-            "title": "Step 16: Utilize New Reference",
-            "prompt": "<p>You've successfully received the BP_VaultDoor reference in BP_PowerRelay from `ED_SequenceStart`. What's the next step to utilize this reliable reference?</p>",
+            "title": "Update Power Relay's Interface Call",
+            "prompt": "With the <strong>BP_VaultDoor</strong> reference now reliably available as an input pin in <strong>BP_PowerRelay</strong>'s event triggered by <strong>ED_SequenceStart</strong>, what's the final modification needed for the <strong>Interface Message</strong>?",
             "choices": [
                 {
-                    "text": "<p>Update BP_PowerRelay's logic: Replace the usage of the unreliable `TargetVault` variable with the newly received reference pin when calling BPI_GrantAccess.</p>",
+                    "text": "Update <strong>BP_PowerRelay</strong>'s logic: Replace the usage of the unreliable <code>TargetVault</code> variable with the newly received reference pin when calling <strong>BPI_GrantAccess</strong>.",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.1hrs. Now that you have a reliable reference, you must use it as the target for the `BPI_GrantAccess` call, replacing the old, unreliable variable.</p>",
+                    "feedback": "<strong>Optimal Time:</strong> +0.1hrs. The final step in fixing the NULL reference is to use the reliably passed reference for the <strong>Interface Message</strong> call, instead of the faulty cached variable.",
                     "next": "step-17"
                 },
                 {
-                    "text": "<p>Delete the `TargetVault` variable from BP_PowerRelay immediately.</p>",
+                    "text": "Delete the <code>TargetVault</code> variable entirely, as it is no longer needed.",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.2hrs. While `TargetVault` will become redundant, deleting it before fully confirming the new system works can be risky. Replace first, then clean up.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.15hrs. While it's no longer the source of the reference, ensure no other part of <strong>BP_PowerRelay</strong> or other Blueprints depend on it before deletion. This is premature. Re-evaluate.",
                     "next": "step-16"
                 },
                 {
-                    "text": "<p>Connect the newly received reference directly to the `ED_SequenceStart` binding node's input pin.</p>",
+                    "text": "Connect the new reference pin directly to the 'Event Delegate' in <strong>BP_PowerRelay</strong>.",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.25hrs. This is an output from the binding, not an input. You need to connect it to the *target* pin of the `BPI_GrantAccess` message.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.10hrs. The reference should connect to the 'Target' pin of the <strong>Interface Message</strong>, not an 'Event Delegate'. This is incorrect wiring. Re-evaluate.",
                     "next": "step-16"
                 },
                 {
-                    "text": "<p>Add another `IsValid` check on the newly received `BP_VaultDoor` reference before using it.</p>",
+                    "text": "Add a 'Do Once' node before the <strong>BPI_GrantAccess</strong> call to prevent multiple grants.",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.15hrs. While `IsValid` checks are always good practice, the primary task is to *use* the (now reliable) reference, not just check it. It's a secondary concern here.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.08hrs. While sometimes useful, it's not the critical step for fixing the NULL reference. The issue is *if* it grants access, not *how many times*. Re-evaluate.",
                     "next": "step-16"
                 }
             ]
         },
         "step-17": {
             "skill": "blueprintslogic",
-            "title": "Step 17: Final Delay Adjustment",
-            "prompt": "<p>The BP_PowerRelay now uses a reliable reference for BPI_GrantAccess. What's the final adjustment needed for the system's timing, considering both issues are addressed?</p>",
+            "title": "Finalize Authorization Timing",
+            "prompt": "The reliable reference is now established. What should be the final adjustment to ensure authorization happens well before the door's 8.0-second timer, completing the timing fix?",
             "choices": [
                 {
-                    "text": "<p>Change the Delay node in BP_PowerRelay to a reliable time that visually leads the opening (e.g., 5.0 seconds).</p>",
+                    "text": "Change the <strong>Delay</strong> node in <strong>BP_PowerRelay</strong> to a reliable time that visually leads the opening (e.g., 5.0 seconds).",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.1hrs. With the reference issue fixed, you can now set a precise and robust delay, ensuring authorization is comfortably granted before the door attempts to open.</p>",
+                    "feedback": "<strong>Optimal Time:</strong> +0.1hrs. Now that the reference is reliable, you can confidently set the <strong>Delay</strong> to ensure authorization is granted with enough lead time for the door's 8.0-second timer.",
                     "next": "step-18"
                 },
                 {
-                    "text": "<p>Remove the `Delay` node in BP_PowerRelay completely, making authorization instant.</p>",
+                    "text": "Increase the <strong>Delay</strong> in <strong>BP_PowerRelay</strong> to 12.0 seconds, assuming the door needs more time.",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.2hrs. A delay might be intended for visual feedback or other sequential events. Removing it entirely could break other aspects of the game flow.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.15hrs. This would reintroduce the original timing race condition where authorization happens *after* the door tries to open. Re-evaluate.",
                     "next": "step-17"
                 },
                 {
-                    "text": "<p>Set the Delay back to 7.5 seconds, as that was the initial attempt to beat the door timer.</p>",
+                    "text": "Remove the <strong>Delay</strong> node from <strong>BP_PowerRelay</strong> completely to grant access instantly.",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.15hrs. While 7.5s technically works, using a slightly earlier time (e.g., 5.0s) provides a more robust buffer against minor timing variations and allows for clearer visual feedback.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.10hrs. While functional, the scenario implies a countdown, and instant authorization might disrupt the intended visual/auditory pacing. Re-evaluate.",
                     "next": "step-17"
                 },
                 {
-                    "text": "<p>Make the Delay node's duration a variable editable in the BP_PowerRelay's Details panel.</p>",
+                    "text": "Add a new <strong>Timer</strong> in <strong>BP_PowerRelay</strong> instead of using a <strong>Delay</strong> node.",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.15hrs. Good practice for iteration, but not the direct fix for the *current* timing value. Set a functional value first, then consider exposing it.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.08hrs. While both can provide timed execution, a simple <strong>Delay</strong> is sufficient here and doesn't require extra setup or cleanup of <strong>Timer Handles</strong>. Re-evaluate.",
                     "next": "step-17"
                 }
             ]
         },
         "step-18": {
             "skill": "blueprintslogic",
-            "title": "Step 18: Final Test",
-            "prompt": "<p>All changes are implemented: reliable reference and appropriate delay. What's the final, crucial step?</p>",
+            "title": "Conduct Final System Test",
+            "prompt": "All changes have been implemented: reliable reference passing and corrected timing. What's your final action to confirm the vault opening system is fully functional?",
             "choices": [
                 {
-                    "text": "<p>Final Test: Run the system to confirm that the explicit reference ensures reliable communication, and the fixed timing ensures authorization is granted before the door attempts to open.</p>",
+                    "text": "Run the system to confirm that the explicit reference ensures reliable communication, and the fixed timing ensures authorization is granted before the door attempts to open.",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.1hrs. The ultimate goal is to confirm the entire system works as intended. Comprehensive testing is always the final step.</p>",
+                    "feedback": "<strong>Optimal Time:</strong> +0.1hrs. A final end-to-end test is essential to validate that all implemented fixes have resolved the problem and the system functions as intended.",
                     "next": "conclusion"
                 },
                 {
-                    "text": "<p>Submit the blueprint changes to version control without performing a final system test.</p>",
+                    "text": "Close the editor and assume all changes will work in a packaged build.",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.5hrs. Never submit untested changes. This could reintroduce bugs or break other features, leading to more debugging time later.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.15hrs. Never assume! Always test thoroughly in the editor before packaging to confirm functionality. Re-evaluate.",
                     "next": "step-18"
                 },
                 {
-                    "text": "<p>Start a new debugging session on an unrelated feature, assuming this scenario is completely resolved.</p>",
+                    "text": "Commit all changes to source control without testing, as the logic seems sound.",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.25hrs. Always confirm the current issue is resolved before moving on. An assumption can lead to a 're-opened' bug report.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.10hrs. Committing untested code is a bad practice. It could introduce bugs into the shared codebase. Always test first. Re-evaluate.",
                     "next": "step-18"
                 },
                 {
-                    "text": "<p>Only test the `BP_PowerRelay` actor in isolation using its custom events.</p>",
+                    "text": "Notify the team that the issue is resolved without a final test.",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.2hrs. While unit testing is good, the problem involves multiple actors. A full system test confirms integration, which is where the original bugs lay.</p>",
+                    "feedback": "<strong>Extended Time:</strong> +0.08hrs. Communication without verification can lead to repeated work if the problem persists. Confirm the fix before reporting. Re-evaluate.",
                     "next": "step-18"
                 }
             ]

@@ -4,657 +4,440 @@ window.SCENARIOS['ForcedDataLayerUnload'] = {
         "description": "We have a large, highly visible Clock Tower asset (a Static Mesh Actor placed in the world) that is essential for gameplay navigation and contains a required mission trigger volume at its base. The tower is assigned to the 'DL_KeyLandmarks' Data Layer. When the player moves approximately 50 meters away from the base, the entire Clock Tower and the associated mission trigger volume abruptly unload (stream out), which should not happen because a nearby, pre-placed trigger Blueprint (BP_MissionZone_A) is supposed to keep this entire area loaded until the mission is complete. The goal is to ensure the Clock Tower remains loaded while the player is within the influence of BP_MissionZone_A, regardless of distance to the default World Partition grid boundary.",
         "estimateHours": 1.15,
         "category": "World Partition & Streaming",
-        "tokens_used": 9212
+        "tokens_used": 10019
     },
     "start": "step-1",
     "steps": {
         "step-1": {
             "skill": "worldpartition",
-            "title": "Step 1: Validate Issue",
-            "prompt": "The Clock Tower streams out prematurely despite a nearby mission zone. What's your first action to confirm this behavior?",
+            "title": "Confirm Unloading Behavior",
+            "prompt": "<p>The <strong>Clock Tower</strong> and its mission trigger disappear when moving ~50m away from its base. A nearby <strong>BP_MissionZone_A</strong> should prevent this.</p><p>How do you investigate this?</p>",
             "choices": [
                 {
-                    "text": "Perform a Play-In-Editor (PIE) session and observe the unloading.",
+                    "text": "<p>Run a <strong>Play-In-Editor (PIE)</strong> session to observe and confirm the abrupt unloading behavior.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. Confirming the issue in PIE is the essential first step to accurately diagnose the problem.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. Validating the observed issue in PIE is the first crucial step to ensure the problem is reproducible and understood in the runtime environment.</p>",
                     "next": "step-2"
                 },
                 {
-                    "text": "Open World Settings and check World Partition Streaming Distance.",
+                    "text": "<p>Open <strong>Task Manager</strong> to check system CPU and RAM usage.</p>",
                     "type": "obvious",
-                    "feedback": "Extended Time: +0.2hrs. Adjusting global settings before confirming the specific issue or inspecting actor properties is premature and can lead to unintended side effects. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. While performance can be a factor, this scenario is about incorrect streaming logic, not necessarily system resource exhaustion. Also, using external apps like Task Manager is restricted by the critical rules.</p>",
                     "next": "step-1"
                 },
                 {
-                    "text": "Check `stat unit` in PIE to monitor performance.",
+                    "text": "<p>Increase the global <strong>World Partition Streaming Distance</strong> parameter in <strong>World Settings</strong>.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.1hrs. While `stat unit` is useful, the immediate goal is to confirm the streaming behavior, not diagnose performance yet. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.50hrs. This is a common but incorrect approach. Increasing the global streaming distance would unnecessarily load large parts of the map, negatively impacting performance across the entire game, and bypasses the specific mission-controlled loading mechanism. This would mask the real issue rather than solve it efficiently.</p>",
                     "next": "step-1"
                 },
                 {
-                    "text": "Manually set the Clock Tower Actor's 'Is Spatially Loaded' property to unchecked (Always Loaded).",
+                    "text": "<p>Check <strong>Project Settings</strong> for any global streaming overrides.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.3hrs. This forces the asset to stay loaded, but bypasses the intended mission control structure and doesn't resolve the underlying issue. Investigate the consequences of this bypass.",
-                    "next": "wrong-B-detour-1"
-                }
-            ]
-        },
-        "wrong-B-detour-1": {
-            "skill": "worldpartition",
-            "title": "Detour: Bypassing Mission Control",
-            "prompt": "You've forced the Clock Tower to 'Always Loaded'. This prevents streaming out, but what's a significant drawback of this approach for a gameplay-critical asset?",
-            "choices": [
-                {
-                    "text": "It bypasses mission control logic, loads it regardless of relevance, potentially wasting resources and impacting performance.",
-                    "type": "correct",
-                    "feedback": "Optimal Time: +0.0hrs. Correct. This is a temporary workaround, not a solution that respects the design intent. You need to fix the intended system.",
-                    "next": "wrong-B-detour-2"
-                },
-                {
-                    "text": "It will break the navigation mesh around the tower.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. Forcing an actor to be 'Always Loaded' doesn't directly corrupt navmesh. This is an incorrect assumption. Re-evaluate.",
-                    "next": "wrong-B-detour-1"
-                },
-                {
-                    "text": "It might cause visual glitches or lighting artifacts.",
-                    "type": "plausible",
-                    "feedback": "Extended Time: +0.1hrs. While possible in rare cases, the primary concern with 'Always Loaded' is resource management and design intent, not direct visual corruption. Re-evaluate.",
-                    "next": "wrong-B-detour-1"
-                },
-                {
-                    "text": "It will prevent other Data Layers from loading correctly.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.1hrs. Forcing one actor to 'Always Loaded' doesn't inherently prevent other Data Layers from loading, but it might lead to unexpected interactions or inefficiencies. Re-evaluate.",
-                    "next": "wrong-B-detour-1"
-                }
-            ]
-        },
-        "wrong-B-detour-2": {
-            "skill": "worldpartition",
-            "title": "Detour: Reverting Suboptimal Changes",
-            "prompt": "You understand the consequence of bypassing the intended system. What action should you take now to properly investigate the issue within the established World Partition framework?",
-            "choices": [
-                {
-                    "text": "Revert the 'Is Spatially Loaded' setting to checked, and restart the diagnosis from the beginning.",
-                    "type": "correct",
-                    "feedback": "Optimal Time: +0.1hrs. Reverting the change is crucial to diagnose the *actual* problem with the streaming source. Restarting from step 1 ensures a thorough and correct approach.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. While global settings can influence streaming, the first step should be to confirm the specific actor's behavior in PIE. Direct actor properties and local streaming volumes often take precedence or are the intended control points for specific gameplay elements.</p>",
                     "next": "step-1"
-                },
-                {
-                    "text": "Search for other 'Always Loaded' settings in Project Settings.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. Chasing more 'Always Loaded' settings is doubling down on a suboptimal solution. Re-evaluate.",
-                    "next": "wrong-B-detour-2"
-                },
-                {
-                    "text": "Try to find a way to dynamically set 'Always Loaded' via Blueprint.",
-                    "type": "plausible",
-                    "feedback": "Extended Time: +0.1hrs. This would still be a workaround, not a fix for the intended streaming source. Re-evaluate.",
-                    "next": "wrong-B-detour-2"
-                },
-                {
-                    "text": "Leave it as 'Always Loaded' for now and investigate the mission Blueprint later.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.1hrs. Leaving a suboptimal change in place can mask the true problem or introduce new ones. Revert and diagnose properly. Re-evaluate.",
-                    "next": "wrong-B-detour-2"
                 }
             ]
         },
         "step-2": {
             "skill": "worldpartition",
-            "title": "Step 2: Inspect Clock Tower Actor",
-            "prompt": "You've confirmed the Clock Tower streams out in PIE. What's the next logical step to investigate its streaming properties?",
+            "title": "Select Clock Tower Actor",
+            "prompt": "<p>You have confirmed the <strong>Clock Tower</strong> abruptly unloads during <strong>PIE</strong>. You need to inspect the <strong>Actor</strong> itself to understand its configuration.</p><p>What's your next move?</p>",
             "choices": [
                 {
-                    "text": "Open the World Outliner and select the Clock Tower Static Mesh Actor.",
+                    "text": "<p>Open the <strong>World Outliner</strong> and select the <strong>Clock Tower Static Mesh Actor</strong>.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. Selecting the actor is necessary to inspect its individual properties in the Details panel.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. To inspect an Actor's properties, you must first select it in the editor. The World Outliner is the primary tool for locating and selecting Actors in the level.</p>",
                     "next": "step-3"
                 },
                 {
-                    "text": "Open Project Settings and navigate to World Partition settings.",
+                    "text": "<p>Try moving the <strong>Clock Tower</strong> to a different location in the level.</p>",
                     "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. While relevant, starting with global settings is too broad. Focus on the specific actor first. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. Moving the actor without understanding its streaming properties will likely not resolve the issue and could introduce new problems with its placement or gameplay relevance.</p>",
                     "next": "step-2"
                 },
                 {
-                    "text": "Right-click the Clock Tower in the viewport and check 'Data Layer' options.",
+                    "text": "<p>Open the <strong>Data Layers Panel</strong> to see currently active <strong>Data Layers</strong>.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. The Details panel is the primary place for actor properties, not a context menu. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. While Data Layers are relevant, it's too early. First, you need to understand how the Clock Tower Actor *itself* is configured in relation to Data Layers and World Partition.</p>",
                     "next": "step-2"
                 },
                 {
-                    "text": "Search for 'Clock Tower' in the Content Browser to check the asset properties.",
+                    "text": "<p>Open the <strong>Content Browser</strong> and inspect the <strong>Static Mesh</strong> asset itself.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. You need to inspect the *actor instance* in the world, not the content asset. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</b> +0.08hrs. Inspecting the raw Static Mesh asset would show its geometry and material properties, but not its World Partition streaming settings, which are properties of the Actor *instance* placed in the world.</p>",
                     "next": "step-2"
                 }
             ]
         },
         "step-3": {
             "skill": "worldpartition",
-            "title": "Step 3: Verify Data Layer Assignment",
-            "prompt": "With the Clock Tower selected in the World Outliner, where do you verify its Data Layer assignment?",
+            "title": "Verify Data Layer Assignment",
+            "prompt": "<p>With the <strong>Clock Tower Static Mesh Actor</strong> selected, you need to understand how it's integrated with <strong>World Partition</strong> streaming.</p><p>How should you proceed?</p>",
             "choices": [
                 {
-                    "text": "In the Details panel, under the 'World Partition' section.",
+                    "text": "<p>Verify in the <strong>Details</strong> panel, under the <strong>World Partition</strong> section, that the <strong>Actor</strong> is assigned to the 'DL_KeyLandmarks' <strong>Data Layer</strong>.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. This is the correct location to find the actor's Data Layer assignment.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. Confirming the correct Data Layer assignment is essential, as the problem statement explicitly mentions the Clock Tower should be part of 'DL_KeyLandmarks'.</p>",
                     "next": "step-4"
                 },
                 {
-                    "text": "Check the 'Actor Tags' section in the Details panel.",
+                    "text": "<p>Check the <strong>Material</strong> assigned to the <strong>Clock Tower</strong> to see if it has any rendering issues.</p>",
                     "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. Actor Tags are generic metadata, not for Data Layer assignments. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. The issue is abrupt unloading, not rendering artifacts while loaded. Material settings are irrelevant to streaming behavior.</p>",
                     "next": "step-3"
                 },
                 {
-                    "text": "Open the Level Blueprint and search for references to the Clock Tower.",
+                    "text": "<p>Look for any attached <strong>Blueprint</strong> components that might control loading.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.1hrs. Data Layers are actor properties, not typically managed in the Level Blueprint. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. While Blueprints can control loading, the primary streaming mechanism for a Static Mesh Actor itself in World Partition is directly through its Actor properties and Data Layer assignment.</p>",
                     "next": "step-3"
                 },
                 {
-                    "text": "Open the Data Layers Panel (Window -> Data Layers) to find the Clock Tower entry.",
+                    "text": "<p>In the <strong>Details</strong> panel, check the <strong>Visibility</strong> property.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. The Data Layers panel shows the layers themselves, not which specific actors are assigned to them directly. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. The actor is disappearing from the world, which is different from its visibility property being toggled while remaining loaded. The problem is streaming, not mere visibility.</p>",
                     "next": "step-3"
                 }
             ]
         },
         "step-4": {
             "skill": "worldpartition",
-            "title": "Step 4: Check 'Is Spatially Loaded' Property",
-            "prompt": "You've confirmed the Clock Tower is assigned to 'DL_KeyLandmarks'. What Actor property should you check next to understand its spatial loading behavior?",
+            "title": "Check Spatial Loading Property",
+            "prompt": "<p>The <strong>Clock Tower</strong> is assigned to 'DL_KeyLandmarks'. Now you need to confirm how it's instructed to load relative to the world.</p><p>What action do you take?</p>",
             "choices": [
                 {
-                    "text": "Ensure the 'Is Spatially Loaded' property is checked in the Details panel.",
+                    "text": "<p>Verify that the <strong>Actor's</strong> 'Is Spatially Loaded' property is checked in the <strong>World Partition</strong> section of the <strong>Details</strong> panel.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. This property confirms the actor relies on the World Partition system or Data Layers for streaming, which is the intended behavior.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. Ensuring 'Is Spatially Loaded' is checked confirms the actor relies on World Partition for streaming, either through its grid cells or associated Data Layers, aligning with the intent of mission control.</p>",
                     "next": "step-5"
                 },
                 {
-                    "text": "Change the Actor's 'Mobility' setting (Static, Stationary, Movable).",
+                    "text": "<p>Manually set the <strong>Clock Tower Actor's</strong> 'Is Spatially Loaded' property to unchecked.</p>",
                     "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. Mobility relates to rendering and physics, not spatial streaming. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.30hrs. Unchecking 'Is Spatially Loaded' would force the actor to be 'Always Loaded'. While this would 'solve' the immediate problem of unloading, it explicitly violates the intended mission control structure and efficient streaming, making it a bad practice. This is considered a 'wrong step' as per the scenario rules.</p>",
                     "next": "step-4"
                 },
                 {
-                    "text": "Uncheck 'Is Spatially Loaded' to make the Actor 'Always Loaded'.",
+                    "text": "<p>Check the <strong>World Partition Grid Settings</strong> in <strong>World Settings</strong>.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.3hrs. This is a workaround that bypasses the intended system, similar to a previous error. Investigate the consequences of this bypass.",
-                    "next": "wrong-B-detour-1"
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. Grid settings are global, but individual actor settings ('Is Spatially Loaded') determine if an actor uses grid streaming at all. It's best to check the actor's specific setting first.</p>",
+                    "next": "step-4"
                 },
                 {
-                    "text": "Check the Data Layer asset properties in the Content Browser.",
+                    "text": "<p>Look for an 'Always Loaded' flag in the <strong>Actor</strong> properties.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.1hrs. You're inspecting the actor's behavior, not the Data Layer definition itself at this point. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. The 'Always Loaded' state is achieved by *unchecking* 'Is Spatially Loaded'. Looking for an explicit 'Always Loaded' flag might cause confusion.</p>",
                     "next": "step-4"
                 }
             ]
         },
         "step-5": {
             "skill": "worldpartition",
-            "title": "Step 5: Confirm Data Layer Runtime State",
-            "prompt": "The Clock Tower is assigned to 'DL_KeyLandmarks' and 'Is Spatially Loaded' is checked. What's the next logical step regarding the 'DL_KeyLandmarks' Data Layer itself?",
+            "title": "Examine Data Layer Runtime State",
+            "prompt": "<p>The <strong>Clock Tower Actor</strong> is correctly spatially loaded and assigned to 'DL_KeyLandmarks'. Now inspect the default runtime state of that <strong>Data Layer</strong> itself.</p><p>Which approach do you choose?</p>",
             "choices": [
                 {
-                    "text": "Open the Data Layers Panel and confirm 'DL_KeyLandmarks' 'Runtime State' is 'Unloaded'.",
+                    "text": "<p>Open the <strong>Data Layers Panel</strong> (Window -> Data Layers) and confirm 'DL_KeyLandmarks' <strong>Runtime State</strong> is set to 'Unloaded'.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. The default runtime state should be 'Unloaded' for streaming to work as intended via a streaming source.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. By default, Data Layers are 'Unloaded' at runtime, relying on explicit activation (e.g., from a Streaming Source) to become loaded. Confirming this ensures it's not inadvertently loaded globally.</p>",
                     "next": "step-6"
                 },
                 {
-                    "text": "Rename the 'DL_KeyLandmarks' Data Layer to 'DL_ClockTower'.",
+                    "text": "<p>Use console command <code>r.ShowDataLayers</code> to visualize <strong>Data Layers</strong>.</p>",
                     "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. Renaming is irrelevant to the streaming issue and could break other references. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. While useful for debugging visualization, this command doesn't directly show the *runtime state* of a Data Layer as configured in the editor. It shows what's currently loaded/unloaded in the viewport.</p>",
                     "next": "step-5"
                 },
                 {
-                    "text": "Set 'DL_KeyLandmarks' 'Runtime State' to 'Loaded' directly in the Data Layers Panel.",
+                    "text": "<p>Attempt to create a new <strong>Blueprint</strong> to manually load the <strong>Data Layer</strong> via an 'Activate Data Layer' node on <strong>Begin Play</strong>.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.2hrs. This would force the Data Layer to be loaded, but bypasses the specific mission control logic. Investigate the consequences of this bypass.",
-                    "next": "wrong-C-detour-1"
-                },
-                {
-                    "text": "Check the Data Layer asset properties (e.g., 'Initial State') in the Content Browser.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. While useful for initial setup, the 'Runtime State' in the panel shows the current operational state, which is more relevant. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.40hrs. This is explicitly a 'wrong step'. The problem statement indicates an *existing* Blueprint ('BP_MissionZone_A') is supposed to manage this. Creating a new manual loading Blueprint would bypass the intended system and waste significant time.</p>",
                     "next": "step-5"
-                }
-            ]
-        },
-        "wrong-C-detour-1": {
-            "skill": "worldpartition",
-            "title": "Detour: Circumventing Mission Logic",
-            "prompt": "You've manually forced the Data Layer to 'Loaded' or tried creating a new Blueprint to load it. The tower *now* stays loaded, but 'BP_MissionZone_A' is designed to manage this. What's the core problem?",
-            "choices": [
-                {
-                    "text": "This circumvents the existing 'BP_MissionZone_A' and its World Partition Streaming Source component, making the intended mission-driven loading logic obsolete.",
-                    "type": "correct",
-                    "feedback": "Optimal Time: +0.0hrs. Correct. You are bypassing the intended system. The goal is to make the existing system work. Move to the next step to revert this.",
-                    "next": "wrong-C-detour-2"
                 },
                 {
-                    "text": "It will conflict with other Data Layers in the map.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. While possible, the primary issue is overriding the specific 'BP_MissionZone_A' logic, not general conflicts. Re-evaluate.",
-                    "next": "wrong-C-detour-1"
-                },
-                {
-                    "text": "It makes the debugging process more complex.",
-                    "type": "plausible",
-                    "feedback": "Extended Time: +0.1hrs. True, but the root problem is bypassing the design, not just complexity. Re-evaluate.",
-                    "next": "wrong-C-detour-1"
-                },
-                {
-                    "text": "It will use too much CPU during runtime.",
+                    "text": "<p>In the <strong>Data Layers Panel</strong>, try to manually set 'DL_KeyLandmarks' to 'Loaded'.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.1hrs. Performance impact is a concern, but the core issue is breaking the design intent for how the mission zone loads areas. Re-evaluate.",
-                    "next": "wrong-C-detour-1"
-                }
-            ]
-        },
-        "wrong-C-detour-2": {
-            "skill": "worldpartition",
-            "title": "Detour: Refocusing on the Streaming Source",
-            "prompt": "You understand that bypassing 'BP_MissionZone_A' is not the intended solution. How should you proceed to properly diagnose why 'BP_MissionZone_A' isn't working as expected?",
-            "choices": [
-                {
-                    "text": "Undo the manual Data Layer change or discard the new Blueprint, and investigate 'BP_MissionZone_A' directly.",
-                    "type": "correct",
-                    "feedback": "Optimal Time: +0.1hrs. Reverting the workaround is crucial. Now, you can properly investigate the intended streaming source.",
-                    "next": "step-6"
-                },
-                {
-                    "text": "Look for other manual Data Layer loading options in World Settings.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. Continue investigating workarounds is counterproductive. Re-evaluate.",
-                    "next": "wrong-C-detour-2"
-                },
-                {
-                    "text": "Ask a designer why 'BP_MissionZone_A' was placed there.",
-                    "type": "plausible",
-                    "feedback": "Extended Time: +0.1hrs. While communication is good, you are a debugger; your job is to investigate the technical implementation first. Re-evaluate.",
-                    "next": "wrong-C-detour-2"
-                },
-                {
-                    "text": "Reload the level to ensure all changes are reset.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. While a good general practice, directly undoing the change and focusing on the target is more efficient. Re-evaluate.",
-                    "next": "wrong-C-detour-2"
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. Manually setting the runtime state in the editor is for testing, not a persistent fix. The goal is to ensure the *streaming Blueprint* manages its loading correctly, not to force it on globally.</p>",
+                    "next": "step-5"
                 }
             ]
         },
         "step-6": {
             "skill": "worldpartition",
-            "title": "Step 6: Locate Streaming Blueprint",
-            "prompt": "You've verified the Clock Tower and its Data Layer settings are consistent with streaming. The problem states 'BP_MissionZone_A' *should* keep it loaded. What now?",
+            "title": "Locate Streaming Blueprint",
+            "prompt": "<p>The <strong>Data Layer</strong> is set to 'Unloaded' by default, as expected. The problem likely lies with how the dedicated streaming <strong>Blueprint</strong> interacts with it.</p><p>What's your next move?</p>",
             "choices": [
                 {
-                    "text": "Locate 'BP_MissionZone_A' in the World Outliner.",
+                    "text": "<p>Locate the dedicated streaming <strong>Blueprint</strong>, 'BP_MissionZone_A', in the <strong>World Outliner</strong> and select it.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.1hrs. Now that you've checked the Clock Tower, the next logical step is to inspect the designated streaming source.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.10hrs. The problem states 'BP_MissionZone_A' is responsible for keeping the area loaded. The next logical step is to inspect this Blueprint's configuration.</p>",
                     "next": "step-7"
                 },
                 {
-                    "text": "Search for 'World Partition Streaming Source' component type in the Content Browser.",
+                    "text": "<p>Run a '<strong>stat unit</strong>' command in the console to check performance metrics.</p>",
                     "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. You need to inspect the *instance* of 'BP_MissionZone_A' in the world, not generic component assets. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. While 'stat unit' is a valid console command for debugging performance, it's not relevant at this stage. The issue is specific streaming behavior, not general performance.</p>",
                     "next": "step-6"
                 },
                 {
-                    "text": "Check 'World Settings' for World Partition options and increase streaming distance.",
+                    "text": "<p>Create a new <strong>World Partition Streaming Source</strong> actor in the level.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.5hrs. Increasing global streaming distance is a broad, performance-intensive change that may not address the specific issue. Investigate the consequences of this change.",
-                    "next": "wrong-A-detour-1"
-                },
-                {
-                    "text": "Create a new Blueprint to manually load the 'DL_KeyLandmarks' Data Layer on Begin Play.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.4hrs. This bypasses the existing 'BP_MissionZone_A', which is designed for this purpose. Investigate the consequences of this bypass.",
-                    "next": "wrong-C-detour-1"
-                }
-            ]
-        },
-        "wrong-A-detour-1": {
-            "skill": "worldpartition",
-            "title": "Detour: Unnecessary Global Streaming",
-            "prompt": "You increased the global World Partition Streaming Distance. You notice more distant areas are loaded, but the Clock Tower *still* streams out at 50m. What's the primary issue with this blanket approach?",
-            "choices": [
-                {
-                    "text": "This significantly increases memory usage and negatively impacts performance across the entire map, without addressing the specific mission zone problem.",
-                    "type": "correct",
-                    "feedback": "Optimal Time: +0.0hrs. Correct. Global streaming distance is a blunt instrument for a precise problem. You need to revert this and focus.",
-                    "next": "wrong-A-detour-2"
-                },
-                {
-                    "text": "It will cause collision issues with distant objects.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. Increased streaming distance doesn't directly cause collision issues, though it could expose existing ones. Re-evaluate.",
-                    "next": "wrong-A-detour-1"
-                },
-                {
-                    "text": "It makes the editor viewport slower.",
-                    "type": "plausible",
-                    "feedback": "Extended Time: +0.1hrs. While true, the performance impact on *runtime* is the more critical concern. Re-evaluate.",
-                    "next": "wrong-A-detour-1"
-                },
-                {
-                    "text": "It doesn't affect Data Layers, only spatial grids.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.1hrs. Streaming distance *does* affect all spatially loaded actors, including those on Data Layers, but it's not the *specific* solution for a designated streaming source. Re-evaluate.",
-                    "next": "wrong-A-detour-1"
-                }
-            ]
-        },
-        "wrong-A-detour-2": {
-            "skill": "worldpartition",
-            "title": "Detour: Reverting Global Changes",
-            "prompt": "You recognize the performance impact of increasing global streaming distance. What should you do to revert this suboptimal change and return to investigating the intended streaming source?",
-            "choices": [
-                {
-                    "text": "Revert the global streaming distance parameter to its default value and refocus on 'BP_MissionZone_A'.",
-                    "type": "correct",
-                    "feedback": "Optimal Time: +0.1hrs. Reverting incorrect global changes is important. Now you can focus on the specific problem.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. Creating a new actor would be redundant and likely conflict with the existing 'BP_MissionZone_A'. The goal is to fix the existing setup, not replace it.</p>",
                     "next": "step-6"
                 },
                 {
-                    "text": "Restart the Unreal Editor to ensure the setting is fully reset.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. While sometimes necessary, restarting is often overkill for a simple setting change. Revert the setting directly. Re-evaluate.",
-                    "next": "wrong-A-detour-2"
-                },
-                {
-                    "text": "Use console commands like `r.streaming.poolsize` to optimize memory.",
-                    "type": "plausible",
-                    "feedback": "Extended Time: +0.1hrs. Optimizing memory is a different task; the immediate goal is to fix the streaming behavior, not mitigate the fallout of a bad setting. Re-evaluate.",
-                    "next": "wrong-A-detour-2"
-                },
-                {
-                    "text": "Check profiler tools (`stat gpu`, `stat unit`) to measure the exact impact.",
+                    "text": "<p>Check the <strong>World Settings</strong> for global streaming sources.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. While good for measurement, the priority is to revert the clearly incorrect change, not just measure its damage. Re-evaluate.",
-                    "next": "wrong-A-detour-2"
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. While World Settings can have global streaming configurations, the problem specifically points to 'BP_MissionZone_A' as the intended local control, so that's the priority.</p>",
+                    "next": "step-6"
                 }
             ]
         },
         "step-7": {
-            "skill": "worldpartition",
-            "title": "Step 7: Open Blueprint Editor",
-            "prompt": "You've located 'BP_MissionZone_A'. How do you inspect its internal streaming configuration?",
+            "skill": "blueprint",
+            "title": "Open Blueprint Editor",
+            "prompt": "<p>You have selected 'BP_MissionZone_A' in the <strong>World Outliner</strong>. To inspect its streaming logic and components, you need to open it.</p><p>How do you proceed?</p>",
             "choices": [
                 {
-                    "text": "Double-click 'BP_MissionZone_A' in the World Outliner to open its Blueprint Editor.",
+                    "text": "<p>Double-click 'BP_MissionZone_A' to open its <strong>Blueprint Editor</strong>.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. Opening the Blueprint Editor is necessary to access its components and logic.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. Opening the Blueprint Editor allows you to access and modify the Blueprint's components, event graph, and other properties relevant to its behavior.</p>",
                     "next": "step-8"
                 },
                 {
-                    "text": "Check its Transformation properties in the Details panel.",
+                    "text": "<p>Drag 'BP_MissionZone_A' to a new location in the level to see if it affects streaming.</p>",
                     "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. Transformation (location, rotation, scale) is not relevant to streaming logic. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. Moving the Blueprint in the level won't reveal its internal streaming configuration and could interfere with mission design.</p>",
                     "next": "step-7"
                 },
                 {
-                    "text": "Right-click 'BP_MissionZone_A' and select 'Edit Actor'.",
+                    "text": "<p>Check the <strong>Details</strong> panel for basic transform properties of 'BP_MissionZone_A'.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. 'Edit Actor' opens a limited details view, not the full Blueprint Editor needed for component inspection. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. While useful for quick adjustments, the Details panel for an Actor instance in the world doesn't expose the internal component structure and logic of the Blueprint asset itself.</p>",
                     "next": "step-7"
                 },
                 {
-                    "text": "Open the Level Blueprint to see if it references 'BP_MissionZone_A'.",
+                    "text": "<p>Open the <strong>Content Browser</strong> and locate the 'BP_MissionZone_A' asset.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.1hrs. While possible, inspecting the Blueprint itself is more direct for its own streaming configuration. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. While locating it in the Content Browser is technically finding the asset, the fastest way to open the editor for an already selected Actor is a direct double-click or right-click context menu.</p>",
                     "next": "step-7"
                 }
             ]
         },
         "step-8": {
-            "skill": "worldpartition",
-            "title": "Step 8: Select Streaming Source Component",
-            "prompt": "Inside 'BP_MissionZone_A' Blueprint Editor, you need to find the component responsible for streaming. Which component is that?",
+            "skill": "blueprint",
+            "title": "Select Streaming Source Component",
+            "prompt": "<p>The <strong>Blueprint Editor</strong> for 'BP_MissionZone_A' is open. You need to find the specific component responsible for managing <strong>World Partition</strong> streaming.</p><p>What action do you take?</p>",
             "choices": [
                 {
-                    "text": "In the Components tab, select the 'World Partition Streaming Source' component.",
+                    "text": "<p>In the <strong>Components</strong> tab, select the '<strong>World Partition Streaming Source</strong>' component.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. This is the dedicated component for World Partition streaming behavior.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. The 'World Partition Streaming Source' component is the dedicated component for defining streaming influence within a Blueprint.</p>",
                     "next": "step-9"
                 },
                 {
-                    "text": "Select the 'Box Collision' component in the Components tab.",
+                    "text": "<p>Go to the <strong>Event Graph</strong> to check for any loading logic.</p>",
                     "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. The Box Collision is typically for gameplay triggers, not streaming activation. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. While Blueprints can contain event graph logic for streaming, the primary configuration for a streaming source component is in its details panel. You should check the component's properties first.</p>",
                     "next": "step-8"
                 },
                 {
-                    "text": "Check the Event Graph for 'Activate Data Layer' nodes.",
+                    "text": "<p>Check the <strong>Details</strong> panel of the root component for streaming settings.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.2hrs. While a Data Layer *could* be activated via Blueprint logic, the existence of a 'World Partition Streaming Source' component implies a declarative approach. Investigate the implications of this assumption.",
-                    "next": "wrong-C-detour-3"
-                },
-                {
-                    "text": "Check the Construction Script for streaming logic.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. Construction scripts are typically for editor-time setup, not runtime streaming. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. The root component might have some general actor settings, but the specific streaming source configuration belongs to the dedicated 'World Partition Streaming Source' component.</p>",
                     "next": "step-8"
-                }
-            ]
-        },
-        "wrong-C-detour-3": {
-            "skill": "worldpartition",
-            "title": "Detour: Focusing on Component-Based Streaming",
-            "prompt": "You checked the Event Graph of 'BP_MissionZone_A' and found no explicit 'Activate Data Layer' nodes. This suggests the Blueprint is designed to use a component for streaming. What should you focus on within the Blueprint now?",
-            "choices": [
-                {
-                    "text": "Return to the Components tab and look for the 'World Partition Streaming Source' component.",
-                    "type": "correct",
-                    "feedback": "Optimal Time: +0.0hrs. Correct. When a dedicated streaming component exists, it's the primary place for configuration, not the Event Graph.",
-                    "next": "step-9"
                 },
                 {
-                    "text": "Add an 'Activate Data Layer' node to the Event Graph to force it to load.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. Adding custom logic when a dedicated component exists is counter-productive to finding the intended solution. Re-evaluate.",
-                    "next": "wrong-C-detour-3"
-                },
-                {
-                    "text": "Investigate the parent class of 'BP_MissionZone_A' for streaming logic.",
-                    "type": "plausible",
-                    "feedback": "Extended Time: +0.1hrs. While sometimes relevant, focusing on the specific Blueprint's components is more direct. Re-evaluate.",
-                    "next": "wrong-C-detour-3"
-                },
-                {
-                    "text": "Check the Blueprint Interface for streaming functions.",
+                    "text": "<p>Look for a <strong>Box Collision</strong> component to see the trigger bounds.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. Less likely for basic streaming configuration, which is usually component-based. Re-evaluate.",
-                    "next": "wrong-C-detour-3"
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. The Box Collision component might define the *area of influence* for the streaming source, but the streaming *logic and configuration* are on the 'World Partition Streaming Source' component itself.</p>",
+                    "next": "step-8"
                 }
             ]
         },
         "step-9": {
             "skill": "worldpartition",
-            "title": "Step 9: Examine Streaming Source Details",
-            "prompt": "You've selected the 'World Partition Streaming Source' component. Where do you find its specific streaming configuration?",
+            "title": "Examine Streaming Source Details",
+            "prompt": "<p>The '<strong>World Partition Streaming Source</strong>' component is selected. Its settings determine how it influences streaming in the world.</p><p>How do you investigate this?</p>",
             "choices": [
                 {
-                    "text": "Examine the Details panel under the 'Streaming Source' category.",
+                    "text": "<p>Examine the <strong>Details</strong> panel of the '<strong>World Partition Streaming Source</strong>' component, specifically the '<strong>Streaming Source</strong>' category.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.15hrs. The Details panel is where component-specific properties are configured.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.15hrs. This category contains all the critical properties for configuring how the streaming source interacts with World Partition, including its target behavior and affected Data Layers.</p>",
                     "next": "step-10"
                 },
                 {
-                    "text": "Check the Blueprint Class Settings for the component.",
+                    "text": "<p>Adjust the <strong>Collision Presets</strong> for the '<strong>World Partition Streaming Source</strong>' component.</p>",
                     "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. Class settings are for the Blueprint as a whole, not individual component instances. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. Collision presets affect how the component interacts with physics and other collision channels, not its streaming behavior for World Partition.</p>",
                     "next": "step-9"
                 },
                 {
-                    "text": "Search for 'streaming' in the Blueprint Editor menu bar.",
+                    "text": "<p>Check the <strong>World Partition</strong> section of the <strong>Blueprint's</strong> main <strong>Details</strong> panel.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. Menu items rarely expose specific component properties. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. This would show the Blueprint Actor's overall World Partition settings, but not the specific properties of the 'World Partition Streaming Source' *component* within it.</p>",
                     "next": "step-9"
                 },
                 {
-                    "text": "Look at the 'Data Layer' property on the root component of the Blueprint.",
+                    "text": "<p>Look for a '<strong>Streaming Priority</strong>' setting.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. The 'World Partition Streaming Source' component has its own relevant properties. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. While streaming priority can be a setting, it's not the first or most critical property to check when an area is failing to load at all. The basic configuration needs to be correct first.</p>",
                     "next": "step-9"
                 }
             ]
         },
         "step-10": {
             "skill": "worldpartition",
-            "title": "Step 10: Verify Target Behavior",
-            "prompt": "In the 'Streaming Source' details, what property should you verify to ensure the area stays loaded when this source is active?",
+            "title": "Verify Target Behavior",
+            "prompt": "<p>You are inspecting the '<strong>Streaming Source</strong>' properties in the <strong>Details</strong> panel. You need to confirm its intended loading behavior.</p><p>What's your next move?</p>",
             "choices": [
                 {
-                    "text": "Verify that the 'Target Behavior' property is correctly set to 'Always Loaded'.",
+                    "text": "<p>Verify that the '<strong>Target Behavior</strong>' property is set to 'Always Loaded'.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. 'Always Loaded' ensures the area remains loaded within the source's influence.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. This property determines whether the streaming source keeps actors 'Always Loaded' within its influence or 'Loaded Until Unloaded', which is crucial for the mission's requirement.</p>",
                     "next": "step-11"
                 },
                 {
-                    "text": "Adjust the 'Streaming Priority' value.",
+                    "text": "<p>Change the '<strong>Shape</strong>' property of the streaming source.</p>",
                     "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. Priority is for conflict resolution, not ensuring persistent loading. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. The shape (e.g., box, sphere) defines the bounds of the streaming influence, but doesn't control *what* happens within those bounds. The current issue is about loading behavior, not spatial extent.</p>",
                     "next": "step-10"
                 },
                 {
-                    "text": "Change the 'Streaming Grid Bounds Source' property.",
+                    "text": "<p>Adjust the '<strong>Loading Range</strong>' property to a larger value.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. While important, it defines the bounds, not the *behavior* when the source is active. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. While increasing range might seem helpful, it's irrelevant if the Data Layer isn't even targeted by the streaming source. It would also increase the loaded area unnecessarily.</p>",
                     "next": "step-10"
                 },
                 {
-                    "text": "Look for an 'Is Spatially Loaded' property on the component.",
+                    "text": "<p>Check the '<strong>Is Enabled</strong>' property of the component.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. 'Is Spatially Loaded' is an Actor property, not a Streaming Source component property. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. If 'Is Enabled' were unchecked, the source wouldn't work at all. Assuming the Blueprint is active, the first check should be for its specific behavior, not its active state.</p>",
                     "next": "step-10"
                 }
             ]
         },
         "step-11": {
             "skill": "worldpartition",
-            "title": "Step 11: Check Data Layers Array",
-            "prompt": "The 'Target Behavior' is correct. What's the *most likely* next property to check regarding the Clock Tower's Data Layer?",
+            "title": "Inspect Data Layers Array",
+            "prompt": "<p>The '<strong>Target Behavior</strong>' for the <strong>Streaming Source</strong> is correctly set to 'Always Loaded'. However, the <strong>Clock Tower</strong> still unloads.</p><p>How should you proceed?</p>",
             "choices": [
                 {
-                    "text": "Check the 'Data Layers' array property and notice if 'DL_KeyLandmarks' is missing or empty.",
+                    "text": "<p>Check the '<strong>Data Layers</strong>' array property within the <strong>Streaming Source</strong> details, noticing that 'DL_KeyLandmarks' is either missing or empty.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.15hrs. This is the critical step! The streaming source needs to explicitly list the Data Layers it influences.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.15hrs. This is the critical missing link. If the 'DL_KeyLandmarks' Data Layer is not explicitly listed in the Streaming Source's 'Data Layers' array, the source will not influence its loading, even if its 'Target Behavior' is 'Always Loaded'.</p>",
                     "next": "step-12"
                 },
                 {
-                    "text": "Look for a 'Radius' property for the streaming zone.",
+                    "text": "<p>Close the <strong>Blueprint Editor</strong> and restart <strong>UE5</strong>.</p>",
                     "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. While a streaming source has bounds, its interaction with Data Layers is through the 'Data Layers' array. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. Restarting the editor is a last resort, not a diagnostic step. The problem clearly lies within the Blueprint's configuration.</p>",
                     "next": "step-11"
                 },
                 {
-                    "text": "Verify the 'Bounds Source' property for the component.",
+                    "text": "<p>Add a new <strong>World Partition Streaming Source</strong> component to the <strong>Blueprint</strong>.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.1hrs. The bounds define the *area*, but not *what* is loaded within that area via Data Layers. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. There is no need to add a new component; the existing one needs to be configured correctly. Adding more components would complicate the setup.</p>",
                     "next": "step-11"
                 },
                 {
-                    "text": "Check the 'Streaming State' property on the component.",
+                    "text": "<p>Check the '<strong>Streaming Grid Cells</strong>' property.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. This is a runtime debug property, not a configuration setting. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. While Streaming Grid Cells are part of World Partition, the problem explicitly states the Clock Tower is assigned to a *Data Layer*, and the Blueprint should manage that Data Layer. Focusing on grid cells directly would be a misdirection from the Data Layer issue.</p>",
                     "next": "step-11"
                 }
             ]
         },
         "step-12": {
             "skill": "worldpartition",
-            "title": "Step 12: Add Missing Data Layer",
-            "prompt": "The 'DL_KeyLandmarks' Data Layer is missing from the Streaming Source's 'Data Layers' array. How do you correct this?",
+            "title": "Add Missing Data Layer",
+            "prompt": "<p>The '<strong>Data Layers</strong>' array in the <strong>Streaming Source</strong> is missing 'DL_KeyLandmarks'. This is the likely cause of the issue.</p><p>What action do you take?</p>",
             "choices": [
                 {
-                    "text": "Add a new element to the 'Data Layers' array and select the 'DL_KeyLandmarks' asset.",
+                    "text": "<p>Add a new element to the '<strong>Data Layers</strong>' array and select the 'DL_KeyLandmarks' <strong>Data Layer</strong> asset reference from the dropdown list.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.15hrs. This correctly associates the streaming source with the relevant Data Layer.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.15hrs. By adding 'DL_KeyLandmarks' to the array, you explicitly tell the 'World Partition Streaming Source' component that it should manage the loading state of actors assigned to this Data Layer when it is active.</p>",
                     "next": "step-13"
                 },
                 {
-                    "text": "Delete the 'World Partition Streaming Source' component and add a new one.",
+                    "text": "<p>Delete the '<strong>World Partition Streaming Source</strong>' component.</p>",
                     "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. This is a destructive and unnecessary action. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. Deleting the component would remove the intended streaming control for the area, worsening the problem.</p>",
                     "next": "step-12"
                 },
                 {
-                    "text": "Open the 'DL_KeyLandmarks' Data Layer asset and modify its properties.",
+                    "text": "<p>Manually type the name 'DL_KeyLandmarks' into a text field somewhere else in the <strong>Details</strong> panel.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.1hrs. The Data Layer asset defines the layer, but the streaming source needs to reference it. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. While it might seem like a way to link them, directly typing a name into an arbitrary text field won't establish the necessary asset reference. You must use the array and the provided dropdown for proper linking.</p>",
                     "next": "step-12"
                 },
                 {
-                    "text": "Try to drag and drop the Clock Tower actor directly into the 'Data Layers' array.",
+                    "text": "<p>Add the <strong>Clock Tower Actor</strong> directly to a new array property.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. The array expects Data Layer assets, not actor instances. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. Streaming sources target Data Layers, which then influence actors assigned to those Data Layers. They don't directly manage individual actors by name, especially not through a non-existent array property.</p>",
                     "next": "step-12"
                 }
             ]
         },
         "step-13": {
-            "skill": "worldpartition",
-            "title": "Step 13: Compile and Save Blueprint",
-            "prompt": "You've added 'DL_KeyLandmarks' to the array. What's crucial to make these changes take effect?",
+            "skill": "blueprint",
+            "title": "Compile and Save Blueprint",
+            "prompt": "<p>You have added 'DL_KeyLandmarks' to the '<strong>Data Layers</strong>' array of the <strong>Streaming Source</strong> component. The <strong>Blueprint</strong> needs to be updated to apply these changes.</p><p>What action do you take?</p>",
             "choices": [
                 {
-                    "text": "Compile and Save the 'BP_MissionZone_A' Blueprint.",
+                    "text": "<p><strong>Compile</strong> and <strong>Save</strong> the 'BP_MissionZone_A' <strong>Blueprint</strong>.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. Compiling and saving the Blueprint is essential for changes to be applied in the game.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. Compiling applies the C++ changes to the Blueprint, and saving persists those changes to the asset. Both are necessary for the changes to take effect in the editor and runtime.</p>",
                     "next": "step-14"
                 },
                 {
-                    "text": "Close the Blueprint Editor without saving.",
+                    "text": "<p>Launch the standalone game directly from the engine.</p>",
                     "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. Closing without saving will discard your changes. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. Launching a standalone game without first compiling and saving the Blueprint would mean the changes you just made would not be present in the build.</p>",
                     "next": "step-13"
                 },
                 {
-                    "text": "Open the main level and save the level.",
+                    "text": "<p>Run another <strong>PIE</strong> session without compiling or saving.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. While saving the level is good practice, Blueprint changes need to be saved within the Blueprint Editor. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. Running PIE without compiling and saving means the changes you made to the Blueprint asset will not be reflected, and the problem will persist.</p>",
                     "next": "step-13"
                 },
                 {
-                    "text": "Restart the Unreal Editor.",
+                    "text": "<p>Only <strong>Compile</strong> the <strong>Blueprint</strong>, forgetting to <strong>Save</strong>.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.1hrs. Restarting the editor is often unnecessary for Blueprint changes. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. Compiling updates the Blueprint's code in memory for the current session, but if you don't save, those changes will be lost when you close the editor or the Blueprint asset is reloaded. It's crucial to do both.</p>",
                     "next": "step-13"
                 }
             ]
         },
         "step-14": {
             "skill": "worldpartition",
-            "title": "Step 14: Confirm Fix",
-            "prompt": "The Blueprint is compiled and saved. How do you confirm the fix?",
+            "title": "Verify Solution in PIE",
+            "prompt": "<p>The <strong>Blueprint</strong> is compiled and saved. You need to confirm the fix and ensure the <strong>Clock Tower</strong> now streams correctly.</p><p>What's your next move?</p>",
             "choices": [
                 {
-                    "text": "Run a new PIE session to confirm the Clock Tower remains streamed in and visible.",
+                    "text": "<p>Exit the <strong>Blueprint Editor</strong> and run a new <strong>PIE</strong> session to confirm the <strong>Clock Tower</strong> now remains streamed in and visible while the player is within the influence of 'BP_MissionZone_A'.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.1hrs. A PIE session is the most direct way to validate the fix in a simulated gameplay environment.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.10hrs. The final step is always to verify the fix in the runtime environment. A successful PIE session confirms that the Clock Tower now streams in as intended, solving the problem.</p>",
                     "next": "conclusion"
                 },
                 {
-                    "text": "Check the Output Log for 'Data Layer Loaded' messages.",
+                    "text": "<p>Delete the <strong>Clock Tower Actor</strong> and re-place it in the level.</p>",
                     "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. While log messages can provide details, visual confirmation in PIE is the primary goal here. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. Deleting and replacing the actor is unnecessary and could reset other unrelated properties, introducing new issues. The fix was in the Blueprint.</p>",
                     "next": "step-14"
                 },
                 {
-                    "text": "Reload the level from scratch in the editor.",
+                    "text": "<p>Check the <strong>World Outliner</strong> for any lingering issues without running <strong>PIE</strong>.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. Reloading the editor might be an option, but PIE is faster and directly tests runtime behavior. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. The World Outliner shows editor-time state. To confirm runtime streaming behavior, a PIE session is absolutely necessary.</p>",
                     "next": "step-14"
                 },
                 {
-                    "text": "Check the 'World Partition Grid' visualization in the editor.",
+                    "text": "<p>Only restart the <strong>UE5 Editor</strong> without running a <strong>PIE</strong> session.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. This visualization helps understand grid boundaries, but doesn't confirm the specific streaming source's influence in runtime. Re-evaluate.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. Restarting the editor ensures all assets are reloaded, but it doesn't simulate the gameplay runtime conditions required to verify streaming behavior. PIE is essential.</p>",
                     "next": "step-14"
                 }
             ]
@@ -662,7 +445,7 @@ window.SCENARIOS['ForcedDataLayerUnload'] = {
         "conclusion": {
             "skill": "complete",
             "title": "Scenario Complete",
-            "prompt": "Congratulations! You have successfully completed this debugging scenario. The Clock Tower now remains loaded correctly while the player is within the influence of BP_MissionZone_A, ensuring critical gameplay elements are always visible.",
+            "prompt": "<p>Congratulations! You have successfully completed this debugging scenario.</p>",
             "choices": []
         }
     }

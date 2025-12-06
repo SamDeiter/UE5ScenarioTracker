@@ -56,8 +56,6 @@ function generateScenarioAssets(scenarioId) {
     }
 
     // Build Unreal command
-    const pythonCmd = `execfile('${pythonScript.replace(/\\/g, '\\\\')}')`;
-
         const tempSpecPath = path.join(process.env.TEMP || 'D:\temp', `${scenarioId}_spec.json`);
     const unrealOutputPath = path.join(UE_PROJECT_PATH, 'Content', 'Scenarios');
     

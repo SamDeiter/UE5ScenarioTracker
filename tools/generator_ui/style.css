@@ -49,6 +49,127 @@ body {
     border: 1px solid var(--border);
 }
 
+/* ============ FULL-WIDTH STATUS BAR ============ */
+.status-bar {
+    background: linear-gradient(135deg, var(--bg-card), rgba(88, 166, 255, 0.1));
+    border: 1px solid var(--accent-blue);
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    animation: slideDown 0.3s ease;
+}
+
+.status-bar.hidden {
+    display: none;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.status-bar-content {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 120px;
+}
+
+.status-icon {
+    font-size: 1.25rem;
+}
+
+.status-icon.pulse {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.status-text {
+    font-weight: 600;
+    color: var(--accent-blue);
+}
+
+.status-progress {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.status-progress .progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--bg-hover);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+
+.progress-count {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    min-width: 50px;
+}
+
+.status-stats {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.status-bar .stat {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.status-bar .stat-label {
+    color: var(--text-secondary);
+}
+
+.status-bar .stat-value {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.status-bar.complete {
+    border-color: var(--accent-green);
+    background: linear-gradient(135deg, var(--bg-card), rgba(63, 185, 80, 0.1));
+}
+
+.status-bar.complete .status-text {
+    color: var(--accent-green);
+}
+
+.status-bar.complete .progress-fill {
+    background: linear-gradient(90deg, var(--accent-green), #56d364);
+}
+
 .header-left {
     display: flex;
     align-items: center;
@@ -60,6 +181,7 @@ body {
     font-weight: 600;
     background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -223,6 +345,81 @@ body {
     border-top: 1px solid var(--border);
     display: flex;
     gap: 0.5rem;
+}
+
+/* ============ FILTER BAR (Jira-style) ============ */
+.filter-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-dark);
+    border-bottom: 1px solid var(--border);
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    transition: border-color 0.2s;
+}
+
+.search-box:focus-within {
+    border-color: var(--accent-blue);
+}
+
+.search-icon {
+    opacity: 0.6;
+}
+
+.search-box input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    outline: none;
+}
+
+.search-box input::placeholder {
+    color: var(--text-secondary);
+}
+
+.filter-controls {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-select {
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    cursor: pointer;
+    min-width: 120px;
+    transition: all 0.2s;
+}
+
+.filter-select:hover {
+    border-color: var(--accent-blue);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+}
+
+.filter-select option {
+    background: var(--bg-card);
+    color: var(--text-primary);
 }
 
 /* Scenario List */
@@ -603,8 +800,18 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--text-secondary);
 }
+
 /* ============ SCENARIO CARD (Right Panel) ============ */
-.scenario-card { padding: 1.5rem; background: var(--bg-dark); border-radius: 12px; display: flex; flex-direction: column; gap: 1rem; min-height: 600px; max-height: 80vh; }
+.scenario-card {
+    padding: 1.5rem;
+    background: var(--bg-dark);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-height: 600px;
+    max-height: 80vh;
+}
 
 .card-header {
     display: flex;
@@ -626,7 +833,10 @@ body {
     line-height: 1.6;
 }
 
-.card-steps { flex: 1; overflow-y: auto; }
+.card-steps {
+    flex: 1;
+    overflow-y: auto;
+}
 
 .card-steps h4 {
     font-size: 0.875rem;
@@ -825,7 +1035,11 @@ body {
 }
 
 /* ============ TIMELINE VIEW (Metro Map Style) ============ */
-.steps-timeline { position: relative; padding-left: 2rem; padding-bottom: 2rem; }
+.steps-timeline {
+    position: relative;
+    padding-left: 2rem;
+    padding-bottom: 2rem;
+}
 
 /* The vertical track line */
 .steps-timeline::before {
@@ -909,9 +1123,23 @@ body {
 }
 
 /* Extended scrollable timeline view */
-.scenario-card { padding: 1.5rem; background: var(--bg-dark); border-radius: 12px; display: flex; flex-direction: column; gap: 1rem; min-height: 600px; max-height: 80vh; }
+.scenario-card {
+    padding: 1.5rem;
+    background: var(--bg-dark);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-height: 600px;
+    max-height: 80vh;
+}
 
-.card-steps {\n    flex: 1;\n    overflow-y: auto;\n    min-height: 400px;\n}\n
+.card-steps {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 400px;
+}
+
 /* Hide redundant status icons */
 .scenario-item .status-icon {
     display: none;

@@ -13,7 +13,7 @@
         <!-- Header -->
         <header class="header">
             <div class="header-left">
-                <h1>🎮 UE5 Scenario Generator <span class="app-version" id="app-version">v1.0.1</span></h1>
+                <h1>🎮 UE5 Scenario Generator <span class="app-version" id="app-version">v1.1.0</span></h1>
                 <span id="api-status" class="status-badge">Checking...</span>
             </div>
             <div class="header-right">
@@ -29,6 +29,36 @@
             </div>
         </header>
 
+        <!-- Full-Width Status Bar -->
+        <div id="status-bar" class="status-bar hidden">
+            <div class="status-bar-content">
+                <div class="status-indicator">
+                    <span id="status-icon" class="status-icon pulse">⚡</span>
+                    <span id="status-text" class="status-text">Ready</span>
+                </div>
+                <div class="status-progress">
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                    <span id="progress-count" class="progress-count">0/0</span>
+                </div>
+                <div class="status-stats">
+                    <div class="stat">
+                        <span class="stat-label">Current:</span>
+                        <span id="current-scenario" class="stat-value">-</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Tokens:</span>
+                        <span id="tokens-used" class="stat-value">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Cost:</span>
+                        <span id="estimated-cost" class="stat-value">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Main Content -->
         <main class="main">
             <!-- Scenario List -->
@@ -36,6 +66,30 @@
                 <div class="panel-header">
                     <h2>📦 Scenarios</h2>
                     <span id="scenario-count" class="count-badge">0 / 0</span>
+                </div>
+                <!-- Filter & Sort Controls -->
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="search-input" placeholder="Search scenarios..." />
+                    </div>
+                    <div class="filter-controls">
+                        <select id="filter-status" class="filter-select" title="Filter by status">
+                            <option value="all">All Status</option>
+                            <option value="generated">✅ Generated</option>
+                            <option value="not-generated">⏳ Not Generated</option>
+                        </select>
+                        <select id="filter-category" class="filter-select" title="Filter by category">
+                            <option value="all">All Categories</option>
+                        </select>
+                        <select id="sort-by" class="filter-select" title="Sort by">
+                            <option value="name">Sort: Name</option>
+                            <option value="steps">Sort: Steps</option>
+                            <option value="time">Sort: Time</option>
+                            <option value="cost">Sort: Cost</option>
+                            <option value="size">Sort: File Size</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="panel-content">
                     <div id="scenario-list" class="scenario-list">
@@ -52,37 +106,12 @@
                 </div>
             </section>
 
-            <!-- Progress & Preview -->
+            <!-- Preview Panel -->
             <section class="panel preview-panel">
                 <div class="panel-header">
-                    <h2>📊 Status</h2>
+                    <h2>👁️ Preview</h2>
                 </div>
                 <div class="panel-content">
-                    <!-- Progress Section -->
-                    <div id="progress-section" class="progress-section hidden">
-                        <div class="progress-header">
-                            <span id="progress-title">Generating...</span>
-                            <span id="progress-count">0/0</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div id="progress-fill" class="progress-fill"></div>
-                        </div>
-                        <div class="progress-stats">
-                            <div class="stat">
-                                <span class="stat-label">Current:</span>
-                                <span id="current-scenario" class="stat-value">-</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-label">Tokens:</span>
-                                <span id="tokens-used" class="stat-value">0</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-label">Cost:</span>
-                                <span id="estimated-cost" class="stat-value">$0.00</span>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Preview Section -->
                     <div id="preview-section" class="preview-section">
                         <div class="preview-placeholder">

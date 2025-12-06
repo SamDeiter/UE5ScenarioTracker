@@ -6,9 +6,16 @@ const API_BASE = 'http://localhost:5000/api';
 
 // State
 let scenarios = [];
+let filteredScenarios = [];
 let selectedScenarios = new Set();
 let isGenerating = false;
 let selectedModel = null;
+let currentFilters = {
+    search: '',
+    status: 'all',
+    category: 'all'
+};
+let currentSort = 'name';
 
 // DOM Elements
 const elements = {
@@ -19,13 +26,21 @@ const elements = {
     scenarioCount: document.getElementById('scenario-count'),
     generateSelectedBtn: document.getElementById('generate-selected-btn'),
     generateAllBtn: document.getElementById('generate-all-btn'),
-    progressSection: document.getElementById('progress-section'),
-    progressTitle: document.getElementById('progress-title'),
-    progressCount: document.getElementById('progress-count'),
+    // New status bar elements
+    statusBar: document.getElementById('status-bar'),
+    statusIcon: document.getElementById('status-icon'),
+    statusText: document.getElementById('status-text'),
     progressFill: document.getElementById('progress-fill'),
+    progressCount: document.getElementById('progress-count'),
     currentScenario: document.getElementById('current-scenario'),
     tokensUsed: document.getElementById('tokens-used'),
     estimatedCost: document.getElementById('estimated-cost'),
+    // Filter elements
+    searchInput: document.getElementById('search-input'),
+    filterStatus: document.getElementById('filter-status'),
+    filterCategory: document.getElementById('filter-category'),
+    sortBy: document.getElementById('sort-by'),
+    // Preview elements
     previewSection: document.getElementById('preview-section'),
     previewContent: document.getElementById('preview-content'),
     previewTitle: document.getElementById('preview-title'),
@@ -167,11 +182,76 @@ async function loadScenarios() {
 
         elements.scenarioCount.textContent = `${data.generated} / ${data.total}`;
 
-        renderScenarioList();
+        // Populate category filter dropdown
+        populateCategoryFilter();
+
+        // Apply filters and render
+        applyFiltersAndSort();
+
         log(`Loaded ${data.total} scenarios (${data.generated} generated)`, 'success');
     } catch {
         elements.scenarioList.innerHTML = '<div class="loading">Failed to load scenarios</div>';
     }
+}
+
+// Populate category filter with all available categories
+function populateCategoryFilter() {
+    const categories = new Set();
+    scenarios.forEach(s => categories.add(s.category || 'Other'));
+
+    elements.filterCategory.innerHTML = '<option value="all">All Categories</option>';
+    Array.from(categories).sort().forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        elements.filterCategory.appendChild(option);
+    });
+}
+
+// Apply filters and sorting, then render
+function applyFiltersAndSort() {
+    // Filter scenarios
+    filteredScenarios = scenarios.filter(scenario => {
+        // Search filter
+        if (currentFilters.search) {
+            const searchLower = currentFilters.search.toLowerCase();
+            if (!scenario.title.toLowerCase().includes(searchLower) &&
+                !(scenario.category || '').toLowerCase().includes(searchLower)) {
+                return false;
+            }
+        }
+
+        // Status filter
+        if (currentFilters.status === 'generated' && !scenario.generated) return false;
+        if (currentFilters.status === 'not-generated' && scenario.generated) return false;
+
+        // Category filter
+        if (currentFilters.category !== 'all') {
+            if ((scenario.category || 'Other') !== currentFilters.category) return false;
+        }
+
+        return true;
+    });
+
+    // Sort scenarios
+    filteredScenarios.sort((a, b) => {
+        switch (currentSort) {
+            case 'name':
+                return a.title.localeCompare(b.title);
+            case 'steps':
+                return (b.steps || 0) - (a.steps || 0);
+            case 'time':
+                return (b.estimate_hours || b.estimated_hours || 0) - (a.estimate_hours || a.estimated_hours || 0);
+            case 'cost':
+                return (b.tokens_used || 0) - (a.tokens_used || 0);
+            case 'size':
+                return (b.file_size || 0) - (a.file_size || 0);
+            default:
+                return 0;
+        }
+    });
+
+    renderScenarioList();
 }
 
 // Render Scenario List
@@ -179,9 +259,15 @@ async function loadScenarios() {
 function renderScenarioList() {
     elements.scenarioList.innerHTML = '';
 
+    // Show message if no results
+    if (filteredScenarios.length === 0) {
+        elements.scenarioList.innerHTML = '<div class="loading">No scenarios match your filters</div>';
+        return;
+    }
+
     // Group by category
     const groups = {};
-    scenarios.forEach(scenario => {
+    filteredScenarios.forEach(scenario => {
         const cat = scenario.category || 'Other';
         if (!groups[cat]) groups[cat] = [];
         groups[cat].push(scenario);
@@ -434,7 +520,8 @@ async function generateScenarios(scenarioIds) {
     isGenerating = true;
     updateButtons();
 
-    elements.progressSection.classList.remove('hidden');
+    // Show the status bar
+    showStatusBar('Generating...');
 
     let completed = 0;
     let totalTokens = 0;
@@ -443,6 +530,7 @@ async function generateScenarios(scenarioIds) {
         elements.currentScenario.textContent = id;
         elements.progressCount.textContent = `${completed + 1}/${scenarioIds.length}`;
         elements.progressFill.style.width = `${(completed / scenarioIds.length) * 100}%`;
+        elements.statusText.textContent = `Generating: ${id}`;
 
         log(`Generating: ${id}...`, 'info');
 
@@ -469,8 +557,10 @@ async function generateScenarios(scenarioIds) {
         elements.progressFill.style.width = `${(completed / scenarioIds.length) * 100}%`;
     }
 
-    elements.progressTitle.textContent = 'Complete!';
+    // Show completion
+    showStatusBar(`Complete! Generated ${completed} scenarios`, true);
     elements.currentScenario.textContent = '-';
+    elements.progressFill.style.width = '100%';
 
     isGenerating = false;
     updateButtons();
@@ -479,7 +569,20 @@ async function generateScenarios(scenarioIds) {
     await loadScenarios();
 }
 
-// Event Listeners
+// Show/update status bar
+function showStatusBar(text, isComplete = false) {
+    elements.statusBar.classList.remove('hidden');
+    elements.statusBar.classList.toggle('complete', isComplete);
+    elements.statusText.textContent = text;
+    elements.statusIcon.textContent = isComplete ? '✅' : '⚡';
+    elements.statusIcon.classList.toggle('pulse', !isComplete);
+}
+
+// Hide status bar
+function hideStatusBar() {
+    elements.statusBar.classList.add('hidden');
+}
+
 // Event Listeners
 function setupEventListeners() {
     elements.refreshBtn.addEventListener('click', () => {
@@ -507,6 +610,27 @@ function setupEventListeners() {
 
     elements.clearLogBtn.addEventListener('click', () => {
         elements.logContent.innerHTML = '<div class="log-entry info">Log cleared</div>';
+    });
+
+    // Filter/Sort event listeners
+    elements.searchInput.addEventListener('input', (e) => {
+        currentFilters.search = e.target.value;
+        applyFiltersAndSort();
+    });
+
+    elements.filterStatus.addEventListener('change', (e) => {
+        currentFilters.status = e.target.value;
+        applyFiltersAndSort();
+    });
+
+    elements.filterCategory.addEventListener('change', (e) => {
+        currentFilters.category = e.target.value;
+        applyFiltersAndSort();
+    });
+
+    elements.sortBy.addEventListener('change', (e) => {
+        currentSort = e.target.value;
+        applyFiltersAndSort();
     });
 }
 

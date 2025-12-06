@@ -607,10 +607,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const isActive = currentScenarioId === scenarioId && !state.completed;
 
             card.className = `p-4 rounded-lg border-l-4 cursor-pointer transition-all duration-200 ${state.completed
-                    ? 'bg-gray-700/50 border-green-600'
-                    : isActive
-                        ? 'bg-blue-900/40 border-blue-400 ring-2 ring-blue-400'
-                        : 'bg-gray-700 hover:bg-gray-600/80 border-blue-500'
+                ? 'bg-gray-700/50 border-green-600'
+                : isActive
+                    ? 'bg-blue-900/40 border-blue-400 ring-2 ring-blue-400'
+                    : 'bg-gray-700 hover:bg-gray-600/80 border-blue-500'
                 }`;
             card.dataset.scenarioId = scenarioId;
 
@@ -810,6 +810,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const timeCost = parseFloat(choiceTimeCost);
         const index = parseInt(originalIndex, 10);
 
+        // Get the choice data to access feedback
+        const scenario = window.SCENARIOS[currentScenarioId];
+        const step = scenario.steps[currentStepId];
+        const choice = step.choices[index];
+        const isCorrect = choice && choice.type === 'correct';
+
         // 1. Log the time cost (updates global state)
         const state = scenarioState[currentScenarioId];
         state.loggedTime += timeCost;
@@ -822,11 +828,80 @@ document.addEventListener('DOMContentLoaded', () => {
         // 3. Check for scenario conclusion
         if (choiceNext === 'conclusion') {
             finishScenario();
+        } else if (choiceNext === currentStepId && !isCorrect && choice && choice.feedback) {
+            // Wrong answer that loops back to same step - show feedback first
+            showChoiceFeedback(choice, () => {
+                currentStepId = choiceNext;
+                renderStep(currentScenarioId, currentStepId);
+            });
         } else {
             // 4. Move to the next step immediately 
             currentStepId = choiceNext;
             renderStep(currentScenarioId, currentStepId);
         }
+    }
+
+    /**
+     * Shows feedback for a choice before continuing to the next step.
+     * @param {Object} choice - The choice object containing feedback text and type.
+     * @param {Function} callback - Function to call after feedback is dismissed.
+     */
+    function showChoiceFeedback(choice, callback) {
+        // Determine feedback styling based on choice type
+        let borderColor = 'border-red-500';
+        let bgColor = 'bg-red-900/20';
+        let iconColor = 'text-red-400';
+        let icon = '✗';
+
+        if (choice.type === 'partial' || choice.type === 'plausible') {
+            borderColor = 'border-yellow-500';
+            bgColor = 'bg-yellow-900/20';
+            iconColor = 'text-yellow-400';
+            icon = '⚠';
+        } else if (choice.type === 'misguided' || choice.type === 'subtle') {
+            borderColor = 'border-orange-500';
+            bgColor = 'bg-orange-900/20';
+            iconColor = 'text-orange-400';
+            icon = '!';
+        }
+
+        // Create feedback overlay
+        const feedbackHtml = `
+            <div id="choice-feedback-overlay" class="fixed inset-0 bg-gray-900/80 flex items-center justify-center z-50 p-4">
+                <div class="max-w-lg w-full ${bgColor} border-2 ${borderColor} rounded-xl p-6 shadow-2xl">
+                    <div class="flex items-start gap-4">
+                        <div class="${iconColor} text-3xl font-bold">${icon}</div>
+                        <div class="flex-1">
+                            <h4 class="${iconColor} font-bold text-lg mb-2">Try Again</h4>
+                            <div class="text-gray-200 text-sm leading-relaxed prose prose-sm prose-invert">${choice.feedback || 'That answer was not correct.'}</div>
+                        </div>
+                    </div>
+                    <button id="feedback-continue-btn" class="mt-6 w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', feedbackHtml);
+
+        // Handle continue button click
+        const continueBtn = document.getElementById('feedback-continue-btn');
+        const overlay = document.getElementById('choice-feedback-overlay');
+
+        const handleContinue = () => {
+            overlay.remove();
+            if (callback) callback();
+        };
+
+        continueBtn.addEventListener('click', handleContinue);
+
+        // Also allow clicking outside to continue
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                handleContinue();
+            }
+        });
     }
 
     /**

@@ -721,7 +721,8 @@ body {
 }
 
 .log-panel.collapsed {
-    height: 40px;
+    height: 50px;
+    border-top: 2px solid var(--accent-blue);
 }
 
 .log-panel.collapsed .log-content {
@@ -729,17 +730,19 @@ body {
 }
 
 .log-panel.expanded {
-    height: 200px;
+    height: 300px;
 }
 
 .log-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1rem;
     cursor: pointer;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    background: var(--bg-hover);
+    font-weight: 500;
 }
 
 .log-bar:hover {
@@ -754,8 +757,15 @@ body {
 }
 
 .log-panel.has-error .log-bar {
-    background: rgba(248, 81, 73, 0.1);
-    color: var(--accent-red);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    background: var(--bg-hover);
+    font-weight: 500;
 }
 
 .log-panel.has-error {

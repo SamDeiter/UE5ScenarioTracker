@@ -855,25 +855,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function showChoiceFeedback(choice, callback) {
         // Determine feedback styling based on choice type
         let borderColor = 'border-red-500';
-        let bgColor = 'bg-red-900/20';
+        let bgColor = 'bg-gray-800'; // Solid background for readability
         let iconColor = 'text-red-400';
         let icon = '✗';
 
         if (choice.type === 'partial' || choice.type === 'plausible') {
             borderColor = 'border-yellow-500';
-            bgColor = 'bg-yellow-900/20';
             iconColor = 'text-yellow-400';
             icon = '⚠';
         } else if (choice.type === 'misguided' || choice.type === 'subtle') {
             borderColor = 'border-orange-500';
-            bgColor = 'bg-orange-900/20';
             iconColor = 'text-orange-400';
             icon = '!';
         }
 
         // Create feedback overlay
         const feedbackHtml = `
-            <div id="choice-feedback-overlay" class="fixed inset-0 bg-gray-900/80 flex items-center justify-center z-50 p-4">
+            <div id="choice-feedback-overlay" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
                 <div class="max-w-lg w-full ${bgColor} border-2 ${borderColor} rounded-xl p-6 shadow-2xl">
                     <div class="flex items-start gap-4">
                         <div class="${iconColor} text-3xl font-bold">${icon}</div>

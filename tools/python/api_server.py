@@ -34,8 +34,20 @@ def get_raw_data():
 
 @app.route('/')
 def index():
-    """Serve the GUI"""
+    """Serve the Generator GUI"""
     return send_from_directory(app.static_folder, 'index.html')
+
+
+@app.route('/launcher')
+def launcher():
+    """Serve the unified launcher"""
+    return send_from_directory(ROOT_DIR, 'launcher.html')
+
+
+@app.route('/quiz')
+def quiz():
+    """Serve the quiz app"""
+    return send_from_directory(ROOT_DIR, 'index.html')
 
 
 @app.route('/<path:path>')

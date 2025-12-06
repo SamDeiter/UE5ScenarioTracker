@@ -479,11 +479,14 @@ elements.generateSelectedBtn.addEventListener('click', () => {
 });
 
 elements.generateAllBtn.addEventListener('click', () => {
+    console.log('Generate All Missing clicked');
     const missing = scenarios.filter(s => !s.generated).map(s => s.id);
+    console.log(`Found ${missing.length} missing scenarios:`, missing.slice(0, 5));
     if (missing.length === 0) {
         log('All scenarios already generated!', 'success');
         return;
     }
+    log(`Starting batch generation of ${missing.length} scenarios...`, 'info');
     generateScenarios(missing);
 });
 

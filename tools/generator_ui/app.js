@@ -225,8 +225,8 @@ function renderScenarioList() {
             const timeDisplay = scenario.generated
                 ? (timeMinutes > 0 ? `${timeMinutes}min` : '-')
                 : (timeMinutes > 0 ? `~${timeMinutes}min` : '-');
-            const cost = scenario.generated && scenario.tokens_used > 0
-                ? `$${(scenario.tokens_used * 0.0000002).toFixed(4)}`
+            const cost = scenario.generated
+                ? `$${((scenario.tokens_used || 0) * 0.0000002).toFixed(4)}`
                 : '-';
 
             item.innerHTML = `
@@ -237,7 +237,7 @@ function renderScenarioList() {
                         ${scenario.steps} steps
                         ${scenario.generated ? ' • ' + sizeKB + 'KB' : ''}
                         • ⏱️ ${timeDisplay}
-                        ${scenario.generated && scenario.tokens_used > 0 ? ' • 💰 ' + cost : ''}
+                        ${scenario.generated ? ' • 💰 ' + cost : ''}
                     </div>
                 </div>
             `;

@@ -6,8 +6,28 @@ Token-efficient two-pass generation system
 import json
 import os
 import re
+import random
 import google.generativeai as genai
 from pathlib import Path
+
+# Varied action prompt endings - rotated to avoid repetitive "What do you do next?"
+ACTION_PROMPTS = [
+    "What is your next step?",
+    "How do you proceed?",
+    "What action do you take?",
+    "What's the best approach here?",
+    "How should you investigate this?",
+    "What do you check first?",
+    "How do you address this?",
+    "What's your next move?",
+    "Which approach do you choose?",
+    "How do you resolve this?",
+    "What should you examine next?",
+    "How do you troubleshoot this?",
+    "What's the correct action here?",
+    "How do you proceed from here?",
+    "What do you investigate?",
+]
 
 class ScenarioGenerator:
     def __init__(self, api_key, templates_path=None):
@@ -32,6 +52,7 @@ class ScenarioGenerator:
             self.templates = json.load(f)
         
         self.token_count = 0
+        self.prompt_index = 0  # For rotating action prompts
 
     def _find_first_valid_model(self):
         """Fetch list of models and return the first one that supports generateContent"""
@@ -180,58 +201,59 @@ CRITICAL: Generate content for ALL {len(all_step_ids)} steps including detours:
 {step_list_str}
 
 CRITICAL: Use EXACT step_id values from the outline above. DO NOT invent new step IDs!
-- For each step in optimal_path, use its "step_id" field exactly
-- For each step in detours.steps arrays, use those exact step IDs
-- Example: If outline has "step-1W-light-1", use that EXACT ID, not "step-1W1_action"
 
-CRITICAL: THIS IS AN ASSESSMENT, NOT A TUTORIAL
-- Prompts show SYMPTOMS only (what you see, error messages, visual bugs)
-- Prompts DON'T teach or explain solutions
-- Prompts DON'T telegraph the answer
-- User must apply UE5 knowledge to choose correct action
+===== PROMPT QUALITY REQUIREMENTS =====
+THIS IS AN ASSESSMENT - NOT A TUTORIAL!
+
+PROMPTS MUST:
+- Describe ONLY what you OBSERVE (symptoms, errors, visual issues)
+- Be SHORT (50-100 characters)
+- Use <strong></strong> for UE5 terms, <code></code> for settings/commands
+- NOT explain WHY or teach the solution
+- NOT use "What do you do next?" repeatedly - vary the action questions:
+  * "How do you investigate?"
+  * "What's your next move?"
+  * "How should you proceed?"
+  * "Which approach do you choose?"
+
+GOOD: "The <strong>Static Mesh</strong> appears pitch black. How do you investigate?"
+BAD: "Understand that the PBR calculation is driving Emissive Color..." (TOO LONG, EXPLAINS)
+===== END PROMPT QUALITY REQUIREMENTS =====
 
 UE5 TOOLS ONLY:
-✅ Console: stat unit, stat gpu, r.*, showflag.*, show collision
-✅ Editor: Details panel, Profiler, Buffer Visualization, World Settings
-✅ Views: wireframe, reflection buffer, collision view
-❌ NO: Task Manager, RenderDoc, PIX, Nsight, external profilers
+✅ Console: stat unit, stat gpu, r.*, showflag.*
+✅ Editor: Details panel, Profiler, Buffer Visualization
+❌ NO: Task Manager, RenderDoc, PIX, Nsight
 
-TASK:
-For each step in optimal_path AND each detour step, generate:
-1. Prompt: Describe WHAT you see/experience (symptoms), ask "What do you do next?"
-2. ONE correct choice (detailed, specific UE5 actions)
-3. THREE wrong choices with varying wrongness:
-   - Choice 1: Obviously wrong (completely different system) OR "Works but bad" (causes memory leaks, performance issues)
-   - Choice 2: Plausible but wrong property/setting
-   - Choice 3: SUBTLY wrong (almost correct but critical small mistake)
-4. Feedback for each:
-   - Correct: "Optimal Time: +Xhrs. [Why this is right approach]"
-   - Wrong: "Extended Time: +Xhrs. [What happened / consequence]"
+TASK - For each step generate:
+1. Prompt: SHORT symptom description + varied action question
+2. ONE correct choice with specific UE5 actions
+3. THREE wrong choices (obvious, plausible, subtle)
+4. Feedback with time logged and explanation
 
 Return JSON:
 {{
   "steps": [
     {{
       "step_id": "step-1",
-      "prompt": "<symptoms only>",
-      "correct_text": "<detailed UE5 action>",
-      "correct_feedback": "<feedback>",
+      "title": "Descriptive Step Title",
+      "prompt": "<p>Short symptom.</p><p><strong>How do you investigate?</strong></p>",
+      "correct_text": "Open <strong>Panel</strong> and check <code>setting</code>.",
+      "correct_feedback": "<strong>Optimal Time:</strong> +0.05hrs. Why this works.",
       "wrong_choices": [
-        {{"text": "<wrong 1>", "feedback": "<consequence>", "type": "obvious"}},
-        {{"text": "<wrong 2>", "feedback": "<consequence>", "type": "plausible"}},
-        {{"text": "<wrong 3>", "feedback": "<consequence>", "type": "subtle"}}
+        {{"text": "Obviously wrong action", "feedback": "<strong>Extended Time:</strong> +0.15hrs. Consequence.", "type": "obvious"}},
+        {{"text": "Plausible but wrong", "feedback": "<strong>Extended Time:</strong> +0.10hrs. Why wrong.", "type": "plausible"}},
+        {{"text": "Almost correct", "feedback": "<strong>Extended Time:</strong> +0.08hrs. Subtle error.", "type": "subtle"}}
       ]
     }}
   ]
 }}
 
 RULES:
-- Prompts: <150 chars, describe situation not solution
-- Actions: Specific (exact menu paths, console commands, property names)
-- Each wrong answer = DIFFERENT mistake type
-- "Works but bad" = fixes issue but creates new problem
-- Keep concise for file size
-- Return ONLY valid JSON, no markdown
+- Prompts: <100 chars, symptoms only
+- Use HTML: <strong>, <code>, <em>
+- Vary action questions across steps
+- Return ONLY valid JSON
 
 JSON:"""
 
@@ -350,10 +372,19 @@ JSON:"""
                     "next": next_step
                 })
             
+            # Use AI-generated title if available, otherwise use step number
+            step_title = detail_step.get('title', f'Step {i}')
+            
+            # Use AI-generated prompt directly (it includes the action question)
+            step_prompt = detail_step.get('prompt', '')
+            # If prompt is missing HTML, wrap it
+            if step_prompt and not step_prompt.startswith('<p>'):
+                step_prompt = f'<p>{step_prompt}</p><p><strong>{self._get_action_prompt()}</strong></p>'
+            
             scenario['steps'][step_id] = {
                 "skill": self._map_category_to_skill(raw_scenario['scenario']['focus_area']),
-                "title": f"Step {i}",
-                "prompt": f"<p>{detail_step.get('prompt', '')}</p><p><strong>What do you do next?</strong></p>",
+                "title": step_title,
+                "prompt": step_prompt,
                 "choices": choices
             }
         
@@ -383,10 +414,18 @@ JSON:"""
                             "next": detour_step_id  # Stay in detour
                         })
                     
+                    # Use AI-generated title if available
+                    detour_title = detour_detail.get('title', detour_step_id.replace('-', ' ').title())
+                    
+                    # Use AI-generated prompt directly
+                    detour_prompt = detour_detail.get('prompt', 'You took a detour.')
+                    if detour_prompt and not detour_prompt.startswith('<p>'):
+                        detour_prompt = f'<p>{detour_prompt}</p><p><strong>{self._get_action_prompt()}</strong></p>'
+                    
                     scenario['steps'][detour_step_id] = {
                         "skill": self._map_category_to_skill(raw_scenario['scenario']['focus_area']),
-                        "title": detour_step_id.replace('-', ' ').title(),
-                        "prompt": f"<p>{detour_detail.get('prompt', 'You took a detour.')}</p><p><strong>What do you do next?</strong></p>",
+                        "title": detour_title,
+                        "prompt": detour_prompt,
                         "choices": choices
                     }
         
@@ -442,7 +481,38 @@ CRITICAL RULES:
 ✅ Editor: Details panel, Profiler, World Settings
 ❌ NO external apps: Task Manager, RenderDoc, PIX
 
-THIS IS AN ASSESSMENT - prompts show SYMPTOMS only, not solutions!
+===== PROMPT QUALITY REQUIREMENTS =====
+THIS IS AN ASSESSMENT - NOT A TUTORIAL!
+
+PROMPTS MUST:
+- Describe ONLY what you OBSERVE (error messages, visual symptoms, behavior)
+- Be SHORT (50-100 characters max)
+- Use <strong></strong> for UE5 terms like <strong>Static Mesh</strong>, <strong>Material Instance</strong>
+- Use <code></code> for settings/commands like <code>r.Lumen.Visualize</code>
+- End with a VARIED action question (rotate these, don't always use "What do you do next?"):
+  * "How do you investigate this?"
+  * "What's your next move?"
+  * "How should you proceed?"
+  * "What action do you take?"
+  * "Which approach do you choose?"
+
+PROMPTS MUST NOT:
+- Explain WHY something is happening (save for feedback)
+- Teach or give hints about the solution
+- Include long technical explanations
+- Use "What do you do next?" for every step
+
+GOOD PROMPT EXAMPLES:
+- "The <strong>Static Mesh</strong> appears pitch black despite correct material settings. How do you investigate?"
+- "Console shows <code>Warning: Voice pool exhausted</code>. What's your next move?"
+- "Buffer Visualization reveals no reflection data on the metallic surface. How do you proceed?"
+
+BAD PROMPT EXAMPLES (DON'T DO THIS):
+- "Understand that since the PBR calculation is driving Emissive Color, and Emissive Color is only visible when the Base Color is non-zero, the material is likely calculating a zero Base Color..." (TOO LONG, EXPLAINS SOLUTION)
+- "You need to check the Mobility setting because Static objects can't simulate physics..." (GIVES AWAY ANSWER)
+
+FEEDBACK should contain the explanation of WHY the choice was right or wrong.
+===== END PROMPT QUALITY REQUIREMENTS =====
 
 Generate COMPLETE JSON scenario with 20-30 steps:
 {{
@@ -456,13 +526,13 @@ Generate COMPLETE JSON scenario with 20-30 steps:
   "steps": {{
     "step-1": {{
       "skill": "{self._map_category_to_skill(category)}",
-      "title": "Step 1",
-      "prompt": "<p>Symptoms description here.</p><p><strong>What do you do next?</strong></p>",
+      "title": "Investigate the Issue",
+      "prompt": "<p>The <strong>object</strong> shows <em>symptom</em>. <code>Error if any</code>.</p><p><strong>How do you investigate?</strong></p>",
       "choices": [
-        {{"text": "<p>Correct action</p>", "type": "correct", "feedback": "<p>Optimal Time: +Xhrs. Why correct.</p>", "next": "step-2"}},
-        {{"text": "<p>Wrong action 1</p>", "type": "obvious", "feedback": "<p>Extended Time: +Xhrs. Consequence.</p>", "next": "step-1"}},
-        {{"text": "<p>Wrong action 2</p>", "type": "plausible", "feedback": "<p>Extended Time: +Xhrs. Consequence.</p>", "next": "step-1"}},
-        {{"text": "<p>Wrong action 3</p>", "type": "subtle", "feedback": "<p>Extended Time: +Xhrs. Consequence.</p>", "next": "step-1"}}
+        {{"text": "<p>Open <strong>Panel Name</strong> and check <code>specific_setting</code>.</p>", "type": "correct", "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. Explanation of why this approach works.</p>", "next": "step-2"}},
+        {{"text": "<p>Wrong approach that's obviously wrong.</p>", "type": "obvious", "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. Consequence and why it's wrong.</p>", "next": "step-1"}},
+        {{"text": "<p>Plausible-sounding but incorrect approach.</p>", "type": "plausible", "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. Why this seems right but isn't.</p>", "next": "step-1"}},
+        {{"text": "<p>Almost correct but subtly wrong.</p>", "type": "subtle", "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. The subtle error and consequence.</p>", "next": "step-1"}}
       ]
     }},
     "conclusion": {{
@@ -474,11 +544,12 @@ Generate COMPLETE JSON scenario with 20-30 steps:
   }}
 }}
 
-RULES:
+ADDITIONAL RULES:
 - 20-30 main steps, each "next" points to next step or "conclusion"
 - 4 choices per step: 1 correct + 3 wrong (obvious, plausible, subtle)
-- Wrong choices loop back to same step or add small detour
-- Prompts: symptoms only, <150 chars
+- Wrong choices loop back to same step
+- Each step has a DESCRIPTIVE title (not just "Step 1", "Step 2")
+- Use HTML formatting: <strong> for terms, <code> for commands/settings, <em> for emphasis
 - Return ONLY valid JSON, no markdown
 
 JSON:"""
@@ -640,6 +711,12 @@ JSON:"""
         """Format wrong steps for prompt"""
         return '\n'.join([f"- {step['step_description']} (Penalty: {step['time_penalty']}hrs)" 
                          for step in steps])
+    
+    def _get_action_prompt(self):
+        """Get next action prompt from rotating pool for variety"""
+        prompt = ACTION_PROMPTS[self.prompt_index % len(ACTION_PROMPTS)]
+        self.prompt_index += 1
+        return prompt
     
     def _extract_json(self, text):
         """Extract JSON from markdown code blocks or raw text"""

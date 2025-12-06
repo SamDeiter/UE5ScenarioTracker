@@ -97,6 +97,9 @@
                     </div>
                 </div>
                 <div class="panel-footer">
+                    <button id="create-new-btn" class="btn btn-secondary" title="Create a new scenario from scratch">
+                        ➕ Create New
+                    </button>
                     <button id="generate-selected-btn" class="btn btn-primary" disabled>
                         ⚡ Generate Selected
                     </button>
@@ -165,6 +168,87 @@
                 <div class="log-entry info">Ready to generate scenarios...</div>
             </div>
         </footer>
+    </div>
+
+    <!-- Step Detail Modal -->
+    <div id="step-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="step-modal-title">Step Details</h3>
+                <button class="modal-close" onclick="closeStepModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="step-detail">
+                    <h4>Prompt:</h4>
+                    <div id="step-modal-prompt" class="step-prompt-text"></div>
+                </div>
+                <div class="step-detail">
+                    <h4>Choices:</h4>
+                    <div id="step-modal-choices" class="step-choices-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create New Scenario Modal -->
+    <div id="create-modal" class="modal hidden">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>➕ Create New Scenario</h3>
+                <button class="modal-close" onclick="closeCreateModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="create-scenario-form" class="create-form">
+                    <div class="form-group">
+                        <label for="new-title">Scenario Title *</label>
+                        <input type="text" id="new-title" placeholder="e.g., Nanite LOD Popping Issue" required />
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="new-category">Category *</label>
+                            <select id="new-category" required>
+                                <option value="">Select category...</option>
+                                <option value="Lighting & Rendering">Lighting & Rendering</option>
+                                <option value="Blueprints & Logic">Blueprints & Logic</option>
+                                <option value="Materials & Shaders">Materials & Shaders</option>
+                                <option value="World Partition & Streaming">World Partition & Streaming</option>
+                                <option value="Physics & Collisions">Physics & Collisions</option>
+                                <option value="Performance & Optimization">Performance & Optimization</option>
+                                <option value="Animation & Rigging">Animation & Rigging</option>
+                                <option value="Audio & Sound">Audio & Sound</option>
+                                <option value="UI & UMG">UI & UMG</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-hours">Estimated Hours *</label>
+                            <input type="number" id="new-hours" step="0.25" min="0.25" max="4" value="1.0" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-description">Problem Description * <span class="hint">(What the user
+                                observes)</span></label>
+                        <textarea id="new-description" rows="3"
+                            placeholder="Describe the visual symptom or error the user encounters..."
+                            required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-solution">Correct Solution Steps <span class="hint">(One per
+                                line)</span></label>
+                        <textarea id="new-solution" rows="4"
+                            placeholder="1. Open the Details panel for the affected Actor&#10;2. Check the Mobility setting..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-wrong">Common Wrong Approaches <span class="hint">(One per line)</span></label>
+                        <textarea id="new-wrong" rows="3"
+                            placeholder="- Restart the editor without investigating&#10;- Change unrelated settings..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeCreateModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create & Generate</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>

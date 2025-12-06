@@ -305,6 +305,64 @@ def get_generation_status():
     return jsonify(generation_status)
 
 
+@app.route('/api/create-scenario', methods=['POST'])
+def create_scenario():
+    """Create a new scenario and add it to raw_data.json"""
+    global _raw_data_cache
+    
+    data = request.json
+    
+    if not data or 'scenario' not in data:
+        return jsonify({'error': 'Invalid scenario data'}), 400
+    
+    scenario = data['scenario']
+    required_fields = ['scenario_id', 'title', 'problem_description', 'focus_area', 'estimated_hours']
+    
+    for field in required_fields:
+        if field not in scenario:
+            return jsonify({'error': f'Missing required field: {field}'}), 400
+    
+    # Ensure arrays have defaults
+    if 'correct_solution_steps' not in scenario or len(scenario['correct_solution_steps']) == 0:
+        scenario['correct_solution_steps'] = [
+            {'step_description': 'Investigate the issue', 'time_cost': 0.1}
+        ]
+    
+    if 'common_wrong_steps' not in scenario or len(scenario['common_wrong_steps']) == 0:
+        scenario['common_wrong_steps'] = [
+            {'step_description': 'Make unrelated changes', 'time_penalty': 0.15}
+        ]
+    
+    try:
+        # Load current raw_data.json
+        with open(RAW_DATA_PATH, 'r', encoding='utf-8') as f:
+            raw_data = json.load(f)
+        
+        # Check if scenario_id already exists
+        for item in raw_data:
+            if item['scenario']['scenario_id'] == scenario['scenario_id']:
+                return jsonify({'error': f'Scenario {scenario["scenario_id"]} already exists'}), 409
+        
+        # Add the new scenario
+        raw_data.append({'scenario': scenario})
+        
+        # Save back to file
+        with open(RAW_DATA_PATH, 'w', encoding='utf-8') as f:
+            json.dump(raw_data, f, indent=2)
+        
+        # Clear cache so new scenario is picked up
+        _raw_data_cache = None
+        
+        return jsonify({
+            'success': True,
+            'scenario_id': scenario['scenario_id'],
+            'message': f'Created scenario: {scenario["title"]}'
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 if __name__ == '__main__':
     print("🚀 Starting Scenario Generator API Server...")
     print(f"📂 Raw data: {RAW_DATA_PATH}")

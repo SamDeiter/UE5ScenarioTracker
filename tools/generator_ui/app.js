@@ -486,21 +486,32 @@ async function showPreview(scenarioId) {
                 }
             }
 
-            // Render as timeline
+            // Render as timeline - make steps clickable
             orderedSteps.forEach((step, index) => {
                 const div = document.createElement('div');
                 const isStart = index === 0;
                 const isEnd = step.id === 'conclusion' || (step.title && step.title.includes('Complete'));
 
                 div.className = 'timeline-step ' + (isStart ? 'step-start' : isEnd ? 'step-end' : 'step-middle');
+                div.title = 'Click to view step details';
 
+                // Truncate prompt for preview (strip HTML and limit length)
+                const promptText = (step.prompt || '').replace(/<[^>]*>/g, '').substring(0, 80);
                 div.innerHTML = `
                     <div class="timeline-title">${step.title || step.action || 'Step ' + (index + 1)}</div>
-                    <div class="timeline-prompt">${step.prompt || step.description || ''}</div>
+                    <div class="timeline-prompt">${promptText}${promptText.length >= 80 ? '...' : ''}</div>
                 `;
+
+                // Add click handler to show step detail modal
+                div.addEventListener('click', () => {
+                    openStepModal(step);
+                });
 
                 stepsList.appendChild(div);
             });
+
+            // Store for modal access
+            currentPreviewContent = content;
         }
 
         // Debug info
@@ -632,7 +643,159 @@ function setupEventListeners() {
         currentSort = e.target.value;
         applyFiltersAndSort();
     });
+
+    // Create New button
+    const createNewBtn = document.getElementById('create-new-btn');
+    if (createNewBtn) {
+        createNewBtn.addEventListener('click', openCreateModal);
+    }
+
+    // Create form submit
+    const createForm = document.getElementById('create-scenario-form');
+    if (createForm) {
+        createForm.addEventListener('submit', handleCreateScenario);
+    }
 }
+
+// Store current preview content for step clicks
+let currentPreviewContent = null;
+
+// Modal Functions
+function openStepModal(step) {
+    const modal = document.getElementById('step-modal');
+    const titleEl = document.getElementById('step-modal-title');
+    const promptEl = document.getElementById('step-modal-prompt');
+    const choicesEl = document.getElementById('step-modal-choices');
+
+    titleEl.textContent = step.title || step.id;
+    promptEl.innerHTML = step.prompt || 'No prompt available';
+
+    // Render choices
+    choicesEl.innerHTML = '';
+    if (step.choices && step.choices.length > 0) {
+        step.choices.forEach(choice => {
+            const div = document.createElement('div');
+            div.className = `choice-item type-${choice.type || 'unknown'}`;
+            div.innerHTML = `
+                <div class="choice-type">${choice.type || 'choice'}</div>
+                <div class="choice-text">${choice.text || ''}</div>
+                <div class="choice-feedback">${choice.feedback || ''}</div>
+            `;
+            choicesEl.appendChild(div);
+        });
+    } else {
+        choicesEl.innerHTML = '<p class="text-muted">No choices (end of scenario)</p>';
+    }
+
+    modal.classList.remove('hidden');
+}
+
+function closeStepModal() {
+    document.getElementById('step-modal').classList.add('hidden');
+}
+
+function openCreateModal() {
+    document.getElementById('create-modal').classList.remove('hidden');
+}
+
+function closeCreateModal() {
+    document.getElementById('create-modal').classList.add('hidden');
+    document.getElementById('create-scenario-form').reset();
+}
+
+async function handleCreateScenario(e) {
+    e.preventDefault();
+
+    const title = document.getElementById('new-title').value.trim();
+    const category = document.getElementById('new-category').value;
+    const hours = parseFloat(document.getElementById('new-hours').value);
+    const description = document.getElementById('new-description').value.trim();
+    const solutionText = document.getElementById('new-solution').value.trim();
+    const wrongText = document.getElementById('new-wrong').value.trim();
+
+    // Generate scenario_id from title
+    const scenarioId = title.replace(/[^a-zA-Z0-9]+/g, '');
+
+    // Parse solution steps
+    const solutionSteps = solutionText
+        .split('\n')
+        .filter(line => line.trim())
+        .map((line, i) => ({
+            step_description: line.replace(/^\d+\.\s*/, '').trim(),
+            time_cost: (hours / 10).toFixed(2)  // Rough estimate
+        }));
+
+    // Parse wrong steps
+    const wrongSteps = wrongText
+        .split('\n')
+        .filter(line => line.trim())
+        .map(line => ({
+            step_description: line.replace(/^[-*]\s*/, '').trim(),
+            time_penalty: 0.1
+        }));
+
+    // Create the raw scenario structure
+    const rawScenario = {
+        scenario: {
+            scenario_id: scenarioId,
+            title: title,
+            problem_description: description,
+            focus_area: category,
+            estimated_hours: hours,
+            correct_solution_steps: solutionSteps.length > 0 ? solutionSteps : [
+                { step_description: 'Investigate the issue', time_cost: 0.1 }
+            ],
+            common_wrong_steps: wrongSteps.length > 0 ? wrongSteps : [
+                { step_description: 'Make unrelated changes', time_penalty: 0.15 }
+            ]
+        }
+    };
+
+    try {
+        log(`Creating new scenario: ${title}`, 'info');
+        closeCreateModal();
+
+        // Save to raw_data.json via API (append)
+        const response = await fetch(`${API_BASE}/create-scenario`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(rawScenario)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to create scenario: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        log(`Created scenario ${scenarioId}, now generating...`, 'success');
+
+        // Reload scenarios and then generate the new one
+        await loadScenarios();
+        generateScenarios([scenarioId]);
+
+    } catch (error) {
+        log(`Failed to create scenario: ${error.message}`, 'error');
+    }
+}
+
+// Close modals on Escape key or backdrop click
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeStepModal();
+        closeCreateModal();
+    }
+});
+
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal')) {
+        closeStepModal();
+        closeCreateModal();
+    }
+});
+
+// Make modal functions global for onclick handlers
+window.closeStepModal = closeStepModal;
+window.closeCreateModal = closeCreateModal;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {

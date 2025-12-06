@@ -220,9 +220,14 @@ function renderScenarioList() {
             item.dataset.id = scenario.id;
 
             const sizeKB = (scenario.file_size / 1024).toFixed(1);
-            const timeHours = scenario.estimate_hours || 0;
+            const timeHours = scenario.estimate_hours || scenario.estimated_hours || 0;
             const timeMinutes = Math.round(timeHours * 60);
-            const cost = scenario.generated ? `$${(scenario.tokens_used * 0.0000002).toFixed(4)}` : '-';
+            const timeDisplay = scenario.generated
+                ? (timeMinutes > 0 ? `${timeMinutes}min` : '-')
+                : (timeMinutes > 0 ? `~${timeMinutes}min` : '-');
+            const cost = scenario.generated && scenario.tokens_used > 0
+                ? `$${(scenario.tokens_used * 0.0000002).toFixed(4)}`
+                : '-';
 
             item.innerHTML = `
                 <input type="checkbox" class="scenario-checkbox" ${selectedScenarios.has(scenario.id) ? 'checked' : ''}>
@@ -231,8 +236,8 @@ function renderScenarioList() {
                     <div class="meta">
                         ${scenario.steps} steps
                         ${scenario.generated ? ' • ' + sizeKB + 'KB' : ''}
-                        • ⏱️ ${timeMinutes}min
-                        ${scenario.generated ? ' • 💰 ' + cost : ''}
+                        • ⏱️ ${timeDisplay}
+                        ${scenario.generated && scenario.tokens_used > 0 ? ' • 💰 ' + cost : ''}
                     </div>
                 </div>
             `;

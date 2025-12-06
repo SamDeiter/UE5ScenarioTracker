@@ -9,535 +9,473 @@ window.SCENARIOS['DanglingAssetRedirectors'] = {
     "steps": {
         "step-1": {
             "skill": "general",
-            "title": "Initial Assessment",
-            "prompt": "<p>You've noticed static meshes in your level displaying pink/black checkers. Additionally, a Level Blueprint sequence fails with a 'Failed to load object' warning in the Output Log. Assets were recently moved. What's your first diagnostic step?</p>",
+            "title": "Identify Initial Clues",
+            "prompt": "<p>Static meshes display pink/black checkers, and a Level Blueprint sequence fails, logging 'Failed to load object' for a particle system. What is your first action?</p>",
             "choices": [
                 {
-                    "text": "<p>Examine the Output Log for the 'Failed to load object' warning.</p>",
+                    "text": "<p>Examine the Output Log for 'Failed to load object' warnings to identify the specific asset path.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.03hrs. The Output Log is the primary place for runtime errors and will often pinpoint the problematic asset path.</p>",
+                    "feedback": "<p>Optimal Time: +0.05hrs. The Output Log provides direct clues to asset loading failures and problematic paths, making it an excellent starting point.</p>",
                     "next": "step-2"
                 },
                 {
                     "text": "<p>Check Project Settings -> Packaging settings, assuming the issue is related to excluded content or the Asset Registry cache.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.15hrs. While packaging issues can relate to asset loading, this specific 'Failed to load object' error during editor runtime points more directly to broken references within the project rather than packaging configuration. This path won't resolve the immediate problem.</p>",
+                    "feedback": "<p>Extended Time: +0.15hrs. While packaging settings are relevant for builds, this problem points to live editor references being broken, not content exclusion. This diverts focus from the core issue.</p>",
                     "next": "step-1"
                 },
                 {
-                    "text": "<p>Restart the Unreal Editor and your computer, hoping a fresh start will resolve any caching issues.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. Restarting the editor is a common first troubleshooting step, but rarely fixes persistent asset reference issues caused by content reorganization. This won't address the underlying problem.</p>",
-                    "next": "step-1"
-                },
-                {
-                    "text": "<p>Navigate to the new 'Content/Environment/Shared' folder and try re-saving all assets within it.</p>",
+                    "text": "<p>Immediately open one of the pink/black materials in the Material Editor to manually re-link its textures.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.07hrs. Re-saving assets in their new location won't automatically fix external references that are still pointing to their old, non-existent paths. The engine needs a specific mechanism to update these references.</p>",
+                    "feedback": "<p>Extended Time: +0.05hrs. This is a premature fix for a symptom, not the root cause. Without understanding the scope of broken references, this could be very inefficient.</p>",
+                    "next": "step-1"
+                },
+                {
+                    "text": "<p>Restart the Unreal Editor, hoping it will automatically re-index assets and fix references.</p>",
+                    "type": "obvious",
+                    "feedback": "<p>Extended Time: +0.05hrs. While sometimes helpful for minor cache issues, this problem requires a specific asset management fix and is unlikely to resolve itself with a restart.</p>",
                     "next": "step-1"
                 }
             ]
         },
         "step-2": {
-            "skill": "assetManagement",
-            "title": "Identifying the Root Cause",
-            "prompt": "<p>You've opened the Output Log. You see a warning: 'Failed to load object '/Game/OldAssets/Textures/T_BrokenTexture.T_BrokenTexture''. What's your next step to understand how this asset is being referenced?</p>",
+            "skill": "editor",
+            "title": "Locate Affected Material",
+            "prompt": "<p>The Output Log indicates a 'Failed to load object' for a texture. This points to a material issue. How do you investigate the material?</p>",
             "choices": [
                 {
-                    "text": "<p>Locate one of the affected Material Instances (displaying pink/black) in the Content Browser.</p>",
+                    "text": "<p>Locate one of the affected Material Instances (the pink/black ones) in the Content Browser.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.02hrs. Since the missing texture likely causes the pink/black material, examining an affected Material Instance is the logical next step to trace its dependencies.</p>",
+                    "feedback": "<p>Optimal Time: +0.02hrs. Identifying an affected material instance is the next logical step to trace its dependencies and understand where the chain of broken references begins.</p>",
                     "next": "step-3"
                 },
                 {
-                    "text": "<p>Manually open the Material Editor for the 'missing' material and try to drag-and-drop the texture from its new location.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.2hrs. This is tedious and only addresses the specific material you're editing. It does not fix other materials or external Blueprint references, nor does it address the underlying redirector issue.</p>",
-                    "next": "step-2"
-                },
-                {
-                    "text": "<p>Search the Content Browser for 'T_BrokenTexture' to confirm its presence in the new 'Content/Environment/Shared' folder.</p>",
+                    "text": "<p>Manually open the broken Materials in the Material Editor and attempt to drag-and-drop the textures into the graph again.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.03hrs. While confirming the asset's new location is useful, it doesn't immediately tell you *why* it's failing to load from the old path. You need to understand the references first.</p>",
+                    "feedback": "<p>Extended Time: +0.2hrs. This is highly tedious, addresses only one material at a time, and does not fix the underlying issue of redirectors or external Blueprint references.</p>",
                     "next": "step-2"
                 },
                 {
-                    "text": "<p>Delete the 'OldAssets' folder immediately from the Content Browser, assuming it's causing conflicts.</p>",
+                    "text": "<p>Delete the static meshes that are displaying pink/black materials and replace them with new ones.</p>",
+                    "type": "obvious",
+                    "feedback": "<p>Extended Time: +0.05hrs. This is a destructive action that doesn't solve the core problem of broken asset references and would result in significant rework.</p>",
+                    "next": "step-2"
+                },
+                {
+                    "text": "<p>Run 'Fix Up Redirectors in Folder' on the new 'Content/Environment/Shared' folder immediately.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.1hrs. Deleting the old folder prematurely, especially without understanding redirectors, can make the problem worse and prevent the engine from properly resolving references. This is a critical mistake.</p>",
+                    "feedback": "<p>Extended Time: +0.05hrs. This command is typically run on the *old* folder containing redirectors, not the new one where the assets now reside. This would be ineffective and premature.</p>",
                     "next": "step-2"
                 }
             ]
         },
         "step-3": {
             "skill": "editor",
-            "title": "Investigating Material Dependencies",
-            "prompt": "<p>You've found an affected Material Instance in the Content Browser. How do you confirm if its underlying texture assets are still pointing to the old folder structure?</p>",
+            "title": "Inspect Material Dependencies",
+            "prompt": "<p>You have an affected Material Instance selected in the Content Browser. How can you confirm its texture dependencies are indeed broken?</p>",
             "choices": [
                 {
-                    "text": "<p>Right-click the Material Instance and select 'Reference Viewer'.</p>",
+                    "text": "<p>Right-click the Material Instance and select 'Reference Viewer' to visually inspect the dependency graph.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.03hrs. The Reference Viewer provides a visual representation of all incoming and outgoing dependencies, perfect for identifying incorrect texture paths.</p>",
+                    "feedback": "<p>Optimal Time: +0.05hrs. The Reference Viewer is the most effective tool for visualizing asset dependencies and confirming if upstream assets (like textures) are linked to old, non-existent folder structures.</p>",
                     "next": "step-4"
                 },
                 {
-                    "text": "<p>Open the Material Instance Editor and check the texture sample nodes for path issues.</p>",
+                    "text": "<p>Open the Material Instance editor and check its parameters for any obvious errors.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. While you can see the texture path in the Material Instance Editor, the Reference Viewer gives a more comprehensive and clear view of *all* dependencies and helps confirm if it's linking to a broken path visually.</p>",
+                    "feedback": "<p>Extended Time: +0.03hrs. While the Material Instance editor is useful for parameter adjustments, it doesn't clearly display the *path* of the base texture asset itself, which is the current problem.</p>",
                     "next": "step-3"
                 },
                 {
-                    "text": "<p>Right-click the Material Instance and select 'Find References in Blueprints'.</p>",
+                    "text": "<p>Try to apply a different, known-good material to the static mesh in the level to see if that renders correctly.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.03hrs. This is useful for finding where the *Material Instance* itself is used, but not for diagnosing its *internal* texture dependencies. It won't show if the textures it uses are broken.</p>",
+                    "feedback": "<p>Extended Time: +0.02hrs. This is a diagnostic step for the mesh, not for identifying the specific reference issue within the problematic material itself.</p>",
                     "next": "step-3"
                 },
                 {
-                    "text": "<p>Examine the 'Details' panel of the Material Instance for any obvious error messages.</p>",
+                    "text": "<p>Check the 'References' tab in the Details panel of the Material Instance.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.02hrs. The 'Details' panel typically shows material parameters, not direct dependency errors for underlying textures. You need a tool designed for dependency analysis.</p>",
+                    "feedback": "<p>Extended Time: +0.03hrs. The Details panel can show some references, but the Reference Viewer provides a more comprehensive, visual, and intuitive dependency graph for path issues.</p>",
                     "next": "step-3"
                 }
             ]
         },
         "step-4": {
-            "skill": "assetManagement",
-            "title": "Analyzing Reference Viewer",
-            "prompt": "<p>You're in the Reference Viewer. You observe that the Material Instance's upstream Texture Sample nodes still link to '/Game/OldAssets/Textures/T_BrokenTexture'. What's the mechanism that Unreal Engine uses to handle moved assets, and how do you ensure it's visible?</p>",
+            "skill": "editor",
+            "title": "Enable Redirector Visibility",
+            "prompt": "<p>The Reference Viewer confirms upstream textures are still linked to an old, non-existent folder. What's the next step to address these stale references?</p>",
             "choices": [
                 {
-                    "text": "<p>Open the Content Browser settings (gear icon) and ensure 'Show Redirectors' is checked.</p>",
+                    "text": "<p>Open the Content Browser settings menu (gear icon in the corner) and ensure 'Show Redirectors' is checked.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.03hrs. Redirectors are placeholder assets left behind to guide references to new locations. Ensuring they are visible is crucial for fixing asset paths.</p>",
+                    "feedback": "<p>Optimal Time: +0.03hrs. Enabling 'Show Redirectors' is a critical step to make the placeholder assets visible that manage old references after an asset move.</p>",
                     "next": "step-5"
                 },
                 {
-                    "text": "<p>Go to Edit -> Editor Preferences -> Content Editors -> Asset Editor and look for 'Show Moved Asset Paths'.</p>",
-                    "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.03hrs. There isn't a specific 'Show Moved Asset Paths' setting in editor preferences that directly addresses this. The 'Show Redirectors' setting in the Content Browser is the correct option.</p>",
-                    "next": "step-4"
-                },
-                {
-                    "text": "<p>Search the Content Browser for 'Redirector' to see if any exist.</p>",
+                    "text": "<p>Restart the Unreal Editor, as Reference Viewer data might be cached incorrectly.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.02hrs. While you might find redirectors this way, you need to enable 'Show Redirectors' in the Content Browser settings for them to be generally visible and manageable, especially in their original folder locations.</p>",
+                    "feedback": "<p>Extended Time: +0.03hrs. The Reference Viewer correctly identified the issue. Restarting won't enable redirector visibility if the setting isn't explicitly checked.</p>",
                     "next": "step-4"
                 },
                 {
-                    "text": "<p>Manually edit the paths in the 'Reference Viewer' directly to point to the new location.</p>",
+                    "text": "<p>Search the Content Browser for the missing texture by its name to locate its new path.</p>",
+                    "type": "plausible",
+                    "feedback": "<p>Extended Time: +0.02hrs. While you know the new path, the current goal is to fix the *old* references, not just re-find the new asset. This doesn't resolve the redirector issue.</p>",
+                    "next": "step-4"
+                },
+                {
+                    "text": "<p>Manually recreate the old folder structure so the references have a path to follow.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. The Reference Viewer is a diagnostic tool, not an editing tool for asset paths. Attempting to directly modify paths here is not possible and would be an incorrect workflow.</p>",
+                    "feedback": "<p>Extended Time: +0.05hrs. This would create empty folders and not actually link assets correctly, leading to further confusion and no actual fix.</p>",
                     "next": "step-4"
                 }
             ]
         },
         "step-5": {
             "skill": "editor",
-            "title": "Locating Redirectors",
-            "prompt": "<p>'Show Redirectors' is now enabled. Where should you navigate in the Content Browser to find the redirectors that need fixing?</p>",
+            "title": "Navigate to Old Location",
+            "prompt": "<p>'Show Redirectors' is now enabled. You need to find where the broken references are actively being maintained. Where do you navigate in the Content Browser?</p>",
             "choices": [
                 {
-                    "text": "<p>Navigate to the original folder location where the assets were moved from (e.g., 'Content/OldAssets/Textures').</p>",
+                    "text": "<p>Navigate the Content Browser to the original folder location (e.g., 'Content/OldAssets/Textures').</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.02hrs. Redirectors are left in the *original* location to point to the new one. This is where they need to be found and fixed.</p>",
+                    "feedback": "<p>Optimal Time: +0.02hrs. You must go to the *old* location where the assets once resided, as this is where redirectors are left behind.</p>",
                     "next": "step-6"
                 },
                 {
-                    "text": "<p>Navigate to the new folder location ('Content/Environment/Shared') where the assets now reside.</p>",
+                    "text": "<p>Navigate to the new folder location ('Content/Environment/Shared') to inspect the moved assets.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.02hrs. Redirectors are not created in the new location; they are remnants in the old location that point to the new. You won't find them there.</p>",
+                    "feedback": "<p>Extended Time: +0.02hrs. The assets are confirmed to be in the new location. The problem is the old references, which are handled by redirectors in the old location.</p>",
                     "next": "step-5"
                 },
                 {
-                    "text": "<p>Search the entire Content folder for assets with a 'Redirector' tag.</p>",
+                    "text": "<p>Check the 'Recently Opened' tab in the Content Browser for the missing assets.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.03hrs. While this might eventually locate them, it's less efficient than going directly to the known original path. It also doesn't ensure you're addressing only the relevant redirectors.</p>",
+                    "feedback": "<p>Extended Time: +0.01hrs. This tab shows recently accessed assets, not necessarily the specific location of broken references or redirectors.</p>",
                     "next": "step-5"
                 },
                 {
-                    "text": "<p>Go to the 'Developer' content folder as redirectors are often stored there temporarily.</p>",
+                    "text": "<p>Perform a global 'Search' in the Content Browser for 'redirector'.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.02hrs. Redirectors are stored precisely where the original asset resided, not in a generic 'Developer' folder. This path is incorrect.</p>",
+                    "feedback": "<p>Extended Time: +0.03hrs. While you might find redirectors this way, it's more efficient and targeted to navigate directly to the known old folder path.</p>",
                     "next": "step-5"
                 }
             ]
         },
         "step-6": {
-            "skill": "assetManagement",
-            "title": "Identifying Redirector Assets",
-            "prompt": "<p>You are in the original folder ('Content/OldAssets/Textures'). What visual cue indicates the presence of redirector assets?</p>",
+            "skill": "editor",
+            "title": "Identify Redirectors",
+            "prompt": "<p>You are in the original folder location with 'Show Redirectors' enabled. What visual clues should you be looking for?</p>",
             "choices": [
                 {
-                    "text": "<p>Observe the grey arrow icons on the asset thumbnails.</p>",
+                    "text": "<p>Observe the grey arrow icons, which represent the asset redirectors left behind after the folder move.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.01hrs. Grey arrow icons are the distinctive visual indicator for redirector assets in the Content Browser.</p>",
+                    "feedback": "<p>Optimal Time: +0.01hrs. These grey arrow icons are the specific visual indicators of redirector assets that need to be addressed.</p>",
                     "next": "step-7"
                 },
                 {
-                    "text": "<p>Look for assets with a red 'X' icon, indicating broken links.</p>",
+                    "text": "<p>Delete the old empty folders immediately without first enabling 'Show Redirectors' and running the 'Fix Up Redirectors in Folder' command.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.01hrs. Red 'X' icons typically indicate completely missing or deleted assets, not redirectors which are active, albeit temporary, pointers.</p>",
+                    "feedback": "<p>Extended Time: +0.1hrs. CRITICAL WRONG STEP. Deleting the folders prematurely will remove the redirectors without updating existing references, leading to permanent broken links.</p>",
                     "next": "step-6"
                 },
                 {
-                    "text": "<p>Check the file size of assets; redirectors usually have a very small file size.</p>",
+                    "text": "<p>Look for the actual texture assets, assuming they might have somehow reappeared in the old folder.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.01hrs. While true that redirectors are small, relying on file size for identification is less direct and visual than their dedicated icon.</p>",
+                    "feedback": "<p>Extended Time: +0.02hrs. The textures were moved; they will not spontaneously reappear in the old folder unless explicitly duplicated.</p>",
                     "next": "step-6"
                 },
                 {
-                    "text": "<p>Read the asset names; redirectors often have '_redirector' appended to their name.</p>",
+                    "text": "<p>Check the folder's properties for any 'moved' flags or indicators.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.01hrs. While some systems might append names, Unreal Engine primarily uses the grey arrow icon for visual identification in the Content Browser.</p>",
+                    "feedback": "<p>Extended Time: +0.02hrs. Unreal Engine does not expose direct 'moved' flags on folders; redirectors are the mechanism for handling moved assets.</p>",
                     "next": "step-6"
                 }
             ]
         },
         "step-7": {
             "skill": "editor",
-            "title": "Selecting Redirectors",
-            "prompt": "<p>You see the grey arrow icons. What is the most efficient way to select all redirectors and other assets (if any) within this original folder to prepare for fixing?</p>",
+            "title": "Select Redirectors",
+            "prompt": "<p>You see the grey arrow icons (redirectors) in the old folder. What is your next action to prepare for fixing them?</p>",
             "choices": [
                 {
-                    "text": "<p>Select all assets within the original folder path using Ctrl+A (if the folder only contains redirectors or relevant assets).</p>",
+                    "text": "<p>Select all assets within the original folder path, including the redirectors (Ctrl+A if the folder only contains redirectors).</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.03hrs. Ctrl+A is the quickest way to select all items in a folder, ensuring no redirectors are missed.</p>",
+                    "feedback": "<p>Optimal Time: +0.03hrs. Selecting the redirectors is the necessary precursor to executing the 'Fix Up Redirectors in Folder' command.</p>",
                     "next": "step-8"
                 },
                 {
-                    "text": "<p>Manually click each redirector asset one by one while holding Ctrl.</p>",
+                    "text": "<p>Right-click on the folder background and look for a 'Fix' option.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. This is feasible for a few assets but becomes inefficient and prone to error if there are many redirectors. Ctrl+A is much faster.</p>",
+                    "feedback": "<p>Extended Time: +0.02hrs. While a 'Fix Redirectors' option can sometimes appear on the folder background, selecting the specific assets first is a more direct and universally applicable method.</p>",
                     "next": "step-7"
                 },
                 {
-                    "text": "<p>Right-click the folder itself and look for a 'Select All Redirectors' option.</p>",
+                    "text": "<p>Manually drag each redirector icon to the new 'Content/Environment/Shared' folder.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.02hrs. There isn't a direct 'Select All Redirectors' option by right-clicking the folder. You need to be inside the folder to select its contents.</p>",
+                    "feedback": "<p>Extended Time: +0.05hrs. This is an incorrect and ineffective way to fix redirectors; they are not files to be physically dragged and dropped in this manner.</p>",
                     "next": "step-7"
                 },
                 {
-                    "text": "<p>Use the Content Browser's search bar to filter for redirector assets and then select them.</p>",
+                    "text": "<p>Delete the redirectors one by one to clear the old folder.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.04hrs. While filtering is possible, it adds extra steps. If you're in the correct folder, Ctrl+A is more direct for selecting all relevant items.</p>",
+                    "feedback": "<p>Extended Time: +0.05hrs. This would delete the redirectors without fixing the incoming references, causing permanent broken links and worsening the problem.</p>",
                     "next": "step-7"
                 }
             ]
         },
         "step-8": {
-            "skill": "assetManagement",
-            "title": "Fixing Redirectors",
-            "prompt": "<p>With all relevant assets and redirectors in the original folder selected, what is the specific command to update all references pointing to these redirectors?</p>",
+            "skill": "editor",
+            "title": "Execute Redirector Fix",
+            "prompt": "<p>The redirectors in the old folder are now selected. Which action will effectively resolve these broken references?</p>",
             "choices": [
                 {
                     "text": "<p>Right-click the selected assets and choose 'Fix Up Redirectors in Folder' from the context menu.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.08hrs. This is the precise command designed to update all incoming references to the new location pointed to by the redirectors.</p>",
+                    "feedback": "<p>Optimal Time: +0.1hrs. This command is specifically designed to repoint all references that were pointing to the redirectors to their new, actual asset locations.</p>",
                     "next": "step-9"
                 },
                 {
-                    "text": "<p>Right-click and select 'Re-save Selected Assets'.</p>",
+                    "text": "<p>Use the 'Migrate' option on the selected redirectors to move them to the new folder.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. Re-saving assets doesn't trigger the redirector fix-up process. It simply saves their current state, which won't resolve external references.</p>",
+                    "feedback": "<p>Extended Time: +0.05hrs. 'Migrate' is used for transferring assets between different projects, not for fixing redirectors within the same project. This would be a misuse of the tool.</p>",
                     "next": "step-8"
                 },
                 {
-                    "text": "<p>Drag the selected redirectors to the new 'Content/Environment/Shared' folder.</p>",
+                    "text": "<p>Try renaming the redirectors to match the new asset names.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.03hrs. Moving redirectors is not the correct action. They need to be processed in their original location to fix references, and then deleted.</p>",
+                    "feedback": "<p>Extended Time: +0.03hrs. Redirectors are special placeholder assets; simply renaming them will not fix the underlying reference paths in other assets.</p>",
                     "next": "step-8"
                 },
                 {
-                    "text": "<p>Use the 'Migrate' option on the selected redirectors.</p>",
+                    "text": "<p>Export the redirectors and then re-import them into the new folder.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.04hrs. The 'Migrate' option is for moving assets to another project, not for fixing references within the current project after an internal move.</p>",
+                    "feedback": "<p>Extended Time: +0.05hrs. Exporting/importing redirectors is not a standard or effective workflow for resolving internal project references.</p>",
                     "next": "step-8"
                 }
             ]
         },
         "step-9": {
-            "skill": "general",
-            "title": "Confirming the Fix",
-            "prompt": "<p>After choosing 'Fix Up Redirectors in Folder', a dialog box appears. What should you do?</p>",
+            "skill": "editor",
+            "title": "Confirm Fix",
+            "prompt": "<p>After choosing 'Fix Up Redirectors in Folder', a confirmation dialog appears. What is your response?</p>",
             "choices": [
                 {
-                    "text": "<p>Confirm the dialog box to allow the engine to attempt to repoint all incoming references.</p>",
+                    "text": "<p>Confirm the dialog box to allow the engine to attempt to repoint all incoming references to the new asset location.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.01hrs. Always confirm prompts when performing critical asset operations to ensure the engine proceeds with the intended action.</p>",
+                    "feedback": "<p>Optimal Time: +0.01hrs. Confirmation is necessary for the engine to proceed with the redirector fix, which will update all affected references.</p>",
                     "next": "step-10"
                 },
                 {
-                    "text": "<p>Cancel the dialog and try a different method, unsure if this is the right approach.</p>",
+                    "text": "<p>Cancel the dialog, as you're unsure if this is the correct action.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.01hrs. This is the correct method. Canceling will prevent the fix from being applied, leaving your references broken.</p>",
+                    "feedback": "<p>Extended Time: +0.02hrs. Canceling at this stage prevents the crucial fix from being applied, leaving the references broken.</p>",
                     "next": "step-9"
                 },
                 {
-                    "text": "<p>Back up your project before confirming, just in case something goes wrong.</p>",
+                    "text": "<p>Spend time reviewing each individual reference listed in the dialog box carefully before proceeding.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. While good practice for major changes, for redirector fixes, it's usually safe and quick enough to proceed. Taking a backup now would delay the fix unnecessarily, assuming you have version control.</p>",
+                    "feedback": "<p>Extended Time: +0.05hrs. While thorough, for a folder-level fix-up, trusting the engine to handle the repointing for a large number of references is standard and efficient.</p>",
                     "next": "step-9"
                 },
                 {
-                    "text": "<p>Select 'Don't ask again' and confirm to speed up future operations.</p>",
+                    "text": "<p>Take a screenshot of the dialog for documentation before confirming.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.02hrs. It's generally not recommended to disable confirmation dialogs for asset management tasks, as they serve as an important safeguard against accidental operations.</p>",
+                    "feedback": "<p>Extended Time: +0.01hrs. Documentation is good practice, but taking a screenshot at this moment doesn't actively contribute to solving the problem and adds a small delay.</p>",
                     "next": "step-9"
                 }
             ]
         },
         "step-10": {
-            "skill": "assetManagement",
-            "title": "Verifying Redirector Removal",
-            "prompt": "<p>You've confirmed the fix. How do you verify that the redirector assets (grey arrows) are now removed from the old folder location?</p>",
+            "skill": "editor",
+            "title": "Verify Redirector Removal",
+            "prompt": "<p>The 'Fix Up Redirectors' command has been executed and confirmed. How do you verify its success in the Content Browser?</p>",
             "choices": [
                 {
-                    "text": "<p>Observe the Content Browser; the grey arrow icons should have disappeared from the old folder.</p>",
+                    "text": "<p>Verify that the redirector assets (grey arrows) are now removed from the old folder location.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.02hrs. After a successful 'Fix Up Redirectors', the redirector assets themselves are removed, leaving the folder empty if only redirectors were present.</p>",
+                    "feedback": "<p>Optimal Time: +0.02hrs. The successful removal of redirectors from the old location is the primary visual confirmation that references have been repointed.</p>",
                     "next": "step-11"
                 },
                 {
-                    "text": "<p>Re-open the Reference Viewer for the Material Instance to see if the old paths are gone.</p>",
-                    "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.03hrs. While this is a good verification step later, the immediate visual confirmation in the Content Browser for the redirectors themselves is quicker and directly confirms their removal.</p>",
-                    "next": "step-10"
-                },
-                {
-                    "text": "<p>Check the Output Log for confirmation messages about redirector cleanup.</p>",
+                    "text": "<p>Restart the editor to ensure all internal caches are updated and reflect the fix.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.02hrs. The Output Log might show activity, but the visual confirmation in the Content Browser is the most direct way to verify their removal.</p>",
+                    "feedback": "<p>Extended Time: +0.03hrs. While a restart can sometimes help, the Content Browser should reflect the change immediately after a 'Fix Up Redirectors' operation.</p>",
                     "next": "step-10"
                 },
                 {
-                    "text": "<p>Disable 'Show Redirectors' in Content Browser settings and re-enable it to refresh the view.</p>",
+                    "text": "<p>Check the Output Log for a confirmation message that redirectors were fixed.</p>",
+                    "type": "plausible",
+                    "feedback": "<p>Extended Time: +0.01hrs. While the log might contain relevant messages, visual confirmation in the Content Browser for redirector removal is more direct and specific to this step.</p>",
+                    "next": "step-10"
+                },
+                {
+                    "text": "<p>Navigate to the new folder location and confirm the assets are still there.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.02hrs. While refreshing the view might be helpful in some cases, a successful fix-up should remove the redirectors directly, making this step generally unnecessary for verification.</p>",
+                    "feedback": "<p>Extended Time: +0.02hrs. This step confirms the assets' presence in the new location, but the current task is to verify the *removal* of redirectors from the old location.</p>",
                     "next": "step-10"
                 }
             ]
         },
         "step-11": {
             "skill": "editor",
-            "title": "Cleaning Up Old Folders",
-            "prompt": "<p>The redirectors are gone, and the 'Content/OldAssets/Textures' folder now appears empty. What should you do with this folder?</p>",
+            "title": "Clean Up Old Folder",
+            "prompt": "<p>The old folder ('Content/OldAssets/Textures') is now empty of redirectors and other assets. What is the best practice for this now-obsolete folder?</p>",
             "choices": [
                 {
-                    "text": "<p>Delete the old folder to prevent future confusion and maintain a clean project structure.</p>",
+                    "text": "<p>If the old folder is now truly empty, delete it to prevent future confusion.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.01hrs. Once redirectors are fixed and the folder is truly empty, deleting it is good practice to keep the Content Browser tidy and avoid misleading empty folders.</p>",
+                    "feedback": "<p>Optimal Time: +0.02hrs. Deleting empty, obsolete folders is a good project organization practice, reducing clutter and preventing confusion.</p>",
                     "next": "step-12"
                 },
                 {
-                    "text": "<p>Leave the empty folder as a historical record of asset movements.</p>",
-                    "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.01hrs. Leaving empty folders clutters the Content Browser and can cause confusion. Version control should handle historical records, not empty folders.</p>",
-                    "next": "step-11"
-                },
-                {
-                    "text": "<p>Rename the folder to 'Content/OldAssets/Textures_DELETED' as a marker.</p>",
+                    "text": "<p>Leave the empty folder, as it causes no harm and might be needed later.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.02hrs. Renaming an empty folder isn't necessary and still contributes to clutter. Deletion is the clean solution.</p>",
+                    "feedback": "<p>Extended Time: +0.01hrs. Empty folders can clutter the Content Browser, making navigation and asset management more difficult in the long run.</p>",
                     "next": "step-11"
                 },
                 {
-                    "text": "<p>Mark the folder as 'Exclude from package' in its right-click menu.</p>",
+                    "text": "<p>Move the empty folder to a 'Deprecated' subfolder within the Content directory.</p>",
+                    "type": "plausible",
+                    "feedback": "<p>Extended Time: +0.02hrs. While sometimes done for deprecated assets, a truly empty folder that served its purpose can simply be deleted to keep the project clean.</p>",
+                    "next": "step-11"
+                },
+                {
+                    "text": "<p>Create a new dummy asset in the folder to indicate it was once used.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.02hrs. This is an option for asset folders containing content you don't want to ship, not for empty folders that should be deleted. It doesn't solve the clutter.</p>",
+                    "feedback": "<p>Extended Time: +0.01hrs. This serves no practical purpose and adds unnecessary files to the project.</p>",
                     "next": "step-11"
                 }
             ]
         },
         "step-12": {
-            "skill": "assetManagement",
-            "title": "Confirming Material Reference Fix",
-            "prompt": "<p>You've cleaned up the old folders. How do you verify that the Material Instance now correctly references its textures from the new 'Content/Environment/Shared' path?</p>",
+            "skill": "editor",
+            "title": "Final Material Verification",
+            "prompt": "<p>Redirectors have been fixed, and the old folder is cleaned up. How do you definitively confirm that the materials are now correctly linked to their textures?</p>",
             "choices": [
                 {
-                    "text": "<p>Re-open the Reference Viewer for the affected Material Instance to confirm its upstream Texture Sample nodes now point to the correct path.</p>",
+                    "text": "<p>Re-open the Reference Viewer for the affected Material Instance to confirm that its upstream Texture Sample nodes now correctly point to the 'Content/Environment/Shared' path.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.02hrs. The Reference Viewer is the most reliable tool to visually inspect and confirm that all dependencies have been successfully updated to the new asset locations.</p>",
+                    "feedback": "<p>Optimal Time: +0.04hrs. Re-checking the Reference Viewer provides definitive, visual proof that the material's dependencies are correctly resolved to the new asset location.</p>",
                     "next": "step-13"
                 },
                 {
-                    "text": "<p>Manually open the Material Editor for the Material Instance and check the texture sample nodes.</p>",
-                    "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.03hrs. While this would show the direct texture path, the Reference Viewer offers a more immediate and comprehensive visual confirmation of all upstream dependencies.</p>",
-                    "next": "step-12"
-                },
-                {
-                    "text": "<p>Run the level (PIE) to see if the pink/black checkers are gone.</p>",
+                    "text": "<p>Assume the materials are fixed and proceed to check the Level Blueprint.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.02hrs. While this is the ultimate goal, it's better to confirm the internal references are fixed using the Reference Viewer first before jumping into PIE for visual verification, reducing potential debugging iterations.</p>",
+                    "feedback": "<p>Extended Time: +0.03hrs. Verification is crucial in debugging; never assume a fix without explicit confirmation.</p>",
                     "next": "step-12"
                 },
                 {
-                    "text": "<p>Export the Material Instance and re-import it, hoping it refreshes its paths.</p>",
+                    "text": "<p>Manually open each affected Material and Material Instance in their editors to visually check texture assignments.</p>",
+                    "type": "plausible",
+                    "feedback": "<p>Extended Time: +0.05hrs. This is a very time-consuming method for verification. The Reference Viewer offers a much quicker and more comprehensive way to check paths.</p>",
+                    "next": "step-12"
+                },
+                {
+                    "text": "<p>Run a 'Validate Assets' command from the Content Browser's context menu.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.05hrs. Exporting and re-importing is a destructive and generally unnecessary step that could lead to data loss or further complications. The engine's built-in tools are designed for this.</p>",
+                    "feedback": "<p>Extended Time: +0.03hrs. While 'Validate Assets' can be useful, it might not provide as clear and direct path information as the Reference Viewer for this specific problem.</p>",
                     "next": "step-12"
                 }
             ]
         },
         "step-13": {
             "skill": "editor",
-            "title": "Visual Material Verification",
-            "prompt": "<p>The Reference Viewer confirms the material now points to the correct paths. What's the next step to visually confirm the fix?</p>",
+            "title": "In-Level Visual Check",
+            "prompt": "<p>The Reference Viewer confirms the material's texture paths are now correct. What is the next visual confirmation you should perform directly in the level?</p>",
             "choices": [
                 {
                     "text": "<p>Verify that all static meshes in the level that were previously pink/black now display their correct materials.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.03hrs. A quick visual scan of the level is necessary to confirm the materials are now rendering correctly on all affected meshes.</p>",
+                    "feedback": "<p>Optimal Time: +0.03hrs. This is the direct visual confirmation that the material assignment issue is fully resolved within the level itself.</p>",
                     "next": "step-14"
                 },
                 {
-                    "text": "<p>Rebuild the lighting in the level, as material changes sometimes require it.</p>",
-                    "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.05hrs. Rebuilding lighting is not directly related to material path resolution. It's for static lighting calculations. This is an unnecessary delay.</p>",
-                    "next": "step-13"
-                },
-                {
-                    "text": "<p>Check the 'Details' panel of an affected static mesh to ensure its material slot is still assigned correctly.</p>",
+                    "text": "<p>Rebuild the level's lighting and geometry, just in case that affects material rendering.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.02hrs. The material assignment itself wasn't the issue; the material *content* was broken due to missing textures. Visually checking the level is more direct.</p>",
+                    "feedback": "<p>Extended Time: +0.1hrs. Rebuilding lighting is primarily for lighting issues, not for resolving broken material references, and is a time-consuming step.</p>",
                     "next": "step-13"
                 },
                 {
-                    "text": "<p>Close and re-open the level to force a full refresh of all actors.</p>",
+                    "text": "<p>Check the 'Material Slot' assignments on the static meshes in the Details panel.</p>",
+                    "type": "plausible",
+                    "feedback": "<p>Extended Time: +0.02hrs. The material slots themselves should already be correctly assigned; the problem was with the material *asset* having a broken internal reference.</p>",
+                    "next": "step-13"
+                },
+                {
+                    "text": "<p>Apply a completely new, known-good material to one of the affected meshes to see if it renders correctly.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.02hrs. While this might force a refresh, simply looking at the level after fixing redirectors should immediately show the updated materials without needing to re-open.</p>",
+                    "feedback": "<p>Extended Time: +0.02hrs. This primarily confirms the mesh itself isn't corrupt, but doesn't verify the fix for the *original* materials that were the problem.</p>",
                     "next": "step-13"
                 }
             ]
         },
         "step-14": {
             "skill": "blueprint",
-            "title": "Addressing Blueprint Dependencies",
-            "prompt": "<p>The materials in the level are fixed. Now you need to address the Level Blueprint sequence that failed to spawn a Particle System Component. What's required to update the Level Blueprint's internal asset dependencies?</p>",
+            "title": "Address Blueprint References",
+            "prompt": "<p>All static meshes in the level now display correct materials. The last remaining issue is the Level Blueprint sequence failing. What's required to update the Blueprint's references?</p>",
             "choices": [
                 {
                     "text": "<p>Open the Level Blueprint, recompile it, and save the map to force the engine to refresh the Blueprint's internal asset dependencies.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.03hrs. Recompiling and saving the Level Blueprint, and subsequently the map, forces the engine to re-evaluate all asset references within it, ensuring they point to the newly fixed paths.</p>",
+                    "feedback": "<p>Optimal Time: +0.07hrs. Blueprints can cache asset references. A recompile and save are often necessary to force them to pick up corrected asset paths and resolve internal errors.</p>",
                     "next": "step-15"
                 },
                 {
-                    "text": "<p>Delete the Particle System Component in the Level Blueprint and re-add it from scratch.</p>",
+                    "text": "<p>Delete the Particle System Component node from the Level Blueprint and recreate it.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. This is a destructive and unnecessary step. Recompiling and saving is usually sufficient to update references without recreating assets.</p>",
+                    "feedback": "<p>Extended Time: +0.05hrs. This is a destructive and often unnecessary action; a simple recompile and save should be sufficient to update references.</p>",
                     "next": "step-14"
                 },
                 {
-                    "text": "<p>In the Level Blueprint, right-click the 'Spawn Particle System' node and select 'Refresh Node'.</p>",
+                    "text": "<p>Check the Project Settings -> Maps & Modes to ensure the correct Level Blueprint is loaded.</p>",
                     "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.02hrs. While 'Refresh Node' can help with certain issues, it's generally not sufficient for updating deep asset path dependencies across an entire Blueprint. A full recompile is more robust.</p>",
+                    "feedback": "<p>Extended Time: +0.02hrs. This isn't related to internal asset references within an already loaded and active Level Blueprint.</p>",
                     "next": "step-14"
                 },
                 {
-                    "text": "<p>Check the Project Settings -> Maps & Modes to see if the Level Blueprint reference is broken there.</p>",
+                    "text": "<p>Modify a small, unrelated detail in the Level Blueprint, then undo it, hoping it triggers a recompile.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.03hrs. Maps & Modes settings relate to which map/game mode loads, not internal asset references *within* a Level Blueprint. This won't help.</p>",
+                    "feedback": "<p>Extended Time: +0.03hrs. While this might indirectly trigger a recompile, explicitly compiling and saving is a clearer, more reliable, and direct approach.</p>",
                     "next": "step-14"
                 }
             ]
         },
         "step-15": {
-            "skill": "blueprint",
-            "title": "Saving the Level Blueprint",
-            "prompt": "<p>You've recompiled the Level Blueprint. What's the final necessary step to ensure the changes are saved and recognized by the engine?</p>",
-            "choices": [
-                {
-                    "text": "<p>Save the map (File -> Save Current Level) to persist the Level Blueprint's changes.</p>",
-                    "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.04hrs. Changes to the Level Blueprint are saved as part of the level itself. Saving the map is essential to persist your compilation and updated dependencies.</p>",
-                    "next": "step-16"
-                },
-                {
-                    "text": "<p>Right-click the Level Blueprint asset in the Content Browser and select 'Save'.</p>",
-                    "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.02hrs. The Level Blueprint is not a standalone asset in the Content Browser. It's intrinsically linked to the map file. You save it by saving the map.</p>",
-                    "next": "step-15"
-                },
-                {
-                    "text": "<p>Perform a 'Save All' operation (File -> Save All) to ensure everything is saved.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.01hrs. While 'Save All' works, it's often overkill. Directly saving the current level is sufficient and more targeted.</p>",
-                    "next": "step-15"
-                },
-                {
-                    "text": "<p>Close the Level Blueprint editor window, as it usually prompts to save automatically.</p>",
-                    "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.02hrs. Relying on prompts can be risky. Explicitly saving the map guarantees your changes are stored before proceeding.</p>",
-                    "next": "step-15"
-                }
-            ]
-        },
-        "step-16": {
-            "skill": "editor",
-            "title": "Final Runtime Verification - PIE",
-            "prompt": "<p>The Level Blueprint is recompiled and the map is saved. What's the final step to confirm everything is working as expected?</p>",
-            "choices": [
-                {
-                    "text": "<p>Run the level (PIE - Play In Editor) and trigger the sequence that previously failed to verify the particle system now spawns correctly without logging errors.</p>",
-                    "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.03hrs. Running PIE is the ultimate test. It verifies that all fixes have correctly updated runtime behavior and that no further 'Failed to load object' errors occur.</p>",
-                    "next": "step-17"
-                },
-                {
-                    "text": "<p>Export the level as an Fbx file and then re-import it to refresh all references.</p>",
-                    "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.05hrs. Exporting and re-importing levels is an extremely destructive and unnecessary workflow for fixing asset references within a project. It would likely break more things than it fixes.</p>",
-                    "next": "step-16"
-                },
-                {
-                    "text": "<p>Perform a full project rebuild in Visual Studio, assuming it will re-index asset paths.</p>",
-                    "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.10hrs. A C++ project rebuild is for code compilation, not for re-indexing asset paths within the Unreal Editor's asset registry. This is unrelated to the issue.</p>",
-                    "next": "step-16"
-                },
-                {
-                    "text": "<p>Check the 'Cooked Content' folder in your project directory to see if the assets are present.</p>",
-                    "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.04hrs. Looking at cooked content is relevant for packaged builds, not for verifying editor runtime behavior. The current issue is within the editor and its asset registry.</p>",
-                    "next": "step-16"
-                }
-            ]
-        },
-        "step-17": {
             "skill": "general",
-            "title": "Verifying Particle System",
-            "prompt": "<p>You've started PIE. What's the final action to confirm the Level Blueprint sequence is fully functional?</p>",
+            "title": "Final Runtime Verification",
+            "prompt": "<p>The Level Blueprint has been recompiled and saved, and all assets appear linked correctly. What is the final step to confirm everything is resolved at runtime?</p>",
             "choices": [
                 {
-                    "text": "<p>Trigger the sequence that previously failed and verify the particle system now spawns correctly without logging errors.</p>",
+                    "text": "<p>Run the level (PIE) and trigger the sequence that previously failed to verify the particle system now spawns correctly without logging errors.</p>",
                     "type": "correct",
-                    "feedback": "<p>Optimal Time: +0.01hrs. Triggering the specific sequence is the direct way to test if the particle system is now loading and spawning as intended, confirming the complete resolution of the issue.</p>",
+                    "feedback": "<p>Optimal Time: +0.05hrs. Running in Play In Editor (PIE) provides the definitive live runtime test for the particle system's functionality and confirms the complete resolution of all issues.</p>",
                     "next": "conclusion"
                 },
                 {
-                    "text": "<p>Review the entire Output Log from the PIE session for any other unrelated warnings or errors.</p>",
-                    "type": "plausible",
-                    "feedback": "<p>Extended Time: +0.02hrs. While good practice for general debugging, the primary focus now is the specific particle system. Reviewing the entire log can come after confirming the main issue is resolved.</p>",
-                    "next": "step-17"
-                },
-                {
-                    "text": "<p>Check the 'World Outliner' to see if the particle system actor is present after the sequence attempts to spawn it.</p>",
+                    "text": "<p>Close and reopen the entire Unreal Editor one last time to ensure all changes are fully propagated.</p>",
                     "type": "obvious",
-                    "feedback": "<p>Extended Time: +0.01hrs. Observing the particle effect visually is generally sufficient. Checking the World Outliner is a secondary confirmation if visual cues are unclear, but not the primary verification.</p>",
-                    "next": "step-17"
+                    "feedback": "<p>Extended Time: +0.02hrs. At this stage, PIE is the most direct and efficient test. Closing and reopening the editor is largely unnecessary for this final verification.</p>",
+                    "next": "step-15"
                 },
                 {
-                    "text": "<p>Attempt to manually place a new instance of the particle system in the level to ensure it functions.</p>",
+                    "text": "<p>Generate a standalone build of the project to check if the particle system works outside the editor.</p>",
+                    "type": "plausible",
+                    "feedback": "<p>Extended Time: +0.2hrs. Packaging a full build is a time-consuming process and is generally overkill for a verification that can be performed efficiently in PIE.</p>",
+                    "next": "step-15"
+                },
+                {
+                    "text": "<p>Use console commands like 'stat particles' to check if the particle system is present in the scene.</p>",
                     "type": "subtle",
-                    "feedback": "<p>Extended Time: +0.02hrs. Manually placing it only verifies the asset itself, not that the Level Blueprint sequence successfully spawns it. Testing the sequence directly is key.</p>",
-                    "next": "step-17"
+                    "feedback": "<p>Extended Time: +0.02hrs. 'stat particles' provides performance information for active particles, but doesn't confirm if the *sequence* successfully spawned the particle system without errors, which is the core test here.</p>",
+                    "next": "step-15"
                 }
             ]
         },
         "conclusion": {
             "skill": "complete",
             "title": "Scenario Complete",
-            "prompt": "<p>Congratulations! You have successfully completed this debugging scenario. You effectively used redirector management to fix broken references caused by asset relocation, resolving both material display issues and Blueprint runtime failures.</p>",
+            "prompt": "<p>Congratulations! You have successfully completed this debugging scenario.</p>",
             "choices": []
         }
     }

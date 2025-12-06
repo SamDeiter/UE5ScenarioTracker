@@ -55,6 +55,20 @@ def list_scenarios():
         scenario_id = scenario['scenario_id']
         output_path = SCENARIOS_DIR / f"{scenario_id}.js"
         
+        # Get tokens_used if file exists
+        tokens_used = 0
+        if output_path.exists():
+            try:
+                with open(output_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    start = content.index('{')
+                    end = content.rindex('}') + 1
+                    json_str = content[start:end]
+                    parsed = json.loads(json_str)
+                    tokens_used = parsed.get('meta', {}).get('tokens_used', 0)
+            except:
+                tokens_used = 0
+        
         scenarios.append({
             'id': scenario_id,
             'title': scenario['title'],
@@ -62,7 +76,8 @@ def list_scenarios():
             'estimated_hours': scenario['estimated_hours'],
             'steps': len(scenario['correct_solution_steps']),
             'generated': output_path.exists(),
-            'file_size': output_path.stat().st_size if output_path.exists() else 0
+            'file_size': output_path.stat().st_size if output_path.exists() else 0,
+            'tokens_used': tokens_used
         })
     
     return jsonify({
@@ -141,10 +156,14 @@ def preview_scenario(scenario_id):
         json_str = content[start:end]
         scenario = json.loads(json_str)
         
+        # Extract tokens_used from meta if available
+        tokens_used = scenario.get('meta', {}).get('tokens_used', 0)
+        
         return jsonify({
             'scenario_id': scenario_id,
             'content': scenario,
-            'file_size': output_path.stat().st_size
+            'file_size': output_path.stat().st_size,
+            'tokens_used': tokens_used
         })
     except Exception as e:
         return jsonify({'error': f'Failed to parse scenario: {e}'}), 500

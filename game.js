@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let interruptedSteps = {}; // Stores the last active step for non-completed scenarios
     let isDebugMode = false; // Flag for debug visualization/controls
     let mainTimerInterval = null; // ID for the setInterval used for the 30-minute countdown
+    let shuffledChoicesCache = {}; // Stores shuffled choice order per scenario+step so it doesn't reshuffle on retry
 
     let timeRemaining = TOTAL_TEST_TIME_SECONDS; // Remaining time on the countdown timer
 
@@ -694,8 +695,13 @@ document.addEventListener('DOMContentLoaded', () => {
             resumeMainTimer();
         }
 
-        // 3. Shuffle choices 
-        const shuffledChoices = [...step.choices].sort(() => Math.random() - 0.5);
+        // 3. Get or create shuffled choices (only shuffle once per step)
+        const cacheKey = `${scenarioId}_${stepId}`;
+        if (!shuffledChoicesCache[cacheKey]) {
+            // First time seeing this step - shuffle and cache
+            shuffledChoicesCache[cacheKey] = [...step.choices].sort(() => Math.random() - 0.5);
+        }
+        const shuffledChoices = shuffledChoicesCache[cacheKey];
 
         // 4. Determine Step Number for display
         const stepKeys = Object.keys(scenario.steps);

@@ -321,10 +321,13 @@ function renderScenarioList() {
                 ? `$${((scenario.tokens_used || 0) * 0.0000002).toFixed(4)}`
                 : '-';
 
+            // Add small check icon for completed scenarios
+            const completedIcon = scenario.generated ? '<span class="completed-icon">✓</span>' : '';
+
             item.innerHTML = `
                 <input type="checkbox" class="scenario-checkbox" ${selectedScenarios.has(scenario.id) ? 'checked' : ''}>
                 <div class="info">
-                    <div class="title">${scenario.title}</div>
+                    <div class="title">${scenario.title}${completedIcon}</div>
                     <div class="meta">
                         ${scenario.steps} steps
                         ${scenario.generated ? ' • ' + sizeKB + 'KB' : ''}

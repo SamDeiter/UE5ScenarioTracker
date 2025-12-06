@@ -1258,7 +1258,6 @@ body {
 .scenario-item {
     background: var(--bg-secondary);
     border-left: 3px solid transparent;
-    position: relative;
 }
 
 /* Not generated - Yellow accent */
@@ -1266,32 +1265,27 @@ body {
     border-left-color: #f39c12;
 }
 
-/* Completed - subtle styling with checkmark icon */
+/* Completed - subtle styling only */
 .scenario-item.completed {
     border-left-color: var(--border);
 }
 
-/* Checkmark icon for completed items - gray by default */
-.scenario-item.completed::before {
-    content: '✓';
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
+/* Completed icon inline with title - gray by default */
+.completed-icon {
+    margin-left: 0.5rem;
     color: var(--text-secondary);
-    font-size: 1rem;
-    font-weight: bold;
+    font-size: 0.85rem;
     opacity: 0.6;
 }
 
-/* Selected - green accent and green checkmark */
+/* Selected - highlight with blue accent */
 .scenario-item.selected {
-    border-left-color: var(--accent-green);
+    border-left-color: var(--accent-blue);
     background: var(--bg-hover);
 }
 
-/* Checkmark turns green when selected */
-.scenario-item.selected.completed::before {
+/* Completed icon turns green when selected */
+.scenario-item.selected .completed-icon {
     color: var(--accent-green);
     opacity: 1;
 }

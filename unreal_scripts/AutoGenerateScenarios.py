@@ -39,7 +39,7 @@ def generate_scenario_step(scene_spec, scenario_id, step_id, output_base_path):
     
     # Wait for scene to settle
     import time
-    time.sleep(1.0)
+    time.sleep(3.0)
     
     # Create output paths
     screenshot_dir = os.path.join(output_base_path, scenario_id)
@@ -67,6 +67,8 @@ def generate_scenario_assets(spec_file_path, output_base_path):
     unreal.log("╔" + "=" * 68 + "╗")
     unreal.log("║" + " " * 15 + "Scenario Asset Generation" + " " * 28 + "║")
     unreal.log("╚" + "=" * 68 + "╝")
+    unreal.log("Waiting 5 seconds for all files to finish saving...")
+    time.sleep(5.0)
     unreal.log("")
     
     # Load scene specifications
@@ -101,6 +103,8 @@ def generate_scenario_assets(spec_file_path, output_base_path):
     unreal.log("╔" + "=" * 68 + "╗")
     unreal.log("║" + " " * 20 + "Generation Complete!" + " " * 26 + "║")
     unreal.log("╚" + "=" * 68 + "╝")
+    unreal.log("Waiting 5 seconds for all files to finish saving...")
+    time.sleep(5.0)
     unreal.log(f"Output: {os.path.join(output_base_path, scenario_id)}")
 
 

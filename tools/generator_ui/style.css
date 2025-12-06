@@ -254,6 +254,16 @@ body {
     background: rgba(88, 166, 255, 0.1);
 }
 
+.scenario-item.previewing {
+    border-color: var(--accent-green);
+    background: rgba(63, 185, 80, 0.15);
+    box-shadow: 0 0 0 2px var(--accent-green), inset 0 0 20px rgba(63, 185, 80, 0.1);
+}
+
+.scenario-item.previewing .title {
+    color: var(--accent-green);
+}
+
 .scenario-item .status-icon {
     font-size: 1.25rem;
 }

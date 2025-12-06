@@ -333,6 +333,17 @@ async function showPreview(scenarioId) {
     try {
         const data = await fetchApi(`/preview/${scenarioId}`);
 
+        // Remove previewing class from all items
+        document.querySelectorAll('.scenario-item.previewing').forEach(el => {
+            el.classList.remove('previewing');
+        });
+
+        // Add previewing class to current item
+        const currentItem = document.querySelector(`[data-id="${scenarioId}"]`);
+        if (currentItem) {
+            currentItem.classList.add('previewing');
+        }
+
         elements.previewSection.querySelector('.preview-placeholder').classList.add('hidden');
         elements.previewContent.classList.remove('hidden');
 

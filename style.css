@@ -85,21 +85,6 @@ code {
     content: none !important;
 }
 
-/* Question text styling - make questions stand out in red/pink */
-#ticket-step-prompt strong:last-of-type,
-.question-text {
-    color: #f87171;
-    /* text-red-400 - distinctive question color */
-    font-weight: 600;
-}
-
-/* Style paragraphs that end with "?" as questions */
-#ticket-step-prompt p:has(strong:last-child),
-#ticket-step-prompt > strong {
-    color: #f87171;
-    /* text-red-400 */
-}
-
 /* Choice button styling - add left border accent for visual consistency */
 #ticket-step-choices button {
     border-left: 4px solid #f59e0b;

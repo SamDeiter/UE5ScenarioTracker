@@ -718,7 +718,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const stepHtml = `
             <div id="ticket-step-prompt" class="mb-6">
                 <h5 class="text-xl font-bold text-gray-200 mb-4">${stepCountPrefix}${step.title}</h5>
-                <div class="prose prose-sm prose-invert text-gray-300">${step.prompt}</div>
+                <div class="prose prose-invert max-w-none text-gray-300">${step.prompt}</div>
             </div>
             <div id="ticket-step-choices" class="space-y-3"></div>
         `;

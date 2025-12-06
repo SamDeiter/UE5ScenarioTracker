@@ -834,14 +834,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // 3. Check for scenario conclusion
         if (choiceNext === 'conclusion') {
             finishScenario();
-        } else if (choiceNext === currentStepId && !isCorrect && choice && choice.feedback) {
-            // Wrong answer that loops back to same step - show feedback first
+        } else if (!isCorrect && choice && choice.feedback) {
+            // Wrong answer - show feedback first, then navigate to next step
             showChoiceFeedback(choice, () => {
                 currentStepId = choiceNext;
                 renderStep(currentScenarioId, currentStepId);
             });
         } else {
-            // 4. Move to the next step immediately 
+            // 4. Move to the next step immediately (correct answers or no feedback)
             currentStepId = choiceNext;
             renderStep(currentScenarioId, currentStepId);
         }

@@ -1,0 +1,50 @@
+{
+  "scenarioId": "black-material-emissive",
+  "stepId": "step1",
+
+  "levelPath": "/Game/ScenarioLevels/BlackMaterial_Level",
+
+  "camera": {
+    "location": [0, -600, 300],
+    "rotation": [-10, 0, 0]
+  },
+
+  "actors": [
+    {
+      "type": "DirectionalLight",
+      "label": "DirectionalLight",
+      "location": [0, 0, 300],
+      "rotation": [-45, 0, 0]
+    },
+    {
+      "type": "SkyAtmosphere",
+      "label": "SkyAtmosphere",
+      "location": [0, 0, 0]
+    },
+    {
+      "type": "SkyLight",
+      "label": "SkyLight",
+      "location": [0, 0, 0]
+    },
+    {
+      "type": "ExponentialHeightFog",
+      "label": "ExponentialHeightFog",
+      "location": [0, 0, 0]
+    },
+    {
+      "type": "PlayerStart",
+      "label": "PlayerStart",
+      "location": [0, -300, 0],
+      "rotation": [0, 0, 0]
+    },
+    {
+      "type": "StaticMeshActor",
+      "label": "Cube",
+      "location": [0, 0, 50],
+      "rotation": [0, 0, 0],
+      "scale": [1, 1, 1],
+      "staticMesh": "/Engine/BasicShapes/Cube.Cube",
+      "material": "/Game/ScenarioMaterials/M_Black_Emissive"
+    }
+  ]
+}

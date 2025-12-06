@@ -725,6 +725,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         ticketStepContent.innerHTML = stepHtml;
 
+        // 5a. OPTIONAL: Render screenshot if imagePath exists
+        if (step.imagePath) {
+            const imageHtml = `
+                <div id="step-screenshot" class="mb-6">
+                    <img 
+                        src="${step.imagePath}" 
+                        alt="Step ${stepNumber} - ${scenario.meta.title}" 
+                        class="w-full rounded-lg border border-neutral-600 shadow-lg"
+                        onerror="this.style.display='none'"
+                    />
+                </div>
+            `;
+            // Insert image AFTER prompt, BEFORE choices
+            const promptDiv = ticketStepContent.querySelector('#ticket-step-prompt');
+            if (promptDiv) {
+                promptDiv.insertAdjacentHTML('afterend', imageHtml);
+            }
+        }
+
         const choicesContainer = ticketStepContent.querySelector('#ticket-step-choices');
 
         // 6. Create Choice Buttons

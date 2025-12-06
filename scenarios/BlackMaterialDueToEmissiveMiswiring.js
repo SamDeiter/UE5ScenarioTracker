@@ -11,6 +11,10 @@ window.SCENARIOS['BlackMaterialDueToEmissiveMiswiring'] = {
         "step-1": {
             "skill": "materialsshaders",
             "title": "Observe Pure Black Material",
+            "imagePath": "/scenarios/BlackMaterialDueToEmissiveMiswiring/step1.png",
+            "sceneSpecPath": "/sceneSpecs/BlackMaterialDueToEmissiveMiswiring/step1.json",
+            "scenarioId": "BlackMaterialDueToEmissiveMiswiring",
+            "stepId": "step-1",
             "prompt": "<p>A newly placed <strong>Static Mesh Actor</strong> with <strong>M_Master_Rock</strong> appears completely black in the <strong>Level Editor</strong>. Surrounding lighting is intense. How do you begin investigating this visual issue?</p>",
             "choices": [
                 {
@@ -42,6 +46,10 @@ window.SCENARIOS['BlackMaterialDueToEmissiveMiswiring'] = {
         "step-2": {
             "skill": "materialsshaders",
             "title": "Examine Static Mesh Actor Details",
+            "imagePath": "/scenarios/BlackMaterialDueToEmissiveMiswiring/step2.png",
+            "sceneSpecPath": "/sceneSpecs/BlackMaterialDueToEmissiveMiswiring/step2.json",
+            "scenarioId": "BlackMaterialDueToEmissiveMiswiring",
+            "stepId": "step-2",
             "prompt": "<p>The <strong>Static Mesh Actor</strong> is selected. You see its <strong>Details</strong> panel. What is the first relevant property to confirm regarding its material?</p>",
             "choices": [
                 {
@@ -73,6 +81,10 @@ window.SCENARIOS['BlackMaterialDueToEmissiveMiswiring'] = {
         "step-3": {
             "skill": "materialsshaders",
             "title": "Open Material Instance",
+            "imagePath": "/scenarios/BlackMaterialDueToEmissiveMiswiring/step3.png",
+            "sceneSpecPath": "/sceneSpecs/BlackMaterialDueToEmissiveMiswiring/step3.json",
+            "scenarioId": "BlackMaterial DueToEmissiveMiswiring",
+            "stepId": "step-3",
             "prompt": "<p>The <strong>Details</strong> panel confirms <strong>MI_Rock_A</strong> is assigned. The <strong>Material Editor</strong> preview for <strong>M_Master_Rock</strong> looks correct. What is your immediate next step to inspect the material setup?</p>",
             "choices": [
                 {

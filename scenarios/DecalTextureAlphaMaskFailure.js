@@ -3,665 +3,449 @@ window.SCENARIOS['DecalTextureAlphaMaskFailure'] = {
         "title": "Deferred Decal Material Renders as Solid Opaque White Square",
         "description": "A newly implemented Deferred Decal material, intended to display a scorch mark using the texture's alpha channel for opacity masking, is failing. When the decal actor is placed on any surface, it renders as a completely solid, fully opaque, bright white square that obscures the underlying geometry texture, regardless of the Decal Material parameters set in the Material Instance. The visual result suggests the opacity mask is being ignored or treated as 1.0 everywhere.",
         "estimateHours": 1.45,
-        "category": "Materials & Shaders"
+        "category": "Materials & Shaders",
+        "tokens_used": 10718
     },
     "start": "step-1",
     "steps": {
         "step-1": {
             "skill": "materialsshaders",
-            "title": "Initial Actor Configuration Check",
-            "prompt": "A newly implemented Deferred Decal material is rendering as a solid opaque white square, ignoring its opacity mask. What's the very first thing to check?",
+            "title": "Investigate Decal Actor Assignment",
+            "prompt": "<p>A newly placed <strong>Decal Actor</strong> in the level renders as a solid, opaque white square, obscuring the underlying geometry.</p><p>How do you begin investigating this visual issue?</p>",
             "choices": [
                 {
-                    "text": "Select the Decal Actor in the level and verify the 'Decal Material' slot is correctly assigned to the Material Instance (MI_ScorchMark_Decal).",
+                    "text": "<p>Select the <strong>Decal Actor</strong> in the <strong>Level Outliner</strong> and verify its <strong>Decal Material</strong> slot in the <strong>Details</strong> panel.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. It's crucial to confirm the decal actor is using the intended material instance before diving deeper into material settings.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. It's crucial to first confirm that the correct material instance is assigned to the decal actor, as a misassignment could lead to unexpected rendering.</p>",
                     "next": "step-2"
                 },
                 {
-                    "text": "Change the 'Decal Blend Mode' property on the Decal Actor component itself to 'DBM_Translucent'.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.3hrs. This property controls the projection method (e.g., AlphaComposite, Translucent, Stain), not the material's output blending based on an opacity mask. It won't solve the issue of the material rendering as a solid white square and can introduce other issues.",
-                    "next": "step-1"
-                },
-                {
-                    "text": "Examine the Project Settings for any global decal rendering overrides.",
+                    "text": "<p>Adjust the <strong>Decal Blend Mode</strong> property on the <strong>Decal Actor</strong> component.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.1hrs. While global settings can affect rendering, it's less likely to cause a specific material to render as solid white and opaque. Start by checking the individual actor and its assigned assets.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.3hrs. The <strong>Decal Blend Mode</strong> on the actor controls how the decal projects onto geometry (e.g., DBuffer, Transparent), not how the material itself handles opacity. This is a material output issue.</p>",
                     "next": "step-1"
                 },
                 {
-                    "text": "Restart the Unreal Editor to clear any potential rendering glitches.",
+                    "text": "<p>Open <strong>MI_ScorchMark_Decal</strong> directly to inspect its parameters.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. While sometimes helpful for transient issues, this is a systematic material problem. It's better to methodically debug the asset configuration.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. While you'll need to open the material instance, it's best practice to first confirm the decal actor itself is correctly referencing it. Skipping this could lead to investigating the wrong asset.</p>",
+                    "next": "step-1"
+                },
+                {
+                    "text": "<p>Run <code>stat gpu</code> in the console to check for rendering performance bottlenecks.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. The issue describes an incorrect visual output (solid white), not performance. GPU stats won't help diagnose material setup problems.</p>",
                     "next": "step-1"
                 }
             ]
         },
         "step-2": {
             "skill": "materialsshaders",
-            "title": "Accessing the Material Instance",
-            "prompt": "The Decal Material slot is correctly assigned to MI_ScorchMark_Decal. What do you do next?",
+            "title": "Verify Material Instance Parameters",
+            "prompt": "<p>You've confirmed the <strong>Decal Actor</strong> references <strong>MI_ScorchMark_Decal</strong>. The material preview in the <strong>Details</strong> panel still shows a solid opaque white square.</p><p>What's your next move to troubleshoot the material's appearance?</p>",
             "choices": [
                 {
-                    "text": "Open the Material Instance (MI_ScorchMark_Decal) from the Content Browser or Details panel.",
+                    "text": "<p>Open <strong>MI_ScorchMark_Decal</strong> and verify its <strong>Base Color</strong> and <strong>Opacity Mask Texture</strong> parameters are pointing to <strong>T_ScorchMask_Alpha</strong>.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. The next logical step is to inspect the Material Instance itself, as it's the primary interface for modifying the material's appearance in the level.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.1hrs. After confirming the correct material instance, inspecting its texture assignments is the next logical step to ensure the correct assets are being used for color and opacity.</p>",
                     "next": "step-3"
                 },
                 {
-                    "text": "Open the Parent Material (M_Base_Decal_Deferred) directly.",
+                    "text": "<p>Replace the <strong>Base Color Texture</strong> parameter in the <strong>Material Instance</strong> with a completely different texture asset.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. While you will eventually check the parent material, it's better to confirm the Material Instance's parameters first, as they are specific to this decal's setup.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. This wastes time confirming parameter functionality when the core problem isn't necessarily the texture's content, but its handling of alpha. Focus on the relevant parameters.</p>",
                     "next": "step-2"
                 },
                 {
-                    "text": "Check the Decal Component's 'Fade Screen Size' property.",
+                    "text": "<p>In the <strong>Material Instance</strong>, look for parameters that might directly control the blend mode.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. Fade Screen Size controls when the decal fades out based on screen coverage, not its core rendering behavior or opacity masking.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. <strong>Material Instances</strong> typically expose parameters, but fundamental material settings like <strong>Blend Mode</strong> are usually controlled by the <strong>Parent Material</strong>. This is not the place to look for that.</p>",
                     "next": "step-2"
                 },
                 {
-                    "text": "Delete the Decal Actor and place a new one to see if it fixes the issue.",
+                    "text": "<p>Try changing the decal's projection depth via the <strong>Decal Actor's</strong> properties.</p>",
                     "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. This issue is with the material asset, not the actor itself. Deleting and replacing it will yield the same result and is a wasted effort.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. Adjusting projection depth will not affect how the material's opacity mask is processed. This is an issue with the material's visual output, not its spatial projection.</p>",
                     "next": "step-2"
                 }
             ]
         },
         "step-3": {
             "skill": "materialsshaders",
-            "title": "Verifying Material Instance Base Color Parameter",
-            "prompt": "You're now in MI_ScorchMark_Decal. Which parameter should you verify first?",
+            "title": "Access Parent Material",
+            "prompt": "<p>The <strong>Material Instance's</strong> parameters for <strong>Base Color</strong> and <strong>Opacity Mask Texture</strong> correctly point to <strong>T_ScorchMask_Alpha</strong>. The preview within the <strong>Material Instance Editor</strong> still shows a solid white square.</p><p>How should you proceed?</p>",
             "choices": [
                 {
-                    "text": "Verify that the 'Base Color Texture' parameter is correctly pointing to T_ScorchMask_Alpha.",
+                    "text": "<p>In the <strong>Material Instance Editor</strong>, locate and open the <strong>Parent Material</strong>, <strong>M_Base_Decal_Deferred</strong>.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. It's good practice to ensure all expected texture parameters are correctly assigned, starting with the base color as it determines the visual output.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. Since the <strong>Material Instance</strong> parameters are correct, the issue likely resides in the parent material's setup, which dictates core material behavior like blending and domain.</p>",
                     "next": "step-4"
                 },
                 {
-                    "text": "Adjust the 'Scalar Parameter' for overall decal intensity.",
+                    "text": "<p>Add a new scalar parameter for opacity to the <strong>Material Instance</strong> and try to adjust it.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. While you might have an intensity parameter, the core problem is a solid white opaque square, which points to a texture or masking issue, not intensity.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.25hrs. Adding a new parameter and trying to force opacity is premature. The goal is to understand why the existing opacity mask isn't working, not to bypass it. This also requires modifying the parent material first.</p>",
                     "next": "step-3"
                 },
                 {
-                    "text": "Replace the Base Color texture parameter with a completely different texture asset.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.15hrs. This wastes time confirming the parameter system works, rather than focusing on the actual problem of the alpha mask being ignored. The issue is with opacity, not necessarily the base color texture itself.",
-                    "next": "step-3"
-                },
-                {
-                    "text": "Check the material instance's 'Physical Material' setting.",
+                    "text": "<p>Right-click the <strong>T_ScorchMask_Alpha</strong> texture thumbnail in the parameter view and choose 'Reimport'.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. Physical materials are used for physics interactions and sound, not directly for visual rendering of alpha masks.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. While reimporting can sometimes resolve texture issues, it's too early. First, verify the material's fundamental settings are correct before assuming a texture import problem.</p>",
+                    "next": "step-3"
+                },
+                {
+                    "text": "<p>Check the <strong>Material Instance's</strong> preview mesh to ensure it's not custom and problematic.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. The preview mesh (usually a sphere or plane) is rarely the cause of a solid white opaque material. Focus on the material's properties themselves.</p>",
                     "next": "step-3"
                 }
             ]
         },
         "step-4": {
             "skill": "materialsshaders",
-            "title": "Verifying Material Instance Opacity Mask Parameter",
-            "prompt": "The Base Color Texture parameter is correct. What's the next material instance parameter to check, given the problem description?",
+            "title": "Verify Material Domain Setting",
+            "prompt": "<p>You are now in the <strong>Parent Material</strong> editor. The material appears visually correct in its preview, but the solid white issue persists in the level.</p><p>What's the first setting you should verify in the <strong>Parent Material's Details</strong> panel?</p>",
             "choices": [
                 {
-                    "text": "Verify that the 'Opacity Mask Texture' parameter is correctly pointing to T_ScorchMask_Alpha.",
+                    "text": "<p>Verify that the <strong>Material Domain</strong> in the <strong>Details</strong> panel is set to <code>Deferred Decal</code>.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. This is critical as the problem explicitly states the opacity mask is being ignored. Ensuring the correct texture is assigned here is a direct diagnostic step.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. For a decal, the <strong>Material Domain</strong> <em>must</em> be <code>Deferred Decal</code>. Any other setting will result in incorrect rendering or no decal projection at all.</p>",
                     "next": "step-5"
                 },
                 {
-                    "text": "Try changing the 'Decal Blend Mode' directly in the Material Instance.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. Decal Blend Mode is a property of the *material's parent settings*, not typically exposed as a changeable parameter in the Material Instance. This suggests a misunderstanding of material architecture.",
-                    "next": "step-4"
-                },
-                {
-                    "text": "Adjust the 'Texture Coordinate' scaling parameters in the Material Instance.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. Texture coordinate scaling affects how the texture repeats or stretches, but won't fix a problem where the alpha channel itself is ignored.",
-                    "next": "step-4"
-                },
-                {
-                    "text": "Apply a different base color texture to see if the problem shifts.",
+                    "text": "<p>Examine the <strong>Material Graph</strong> for any complex nodes that might override opacity.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. While you already checked base color, changing it *again* to a different texture is redundant when the problem is clearly with the opacity mask.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. While you will need to check the graph, it's always best to verify the fundamental material settings (like <strong>Material Domain</strong> and <strong>Blend Mode</strong>) first, as these dictate how the material is rendered at a high level.</p>",
+                    "next": "step-4"
+                },
+                {
+                    "text": "<p>Look for parameters related to lighting models, like <code>Shading Model</code>.</p>",
+                    "type": "subtle",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. While <strong>Shading Model</strong> is important, it's less likely to cause a completely solid white, opaque decal than an incorrect <strong>Material Domain</strong> or <strong>Blend Mode</strong> for a decal.</p>",
+                    "next": "step-4"
+                },
+                {
+                    "text": "<p>Check the <strong>Material Output Log</strong> for compilation warnings.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. The output log is useful for compile errors, but a material rendering incorrectly might still compile without warnings. Direct inspection of settings is more effective here.</p>",
                     "next": "step-4"
                 }
             ]
         },
         "step-5": {
             "skill": "materialsshaders",
-            "title": "Accessing the Parent Material",
-            "prompt": "Both Base Color and Opacity Mask Texture parameters in MI_ScorchMark_Decal are correctly assigned to T_ScorchMask_Alpha. What's your next step?",
+            "title": "Confirm Blend Mode Setting",
+            "prompt": "<p>You've confirmed the <strong>Material Domain</strong> is <code>Deferred Decal</code>. The decal is still rendering as a solid opaque white square.</p><p>Which other critical material setting should you verify in the <strong>Details</strong> panel?</p>",
             "choices": [
                 {
-                    "text": "In the Material Instance, locate and open the Parent Material (M_Base_Decal_Deferred).",
+                    "text": "<p>Confirm the <strong>Blend Mode</strong> is set to <code>Masked</code>.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. Since the instance parameters are correct, the problem likely lies within the parent material's core setup, which dictates the fundamental behavior.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.1hrs. For an opacity mask to function, the <strong>Blend Mode</strong> must be <code>Masked</code>. If it were <code>Opaque</code>, the alpha channel would be ignored entirely, leading to a solid appearance.</p>",
                     "next": "step-6"
                 },
                 {
-                    "text": "Try adjusting the 'Opacity Mask Clip Value' in the Material Instance.",
+                    "text": "<p>Change the <strong>Blend Mode</strong> from <code>Masked</code> to <code>Translucent</code>.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. While this value is important, it's a property of the parent material and needs to be checked there first. Changing it in the instance won't help if the parent isn't configured for masked blending.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.45hrs. Changing to <code>Translucent</code> without solving the underlying texture alpha issue will introduce incorrect lighting, sorting artifacts, and likely still won't display the desired mask. It's a different rendering path.</p>",
                     "next": "step-5"
                 },
                 {
-                    "text": "Create a new material from scratch to see if the problem persists with a fresh setup.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.2hrs. This is a time-consuming step that avoids diagnosing the root cause of the current material's failure. It's better to methodically fix the existing assets.",
-                    "next": "step-5"
-                },
-                {
-                    "text": "Add a new scalar parameter for 'Opacity' in the Material Instance and try to adjust it.",
+                    "text": "<p>Check the <strong>Decal Blend Mode</strong> property in the <strong>Details</strong> panel of the <strong>Material Editor</strong>.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.1hrs. A scalar parameter for opacity would only work if the parent material was set up to receive it, and it's not directly related to why the existing opacity mask is being ignored.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. There is no 'Decal Blend Mode' property <em>within the Material Editor</em> for the material itself. This setting exists on the <strong>Decal Actor</strong> component, which controls projection, not material blending.</p>",
+                    "next": "step-5"
+                },
+                {
+                    "text": "<p>Adjust the <strong>Two Sided</strong> property.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. The <strong>Two Sided</strong> property only affects if the backfaces of geometry are rendered; it has no impact on how the material's alpha channel is interpreted for opacity masking.</p>",
                     "next": "step-5"
                 }
             ]
         },
         "step-6": {
             "skill": "materialsshaders",
-            "title": "Verifying Parent Material Domain",
-            "prompt": "You're now in M_Base_Decal_Deferred. What's the first fundamental property to check for a deferred decal?",
+            "title": "Examine Opacity Mask Connection",
+            "prompt": "<p>The <strong>Material Domain</strong> is <code>Deferred Decal</code> and <strong>Blend Mode</strong> is <code>Masked</code>. Still, the decal renders as a solid opaque white square. This suggests the mask itself might be ignored or misconnected.</p><p>How do you investigate the mask's behavior within the material?</p>",
             "choices": [
                 {
-                    "text": "Verify the 'Material Domain' is set to 'Deferred Decal'.",
+                    "text": "<p>Examine the <strong>Material Graph</strong> to ensure the <strong>Opacity Mask</strong> input is correctly receiving the alpha output (A) from the <strong>Texture Sample Parameter</strong> used for <strong>T_ScorchMask_Alpha</strong>.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. The Material Domain is fundamental. If it's not 'Deferred Decal', the material won't render as a decal at all, or will render incorrectly.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.15hrs. With core settings correct, the next step is to visually confirm the data flow in the <strong>Material Graph</strong>, ensuring the alpha channel from the texture is indeed wired to the <strong>Opacity Mask</strong> input.</p>",
                     "next": "step-7"
                 },
                 {
-                    "text": "Immediately check the 'Blend Mode' property.",
+                    "text": "<p>Add a <code>Multiply</code> node to the <strong>Opacity Mask</strong> input to try and manually adjust its intensity.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. While Blend Mode is critical, Material Domain is an even higher-level setting that dictates how the material interacts with the rendering pipeline as a whole.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.25hrs. Adding nodes to 'force' a value is premature. First, verify the existing connections and data integrity. If the alpha data isn't even reaching the input correctly, multiplying it won't help.</p>",
                     "next": "step-6"
                 },
                 {
-                    "text": "Look for the Base Color input in the material graph.",
+                    "text": "<p>Disconnect the <strong>Opacity Mask</strong> input entirely to see if it changes behavior.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. The base color is not the primary issue; the problem is with the opacity mask being ignored. Start with fundamental material properties.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. Disconnecting the input will make the material fully opaque by default, which is the current symptom. This won't help diagnose <em>why</em> it's currently opaque with the input connected.</p>",
                     "next": "step-6"
                 },
                 {
-                    "text": "Run a 'stat gpu' command in the console to check GPU performance.",
+                    "text": "<p>Try changing the <strong>Base Color</strong> input to a solid color to rule out texture issues there.</p>",
                     "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. Performance stats are not relevant to a material rendering incorrectly as a solid white square. This is a configuration issue.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. The problem explicitly states a 'solid opaque white square' regardless of material parameters, indicating an opacity issue, not a base color value problem. Investigating base color is a diversion.</p>",
                     "next": "step-6"
                 }
             ]
         },
         "step-7": {
             "skill": "materialsshaders",
-            "title": "Confirming Parent Material Blend Mode",
-            "prompt": "Material Domain is confirmed as 'Deferred Decal'. Which material setting is crucial for alpha-based opacity masking to function?",
+            "title": "Verify Opacity Mask Clip Value",
+            "prompt": "<p>The <strong>Material Graph</strong> shows the <strong>Texture Sample's</strong> alpha output correctly connected to the <strong>Opacity Mask</strong> input. The solid white square persists.</p><p>With a <code>Masked</code> blend mode, what crucial related setting should you verify in the <strong>Material's Details</strong> panel?</p>",
             "choices": [
                 {
-                    "text": "Verify the 'Blend Mode' is set to 'Masked'.",
+                    "text": "<p>Confirm the <strong>Opacity Mask Clip Value</strong> is set to a reasonable non-zero value (e.g., <code>0.333</code>).</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.1hrs. For a material to use an opacity mask (binary transparency based on an alpha channel), its Blend Mode *must* be set to 'Masked'. If it were Translucent, the color might be affected, but the problem states it is solid white and opaque, indicating the mask is ignored.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. For a <code>Masked</code> blend mode, the <strong>Opacity Mask Clip Value</strong> is crucial. If set to <code>0</code> or an extreme value, it can make the entire material opaque or fully transparent, regardless of the input alpha.</p>",
                     "next": "step-8"
                 },
                 {
-                    "text": "Change the Base Material Blend Mode from 'Masked' to 'Translucent'.",
+                    "text": "<p>Adjust the <strong>Scalar Parameter</strong> controlling the texture tiling or offset.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.45hrs. Changing to 'Translucent' without solving the texture alpha issue would introduce incorrect lighting and sorting artifacts, and is not the correct approach for binary opacity masking. It also won't solve the solid white problem.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. Tiling or offset parameters affect the texture's placement on the surface, but have no impact on how the alpha channel is interpreted by the <strong>Opacity Mask Clip Value</strong> or the blend mode.</p>",
                     "next": "step-7"
                 },
                 {
-                    "text": "Set 'Shading Model' to 'Unlit'.",
+                    "text": "<p>Attempt to compile the material manually to catch any latent errors.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.1hrs. Shading Model affects how light interacts with the material, not primarily how its opacity mask is interpreted for binary transparency.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. The material is already compiled and rendering (albeit incorrectly). Manually compiling again is unlikely to reveal new information if there are no visible compilation errors.</p>",
                     "next": "step-7"
                 },
                 {
-                    "text": "Enable 'Two Sided' to ensure the decal renders on both sides of geometry.",
+                    "text": "<p>Look for any hidden parameters related to decal depth or projection.</p>",
                     "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. 'Two Sided' is irrelevant to the decal rendering as a solid opaque white square. It only affects rendering from reverse normals.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. Material settings control appearance, not projection parameters like depth, which are typically found on the <strong>Decal Actor</strong> itself.</p>",
                     "next": "step-7"
                 }
             ]
         },
         "step-8": {
             "skill": "materialsshaders",
-            "title": "Examining Material Graph for Opacity Mask Logic",
-            "prompt": "Blend Mode is 'Masked'. What should you now examine in the material graph regarding the opacity mask?",
+            "title": "Inspect Source Texture Asset",
+            "prompt": "<p>The material setup (domain, blend mode, graph connections, clip value) appears logically sound, yet the decal remains a solid opaque white square, ignoring the alpha channel. This suggests the problem might not be in the material logic itself.</p><p>How do you investigate the source of the alpha data?</p>",
             "choices": [
                 {
-                    "text": "Examine the Material Graph to ensure the Texture Sample Parameter for T_ScorchMask_Alpha is present and connected to the Opacity Mask input.",
+                    "text": "<p>Identify and open the actual texture asset <strong>T_ScorchMask_Alpha</strong> in the <strong>Content Browser</strong> by right-clicking its reference in the <strong>Material Graph</strong> and selecting 'Browse To Asset'.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. It's vital to confirm that the material's Opacity Mask input is receiving *any* data from the intended texture, and that the texture sample node is correctly set up.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.1hrs. If the material logic seems correct, the next logical step is to investigate the source data itself \u2013 the texture asset \u2013 to ensure its alpha channel is correctly configured and interpreted by the engine.</p>",
                     "next": "step-9"
                 },
                 {
-                    "text": "Plug a 'Constant' value of 0.5 directly into the Opacity Mask input to test transparency.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.25hrs. Trying to force transparency using a constant value into the opacity mask input, rather than checking the input texture asset configuration, bypasses the problem rather than diagnosing it. It will make the decal semi-transparent, but it won't fix the underlying issue with the texture's alpha channel.",
-                    "next": "step-8"
-                },
-                {
-                    "text": "Add a 'Multiply' node before the Base Color input to brighten the decal.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. The base color is not the primary issue, and brightening it won't resolve the opacity mask problem.",
-                    "next": "step-8"
-                },
-                {
-                    "text": "Check if the material is compiling correctly by looking for errors in the output log.",
+                    "text": "<p>Try applying a different basic texture with known working alpha to the <strong>Opacity Mask</strong> input in the material.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. If the material were failing to compile, it would likely render as a default gray checkerboard or black, not a solid white square. The issue is logical, not syntax-related.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. While this would confirm the material's ability to use an alpha mask, it doesn't solve the problem for the specific <strong>T_ScorchMask_Alpha</strong> texture. The goal is to fix the existing asset.</p>",
+                    "next": "step-8"
+                },
+                {
+                    "text": "<p>Check the engine's <strong>Output Log</strong> for texture-related warnings during loading.</p>",
+                    "type": "subtle",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. The output log might have general warnings, but direct inspection of the texture asset's properties is a more targeted and efficient way to diagnose configuration issues.</p>",
+                    "next": "step-8"
+                },
+                {
+                    "text": "<p>Recreate the <strong>Material Instance</strong> from scratch to rule out corruption.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.20hrs. This is a drastic step and highly unlikely to solve the problem, especially if the material's parent settings are correct. It wastes significant time.</p>",
                     "next": "step-8"
                 }
             ]
         },
         "step-9": {
             "skill": "materialsshaders",
-            "title": "Confirming Opacity Mask Channel Connection",
-            "prompt": "The Texture Sample for T_ScorchMask_Alpha is connected to the Opacity Mask input. What specific output channel from the texture sample should be connected?",
+            "title": "Verify Texture Alpha Presence",
+            "prompt": "<p>You've opened <strong>T_ScorchMask_Alpha</strong> in the <strong>Texture Editor</strong>. The texture preview shows a white square, and toggling the alpha channel view still shows a solid white, not a mask.</p><p>What do you do next to confirm the texture's alpha channel data?</p>",
             "choices": [
                 {
-                    "text": "Confirm the Opacity Mask input is correctly receiving the alpha output (A) from the Texture Sample Parameter.",
+                    "text": "<p>Verify the texture is being sampled correctly by checking the <strong>Source Texture</strong> properties and confirming the alpha channel is present in the imported source file (usually visible in the <strong>Texture Editor's</strong> preview channels).</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.1hrs. It's crucial that the *alpha* channel, not RGB, is driving the Opacity Mask. Accidentally connecting the Red or RGB channel would result in incorrect or fully opaque behavior if the texture is mostly white.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.15hrs. Before adjusting settings, confirm the basic integrity: is the alpha channel actually <em>in</em> the source image, and is the engine reading it at all? The preview channels can help visualize this.</p>",
                     "next": "step-10"
                 },
                 {
-                    "text": "Connect the Red channel of the texture sample to the Opacity Mask input.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. Connecting the Red channel (or any RGB channel) will cause incorrect behavior as it will use color data, not alpha, for transparency. This would likely perpetuate the solid white issue.",
-                    "next": "step-9"
-                },
-                {
-                    "text": "Add a 'Power' node to modify the opacity values from the texture.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. While you can modify mask values, this is an advanced adjustment. The first step is to ensure the correct raw data is being fed into the mask.",
-                    "next": "step-9"
-                },
-                {
-                    "text": "Disconnect and reconnect the texture sample node to 'refresh' the connection.",
+                    "text": "<p>Change the <strong>Texture Group</strong> setting to a different category.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. This is a troubleshooting step for a potential editor glitch, but unlikely to fix a logical connection error. The visual connection in the graph is what matters.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. <strong>Texture Group</strong> affects streaming, LODs, and memory usage. It has no bearing on whether the alpha channel data itself is correctly interpreted and used for masking.</p>",
+                    "next": "step-9"
+                },
+                {
+                    "text": "<p>Adjust the <strong>Texture's</strong> resolution via its settings in the <strong>Details</strong> panel.</p>",
+                    "type": "subtle",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. Changing resolution affects clarity and size, not the fundamental presence or interpretation of the alpha channel data. This won't address an opacity issue.</p>",
+                    "next": "step-9"
+                },
+                {
+                    "text": "<p>Re-import the texture from a different file format (e.g., PNG to TGA) without checking settings.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.20hrs. Simply re-importing might not fix the issue if the problem lies in the texture's <em>engine-side settings</em> rather than the file format itself. Diagnosing first is better.</p>",
                     "next": "step-9"
                 }
             ]
         },
         "step-10": {
             "skill": "materialsshaders",
-            "title": "Checking Opacity Mask Clip Value in Parent Material",
-            "prompt": "The Opacity Mask input is correctly connected to the alpha output. What additional material setting is critical for 'Masked' blend mode to correctly interpret the texture data?",
+            "title": "Check Texture Compression Settings",
+            "prompt": "<p>You've confirmed the alpha channel is present in the source file and visible in the <strong>Texture Editor's</strong> preview when manually toggling channels. Yet, the texture still appears opaque white, even in the preview, and the decal is not working.</p><p>Which texture setting commonly causes issues with alpha channel interpretation?</p>",
             "choices": [
                 {
-                    "text": "Confirm the 'Opacity Mask Clip Value' is set to a reasonable non-zero value (e.g., 0.333), as this is required for Masked blend mode.",
+                    "text": "<p>In the <strong>Texture Editor Details</strong> panel, check the <strong>Compression Settings</strong> property. The current setting is likely <code>Default (DXT1/5)</code>.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. The Opacity Mask Clip Value defines the threshold for masked materials. If it's 0 (or too low/high), it can cause unexpected results, including potentially ignoring valid mask data (treating everything as opaque if 0 or too low).",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.1hrs. If the alpha is present but not being <em>used</em> or <em>interpreted</em> correctly, <strong>Compression Settings</strong> are a prime suspect. <code>Default</code> compression often discards or poorly handles alpha for non-color data.</p>",
                     "next": "step-11"
                 },
                 {
-                    "text": "Add a 'Clamp' node to the Opacity Mask input to ensure values are between 0 and 1.",
+                    "text": "<p>Adjust the <strong>LOD Bias</strong> property to force a higher quality mipmap.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. While clamping is good practice, the engine usually handles this. The primary issue is not out-of-range values from the texture, but how the texture data itself is being processed and clipped.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. <strong>LOD Bias</strong> affects which mipmap level is used, but if the alpha data is fundamentally miscompressed, even the highest quality mip will be incorrect. This won't resolve the core issue.</p>",
                     "next": "step-10"
                 },
                 {
-                    "text": "Disable 'Cast Shadows' on the material to see if it's related to shadow rendering.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. Casting shadows is unrelated to the material itself rendering as a solid white square. This is a material property problem.",
-                    "next": "step-10"
-                },
-                {
-                    "text": "Verify the 'Usage' flags for the material, like 'Used With Skeletal Meshes'.",
+                    "text": "<p>Look for a <strong>Dither Alpha</strong> option in the texture settings.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. Material usage flags affect where the material can be applied, not how its internal logic processes opacity for a decal. This is a deferred decal, so those specific flags are unlikely to be relevant.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. <strong>Dither Alpha</strong> is related to how alpha is displayed or rendered, but it doesn't control the underlying <em>storage</em> and <em>interpretation</em> of the alpha data itself. Compression is a more fundamental step.</p>",
+                    "next": "step-10"
+                },
+                {
+                    "text": "<p>Change the <strong>Power of Two Mode</strong> to ensure compatibility.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. <strong>Power of Two Mode</strong> ensures texture dimensions are powers of two, which is a legacy optimization. It has no direct impact on alpha channel interpretation or compression.</p>",
                     "next": "step-10"
                 }
             ]
         },
         "step-11": {
             "skill": "materialsshaders",
-            "title": "Identifying the Root Cause Component",
-            "prompt": "All material graph logic and properties (domain, blend mode, clip value, texture connections) appear sound. What's the next logical component to investigate?",
+            "title": "Adjust Texture Compression",
+            "prompt": "<p>The <strong>Compression Settings</strong> are indeed set to <code>Default (DXT1/5)</code>. This setting is known to sometimes optimize away alpha or not handle it linearly, especially for masks.</p><p>How do you ensure the alpha channel data is preserved accurately for masking?</p>",
             "choices": [
                 {
-                    "text": "Since the material graph logic appears sound, identify the actual texture asset (T_ScorchMask_Alpha) that is being sampled.",
+                    "text": "<p>Change the <strong>Compression Settings</strong> from <code>Default</code> to <code>Masks (No SRGB)</code> or <code>UserInterface2D (BC7)</code> to ensure the alpha channel data is preserved accurately and linearly, as masked opacity relies on binary/linear data.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. If the material setup is correct, the problem almost certainly lies with the source data\u2014the texture asset itself. It's the only remaining piece of the puzzle that could be causing the alpha to be ignored.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.15hrs. <code>Masks (No SRGB)</code> is specifically designed for single-channel data masks, ensuring the alpha channel is preserved without color space conversions. <code>UserInterface2D (BC7)</code> is also a good option for high-quality alpha.</p>",
                     "next": "step-12"
                 },
                 {
-                    "text": "Create a completely new material and re-implement the decal logic from scratch.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.3hrs. This is a very time-consuming approach. Given that the material graph appears correct, recreating it is unlikely to solve the problem and avoids diagnosing the root cause.",
-                    "next": "step-11"
-                },
-                {
-                    "text": "Check the Decal Actor's scale and rotation in the level.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. Scale and rotation affect the projection of the decal, but not its material's opacity. It would still be a white square, just scaled/rotated.",
-                    "next": "step-11"
-                },
-                {
-                    "text": "Replace the texture sample in the material with a 'Texture Object Parameter' and try to assign the texture again.",
+                    "text": "<p>Try a different <strong>Compression Settings</strong> like <code>NormalMap</code>.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.1hrs. While this might confirm parameter functionality, it's an unnecessary step if the current Texture Sample Parameter is already correctly pointing to the texture. The issue isn't the *connection*, but how the *texture itself* is processed.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. <code>NormalMap</code> compression is specifically tailored for tangent-space normal maps, which have entirely different data requirements and compression algorithms than a grayscale mask. This would lead to incorrect results.</p>",
+                    "next": "step-11"
+                },
+                {
+                    "text": "<p>Re-import the texture with different import settings for the alpha channel.</p>",
+                    "type": "subtle",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.12hrs. While import settings can be a factor, directly changing the engine's <strong>Compression Settings</strong> for the asset is the most immediate and targeted way to address how the engine <em>stores</em> and <em>interprets</em> the alpha channel after import.</p>",
+                    "next": "step-11"
+                },
+                {
+                    "text": "<p>Set <strong>Compression Settings</strong> to <code>VectorDisplacementMap</code>.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. <code>VectorDisplacementMap</code> is for highly specific 3D displacement data. Applying it to a 2D opacity mask is fundamentally incorrect and will result in corrupted data.</p>",
                     "next": "step-11"
                 }
             ]
         },
         "step-12": {
-            "skill": "textureeditor",
-            "title": "Opening the Texture Asset",
-            "prompt": "The texture asset T_ScorchMask_Alpha has been identified. What's the immediate next step?",
+            "skill": "materialsshaders",
+            "title": "Disable sRGB for Data Texture",
+            "prompt": "<p>You've updated the <strong>Compression Settings</strong>. The texture preview might still look odd or white, as another critical setting often works in tandem with compression for data textures and can cause similar white-out issues.</p><p>Considering this texture is a data mask, not a color texture, what is the next crucial setting to adjust?</p>",
             "choices": [
                 {
-                    "text": "Open the T_ScorchMask_Alpha asset in the Texture Editor.",
+                    "text": "<p>Crucially, locate the <code>sRGB</code> checkbox in the <strong>Texture Editor</strong>. Since this texture is being used purely as a data mask (not for color display), uncheck <code>sRGB</code>.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. To inspect and modify the texture's properties, it must be opened in its dedicated editor.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.15hrs. <code>sRGB</code> applies a gamma correction, intended for color textures. For a linear data mask (like opacity), having <code>sRGB</code> enabled will distort the alpha values, effectively making 0s become non-zero, resulting in an opaque look.</p>",
                     "next": "step-13"
                 },
                 {
-                    "text": "Right-click the texture and select 'Reimport'.",
+                    "text": "<p>Enable <strong>Virtual Texture Streaming</strong> for this texture.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. Reimporting without changing settings won't help. You need to inspect the texture's properties *before* reimporting to diagnose the issue.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. <strong>Virtual Texture Streaming</strong> is a memory and performance optimization for large textures. It has no impact on the color space interpretation (<code>sRGB</code>) or compression of the texture data itself.</p>",
                     "next": "step-12"
                 },
                 {
-                    "text": "Drag the texture directly into the level viewport to see how it renders on its own.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. Dragging it into the level will create a material/mesh that won't necessarily replicate the decal's behavior, and won't allow you to inspect its internal properties.",
-                    "next": "step-12"
-                },
-                {
-                    "text": "Check the texture's file path on disk using the Content Browser's 'Show in Explorer' option.",
+                    "text": "<p>Look for an 'Invert Alpha' option in the texture settings.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. The file path is irrelevant to how Unreal processes the texture asset's internal alpha channel data.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. While an inverted alpha could be a future step if the mask shows up correctly but is reversed, it won't fix the issue where the mask isn't being read <em>at all</em> due to <code>sRGB</code> or compression.</p>",
+                    "next": "step-12"
+                },
+                {
+                    "text": "<p>Adjust the <strong>Max Texture Size</strong> to force a re-render.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. <strong>Max Texture Size</strong> caps the texture resolution but does not affect how its color space (<code>sRGB</code>) or alpha channel are fundamentally processed. This is irrelevant to the current problem.</p>",
                     "next": "step-12"
                 }
             ]
         },
         "step-13": {
-            "skill": "textureeditor",
-            "title": "Verifying Source Texture Properties",
-            "prompt": "You've opened T_ScorchMask_Alpha in the Texture Editor. What's the first thing to verify about its alpha channel?",
+            "skill": "materialsshaders",
+            "title": "Save Texture Asset Changes",
+            "prompt": "<p>You've changed both the <strong>Compression Settings</strong> and unchecked <code>sRGB</code> for <strong>T_ScorchMask_Alpha</strong>. The texture preview in the <strong>Texture Editor</strong> may still not immediately update, or the decal in the level remains unchanged.</p><p>What final action is required for these texture changes to take effect throughout the engine?</p>",
             "choices": [
                 {
-                    "text": "Verify the 'Source Texture' properties and confirm that the alpha channel is present in the imported source file.",
+                    "text": "<p>Save the changes to the texture asset (<strong>T_ScorchMask_Alpha</strong>). This forces a re-import and re-compression of the texture data.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. Before diving into compression or sRGB, confirm that the alpha channel *actually exists* in the source image and was correctly detected during import.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.1hrs. Changes to core texture properties like compression and sRGB often require the asset to be explicitly saved. This triggers the engine to reprocess and re-compress the texture with the new settings, propagating the fix.</p>",
                     "next": "step-14"
                 },
                 {
-                    "text": "Immediately change the 'Compression Settings' to 'Masks (No SRGB)'.",
+                    "text": "<p>Right-click the texture in the <strong>Content Browser</strong> and select 'Recompile Shaders'.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. While this is part of the solution, it's better to verify the alpha channel exists first. Changing settings without confirming source data presence can lead to misdiagnosis.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. Shaders are compiled based on material graph changes. Texture asset changes primarily affect texture data processing, not shader compilation directly, though materials using the texture will likely recompile automatically when the texture is saved.</p>",
                     "next": "step-13"
                 },
                 {
-                    "text": "Modify the 'Resolution' of the texture to a higher value.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. Texture resolution affects detail, not whether its alpha channel is correctly processed for opacity. This is irrelevant to the problem.",
-                    "next": "step-13"
-                },
-                {
-                    "text": "Check the 'Filter' property (e.g., Bilinear, Trilinear, Anisotropic).",
+                    "text": "<p>Refresh the <strong>Material Instance</strong> or <strong>Parent Material</strong> in their respective editors.</p>",
                     "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. Filtering affects how the texture is sampled at different distances, not whether its alpha channel is active for masked opacity.",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.08hrs. While materials often hot-reload, the fundamental texture data won't update in memory until the asset itself is saved and reprocessed. Refreshing the material editors without saving the texture is ineffective.</p>",
+                    "next": "step-13"
+                },
+                {
+                    "text": "<p>Restart the entire Unreal Editor to clear caches.</p>",
+                    "type": "obvious",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.20hrs. Restarting the editor is a last resort and usually unnecessary for asset changes. Saving the asset is the intended and faster way to apply changes.</p>",
                     "next": "step-13"
                 }
             ]
         },
         "step-14": {
-            "skill": "textureeditor",
-            "title": "Observing Texture Editor Preview Channels",
-            "prompt": "Source Texture properties confirm alpha channel presence. How can you visually inspect the alpha channel within the Texture Editor?",
+            "skill": "materialsshaders",
+            "title": "Verify Decal in Level",
+            "prompt": "<p>After saving the texture asset, the preview in the <strong>Texture Editor</strong> now correctly displays the alpha channel, and the decal in the level viewport has visually updated.</p><p>What is your final step to confirm the fix?</p>",
             "choices": [
                 {
-                    "text": "Confirm the alpha channel is visible and appears as expected in the Texture Editor preview channels (e.g., by selecting the 'Alpha' channel view).",
+                    "text": "<p>Return to the level viewport and verify the <strong>Decal Material</strong> now blends correctly, using the texture's alpha channel for opacity, resulting in a scorch mark instead of a white square.</p>",
                     "type": "correct",
-                    "feedback": "Optimal Time: +0.1hrs. The preview channels allow direct visual inspection of individual channels (Red, Green, Blue, Alpha). This confirms if the engine is correctly interpreting the alpha data it has.",
-                    "next": "step-15"
-                },
-                {
-                    "text": "Use an external image editor to view the alpha channel.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.15hrs. The Unreal Texture Editor provides the tools to inspect channels. Using an external app is unnecessary and wastes time, violating a critical rule for this assessment.",
-                    "next": "step-14"
-                },
-                {
-                    "text": "Check the 'Mipmap' generation settings.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. Mipmaps are scaled-down versions for distance rendering. While they rely on the source, checking their generation settings won't tell you if the alpha channel is being correctly processed for the material's current issue.",
-                    "next": "step-14"
-                },
-                {
-                    "text": "Apply a 'Texture Curve' to modify the alpha values dynamically.",
-                    "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. Applying a curve is a modification, not a diagnostic step. You need to understand why it's not working *before* trying to change its values.",
-                    "next": "step-14"
-                }
-            ]
-        },
-        "step-15": {
-            "skill": "textureeditor",
-            "title": "Inspecting Compression Settings for Alpha Data",
-            "prompt": "Alpha channel is present and visible in the preview. What texture property often dictates how accurately alpha channel data is preserved?",
-            "choices": [
-                {
-                    "text": "In the Texture Editor Details panel, check the 'Compression Settings' property. The current setting is likely 'Default (DXT1/5)'.",
-                    "type": "correct",
-                    "feedback": "Optimal Time: +0.1hrs. Compression settings determine how texture data, including alpha, is stored. Incorrect settings often lead to alpha channel degradation or outright removal, causing issues like yours.",
-                    "next": "step-16"
-                },
-                {
-                    "text": "Adjust the 'LOD Bias' to force a higher-quality mip.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. LOD Bias affects mipmap selection, which impacts visual quality at distance, but doesn't solve a fundamental issue with the alpha channel's data interpretation.",
-                    "next": "step-15"
-                },
-                {
-                    "text": "Change the 'Addressing X' and 'Addressing Y' to 'Wrap'.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. Addressing modes (Wrap, Clamp, Mirror) affect how the texture behaves when UVs go outside the 0-1 range. This is irrelevant to the alpha mask being ignored.",
-                    "next": "step-15"
-                },
-                {
-                    "text": "Export the texture to an external application to verify its alpha channel there.",
-                    "type": "plausible",
-                    "feedback": "Extended Time: +0.2hrs. While possible, the Texture Editor itself provides adequate tools to verify the alpha channel. This external step adds unnecessary time and complexity, violating a critical rule.",
-                    "next": "step-15"
-                }
-            ]
-        },
-        "step-16": {
-            "skill": "textureeditor",
-            "title": "Correcting Compression Settings for Alpha Mask",
-            "prompt": "Compression Settings are 'Default (DXT1/5)'. What's the appropriate setting for an alpha mask texture?",
-            "choices": [
-                {
-                    "text": "Change the 'Compression Settings' from 'Default' to 'Masks (No SRGB)' or 'UserInterface2D (BC7)' to ensure the alpha channel data is preserved accurately and linearly.",
-                    "type": "correct",
-                    "feedback": "Optimal Time: +0.15hrs. 'Default' compression (DXT1/5) can aggressively compress or even discard alpha, or store it non-linearly. 'Masks (No SRGB)' is specifically designed for binary alpha masks, ensuring accurate and linear data. BC7 is also a good, higher-quality alternative.",
-                    "next": "step-17"
-                },
-                {
-                    "text": "Set 'Compression Settings' to 'VectorDisplacementmap (RGBA8)'.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. This setting is for vector displacement maps and is inappropriate for a simple alpha mask, potentially causing incorrect data interpretation.",
-                    "next": "step-16"
-                },
-                {
-                    "text": "Increase the 'Max Texture Size' to ensure full resolution.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. Max Texture Size dictates the highest mipmap resolution. While it affects quality, it doesn't address how the alpha channel data itself is being compressed or interpreted for masking.",
-                    "next": "step-16"
-                },
-                {
-                    "text": "Try 'Grayscale (R8)' as the compression setting.",
-                    "type": "plausible",
-                    "feedback": "Extended Time: +0.1hrs. While 'Grayscale' might preserve a single channel, it's not ideal for a texture intended to have an alpha, and 'Masks (No SRGB)' is more appropriate and robust for preserving specific alpha data.",
-                    "next": "step-16"
-                }
-            ]
-        },
-        "step-17": {
-            "skill": "textureeditor",
-            "title": "Locating the sRGB Checkbox",
-            "prompt": "Compression Settings are now appropriate. There's another critical texture setting for data masks that affects gamma. Where is it located?",
-            "choices": [
-                {
-                    "text": "Locate the 'sRGB' checkbox in the Texture Editor Details panel.",
-                    "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. The 'sRGB' setting is crucial for data textures like masks, as it determines if gamma correction is applied, which can distort linear data.",
-                    "next": "step-18"
-                },
-                {
-                    "text": "Look for a 'Gamma Correction' slider in the 'Advanced' section.",
-                    "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. While related to gamma, directly setting Gamma via a slider might override other important settings or not fully achieve the 'linear' data desired. 'sRGB' checkbox is the standard control.",
-                    "next": "step-17"
-                },
-                {
-                    "text": "Check the 'Virtual Texture Streaming' settings.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. Virtual Texture Streaming is a performance optimization for very large textures, unrelated to the interpretation of an alpha mask.",
-                    "next": "step-17"
-                },
-                {
-                    "text": "Search for 'sRGB' in the Project Settings.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. While global sRGB settings exist, the per-texture 'sRGB' checkbox is the direct control for an individual texture asset.",
-                    "next": "step-17"
-                }
-            ]
-        },
-        "step-18": {
-            "skill": "textureeditor",
-            "title": "Disabling sRGB for Mask Data",
-            "prompt": "You've located the 'sRGB' checkbox. What action should you take for this data mask texture?",
-            "choices": [
-                {
-                    "text": "Uncheck 'sRGB' since this texture is being used purely as a data mask (not for color display), ensuring linear data interpretation.",
-                    "type": "correct",
-                    "feedback": "Optimal Time: +0.1hrs. sRGB applies a gamma correction, which is necessary for color textures but distorts linear data for masks. Unchecking it ensures the alpha values are interpreted directly (0-1).",
-                    "next": "step-19"
-                },
-                {
-                    "text": "Keep 'sRGB' checked to maintain visual fidelity for the decal.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.15hrs. Keeping sRGB checked will apply gamma correction, distorting the linear alpha values and preventing the opacity mask from working correctly, which is precisely the problem you're trying to solve.",
-                    "next": "step-18"
-                },
-                {
-                    "text": "Adjust the 'Post Process Material' setting for the texture.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. Post-process materials are for applying effects *to* the texture, not for fundamental data interpretation like sRGB.",
-                    "next": "step-18"
-                },
-                {
-                    "text": "Change the texture's 'LOD Group' to 'UI'.",
-                    "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. LOD Groups define default settings for textures, but manually unchecking sRGB is the direct and specific fix for this scenario.",
-                    "next": "step-18"
-                }
-            ]
-        },
-        "step-19": {
-            "skill": "textureeditor",
-            "title": "Saving Texture Asset Changes",
-            "prompt": "You've changed the Compression Settings and unchecked sRGB. What's the next essential step to apply these changes?",
-            "choices": [
-                {
-                    "text": "Save the changes to the texture asset (T_ScorchMask_Alpha). This forces a re-import and re-compression of the texture data.",
-                    "type": "correct",
-                    "feedback": "Optimal Time: +0.1hrs. The changes made in the Texture Editor will only take effect after saving the asset. This crucial step triggers the internal re-processing of the texture with the new settings.",
-                    "next": "step-20"
-                },
-                {
-                    "text": "Recompile the Parent Material (M_Base_Decal_Deferred).",
-                    "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. While a material recompile can be helpful, the underlying texture data needs to be saved and reprocessed first. The material itself isn't the problem, the texture it's sampling is.",
-                    "next": "step-19"
-                },
-                {
-                    "text": "Close the Texture Editor without saving to see if the changes are implicitly applied.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. Closing without saving will discard your changes, and the problem will persist. Always save asset modifications!",
-                    "next": "step-19"
-                },
-                {
-                    "text": "Run 'Fixup Redirectors in Folder' on the content browser folder.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. Redirectors are for asset renames/moves. This is unrelated to the texture's internal data configuration.",
-                    "next": "step-19"
-                }
-            ]
-        },
-        "step-20": {
-            "skill": "levelviewport",
-            "title": "Returning to the Level",
-            "prompt": "The texture asset has been saved and reprocessed. What is the immediate next action to observe the result?",
-            "choices": [
-                {
-                    "text": "Return to the level viewport.",
-                    "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. After making and saving changes to an asset, returning to the context where it's used (the level viewport) is necessary to observe if the fix was successful.",
-                    "next": "step-21"
-                },
-                {
-                    "text": "Clear the Derived Data Cache to ensure all cached data is fresh.",
-                    "type": "plausible",
-                    "feedback": "Extended Time: +0.1hrs. While a DDC clear can sometimes help with persistent issues, saving the texture asset directly forces a re-import and re-compression, making a DDC clear less immediately necessary in this specific scenario.",
-                    "next": "step-20"
-                },
-                {
-                    "text": "Create a new Decal Actor to see if the problem only affected the original one.",
-                    "type": "obvious",
-                    "feedback": "Extended Time: +0.1hrs. This issue was with the texture asset itself, which is shared. Creating a new actor would yield the same result and is an unnecessary step.",
-                    "next": "step-20"
-                },
-                {
-                    "text": "Adjust the global post-processing volume's 'Scene Color' settings.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. Post-processing affects the final image, but it won't fix a material that's fundamentally ignoring its alpha channel for blending.",
-                    "next": "step-20"
-                }
-            ]
-        },
-        "step-21": {
-            "skill": "levelviewport",
-            "title": "Final Verification of Decal Rendering",
-            "prompt": "You are back in the level viewport. What is the final action?",
-            "choices": [
-                {
-                    "text": "Verify the Decal Material now blends correctly, using the texture's alpha channel for opacity, resulting in a scorch mark instead of a white square.",
-                    "type": "correct",
-                    "feedback": "Optimal Time: +0.05hrs. The final step is to visually confirm in the level viewport that the decal now renders as intended, using its alpha channel for transparency.",
+                    "feedback": "<p><strong>Optimal Time:</strong> +0.05hrs. The final and most important step is to confirm the fix in the actual environment, ensuring the decal now functions as intended and the problem has been fully resolved.</p>",
                     "next": "conclusion"
                 },
                 {
-                    "text": "Save the current level.",
-                    "type": "subtle",
-                    "feedback": "Extended Time: +0.05hrs. Saving the level is good practice, but it's not the primary action for *verifying* the fix. The visual check is paramount.",
-                    "next": "step-21"
-                },
-                {
-                    "text": "Check the material's 'Shader Complexity' view mode.",
+                    "text": "<p>Tweak the <strong>Opacity Mask Clip Value</strong> in the material for visual refinement.</p>",
                     "type": "plausible",
-                    "feedback": "Extended Time: +0.05hrs. Shader complexity is for performance optimization, not for confirming correct alpha blending. It won't tell you if the decal is visually correct.",
-                    "next": "step-21"
+                    "feedback": "<p><strong>Extended Time:</strong> +0.10hrs. While refining the clip value might be a subsequent step for artistic polish, the current goal is to verify the core problem (solid white square) is fixed, not to optimize its visual appearance yet.</p>",
+                    "next": "step-14"
                 },
                 {
-                    "text": "Apply a different post-process effect to highlight the decal.",
+                    "text": "<p>Apply the fixed texture to other materials to confirm universal functionality.</p>",
+                    "type": "subtle",
+                    "feedback": "<p><strong>Extended Time:</strong> +0.15hrs. While confirming universal functionality is good practice for shared assets, it goes beyond the scope of verifying <em>this specific scenario's</em> fix. Focus on the original problem first.</p>",
+                    "next": "step-14"
+                },
+                {
+                    "text": "<p>Delete and re-add the <strong>Decal Actor</strong> to the level.</p>",
                     "type": "obvious",
-                    "feedback": "Extended Time: +0.05hrs. Applying post-process effects is unrelated to verifying if the decal's material is now correctly using its alpha channel.",
-                    "next": "step-21"
+                    "feedback": "<p><strong>Extended Time:</strong> +0.05hrs. The fix was on the material and texture assets, not the actor. Deleting and re-adding the actor is unnecessary and won't contribute to verifying the fix.</p>",
+                    "next": "step-14"
                 }
             ]
         },
         "conclusion": {
             "skill": "complete",
             "title": "Scenario Complete",
-            "prompt": "Congratulations! You have successfully completed this debugging scenario. The decal now renders correctly, showing a scorch mark instead of a white square, confirming the texture's compression settings and sRGB property were the root cause.",
+            "prompt": "<p>Congratulations! You have successfully completed this debugging scenario. The Deferred Decal material now correctly uses the texture's alpha channel for opacity, rendering as a scorch mark instead of a solid white square.</p>",
             "choices": []
         }
     }

@@ -1133,13 +1133,62 @@ document.addEventListener('DOMContentLoaded', () => {
             const passed = efficiencyScore >= PASS_THRESHOLD;
 
             // 2. Generate Test Key (Using the state that was passed in)
+
+
             const testKey = generateTestKey(stateToUse);
 
+
+
+            // 3. Report to SCORM/LMS (silently - user doesn't see this)
+
+
+            if (typeof window.reportScoreAndGUIDToLMS12 === 'function') {
+
+
+                const scormSuccess = window.reportScoreAndGUIDToLMS12(
+
+
+                    finalEfficiencyPercent,  // Score as percentage
+
+
+                    testKey,                   // Test key (GUID)
+
+
+                    100,                       // Max score
+
+
+                    PASS_THRESHOLD * 100       // Pass threshold
+
+
+                );
+
+
+                console.log('SCORM data sent:', scormSuccess ? 'Success' : 'Failed');
+
+
+            } else {
+
+
+                console.warn('SCORM helper not loaded - test data not sent to LMS');
+
+
+            }
+
+
+
             mainTitle = passed ? "Assessment Passed" : "Assessment Completed";
+
+
             mainTitleColor = passed ? "text-green-500" : "text-yellow-500";
+
+
             subText = passed
-                ? "Congratulations! Your results are logged based on efficient problem-solving."
-                : "You completed all tickets. Review the details below.";
+
+
+                ? "Congratulations! Your results have been submitted to the LMS."
+
+
+                : "You completed all tickets. Your results have been submitted.";
 
             // 4. Assemble Final Stats HTML (Reproducible Key added back)
             finalStatsHtml = `

@@ -213,31 +213,58 @@ function renderScenarioList() {
 
         groups[category].forEach(scenario => {
             const item = document.createElement('div');
-            item.className = `scenario-item ${selectedScenarios.has(scenario.id) ? 'selected' : ''}`;
+            const classes = ['scenario-item'];
+            if (selectedScenarios.has(scenario.id)) classes.push('selected');
+            if (scenario.generated) classes.push('completed');
+            item.className = classes.join(' ');
             item.dataset.id = scenario.id;
 
             const sizeKB = (scenario.file_size / 1024).toFixed(1);
+            const timeHours = scenario.estimate_hours || 0;
+            const timeMinutes = Math.round(timeHours * 60);
+            const cost = scenario.generated ? `$${(scenario.tokens_used * 0.0000002).toFixed(4)}` : '-';
 
             item.innerHTML = `
                 <input type="checkbox" class="scenario-checkbox" ${selectedScenarios.has(scenario.id) ? 'checked' : ''}>
                 <span class="status-icon">${scenario.generated ? '✅' : '⏳'}</span>
                 <div class="info">
                     <div class="title">${scenario.title}</div>
-                    <div class="meta">${scenario.steps} steps${scenario.generated ? ' • ' + sizeKB + 'KB' : ''}</div>
+                    <div class="meta">
+                        ${scenario.steps} steps
+                        ${scenario.generated ? ' • ' + sizeKB + 'KB' : ''}
+                        • ⏱️ ${timeMinutes}min
+                        ${scenario.generated ? ' • 💰 ' + cost : ''}
+                    </div>
                 </div>
             `;
 
+            // Click on item (not checkbox) to toggle
             item.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (e.target.type !== 'checkbox') {
                     toggleScenarioSelection(scenario);
+                    // Manually update checkbox since we're toggling programmatically
+                    const checkbox = item.querySelector('.scenario-checkbox');
+                    checkbox.checked = selectedScenarios.has(scenario.id);
                 }
             });
 
+            // Checkbox change event
             const checkbox = item.querySelector('.scenario-checkbox');
-            checkbox.addEventListener('click', (e) => {
+            checkbox.addEventListener('change', (e) => {
                 e.stopPropagation();
-                toggleScenarioSelection(scenario);
+                // Checkbox will be in its new state already, sync our selection to match
+                if (checkbox.checked && !selectedScenarios.has(scenario.id)) {
+                    selectedScenarios.add(scenario.id);
+                } else if (!checkbox.checked && selectedScenarios.has(scenario.id)) {
+                    selectedScenarios.delete(scenario.id);
+                }
+                // Update UI
+                item.classList.toggle('selected', checkbox.checked);
+                updateButtons();
+                if (selectedScenarios.size === 1 && scenario.generated) {
+                    showPreview(scenario.id);
+                }
             });
 
             itemsContainer.appendChild(item);
@@ -312,28 +339,50 @@ async function showPreview(scenarioId) {
             descEl.textContent = meta.description || content.description || 'No description available.';
         }
 
-        // Steps as timeline - traverse linked list for correct order
+        // Time and Cost
+        const timeEl = document.getElementById('preview-time');
+        const costEl = document.getElementById('preview-cost');
+        if (timeEl && meta.estimateHours) {
+            const minutes = Math.round(meta.estimateHours * 60);
+            timeEl.textContent = `${minutes} minutes`;
+        }
+        if (costEl && data.tokens_used) {
+            const cost = (data.tokens_used * 0.0000002).toFixed(4);
+            costEl.textContent = `$${cost}`;
+        } else if (costEl) {
+            costEl.textContent = 'Not generated yet';
+        }
+
+        // Steps as timeline - traverse linked list following correct choices
         const stepsList = document.getElementById('preview-steps-list');
         if (stepsList && content.steps) {
             stepsList.innerHTML = '';
 
             // Traverse linked list to get correct order
+            // Note: 'next' is inside choices array, follow the 'correct' choice
             const orderedSteps = [];
-            let currentId = 'step-1'; // Start node
+            let currentId = content.start || 'step-1'; // Use content.start if available
             const visited = new Set();
 
             while (currentId && content.steps[currentId] && !visited.has(currentId)) {
                 visited.add(currentId);
                 const step = content.steps[currentId];
                 orderedSteps.push({ id: currentId, ...step });
-                currentId = step.next;
+
+                // Find the next step from the correct choice
+                if (step.choices && step.choices.length > 0) {
+                    const correctChoice = step.choices.find(c => c.type === 'correct');
+                    currentId = correctChoice ? correctChoice.next : null;
+                } else {
+                    currentId = null; // No more steps
+                }
             }
 
             // Render as timeline
             orderedSteps.forEach((step, index) => {
                 const div = document.createElement('div');
                 const isStart = index === 0;
-                const isEnd = index === orderedSteps.length - 1 || (step.title && step.title.includes('Complete'));
+                const isEnd = step.id === 'conclusion' || (step.title && step.title.includes('Complete'));
 
                 div.className = 'timeline-step ' + (isStart ? 'step-start' : isEnd ? 'step-end' : 'step-middle');
 

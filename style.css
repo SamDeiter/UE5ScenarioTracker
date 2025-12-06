@@ -94,23 +94,23 @@ code {
    - Cyan: Code/Commands (matches code styling)
    ============================================ */
 
-/* Default strong tags = Blue for Objects/Assets (Static Mesh Actor, Material Instance, Blueprint) */
+/* Default strong tags = White for emphasis (UE5 editor uses white text) */
 #ticket-step-content strong,
 #ticket-step-prompt strong,
 #ticket-step-feedback strong {
-    color: #60a5fa;
-    /* blue-400 - UE5 Object reference color */
+    color: #ffffff;
+    /* Pure white for emphasis */
     font-weight: 700;
 }
 
-/* Code tags = Cyan for Console Commands and Values (r.Lumen.Visualize, BeginPlay) */
+/* Code tags = Light gray for code/values */
 #ticket-step-content code,
 #ticket-step-prompt code,
 .prose code {
-    background-color: #2a2a2a;
+    background-color: #3a3a3a;
     /* Neutral dark gray background */
-    color: #67e8f9;
-    /* cyan-300 - UE5 code/value color */
+    color: #e5e5e5;
+    /* Light gray text */
     padding: 2px 6px;
     border-radius: 4px;
     font-family: "Fira Code", "Consolas", monospace;
@@ -133,13 +133,13 @@ code {
 
 /* Ensure feedback modal text has proper formatting */
 #choice-feedback-overlay strong {
-    color: #60a5fa;
-    /* text-blue-400 */
+    color: #ffffff;
+    /* Pure white */
 }
 
 #choice-feedback-overlay code {
-    background-color: #2a2a2a;
-    color: #67e8f9;
+    background-color: #3a3a3a;
+    color: #e5e5e5;
     padding: 2px 6px;
     border-radius: 4px;
 }

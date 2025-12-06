@@ -60,10 +60,10 @@ function generateScenarioAssets(scenarioId) {
 
     const args = [
         UE_PROJECT_FILE,
-        '-ExecutePythonScript=' + pythonCmd,
-        '-stdout',
-        '-unattended',
-        '-nopause'
+        `-stdout`,
+        `-unattended`,
+        `-nopause`,
+        `-run=python "${path.join(ueScriptsPath, 'AutoGenerateScenarios.py')}"`
     ];
 
     console.log(`\nUnreal Editor: ${UE_EDITOR_CMD}`);

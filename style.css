@@ -5,15 +5,19 @@
 
 /* Custom base styles */
 body {
-    background-color: #1a202c; /* bg-gray-900 */
-    color: #e2e8f0; /* text-gray-200 */
+    background-color: #1a202c;
+    /* bg-gray-900 */
+    color: #e2e8f0;
+    /* text-gray-200 */
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 /* Custom class for the glowing border on correct answers in debug mode */
 .debug-correct {
-    box-shadow: 0 0 15px 4px rgba(22, 163, 74, 0.7); /* Green-600 glow */
-    border-color: #16a34a; /* green-600 */
+    box-shadow: 0 0 15px 4px rgba(22, 163, 74, 0.7);
+    /* Green-600 glow */
+    border-color: #16a34a;
+    /* green-600 */
 }
 
 /* Custom class for the pulsing red timer */
@@ -22,10 +26,13 @@ body {
 }
 
 @keyframes pulse-red-animation {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 1;
         transform: scale(1);
     }
+
     50% {
         opacity: 0.8;
         transform: scale(1.05);
@@ -34,8 +41,10 @@ body {
 
 /* Custom styles for code blocks inside prompts/feedback */
 code {
-    background-color: #2d3748; /* bg-gray-700 */
-    color: #90cdf4; /* text-blue-300 */
+    background-color: #2d3748;
+    /* bg-gray-700 */
+    color: #90cdf4;
+    /* text-blue-300 */
     padding: 2px 6px;
     border-radius: 4px;
     font-family: "Fira Code", "Courier New", monospace;
@@ -43,14 +52,35 @@ code {
 }
 
 /* Custom styles for paragraphs inside prompts/feedback */
+#ticket-step-content p,
 #ticket-step-prompt p,
 #ticket-step-feedback p {
-    margin-bottom: 1rem; 
-    color: #d1d5db; /* text-gray-300 */
+    margin-bottom: 1rem;
+    color: #d1d5db;
+    /* text-gray-300 */
 }
 
 /* Custom styles for strong tags inside prompts/feedback */
+#ticket-step-content strong,
 #ticket-step-prompt strong,
 #ticket-step-feedback strong {
-    color: #93c5fd; /* text-blue-300 */
+    color: #93c5fd;
+    /* text-blue-300 */
+    font-weight: 700;
+}
+
+/* Ensure code elements inside prose look correct */
+.prose code,
+#ticket-step-content code {
+    background-color: #2d3748 !important;
+    color: #90cdf4 !important;
+    padding: 2px 6px !important;
+    border-radius: 4px;
+    font-family: "Fira Code", "Courier New", monospace;
+}
+
+/* Remove the default quotes around code in prose */
+.prose code::before,
+.prose code::after {
+    content: none !important;
 }

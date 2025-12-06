@@ -304,8 +304,13 @@ function toggleScenarioSelection(scenario) {
 
     updateButtons();
 
-    // Show preview if only one selected
-    if (selectedScenarios.size === 1 && scenario.generated) {
+    // Toggle status panel visibility
+    if (selectedScenarios.size === 0) {
+        // Hide preview, show placeholder
+        elements.previewContent.classList.add('hidden');
+        elements.previewSection.querySelector('.preview-placeholder').classList.remove('hidden');
+    } else if (selectedScenarios.size === 1 && scenario.generated) {
+        // Show preview for single selection
         showPreview(scenario.id);
     }
 }

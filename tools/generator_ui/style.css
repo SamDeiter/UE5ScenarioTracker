@@ -969,3 +969,82 @@ body {
     opacity: 0.6;
     margin-left: 0.5rem;
 }
+
+/* Improved generate buttons */
+.panel-footer {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--bg-dark);
+    border-top: 1px solid var(--border);
+}
+
+.panel-footer .btn {
+    flex: 1;
+    padding: 0.875rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    min-height: 48px;
+}
+
+.btn-primary {
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #2980b9;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-accent {
+    background: var(--accent-green);
+    color: white;
+    border: none;
+    box-shadow: 0 2px 8px rgba(46, 213, 115, 0.3);
+}
+
+.btn-accent:hover {
+    background: #27ae60;
+    box-shadow: 0 4px 12px rgba(46, 213, 115, 0.4);
+}
+
+/* Scenario item color coding */
+.scenario-item {
+    background: var(--bg-secondary);
+    border-left: 3px solid transparent;
+}
+
+/* Not generated - Yellow accent */
+.scenario-item:not(.completed) {
+    border-left-color: #f39c12;
+}
+
+/* Completed - Green accent */
+.scenario-item.completed {
+    border-left-color: var(--accent-green);
+    background: rgba(46, 213, 115, 0.05);
+}
+
+/* Selected - White/bright accent */
+.scenario-item.selected {
+    border-left-color: white;
+    background: var(--bg-hover);
+}
+
+/* Remove the ::after checkmark for completed items */
+.scenario-item.completed::after {
+    display: none;
+}
+
+/* Hide custom log panel - use F12 browser console instead */
+.log-panel {
+    display: none !important;
+}

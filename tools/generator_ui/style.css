@@ -1178,26 +1178,7 @@ body {
     font-size: 0.75rem;
 }
 
-/* Completed scenario styling */
-.scenario-item.completed {
-    background: rgba(46, 213, 115, 0.05);
-    border-left: 3px solid var(--accent-green);
-}
-
-.scenario-item.completed .title {
-    color: var(--text-primary);
-}
-
-.scenario-item.completed::after {
-    content: '✓';
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.5rem;
-    color: var(--accent-green);
-    opacity: 0.3;
-}
+/* Completed scenario - styling moved to bottom of file */
 
 /* Version badge */
 .app-version {

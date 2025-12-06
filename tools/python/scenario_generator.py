@@ -210,14 +210,15 @@ PROMPTS MUST:
 - Be SHORT (50-100 characters)
 - Use <strong></strong> for UE5 terms, <code></code> for settings/commands
 - NOT explain WHY or teach the solution
-- NOT use "What do you do next?" repeatedly - vary the action questions:
-  * "How do you investigate?"
-  * "What's your next move?"
-  * "How should you proceed?"
-  * "Which approach do you choose?"
+- NOT use "What do you do next?" repeatedly - vary the action questions
+
+TITLES MUST:
+- Be descriptive actions like "Check Material Settings", NOT "Step 1" or "Step 2"
+- Never include step numbers or prefixes like "Step X:"
 
 GOOD: "The <strong>Static Mesh</strong> appears pitch black. How do you investigate?"
-BAD: "Understand that the PBR calculation is driving Emissive Color..." (TOO LONG, EXPLAINS)
+BAD: "Understand that the PBR calculation is driving Emissive Color..." (TOO LONG)
+BAD: "Step 1: Check the settings" (INCLUDES STEP NUMBER)
 ===== END PROMPT QUALITY REQUIREMENTS =====
 
 UE5 TOOLS ONLY:
@@ -501,6 +502,12 @@ PROMPTS MUST NOT:
 - Teach or give hints about the solution
 - Include long technical explanations
 - Use "What do you do next?" for every step
+- Include step numbers like "Step 1:", "Step 2:" in titles or text
+
+TITLES MUST:
+- Be descriptive actions like "Check Material Settings" or "Verify Mobility Property"
+- NOT include step numbers like "Step 1", "Step 2", "Step 3"
+- NOT include prefixes like "Step 1:" or "Step X / Y:"
 
 GOOD PROMPT EXAMPLES:
 - "The <strong>Static Mesh</strong> appears pitch black despite correct material settings. How do you investigate?"
@@ -510,6 +517,7 @@ GOOD PROMPT EXAMPLES:
 BAD PROMPT EXAMPLES (DON'T DO THIS):
 - "Understand that since the PBR calculation is driving Emissive Color, and Emissive Color is only visible when the Base Color is non-zero, the material is likely calculating a zero Base Color..." (TOO LONG, EXPLAINS SOLUTION)
 - "You need to check the Mobility setting because Static objects can't simulate physics..." (GIVES AWAY ANSWER)
+- "Step 1: Check the settings" (INCLUDES STEP NUMBER)
 
 FEEDBACK should contain the explanation of WHY the choice was right or wrong.
 ===== END PROMPT QUALITY REQUIREMENTS =====

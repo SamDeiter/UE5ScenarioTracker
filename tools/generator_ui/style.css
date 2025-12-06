@@ -1258,6 +1258,7 @@ body {
 .scenario-item {
     background: var(--bg-secondary);
     border-left: 3px solid transparent;
+    position: relative;
 }
 
 /* Not generated - Yellow accent */
@@ -1265,21 +1266,33 @@ body {
     border-left-color: #f39c12;
 }
 
-/* Completed - Green accent */
+/* Completed - subtle styling with checkmark icon */
 .scenario-item.completed {
-    border-left-color: var(--accent-green);
-    background: rgba(46, 213, 115, 0.05);
+    border-left-color: var(--border);
 }
 
-/* Selected - White/bright accent */
+/* Checkmark icon for completed items */
+.scenario-item.completed::before {
+    content: '✓';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent-green);
+    font-size: 1rem;
+    font-weight: bold;
+    opacity: 0.8;
+}
+
+/* Selected - White/bright accent (overrides completed styling) */
 .scenario-item.selected {
-    border-left-color: white;
+    border-left-color: var(--accent-blue);
     background: var(--bg-hover);
 }
 
-/* Remove the ::after checkmark for completed items */
-.scenario-item.completed::after {
-    display: none;
+/* Hide checkmark when selected to avoid clutter */
+.scenario-item.selected::before {
+    opacity: 0.4;
 }
 
 /* Hide custom log panel - use F12 browser console instead */

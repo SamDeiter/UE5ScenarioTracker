@@ -44,8 +44,8 @@ class ScreenshotCapture:
             f"r.SetRes {resolution[0]}x{resolution[1]}"
         )
         
-        # Wait for frame to stabilize
-        time.sleep(0.5)
+        # Wait for frame to stabilize (increased from 0.5s)
+        time.sleep(2.0)
         
         # Capture high-res screenshot
         self.automation_lib.take_high_res_screenshot(
@@ -54,8 +54,8 @@ class ScreenshotCapture:
             full_path
         )
         
-        # Wait for screenshot to complete
-        time.sleep(1.0)
+        # Wait for screenshot to complete (increased from 1.0s)
+        time.sleep(5.0)
         
         unreal.log(f"Screenshot saved: {full_path}")
         

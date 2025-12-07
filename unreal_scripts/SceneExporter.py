@@ -60,20 +60,27 @@ class SceneExporter:
     
     def _is_persistent_actor(self, actor):
         """Check if actor is persistent (should not be exported)"""
-        persistent_types = [
-            unreal.LevelBounds,
-            unreal.WorldSettings,
-            unreal.DefaultPhysicsVolume
+        if actor is None:
+            return False
+        try:
+            class_name = actor.get_class().get_name()
+        except:
+            return False
+        persistent_classes = [
+            'LevelBounds',
+            'WorldSettings',
+            'DefaultPhysicsVolume',
+            'WorldDataLayers'
         ]
-        
-        for actor_type in persistent_types:
-            if actor.is_a(actor_type):
-                return True
-        return False
+        return class_name in persistent_classes
     
     def _is_light_actor(self, actor):
         """Check if actor is a light"""
-        return actor.is_a(unreal.Light)
+        try:
+            class_name = actor.get_class().get_name()
+            return 'Light' in class_name
+        except:
+            return False
     
     def _export_actor(self, actor):
         """Export single actor data"""
@@ -93,9 +100,10 @@ class SceneExporter:
             }
             
             # Export specific properties based on type
-            if actor.is_a(unreal.StaticMeshActor):
+            class_name = actor.get_class().get_name()
+            if class_name == 'StaticMeshActor':
                 actor_data.update(self._export_static_mesh_actor(actor))
-            elif actor.is_a(unreal.Light):
+            elif 'Light' in class_name:
                 actor_data.update(self._export_light_actor(actor))
             
             return actor_data
@@ -131,17 +139,21 @@ class SceneExporter:
         """Export light specific data"""
         data = {}
         
-        # Get light component
-        if actor.is_a(unreal.DirectionalLight):
-            light_comp = actor.get_component_by_class(unreal.DirectionalLightComponent)
-            data["lightType"] = "Directional"
-        elif actor.is_a(unreal.PointLight):
-            light_comp = actor.get_component_by_class(unreal.PointLightComponent)
-            data["lightType"] = "Point"
-        elif actor.is_a(unreal.SkyLight):
-            light_comp = actor.get_component_by_class(unreal.SkyLightComponent)
-            data["lightType"] = "Sky"
-        else:
+        # Get light component using class name
+        try:
+            class_name = actor.get_class().get_name()
+            if 'DirectionalLight' in class_name:
+                light_comp = actor.get_component_by_class(unreal.DirectionalLightComponent)
+                data["lightType"] = "Directional"
+            elif 'PointLight' in class_name:
+                light_comp = actor.get_component_by_class(unreal.PointLightComponent)
+                data["lightType"] = "Point"
+            elif 'SkyLight' in class_name:
+                light_comp = actor.get_component_by_class(unreal.SkyLightComponent)
+                data["lightType"] = "Sky"
+            else:
+                light_comp = None
+        except:
             light_comp = None
         
         if light_comp:

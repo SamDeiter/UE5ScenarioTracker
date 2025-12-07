@@ -1,7 +1,6 @@
 """
-Screenshot Capture for Unreal Engine Scenario Automation
-
-Handles high-quality screenshot capture for scenario steps.
+Screenshot Capture using HighResShot with unique filenames
+Simple, reliable, uses incrementing counter to prevent overwrites
 """
 
 import unreal
@@ -12,8 +11,11 @@ import time
 class ScreenshotCapture:
     """Captures high-resolution screenshots from Unreal Engine"""
     
+    # Class-level counter to ensure unique filenames
+    screenshot_counter = 0
+    
     def __init__(self):
-        self.automation_lib = unreal.AutomationLibrary()
+        pass
         
     def capture(self, output_path, filename, resolution=(1920, 1080)):
         """
@@ -38,28 +40,55 @@ class ScreenshotCapture:
         # Disable UI overlays
         self._hide_ui_elements()
         
-        # Set resolution
-        unreal.SystemLibrary.execute_console_command(
-            None,
-            f"r.SetRes {resolution[0]}x{resolution[1]}"
-        )
+        # Small wait for UI to hide
+        time.sleep(0.5)
         
-        # Wait for frame to stabilize (increased from 0.5s)
-        time.sleep(2.0)
+        # Increment counter for unique temp filename
+        ScreenshotCapture.screenshot_counter += 1
+        temp_name = f"ScenarioShot{ScreenshotCapture.screenshot_counter:04d}"
         
-        # Capture high-res screenshot
-        self.automation_lib.take_high_res_screenshot(
-            resolution[0],
-            resolution[1],
-            full_path
-        )
+        # Execute HighResShot with unique numbered filename
+        resolution_str = f"{resolution[0]}x{resolution[1]}"
+        cmd = f"HighResShot {resolution_str} filename={temp_name}"
         
-        # Wait for screenshot to complete (increased from 1.0s)
-        time.sleep(5.0)
+        unreal.log(f"Executing: {cmd}")
+        unreal.SystemLibrary.execute_console_command(None, cmd)
         
-        unreal.log(f"Screenshot saved: {full_path}")
+        # Wait for screenshot to appear
+        project_dir = unreal.SystemLibrary.get_project_directory()
+        temp_path = os.path.join(project_dir, "Saved", "Screenshots", "WindowsEditor")
+        expected_file = os.path.join(temp_path, f"{temp_name}.png")
         
-        return full_path
+        unreal.log(f"Waiting for: {expected_file}")
+        
+        max_wait = 45
+        wait_interval = 0.5
+        elapsed = 0
+        
+        while elapsed < max_wait:
+            if os.path.exists(expected_file):
+                # Verify file is complete (size > 0 and stable)
+                size1 = os.path.getsize(expected_file)
+                if size1 > 0:
+                    time.sleep(0.5)
+                    size2 = os.path.getsize(expected_file)
+                    if size1 == size2:
+                        # File is stable, copy to destination
+                        import shutil
+                        shutil.copy2(expected_file, full_path)
+                        os.remove(expected_file)  # Clean up temp file
+                        unreal.log(f"✓ Screenshot saved: {full_path}")
+                        return full_path
+            
+            time.sleep(wait_interval)
+            elapsed += wait_interval
+            
+            # Progress logging
+            if elapsed > 0 and int(elapsed) % 10 == 0:
+                unreal.log(f"  Still waiting... {int(elapsed)}s")
+        
+        unreal.log_warning(f"✗ Screenshot timed out: {full_path}")
+        return None
     
     def _hide_ui_elements(self):
         """Hide UI elements for clean screenshots"""
@@ -73,29 +102,3 @@ class ScreenshotCapture:
         
         for cmd in commands:
             unreal.SystemLibrary.execute_console_command(None, cmd)
-    
-    def capture_multiple(self, output_path, base_filename, count=1, resolution=(1920, 1080)):
-        """
-        Capture multiple screenshots (e.g., for different angles)
-        
-        Args:
-            output_path (str): Directory to save screenshots
-            base_filename (str): Base filename pattern
-            count (int): Number of screenshots to capture
-            resolution (tuple): Resolution for each capture
-            
-        Returns:
-            list: Paths to all captured screenshots
-        """
-        paths = []
-        
-        for i in range(count):
-            filename = f"{base_filename}_{i+1}" if count > 1 else base_filename
-            path = self.capture(output_path, filename, resolution)
-            paths.append(path)
-            
-            # Small delay between captures
-            if i < count - 1:
-                time.sleep(0.2)
-        
-        return paths

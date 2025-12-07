@@ -30,16 +30,32 @@ class SceneBuilder:
     
     def _is_persistent_actor(self, actor):
         """Check if actor should be kept (is persistent)"""
-        persistent_types = [
-            unreal.LevelBounds,
-            unreal.WorldSettings,
-            unreal.DefaultPhysicsVolume
+        if actor is None:
+            return False
+        
+        # Get actor class name safely
+        try:
+            class_name = actor.get_class().get_name()
+        except:
+            return False
+        
+        # List of persistent actor class names - preserve environment between steps
+        # DO NOT include lights here - they should be recreated for each step
+        persistent_classes = [
+            'LevelBounds',
+            'WorldSettings',
+            'DefaultPhysicsVolume',
+            'WorldDataLayers',
+            'Landscape',
+            'SM_SkySphere',
+            'SkyAtmosphere',
+            'ExponentialHeightFog',
+            'VolumetricCloud',
+            'Floor',
+            'PlayerStart'
         ]
         
-        for actor_type in persistent_types:
-            if actor.is_a(actor_type):
-                return True
-        return False
+        return class_name in persistent_classes
     
     def spawn_actor(self, actor_spec):
         """
@@ -181,23 +197,27 @@ class SceneBuilder:
         # Try to find existing landscape
         all_actors = unreal.EditorLevelLibrary.get_all_level_actors()
         for actor in all_actors:
-            if actor.is_a(unreal.Landscape):
-                unreal.log(f"Using existing Landscape")
-                
-                # Apply material if specified
-                if 'material' in spec:
-                    material = unreal.load_asset(spec['material'])
-                    if material:
-                        landscape_component = actor.get_component_by_class(
-                            unreal.LandscapeComponent
-                        )
-                        if landscape_component:
-                            landscape_component.set_editor_property(
-                                'landscape_material',
-                                material
+            # Check if actor is a Landscape using class name
+            try:
+                if actor.get_class().get_name() == 'Landscape':
+                    unreal.log(f"Using existing Landscape")
+                    
+                    # Apply material if specified
+                    if 'material' in spec:
+                        material = unreal.load_asset(spec['material'])
+                        if material:
+                            landscape_component = actor.get_component_by_class(
+                                unreal.LandscapeComponent
                             )
-                
-                return actor
+                            if landscape_component:
+                                landscape_component.set_editor_property(
+                                    'landscape_material',
+                                    material
+                                )
+                    
+                    return actor
+            except:
+                continue
         
         unreal.log_warning("No existing landscape found. Please create one manually.")
         return None

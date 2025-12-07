@@ -8,10 +8,11 @@ import unreal
 import json
 import sys
 import os
+import time
 
 # Import our modules
 from SceneBuilder import SceneBuilder
-from ScreenshotCapture import ScreenshotCapture
+from SuperSimpleScreenshot import SuperSimpleScreenshot
 from SceneExporter import SceneExporter
 
 
@@ -31,29 +32,21 @@ def generate_scenario_step(scene_spec, scenario_id, step_id, output_base_path):
     
     # Initialize utilities
     scene_builder = SceneBuilder()
-    screenshot = ScreenshotCapture()
+    screenshot = SuperSimpleScreenshot()
     exporter = SceneExporter()
     
     # Setup scene
     scene_builder.setup_scene(scene_spec)
     
-    # Wait for scene to settle (increased from 3.0s)
-    import time
-    time.sleep(5.0)
+    # Create output directory
+    output_dir = os.path.join(output_base_path, scenario_id)
+    os.makedirs(output_dir, exist_ok=True)
     
-    # Create output paths
-    screenshot_dir = os.path.join(output_base_path, scenario_id)
-    spec_dir = os.path.join(output_base_path, scenario_id)
+    # Capture screenshot (use 'capture' method, not 'capture_screenshot')
+    screenshot.capture(output_dir, step_id, resolution=(1280, 720))
     
-    # Capture screenshot
-    screenshot_file = step_id.replace('step-', 'step')  # step1, step2, etc.
-    screenshot.capture(screenshot_dir, screenshot_file, resolution=(1920, 1080))
-    
-    # Export scene spec
-    exporter.export_scene(spec_dir, screenshot_file)
-    
-    unreal.log(f"✓ {step_id} complete")
-    unreal.log("")
+    # Export JSON (export_scene expects output_path and filename separately)
+    exporter.export_scene(output_dir, step_id)
 
 
 def generate_scenario_assets(spec_file_path, output_base_path):
@@ -67,8 +60,6 @@ def generate_scenario_assets(spec_file_path, output_base_path):
     unreal.log("╔" + "=" * 68 + "╗")
     unreal.log("║" + " " * 15 + "Scenario Asset Generation" + " " * 28 + "║")
     unreal.log("╚" + "=" * 68 + "╝")
-    unreal.log("Waiting 5 seconds for all files to finish saving...")
-    time.sleep(5.0)
     unreal.log("")
     
     # Load scene specifications
@@ -99,12 +90,28 @@ def generate_scenario_assets(spec_file_path, output_base_path):
         except Exception as e:
             unreal.log_error(f"Failed to generate {step_id}: {e}")
             continue
+        
+        # Cleanup between steps to prevent memory/resource issues
+        import gc
+        gc.collect()  # Python garbage collection
+        unreal.SystemLibrary.execute_console_command(None, "obj gc")  # UE garbage collection
+    
+    # Clean up temp screenshots after ALL steps complete
+    try:
+        project_dir = unreal.SystemLibrary.get_project_directory()
+        temp_screenshot_path = os.path.join(project_dir, "Saved", "Screenshots", "WindowsEditor")
+        if os.path.exists(temp_screenshot_path):
+            for f in os.listdir(temp_screenshot_path):
+                if f.endswith('.png'):
+                    file_path = os.path.join(temp_screenshot_path, f)
+                    os.remove(file_path)
+                    unreal.log(f"Cleaned up temp file: {f}")
+    except Exception as cleanup_error:
+        unreal.log_warning(f"Cleanup warning: {cleanup_error}")
     
     unreal.log("╔" + "=" * 68 + "╗")
     unreal.log("║" + " " * 20 + "Generation Complete!" + " " * 26 + "║")
     unreal.log("╚" + "=" * 68 + "╝")
-    unreal.log("Waiting 10 seconds for all files to finish saving...")
-    time.sleep(10.0)
     unreal.log(f"Output: {os.path.join(output_base_path, scenario_id)}")
 
 

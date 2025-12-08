@@ -1,0 +1,95 @@
+{
+    "scenarioId": "test_light_colors",
+    "steps": [
+        {
+            "stepId": "step-1",
+            "prompt": "Red directional light",
+            "sceneSetup": {
+                "lighting": [
+                    {
+                        "type": "DirectionalLight",
+                        "id": "MainLight",
+                        "transform": {
+                            "location": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "rotation": [
+                                -16.622561,
+                                -166.927641,
+                                82.630644
+                            ]
+                        },
+                        "intensity": 50.0,
+                        "lightColor": [
+                            1.0,
+                            0.0,
+                            0.0
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "stepId": "step-2",
+            "prompt": "Green directional light",
+            "sceneSetup": {
+                "lighting": [
+                    {
+                        "type": "DirectionalLight",
+                        "id": "MainLight",
+                        "transform": {
+                            "location": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "rotation": [
+                                -16.622561,
+                                -166.927641,
+                                82.630644
+                            ]
+                        },
+                        "intensity": 50.0,
+                        "lightColor": [
+                            0.0,
+                            1.0,
+                            0.0
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "stepId": "step-3",
+            "prompt": "Blue directional light",
+            "sceneSetup": {
+                "lighting": [
+                    {
+                        "type": "DirectionalLight",
+                        "id": "MainLight",
+                        "transform": {
+                            "location": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "rotation": [
+                                -16.622561,
+                                -166.927641,
+                                82.630644
+                            ]
+                        },
+                        "intensity": 50.0,
+                        "lightColor": [
+                            0.0,
+                            0.0,
+                            1.0
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}

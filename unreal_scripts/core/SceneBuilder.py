@@ -131,13 +131,15 @@ class SceneBuilder:
             )
             unreal.log(f"  ✓ Set color: RGB({color[0]}, {color[1]}, {color[2]})")
             
-            # Force viewport refresh to make color change visible
+            # Force viewport refresh  
             import time
             light_component.modify()
-            unreal.SystemLibrary.execute_console_command(None, "r.Invalidate")
-            time.sleep(1.0)  # Increased delay
-            unreal.SystemLibrary.execute_console_command(None, "RedrawViewports")
-            time.sleep(1.5)  # Increased delay to let viewport fully render
+            try:
+                unreal.EditorUtilityLibrary.refresh_level_editor()
+            except:
+                pass
+            unreal.EditorLevelLibrary.editor_invalidate_viewports()
+            time.sleep(1.0)  # Wait for viewport to render
             unreal.log(f"  ✓ Refreshed viewport for light color change")
         
         # Set shadow distance (if specified)

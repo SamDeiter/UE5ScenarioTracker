@@ -114,32 +114,48 @@ class SceneBuilder:
         
         light_component = actor.get_component_by_class(unreal.DirectionalLightComponent)
         
+        unreal.log(f"Configuring DirectionalLight: {spec.get('id', spec.get('label', 'Unknown'))}")
+        
         # Set intensity
         if 'intensity' in spec:
             light_component.set_intensity(spec['intensity'])
+            unreal.log(f"  ✓ Set intensity: {spec['intensity']}")
         
         # Set color
-        if 'lightColor' in spec:
-            color = spec['lightColor']
+        if 'lightColor' in spec or 'color' in spec:
+            color = spec.get('lightColor', spec.get('color'))
             light_component.set_light_color(
                 unreal.LinearColor(color[0], color[1], color[2])
             )
+            unreal.log(f"  ✓ Set color: RGB({color[0]}, {color[1]}, {color[2]})")
         
         # Set shadow distance (if specified)
         if 'dynamicShadowDistance' in spec:
-            light_component.set_editor_property(
-                'dynamic_shadow_distance_movable_light',
-                spec['dynamicShadowDistance']
-            )
+            try:
+                light_component.set_editor_property(
+                    'dynamic_shadow_distance_movable_light',
+                    spec['dynamicShadowDistance']
+                )
+                # Verify it was set
+                actual_value = light_component.get_editor_property('dynamic_shadow_distance_movable_light')
+                unreal.log(f"  ✓ Set dynamicShadowDistance: {spec['dynamicShadowDistance']} (verified: {actual_value})")
+            except Exception as e:
+                unreal.log_warning(f"  ✗ Failed to set dynamicShadowDistance: {e}")
         
         # Set cascade count (if specified)
         if 'numDynamicShadowCascades' in spec:
-            light_component.set_editor_property(
-                'dynamic_shadow_cascades',
-                spec['numDynamicShadowCascades']
-            )
+            try:
+                light_component.set_editor_property(
+                    'dynamic_shadow_cascades',
+                    spec['numDynamicShadowCascades']
+                )
+                # Verify it was set
+                actual_value = light_component.get_editor_property('dynamic_shadow_cascades')
+                unreal.log(f"  ✓ Set numDynamicShadowCascades: {spec['numDynamicShadowCascades']} (verified: {actual_value})")
+            except Exception as e:
+                unreal.log_warning(f"  ✗ Failed to set numDynamicShadowCascades: {e}")
         
-        unreal.log(f"Spawned DirectionalLight: {spec.get('id')}")
+        unreal.log(f"Spawned DirectionalLight: {spec.get('id', spec.get('label', 'Actor'))}")
         return actor
     
     def _spawn_point_light(self, spec, location, rotation):

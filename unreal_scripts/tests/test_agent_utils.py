@@ -38,6 +38,9 @@ def run_tests():
     # Test 1: Import AgentUtils
     # =========================================================================
     try:
+        import importlib
+        import AgentUtils
+        importlib.reload(AgentUtils)  # Force reload to get latest changes
         from AgentUtils import (
             EditorSubsystems, 
             AssetInspector, 

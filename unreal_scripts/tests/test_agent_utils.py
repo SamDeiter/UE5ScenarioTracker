@@ -77,9 +77,11 @@ def run_tests():
     # =========================================================================
     try:
         actors = EditorSubsystems.get_all_actors()
-        passed = isinstance(actors, list) and len(actors) > 0
+        # Unreal returns Array type, not Python list - check if it's iterable with length
+        actor_count = len(actors)
+        passed = actor_count > 0
         log_test("EditorSubsystems.get_all_actors()", passed, 
-                 f"Found {len(actors)} actors")
+                 f"Found {actor_count} actors")
     except Exception as e:
         log_test("EditorSubsystems.get_all_actors()", False, str(e))
     

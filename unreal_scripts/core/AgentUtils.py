@@ -75,20 +75,21 @@ class EditorSubsystems:
         Returns:
             tuple: (unreal.Vector location, unreal.Rotator rotation)
         """
-        subsystem = EditorSubsystems.get_level_subsystem()
-        if subsystem:
-            # Returns (location, rotation) tuple
-            return subsystem.get_level_viewport_camera_info()
+        # Use EditorLevelLibrary which is the reliable API for viewport camera
+        # LevelEditorSubsystem.get_level_viewport_camera_info() doesn't exist in all UE5 versions
+        try:
+            location, rotation = unreal.EditorLevelLibrary.get_level_viewport_camera_info()
+            return location, rotation
+        except Exception:
+            pass
+        
+        # Fallback - return zeros
         return unreal.Vector(0, 0, 0), unreal.Rotator(0, 0, 0)
     
     @staticmethod
     def set_viewport_camera(location: unreal.Vector, rotation: unreal.Rotator):
         """Set viewport camera position and rotation"""
-        subsystem = EditorSubsystems.get_level_subsystem()
-        if subsystem:
-            subsystem.set_level_viewport_camera_info(location, rotation)
-        else:
-            unreal.EditorLevelLibrary.set_level_viewport_camera_info(location, rotation)
+        unreal.EditorLevelLibrary.set_level_viewport_camera_info(location, rotation)
 
 
 # =============================================================================

@@ -64,7 +64,7 @@
       }
     },
     {
-      "label": "Actor",
+      "label": "landscape",
       "type": "Landscape",
       "transform": {
         "location": [
@@ -83,40 +83,10 @@
           100.0
         ]
       }
-    }
-  ],
-  "lighting": [
-    {
-      "label": "Actor",
-      "type": "DirectionalLight",
-      "transform": {
-        "location": [
-          0.0,
-          0.0,
-          500.0
-        ],
-        "rotation": [
-          0.0,
-          -45.0,
-          0.0
-        ],
-        "scale": [
-          2.5,
-          2.5,
-          2.5
-        ]
-      },
-      "lightType": "Directional",
-      "intensity": 3.0,
-      "color": [
-        1.0,
-        1.0,
-        1.0
-      ]
     },
     {
       "label": "Actor",
-      "type": "SkyLight",
+      "type": "StaticMeshActor",
       "transform": {
         "location": [
           0.0,
@@ -133,12 +103,35 @@
           1.0,
           1.0
         ]
+      }
+    }
+  ],
+  "lighting": [
+    {
+      "label": "Actor",
+      "type": "DirectionalLight",
+      "transform": {
+        "location": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          2.5,
+          2.5,
+          2.5
+        ]
       },
-      "lightType": "Sky",
-      "intensity": 1.0,
+      "lightType": "Directional",
+      "intensity": 10.0,
       "color": [
-        0.7991027235984802,
-        0.8962693214416504,
+        1.0,
+        1.0,
         1.0
       ]
     }
@@ -158,5 +151,5 @@
     "note": "Camera state from viewport (simplified)"
   },
   "level": "BlackMaterial_Level",
-  "image_path": "directional_light/images/step-1.bmp"
+  "image_path": "directional_light/images/step_2.bmp"
 }

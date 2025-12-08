@@ -1,12 +1,10 @@
-window.SCENARIOS = window.SCENARIOS || {};
-window.SCENARIOS['directional_light'] = {
-  "scenario_id": "directional_light",
+{
+  "scenarioId": "directional_light",
   "steps": [
     {
-      "step_id": "conclusion",
+      "stepId": "conclusion",
       "prompt": "Step conclusion",
-      "image_path": "directional_light/images/conclusion.bmp",
-      "scene_data": {
+      "sceneSetup": {
         "actors": [
           {
             "label": "SkyAtmosphere",
@@ -72,7 +70,7 @@ window.SCENARIOS['directional_light'] = {
             }
           },
           {
-            "label": "Actor",
+            "label": "landscape",
             "type": "Landscape",
             "transform": {
               "location": [
@@ -95,7 +93,7 @@ window.SCENARIOS['directional_light'] = {
         ],
         "lighting": [
           {
-            "label": "Actor",
+            "label": "directional_light",
             "type": "DirectionalLight",
             "transform": {
               "location": [
@@ -105,8 +103,8 @@ window.SCENARIOS['directional_light'] = {
               ],
               "rotation": [
                 0.0,
-                -45.0,
-                0.0
+                0.0,
+                -45.0
               ],
               "scale": [
                 2.5,
@@ -118,8 +116,8 @@ window.SCENARIOS['directional_light'] = {
             "intensity": 3.0,
             "color": [
               1.0,
-              1.0,
-              1.0
+              0.9473065137863159,
+              0.8962693214416504
             ]
           },
           {
@@ -170,4 +168,4 @@ window.SCENARIOS['directional_light'] = {
       }
     }
   ]
-};
+}

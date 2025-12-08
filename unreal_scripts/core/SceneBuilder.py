@@ -135,9 +135,9 @@ class SceneBuilder:
             import time
             light_component.modify()
             unreal.SystemLibrary.execute_console_command(None, "r.Invalidate")
-            time.sleep(0.3)
+            time.sleep(1.0)  # Increased delay
             unreal.SystemLibrary.execute_console_command(None, "RedrawViewports")
-            time.sleep(0.5)
+            time.sleep(1.5)  # Increased delay to let viewport fully render
             unreal.log(f"  ✓ Refreshed viewport for light color change")
         
         # Set shadow distance (if specified)

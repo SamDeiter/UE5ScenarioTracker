@@ -77,30 +77,28 @@
     <main id="game-container" class="flex-grow p-4 md:p-8 flex flex-col items-center">
 
         <!-- Header with UE5 Branding & Controls -->
-        <div class="w-full max-w-7xl mb-4 flex justify-between items-center flex-wrap gap-4">
+        <div
+            class="w-full max-w-7xl mb-4 flex justify-between items-center flex-wrap gap-4 assessment-header p-4 rounded-lg">
             <div class="flex items-center gap-4">
                 <!-- UE5 Logo -->
                 <img src="assets/icons/UE-Secondary-Logo-2023-Horizontal-White.svg" alt="Unreal Engine" class="h-8">
-                <span class="text-neutral-500">|</span>
-                <h1 class="text-2xl font-semibold text-neutral-100">Scenario Tracker</h1>
-                <a href="launcher.html"
-                    class="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 rounded text-sm transition-colors"
-                    title="Back to Launcher">🏠 Launcher</a>
-                <a href="http://localhost:5000/"
-                    class="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 rounded text-sm transition-colors"
-                    title="Open Generator">🤖 Generator</a>
+                <span class="text-neutral-600">|</span>
+                <div>
+                    <h1 class="text-xl font-bold text-neutral-100">Competency Evaluation</h1>
+                    <span class="text-xs text-neutral-500 uppercase tracking-wider">Technical Assessment</span>
+                </div>
             </div>
 
             <!-- Controls -->
             <div id="header-controls" class="flex-1 flex justify-end items-center space-x-4 min-w-[300px]">
 
                 <!-- Countdown Timer -->
-                <div class="text-right">
-                    <span class="text-sm uppercase text-neutral-400">Time Remaining</span>
-                    <div id="countdown-timer" class="text-3xl font-bold text-neutral-100">30:00</div>
+                <div class="text-right bg-neutral-800/50 px-4 py-2 rounded-lg border border-neutral-700">
+                    <span class="text-xs uppercase text-neutral-500 tracking-wider">Time Remaining</span>
+                    <div id="countdown-timer" class="text-2xl font-bold text-neutral-100">30:00</div>
                 </div>
 
-                <!-- Debug Mode Toggle Container (Hidden by default, activated by CTRL+SHIFT+DELETE) -->
+                <!-- Debug Mode Toggle Container -->
                 <div id="debug-controls-container" class="flex items-center space-x-2 pl-4 border-l border-neutral-700">
                     <input type="checkbox" id="debug-toggle"
                         class="form-checkbox h-4 w-4 text-emerald-500 bg-neutral-700 border-neutral-600 rounded focus:ring-emerald-500">
@@ -141,34 +139,50 @@
             </div>
         </div>
 
+        <!-- Assessment Progress Bar -->
+        <div id="assessment-progress" class="w-full max-w-7xl mb-6">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-medium text-neutral-400">Assessment Progress</span>
+                <span id="progress-text" class="text-sm text-neutral-500">0 of 0 modules complete</span>
+            </div>
+            <div class="progress-track">
+                <div id="progress-bar" class="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
 
-        <!-- Main Jira-style Grid -->
+        <!-- Main Assessment Grid -->
         <div id="jira-board" class="w-full max-w-7xl grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow min-h-[70vh]">
 
-            <!-- Column 1: Backlog -->
-            <div id="backlog-column"
-                class="md:col-span-1 bg-neutral-800 rounded-lg shadow-2xl overflow-hidden flex flex-col">
-                <h2 class="text-xl font-semibold text-neutral-100 bg-neutral-700/50 p-4 border-b border-neutral-600">
-                    Sprint Backlog
-                </h2>
-                <div id="backlog-list" class="p-4 space-y-3 overflow-y-auto">
+            <!-- Column 1: Module Selection -->
+            <div id="backlog-column" class="md:col-span-1 rounded-lg shadow-2xl overflow-hidden flex flex-col"
+                style="background: var(--ue-bg-dark); border: 1px solid var(--ue-border-dark);">
+                <div class="p-4 border-b"
+                    style="background: linear-gradient(135deg, #12121a 0%, #1a1a28 100%); border-color: var(--ue-border-dark);">
+                    <h2 class="text-lg font-bold text-neutral-100">Assessment Modules</h2>
+                    <p class="text-xs text-neutral-500 mt-1">Select a module to begin evaluation</p>
+                </div>
+                <div id="backlog-list" class="space-y-0 overflow-y-auto">
                     <!-- Backlog tickets will be injected here by game.js -->
                 </div>
             </div>
 
-            <!-- Column 2: Ticket View -->
-            <div id="ticket-view-column"
-                class="md:col-span-2 bg-neutral-800 rounded-lg shadow-2xl overflow-hidden flex flex-col">
+            <!-- Column 2: Question View -->
+            <div id="ticket-view-column" class="md:col-span-2 rounded-lg shadow-2xl overflow-hidden flex flex-col"
+                style="background: var(--ue-bg-dark); border: 1px solid var(--ue-border-dark);">
                 <!-- Placeholder -->
                 <div id="ticket-placeholder"
                     class="flex-grow flex flex-col items-center justify-center p-8 text-center">
-                    <svg class="w-24 h-24 text-neutral-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
-                    </svg>
-                    <h3 class="text-xl font-semibold text-neutral-400">Select a ticket</h3>
-                    <p class="text-neutral-500">Choose a ticket from the backlog on the left to get started.</p>
+                    <div class="w-20 h-20 rounded-full flex items-center justify-center mb-6"
+                        style="background: linear-gradient(135deg, #1e3a5f, #2563eb); border: 2px solid #3b82f6;">
+                        <svg class="w-10 h-10 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10" stroke-width="2"></circle>
+                            <path stroke-width="2" d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <line x1="12" y1="17" x2="12.01" y2="17" stroke-width="2"></line>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-neutral-200 mb-2">Select a Module</h3>
+                    <p class="text-neutral-500 max-w-sm">Choose an assessment module from the left panel to begin your
+                        evaluation.</p>
                 </div>
 
                 <!-- Active Ticket Content (hidden by default) -->

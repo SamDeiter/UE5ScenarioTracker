@@ -574,7 +574,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Renders the list of tickets in the backlog (left column).
+     * Renders the list of tickets in the backlog (left column) - Assessment Module Style.
      */
     function renderBacklog() {
         backlogList.innerHTML = '';
@@ -590,75 +590,113 @@ document.addEventListener('DOMContentLoaded', () => {
                 typeof item.data.meta.estimateHours !== 'undefined'
             );
 
-        validScenarios.forEach(item => {
+        // Update overall progress display if it exists
+        const completedCount = validScenarios.filter(item => scenarioState[item.id]?.completed).length;
+        const progressText = document.getElementById('progress-text');
+        const progressBar = document.getElementById('progress-bar');
+        if (progressText) {
+            progressText.textContent = `${completedCount} of ${validScenarios.length} modules complete`;
+        }
+        if (progressBar) {
+            const percentage = validScenarios.length > 0 ? (completedCount / validScenarios.length) * 100 : 0;
+            progressBar.style.width = `${percentage}%`;
+        }
+
+        validScenarios.forEach((item, index) => {
             const scenarioId = item.id;
             const scenario = item.data;
             const state = scenarioState[scenarioId];
 
             const meta = scenario.meta;
             const title = meta.title;
-            const description = meta.description ? meta.description.substring(0, 70) + '...' : "No description available.";
+            const category = (meta.category || 'General').toLowerCase();
+            const questionCount = scenario.steps ? Object.keys(scenario.steps).filter(k => k !== 'conclusion').length : 0;
 
             let estimate = parseFloat(meta.estimateHours);
-            if (isNaN(estimate)) {
-                estimate = 0;
-            }
+            if (isNaN(estimate)) estimate = 0;
 
             const card = document.createElement('div');
             const isActive = currentScenarioId === scenarioId && !state.completed;
 
-            card.className = `p-4 rounded-lg border-l-4 cursor-pointer transition-all duration-200 ${state.completed
-                ? 'bg-neutral-700/50 border-green-600'
-                : isActive
-                    ? 'bg-emerald-900/40 border-emerald-500 ring-2 ring-emerald-500'
-                    : 'bg-neutral-700 hover:bg-neutral-600/80 border-emerald-500'
-                }`;
+            // Build class list for scenario card
+            let cardClasses = 'scenario-card mb-3';
+            if (state.completed) cardClasses += ' completed';
+            if (isActive) cardClasses += ' active';
+
+            card.className = cardClasses;
             card.dataset.scenarioId = scenarioId;
 
-            let statusSpan;
-            let loggedTimeDisplay = '';
+            // Status pill HTML
+            let statusPillHtml;
             const logged = state.loggedTime;
-            const loggedColorClass = getLoggedTimeColorClass(logged, estimate);
-
 
             if (state.completed) {
-                statusSpan = `<span class="text-xs font-semibold text-green-400">COMPLETED</span>`;
-                loggedTimeDisplay = `
-                    <div class="text-sm text-gray-300">
-                        Logged: <span class="font-bold ${loggedColorClass}">${logged.toFixed(1)} hrs</span> / 
-                        Est: <span class="font-bold text-green-400">${estimate.toFixed(1)} hrs</span>
-                    </div>
-                `;
+                statusPillHtml = `<span class="status-pill completed">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Completed
+                </span>`;
             } else {
                 const savedStepId = interruptedSteps[scenarioId];
-
                 if (savedStepId && savedStepId !== scenario.start) {
-                    statusSpan = `<span class="text-xs font-semibold text-yellow-400">IN PROGRESS</span>`;
-                    loggedTimeDisplay = `
-                        <div class="text-sm text-gray-400">
-                            Logged: <span class="font-bold ${loggedColorClass}">${logged.toFixed(1)} hrs</span> / 
-                            Est: <span class="font-bold text-green-400">${estimate.toFixed(1)} hrs</span>
-                        </div>
-                    `;
+                    statusPillHtml = `<span class="status-pill in-progress">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        In Progress
+                    </span>`;
                 } else {
-                    statusSpan = `<span class="text-xs font-semibold text-neutral-100">NOT STARTED</span>`;
-                    loggedTimeDisplay = `
-                        <div class="text-sm text-gray-400">
-                            Est. Time: <span class="font-bold text-green-400">${estimate.toFixed(1)} hrs</span>
-                        </div>
-                    `;
+                    statusPillHtml = `<span class="status-pill not-started">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                        </svg>
+                        Not Started
+                    </span>`;
                 }
             }
 
-            const html = `
-                <h4 class="font-bold ${state.completed ? 'text-gray-400 line-through' : 'text-gray-100'}">${title}</h4>
-                <p class="text-xs text-gray-400 mt-1">${description}</p>
-                <div class="mt-3 pt-3 border-t border-neutral-600">
-                    ${statusSpan}
-                    ${loggedTimeDisplay}
-                </div>
-            `;
+            // Metrics row
+            let metricsHtml = '';
+            if (state.completed) {
+                const loggedColorClass = getLoggedTimeColorClass(logged, estimate);
+                metricsHtml = `
+                    <div class="flex justify-between text-xs mt-2">
+                        <span class="text-gray-500">Time Logged</span>
+                        <span class="${loggedColorClass} font-semibold">${logged.toFixed(1)} hrs</span>
+                    </div>
+                `;
+            } else if (logged > 0) {
+                metricsHtml = `
+                    <div class="flex justify-between text-xs mt-2">
+                        <span class="text-gray-500">Progress</span>
+                        <span class="text-yellow-400 font-semibold">${logged.toFixed(1)} hrs logged</span>
+                    </div>
+                `;
+            }
 
+            const html = `
+                <div class="flex items-start justify-between mb-2">
+                    <span class="category-badge ${category}">${category}</span>
+                    <span class="question-count">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        ${questionCount} questions
+                    </span>
+                </div>
+                <h4 class="font-bold text-sm ${state.completed ? 'text-gray-500 line-through' : 'text-gray-100'} mb-1">
+                    Module ${index + 1}: ${title}
+                </h4>
+                <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-700/50">
+                    ${statusPillHtml}
+                    <span class="text-xs text-gray-500">${estimate.toFixed(1)} hrs est.</span>
+                </div>
+                ${metricsHtml}
+            `;
 
             card.innerHTML = html;
 
@@ -670,8 +708,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+
     /**
-     * Renders a specific step (prompt and choices) of a scenario.
+     * Renders a specific step (prompt and choices) of a scenario - Professional Evaluation Style.
      */
     function renderStep(scenarioId, stepId) {
         const scenario = window.SCENARIOS[scenarioId];
@@ -698,44 +737,60 @@ document.addEventListener('DOMContentLoaded', () => {
         // 3. Get or create shuffled choices (only shuffle once per step)
         const cacheKey = `${scenarioId}_${stepId}`;
         if (!shuffledChoicesCache[cacheKey]) {
-            // First time seeing this step - shuffle and cache
             shuffledChoicesCache[cacheKey] = [...step.choices].sort(() => Math.random() - 0.5);
         }
         const shuffledChoices = shuffledChoicesCache[cacheKey];
 
         // 4. Determine Step Number for display
-        const stepKeys = Object.keys(scenario.steps);
+        const stepKeys = Object.keys(scenario.steps).filter(k => k !== 'conclusion');
         const stepIndex = stepKeys.indexOf(stepId);
         const stepNumber = stepIndex !== -1 ? stepIndex + 1 : 1;
         const totalSteps = stepKeys.length;
 
-        // Conditionally generate the step count prefix (visible only in debug mode)
-        const stepCountPrefix = isDebugMode
-            ? `Step ${stepNumber} / ${totalSteps}: `
-            : '';
+        // 5. Build step progress dots
+        let progressDotsHtml = '<div class="step-progress-container">';
+        stepKeys.forEach((key, idx) => {
+            let dotClass = 'step-dot';
+            if (idx < stepIndex) dotClass += ' completed';
+            else if (idx === stepIndex) dotClass += ' current';
+            progressDotsHtml += `<div class="${dotClass}"></div>`;
+        });
+        progressDotsHtml += `<span class="ml-3 text-xs text-gray-500">Question ${stepNumber} of ${totalSteps}</span></div>`;
 
-        // 5. Build screenshot HTML if image_path exists
+        // 6. Build screenshot HTML if image_path exists
         let screenshotHtml = '';
         if (step.image_path) {
             const imageSrc = `scenarios/${step.image_path}`;
             screenshotHtml = `
-                <div id="screenshot-container" class="screenshot-area mb-6">
+                <div class="screenshot-area mb-6">
                     <img 
                         src="${imageSrc}" 
-                        alt="Step ${stepNumber} - ${scenario.meta.title}" 
-                        class="w-full rounded-lg border border-neutral-700 shadow-lg"
-                        onerror="this.parentElement.classList.add('hidden'); console.warn('Failed to load image:', '${imageSrc}')"
+                        alt="Question ${stepNumber} - ${scenario.meta.title}" 
+                        class="w-full"
+                        onerror="this.parentElement.classList.add('hidden')"
                     />
                 </div>
             `;
         }
 
-        // 6. Build the Step Prompt and Choices with screenshot
+        // 7. Build the Step Prompt and Choices with assessment styling
         const stepHtml = `
+            <div class="question-header rounded-t-lg mb-6">
+                <div class="flex items-center gap-4">
+                    <span class="question-number-badge">Q${stepNumber}</span>
+                    <div>
+                        <h5 class="text-lg font-bold text-gray-100">${step.title}</h5>
+                        ${progressDotsHtml}
+                    </div>
+                </div>
+            </div>
             ${screenshotHtml}
-            <div id="ticket-step-prompt" class="mb-6">
-                <h5 class="text-xl font-bold text-gray-200 mb-4">${stepCountPrefix}${step.title}</h5>
+            <div class="question-prompt mb-6">
+                <span class="prompt-label">Scenario</span>
                 <div class="prose prose-invert max-w-none text-gray-300">${step.prompt}</div>
+            </div>
+            <div class="mb-3">
+                <span class="text-xs font-semibold uppercase tracking-wider text-gray-500">Select your response:</span>
             </div>
             <div id="ticket-step-choices" class="space-y-3"></div>
         `;
@@ -743,80 +798,60 @@ document.addEventListener('DOMContentLoaded', () => {
         ticketStepContent.innerHTML = stepHtml;
 
         const choicesContainer = ticketStepContent.querySelector('#ticket-step-choices');
+        const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
-        // 6. Create Choice Buttons
-        // Map original index to shuffled button for time tracking stability
-        shuffledChoices.forEach((choice, originalIndex) => {
+        // 8. Create Choice Buttons with letter prefixes
+        shuffledChoices.forEach((choice, shuffledIndex) => {
             const timeCost = getTimeCostForChoice(choice.type);
-            const isCorrect = choice.type === 'correct';
+            const letter = letters[shuffledIndex] || String(shuffledIndex + 1);
 
             const btn = document.createElement('button');
 
-            // Determine button styling and labels based on debug mode
-            let debugClass = '';
-            let typeLabel = '';
-            let typeLabelClass = '';
-            let feedbackHtml = '';
+            // Determine button styling based on debug mode
+            let extraClasses = '';
+            let debugLabelHtml = '';
 
             if (isDebugMode) {
-                // Debug mode: show colored borders, type labels, and feedback
                 if (choice.type === 'correct') {
-                    debugClass = 'border-l-4 border-green-500 bg-green-900/30';
-                    typeLabel = 'CORRECT';
-                    typeLabelClass = 'text-green-400';
+                    extraClasses = 'debug-correct';
                 } else if (choice.type === 'partial') {
-                    debugClass = 'border-l-4 border-yellow-500 bg-yellow-900/20';
-                    typeLabel = 'PLAUSIBLE';
-                    typeLabelClass = 'text-yellow-400';
+                    extraClasses = 'debug-partial';
                 } else if (choice.type === 'misguided') {
-                    debugClass = 'border-l-4 border-orange-500 bg-orange-900/20';
-                    typeLabel = 'SUBTLE';
-                    typeLabelClass = 'text-orange-400';
+                    extraClasses = 'debug-wrong';
                 } else {
-                    debugClass = 'border-l-4 border-red-500 bg-red-900/20';
-                    typeLabel = 'OBVIOUS';
-                    typeLabelClass = 'text-red-400';
+                    extraClasses = 'debug-wrong';
                 }
 
-                // Build feedback HTML for debug mode
-                const timeLabel = choice.type === 'correct' ? 'Optimal Time:' : 'Extended Time:';
-                feedbackHtml = `
-                    <div class="mt-3 pt-3 border-t border-neutral-600">
-                        <p class="text-xs italic text-gray-400">${timeLabel} +${timeCost.toFixed(2)}hrs. ${choice.feedback || ''}</p>
+                const typeLabels = {
+                    'correct': 'OPTIMAL',
+                    'partial': 'ACCEPTABLE',
+                    'misguided': 'SUBOPTIMAL',
+                    'wrong': 'INCORRECT'
+                };
+                debugLabelHtml = `
+                    <div class="text-xs mt-2 pt-2 border-t border-gray-700/50">
+                        <span class="font-semibold uppercase tracking-wider ${choice.type === 'correct' ? 'text-green-400' : choice.type === 'partial' ? 'text-yellow-400' : 'text-red-400'}">${typeLabels[choice.type] || 'INCORRECT'}</span>
+                        <span class="text-gray-500 ml-2">+${timeCost.toFixed(1)} hrs</span>
                     </div>
                 `;
-            } else {
-                // Normal mode: neutral styling
-                debugClass = 'border border-neutral-600 hover:border-emerald-500';
             }
 
-            // Build button classes
-            btn.className = `block w-full text-left p-4 rounded-lg transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${debugClass}`;
+            btn.className = `answer-option ${extraClasses}`;
 
-            // Build button innerHTML
-            if (isDebugMode) {
-                btn.innerHTML = `
-                    <div class="text-xs font-bold uppercase tracking-wider ${typeLabelClass} mb-1">${typeLabel}</div>
-                    <div class="font-bold text-gray-100">${choice.text}</div>
-                    ${feedbackHtml}
-                `;
-            } else {
-                btn.innerHTML = `<span class="font-bold">${choice.text}</span>`;
-            }
+            btn.innerHTML = `
+                <span class="answer-letter">${letter}</span>
+                <div class="answer-text">
+                    <span class="font-medium text-gray-100">${choice.text}</span>
+                    ${debugLabelHtml}
+                </div>
+            `;
 
-            // Attach minimal data to dataset
+            // Attach data
             btn.dataset.choiceNext = choice.next;
             btn.dataset.choiceTimeCost = timeCost;
 
-            // CRITICAL: Store the original index from the SCENARIOS array for stable score tracking
-            // We need to find the original index in the unshuffled array
             const originalIndexInChoices = step.choices.indexOf(choice);
-            if (originalIndexInChoices !== -1) {
-                btn.dataset.originalIndex = originalIndexInChoices;
-            } else {
-                console.error("Could not find choice in original array for stable index mapping.");
-                btn.dataset.originalIndex = -1; // Fallback to -1 if mapping fails
-            }
+            btn.dataset.originalIndex = originalIndexInChoices !== -1 ? originalIndexInChoices : -1;
 
             btn.addEventListener('click', () => handleChoice(btn));
             choicesContainer.appendChild(btn);

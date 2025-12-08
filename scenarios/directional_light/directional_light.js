@@ -3,9 +3,9 @@ window.SCENARIOS['directional_light'] = {
   "scenario_id": "directional_light",
   "steps": [
     {
-      "step_id": "conclusion",
-      "prompt": "Step conclusion",
-      "image_path": "directional_light/images/conclusion.bmp",
+      "step_id": "step_1",
+      "prompt": "",
+      "image_path": "directional_light/images/step_1.bmp",
       "scene_data": {
         "actors": [
           {
@@ -15,7 +15,7 @@ window.SCENARIOS['directional_light'] = {
               "location": [
                 0.0,
                 0.0,
-                0.0
+                -6000.0
               ],
               "rotation": [
                 0.0,
@@ -34,9 +34,30 @@ window.SCENARIOS['directional_light'] = {
             "type": "ExponentialHeightFog",
             "transform": {
               "location": [
+                -5600.0,
+                -50.0,
+                -6850.0
+              ],
+              "rotation": [
                 0.0,
                 0.0,
                 0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "label": "VolumetricCloud",
+            "type": "VolumetricCloud",
+            "transform": {
+              "location": [
+                0.0,
+                0.0,
+                700.0
               ],
               "rotation": [
                 0.0,
@@ -56,8 +77,8 @@ window.SCENARIOS['directional_light'] = {
             "transform": {
               "location": [
                 0.0,
-                -300.0,
-                0.0
+                0.0,
+                92.0
               ],
               "rotation": [
                 0.0,
@@ -73,11 +94,11 @@ window.SCENARIOS['directional_light'] = {
           },
           {
             "label": "Actor",
-            "type": "Landscape",
+            "type": "StaticMeshActor",
             "transform": {
               "location": [
-                -25200.0,
-                -25200.0,
+                0.0,
+                0.0,
                 0.0
               ],
               "rotation": [
@@ -86,9 +107,9 @@ window.SCENARIOS['directional_light'] = {
                 0.0
               ],
               "scale": [
-                100.0,
-                100.0,
-                100.0
+                1.0,
+                1.0,
+                1.0
               ]
             }
           }
@@ -101,11 +122,11 @@ window.SCENARIOS['directional_light'] = {
               "location": [
                 0.0,
                 0.0,
-                500.0
+                0.0
               ],
               "rotation": [
                 0.0,
-                -45.0,
+                0.0,
                 0.0
               ],
               "scale": [
@@ -115,38 +136,10 @@ window.SCENARIOS['directional_light'] = {
               ]
             },
             "lightType": "Directional",
-            "intensity": 3.0,
+            "intensity": 10.0,
             "color": [
               1.0,
               1.0,
-              1.0
-            ]
-          },
-          {
-            "label": "Actor",
-            "type": "SkyLight",
-            "transform": {
-              "location": [
-                0.0,
-                0.0,
-                0.0
-              ],
-              "rotation": [
-                0.0,
-                0.0,
-                0.0
-              ],
-              "scale": [
-                1.0,
-                1.0,
-                1.0
-              ]
-            },
-            "lightType": "Sky",
-            "intensity": 1.0,
-            "color": [
-              0.7991027235984802,
-              0.8962693214416504,
               1.0
             ]
           }
@@ -165,8 +158,328 @@ window.SCENARIOS['directional_light'] = {
           "fov": 90,
           "note": "Camera state from viewport (simplified)"
         },
-        "level": "BlackMaterial_Level",
-        "image_path": "directional_light/images/conclusion.bmp"
+        "level": "Untitled_2",
+        "image_path": "directional_light/images/step_1.bmp"
+      }
+    },
+    {
+      "step_id": "step_2",
+      "prompt": "",
+      "image_path": "directional_light/images/step_2.bmp",
+      "scene_data": {
+        "actors": [
+          {
+            "label": "SkyAtmosphere",
+            "type": "SkyAtmosphere",
+            "transform": {
+              "location": [
+                0.0,
+                0.0,
+                -6000.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "label": "ExponentialHeightFog",
+            "type": "ExponentialHeightFog",
+            "transform": {
+              "location": [
+                -5600.0,
+                -50.0,
+                -6850.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "label": "VolumetricCloud",
+            "type": "VolumetricCloud",
+            "transform": {
+              "location": [
+                0.0,
+                0.0,
+                700.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "label": "PlayerStart",
+            "type": "PlayerStart",
+            "transform": {
+              "location": [
+                0.0,
+                0.0,
+                92.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "label": "Actor",
+            "type": "StaticMeshActor",
+            "transform": {
+              "location": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          }
+        ],
+        "lighting": [
+          {
+            "label": "Actor",
+            "type": "DirectionalLight",
+            "transform": {
+              "location": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                2.5,
+                2.5,
+                2.5
+              ]
+            },
+            "lightType": "Directional",
+            "intensity": 10.0,
+            "color": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        ],
+        "camera": {
+          "location": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "fov": 90,
+          "note": "Camera state from viewport (simplified)"
+        },
+        "level": "Untitled_2",
+        "image_path": "directional_light/images/step_2.bmp"
+      }
+    },
+    {
+      "step_id": "step_3",
+      "prompt": "",
+      "image_path": "directional_light/images/step_3.bmp",
+      "scene_data": {
+        "actors": [
+          {
+            "label": "SkyAtmosphere",
+            "type": "SkyAtmosphere",
+            "transform": {
+              "location": [
+                0.0,
+                0.0,
+                -6000.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "label": "ExponentialHeightFog",
+            "type": "ExponentialHeightFog",
+            "transform": {
+              "location": [
+                -5600.0,
+                -50.0,
+                -6850.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "label": "VolumetricCloud",
+            "type": "VolumetricCloud",
+            "transform": {
+              "location": [
+                0.0,
+                0.0,
+                700.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "label": "PlayerStart",
+            "type": "PlayerStart",
+            "transform": {
+              "location": [
+                0.0,
+                0.0,
+                92.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "label": "Actor",
+            "type": "StaticMeshActor",
+            "transform": {
+              "location": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          }
+        ],
+        "lighting": [
+          {
+            "label": "Actor",
+            "type": "DirectionalLight",
+            "transform": {
+              "location": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                2.5,
+                2.5,
+                2.5
+              ]
+            },
+            "lightType": "Directional",
+            "intensity": 10.0,
+            "color": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        ],
+        "camera": {
+          "location": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "fov": 90,
+          "note": "Camera state from viewport (simplified)"
+        },
+        "level": "Untitled_2",
+        "image_path": "directional_light/images/step_3.bmp"
       }
     }
   ]

@@ -7,12 +7,20 @@ import sys
 import json
 import os
 import unreal
+import importlib
 
-# Add path to core scripts
+# Add paths to scripts
 sys.path.insert(0, r"C:\Users\Sam Deiter\Documents\GitHub\UE5ScenarioTracker\unreal_scripts\core")
+sys.path.insert(0, r"C:\Users\Sam Deiter\Documents\GitHub\UE5ScenarioTracker\unreal_scripts\experimental")
+
+# Force reload to pick up changes
+if 'SceneBuilder' in sys.modules:
+    importlib.reload(sys.modules['SceneBuilder'])
+if 'WindowsPrintScreen' in sys.modules:
+    importlib.reload(sys.modules['WindowsPrintScreen'])
 
 from SceneBuilder import SceneBuilder
-from WindowsPrintScreen import capture_window_screenshot
+import WindowsPrintScreen
 
 # Paths
 json_dir = r"C:\Users\Sam Deiter\Documents\GitHub\UE5ScenarioTracker\scenarios\directional_light"
@@ -72,7 +80,7 @@ for step_id in steps:
     
     # Capture screenshot
     output_path = os.path.join(output_dir, f"{step_id}.bmp")
-    success = capture_window_screenshot("UEScenarioFactory - Unreal Editor", output_path)
+    success = WindowsPrintScreen.capture_editor_window(output_path)
     
     if success:
         print(f"✓ Screenshot saved: {output_path}")

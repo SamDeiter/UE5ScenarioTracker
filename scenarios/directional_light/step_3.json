@@ -7,7 +7,7 @@
         "location": [
           0.0,
           0.0,
-          0.0
+          -6000.0
         ],
         "rotation": [
           0.0,
@@ -26,9 +26,30 @@
       "type": "ExponentialHeightFog",
       "transform": {
         "location": [
+          -5600.0,
+          -50.0,
+          -6850.0
+        ],
+        "rotation": [
           0.0,
           0.0,
           0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "label": "VolumetricCloud",
+      "type": "VolumetricCloud",
+      "transform": {
+        "location": [
+          0.0,
+          0.0,
+          700.0
         ],
         "rotation": [
           0.0,
@@ -48,8 +69,8 @@
       "transform": {
         "location": [
           0.0,
-          -300.0,
-          0.0
+          0.0,
+          92.0
         ],
         "rotation": [
           0.0,
@@ -60,27 +81,6 @@
           1.0,
           1.0,
           1.0
-        ]
-      }
-    },
-    {
-      "label": "landscape",
-      "type": "Landscape",
-      "transform": {
-        "location": [
-          -25200.0,
-          -25200.0,
-          0.0
-        ],
-        "rotation": [
-          0.0,
-          0.0,
-          0.0
-        ],
-        "scale": [
-          100.0,
-          100.0,
-          100.0
         ]
       }
     },
@@ -150,6 +150,6 @@
     "fov": 90,
     "note": "Camera state from viewport (simplified)"
   },
-  "level": "BlackMaterial_Level",
+  "level": "Untitled_2",
   "image_path": "directional_light/images/step_3.bmp"
 }

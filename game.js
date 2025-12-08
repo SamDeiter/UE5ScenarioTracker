@@ -865,64 +865,68 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Shows feedback for a choice before continuing to the next step.
+     * Shows inline feedback for incorrect choices in a professional manner.
      * @param {Object} choice - The choice object containing feedback text and type.
-     * @param {Function} callback - Function to call after feedback is dismissed.
+     * @param {Function} callback - Function to call after feedback is shown.
      */
     function showChoiceFeedback(choice, callback) {
-        // Determine feedback styling based on choice type
+        // Determine feedback styling based on choice type - professional color scheme
         let borderColor = 'border-red-500';
-        let bgColor = 'bg-gray-800'; // Solid background for readability
-        let iconColor = 'text-red-400';
-        let icon = '✗';
+        let bgColor = 'bg-red-900/10';
+        let textColor = 'text-red-300';
+        let severity = 'Incorrect';
 
         if (choice.type === 'partial' || choice.type === 'plausible') {
             borderColor = 'border-yellow-500';
-            iconColor = 'text-yellow-400';
-            icon = '⚠';
+            bgColor = 'bg-yellow-900/10';
+            textColor = 'text-yellow-300';
+            severity = 'Partially Correct';
         } else if (choice.type === 'misguided' || choice.type === 'subtle') {
             borderColor = 'border-orange-500';
-            iconColor = 'text-orange-400';
-            icon = '!';
+            bgColor = 'bg-orange-900/10';
+            textColor = 'text-orange-300';
+            severity = 'Needs Revision';
         }
 
-        // Create feedback overlay
-        const feedbackHtml = `
-            <div id="choice-feedback-overlay" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
-                <div class="max-w-lg w-full ${bgColor} border-2 ${borderColor} rounded-xl p-6 shadow-2xl">
-                    <div class="flex items-start gap-4">
-                        <div class="${iconColor} text-3xl font-bold">${icon}</div>
-                        <div class="flex-1">
-                            <h4 class="${iconColor} font-bold text-lg mb-2">Try Again</h4>
-                            <div class="text-gray-200 text-sm leading-relaxed prose prose-sm prose-invert">${choice.feedback || 'That answer was not correct.'}</div>
-                        </div>
+        // Create inline feedback banner - professional and subtle
+        const feedbackBanner = document.createElement('div');
+        feedbackBanner.id = 'inline-feedback-banner';
+        feedbackBanner.className = `${bgColor} ${borderColor} border-l-4 p-4 mb-6 rounded-r-lg animate-slideIn`;
+        feedbackBanner.innerHTML = `
+            <div class="flex items-start gap-3">
+                <div class="${textColor} text-lg">ⓘ</div>
+                <div class="flex-1">
+                    <div class="${textColor} font-semibold text-sm mb-1">${severity}</div>
+                    <div class="text-gray-300 text-sm leading-relaxed prose prose-sm prose-invert">
+                        ${choice.feedback || 'This approach may not be optimal. Please reconsider.'}
                     </div>
-                    <button id="feedback-continue-btn" class="mt-6 w-full bg-neutral-700 hover:bg-neutral-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-                        Continue
-                    </button>
                 </div>
+                <button class="text-gray-400 hover:text-gray-200 transition-colors" onclick="this.parentElement.parentElement.remove()">
+                    ×
+                </button>
             </div>
         `;
 
-        document.body.insertAdjacentHTML('beforeend', feedbackHtml);
+        // Insert banner at the top of step content (before prompt)
+        const stepContent = document.getElementById('ticket-step-content');
+        if (stepContent && stepContent.firstChild) {
+            stepContent.insertBefore(feedbackBanner, stepContent.firstChild);
 
-        // Handle continue button click
-        const continueBtn = document.getElementById('feedback-continue-btn');
-        const overlay = document.getElementById('choice-feedback-overlay');
+            // Scroll banner into view smoothly
+            feedbackBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-        const handleContinue = () => {
-            overlay.remove();
-            if (callback) callback();
-        };
+            // Auto-dismiss after 5 seconds for better UX
+            setTimeout(() => {
+                if (feedbackBanner.parentElement) {
+                    feedbackBanner.style.opacity = '0';
+                    feedbackBanner.style.transition = 'opacity 0.5s';
+                    setTimeout(() => feedbackBanner.remove(), 500);
+                }
+            }, 5000);
+        }
 
-        continueBtn.addEventListener('click', handleContinue);
-
-        // Also allow clicking outside to continue
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                handleContinue();
-            }
-        });
+        // Call callback immediately - don't block user progression
+        if (callback) callback();
     }
 
     /**

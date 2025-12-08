@@ -146,3 +146,33 @@ code {
     flex: 1;
     overflow-y: auto;
 }
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+/* Slide in animation for inline feedback */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-slideIn {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Pulse animation for low-time timer */
+@keyframes pulse-red-animation {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}

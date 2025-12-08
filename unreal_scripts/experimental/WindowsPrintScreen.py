@@ -46,21 +46,6 @@ class WindowsPrintScreen:
             output_path (str): Full path to save PNG file
             window_title (str): Window title to find
             
-        Returns:
-            bool: Success status
-        """
-        unreal.log(f"Capturing window: {window_title}")
-        
-        try:
-            unreal.log(f"Window dimensions: {width}x{height}")
-            
-            # Get window DC (not client DC - we want the full window)
-            hwndDC = self.user32.GetDC(hwnd)
-            
-            # Create compatible DC and bitmap
-            mfcDC = self.gdi32.CreateCompatibleDC(hwndDC)
-            saveBitMap = self.gdi32.CreateCompatibleBitmap(hwndDC, width, height)
-            
             # Select bitmap into DC
             old_obj = self.gdi32.SelectObject(mfcDC, saveBitMap)
             

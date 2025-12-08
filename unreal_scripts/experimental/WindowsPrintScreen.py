@@ -52,31 +52,6 @@ class WindowsPrintScreen:
         unreal.log(f"Capturing window: {window_title}")
         
         try:
-            # Find window by title
-            hwnd = self.user32.FindWindowW(None, window_title)
-            if not hwnd:
-                unreal.log_warning(f"Could not find window: {window_title}")
-                return False
-            
-            # Make sure window is active and fully rendered
-            self.user32.SetForegroundWindow(hwnd)
-            self.user32.BringWindowToTop(hwnd)
-            time.sleep(0.2)
-            
-            # Force DWM to flush and complete all rendering
-            try:
-                self.dwmapi.DwmFlush()
-            except:
-                pass  # DwmFlush may not be available on all systems
-            
-            time.sleep(0.3)
-            
-            # Get window dimensions
-            rect = wintypes.RECT()
-            self.user32.GetWindowRect(hwnd, ctypes.byref(rect))
-            width = rect.right - rect.left
-            height = rect.bottom - rect.top
-            
             unreal.log(f"Window dimensions: {width}x{height}")
             
             # Get window DC (not client DC - we want the full window)

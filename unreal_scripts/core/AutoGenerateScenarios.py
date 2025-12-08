@@ -11,9 +11,11 @@ import os
 import time
 
 # Import our modules
+sys.path.insert(0, r"C:\Users\Sam Deiter\Documents\GitHub\UE5ScenarioTracker\unreal_scripts\experimental")
 from SceneBuilder import SceneBuilder
-from SuperSimpleScreenshot import SuperSimpleScreenshot  # Fast PrintScreen approach
+from WindowsPrintScreen import capture_editor_window  # Epic-compliant screenshot
 from SceneExporter import SceneExporter
+
 
 
 def generate_scenario_step(scene_spec, scenario_id, step_id, output_base_path):
@@ -32,21 +34,26 @@ def generate_scenario_step(scene_spec, scenario_id, step_id, output_base_path):
     
     # Initialize utilities
     scene_builder = SceneBuilder()
-    screenshot = SuperSimpleScreenshot()
     exporter = SceneExporter()
     
     # Setup scene
     scene_builder.setup_scene(scene_spec)
     
-    # Create output directory
+    # Create output directories
     output_dir = os.path.join(output_base_path, scenario_id)
-    os.makedirs(output_dir, exist_ok=True)
+    images_dir = os.path.join(output_dir, "images")
+    os.makedirs(images_dir, exist_ok=True)
     
-    # Capture screenshot (use 'capture' method, not 'capture_screenshot')
-    screenshot.capture(output_dir, step_id, resolution=(1280, 720))
+    # Capture screenshot using Windows API (Epic-compliant)
+    screenshot_path = os.path.join(images_dir, f"{step_id}.bmp")
+    success = capture_editor_window(screenshot_path)
+    
+    if not success:
+        unreal.log_warning(f"Screenshot capture failed for {step_id}")
     
     # Export JSON (export_scene expects output_path and filename separately)
     exporter.export_scene(output_dir, step_id)
+
 
 
 def generate_scenario_assets(spec_file_path, output_base_path):

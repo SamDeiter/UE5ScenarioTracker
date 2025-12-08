@@ -128,7 +128,7 @@ class WindowsPrintScreen:
             f.write(b'BM')
             file_size = 54 + dwBmpSize
             f.write(file_size.to_bytes(4, 'little'))
-            f.write(b'\\x00\\x00\\x00\\x00')  # Reserved
+            f.write(b'\x00\x00\x00\x00')  # Reserved
             f.write((54).to_bytes(4, 'little'))  # Offset to pixel data
             
             # BMP info header

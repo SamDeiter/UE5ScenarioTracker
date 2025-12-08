@@ -52,7 +52,9 @@ class SceneBuilder:
             'ExponentialHeightFog',
             'VolumetricCloud',
             'Floor',
-            'PlayerStart'
+            'PlayerStart',
+            'StaticMeshActor',  # Keep cubes and other static meshes
+            'Cube'  # Specifically keep cube actors
         ]
         
         return class_name in persistent_classes

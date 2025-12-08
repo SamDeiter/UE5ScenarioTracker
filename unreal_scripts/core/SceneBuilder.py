@@ -130,6 +130,18 @@ class SceneBuilder:
                 unreal.LinearColor(color[0], color[1], color[2])
             )
             unreal.log(f"  ✓ Set color: RGB({color[0]}, {color[1]}, {color[2]})")
+            
+            # Force viewport refresh to make color change visible
+            import time
+            light_component.modify()
+            light_component.mark_render_state_dirty()
+            unreal.SystemLibrary.execute_console_command(None, "r.Invalidate")
+            time.sleep(0.2)
+            unreal.SystemLibrary.execute_console_command(None, "RedrawViewports")
+            time.sleep(0.2)
+            unreal.SystemLibrary.execute_console_command(None, "BuildLighting")
+            time.sleep(0.5)
+            unreal.log(f"  ✓ Refreshed viewport for light color change")
         
         # Set shadow distance (if specified)
         if 'dynamicShadowDistance' in spec:

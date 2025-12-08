@@ -2,15 +2,17 @@
 Pilot Test Generator - Creates 4 distinct screenshots for directional_light scenario
 Phase 2.1 - Testing image generation with different camera angles and UI states
 
-This script will generate 4 screenshots showing:
-1. Wide shot of the scene with Details Panel showing directional light properties
-2. Close-up of the light actor with specific settings expanded
-3. Material Editor view (if applicable)
-4. Lighting visualizer or another relevant UI state
+Uses the existing WindowsPrintScreen module (Epic-compliant, ctypes only)
 """
 
 import unreal
 import os
+import sys
+
+# Add path to experimental folder
+sys.path.insert(0, r"C:\Users\Sam Deiter\Documents\GitHub\UE5ScenarioTracker\unreal_scripts\experimental")
+from WindowsPrintScreen import capture_editor_window
+
 
 class PilotTestGenerator:
     def __init__(self, output_dir="D:/temp/pilot_test"):
@@ -20,29 +22,30 @@ class PilotTestGenerator:
         # Create output directory
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-            print(f"Created output directory: {output_dir}")
+            unreal.log(f"Created output directory: {output_dir}")
     
     def _capture_screenshot(self, filename):
-        """Capture screenshot using PIL (PrintScreen approach - NO DELAYS)"""
+        """Capture screenshot using existing WindowsPrintScreen module"""
         try:
-            from PIL import ImageGrab
-            
             full_path = os.path.join(self.output_dir, filename)
-            screenshot = ImageGrab.grab()
-            screenshot.save(full_path, 'PNG')
+            success = capture_editor_window(full_path)
             
-            unreal.log(f"  ✓ Saved: {filename}")
-            return full_path
-            
-        except ImportError:
-            unreal.log_error("PIL/Pillow not available - cannot capture screenshots")
+            if success:
+                unreal.log(f"  ✓ Saved: {filename}")
+                return full_path
+            else:
+                unreal.log_error(f"  ✗ Failed to capture: {filename}")
+                return None
+                
+        except Exception as e:
+            unreal.log_error(f"Screenshot failed: {str(e)}")
             return None
     
     def generate_four_screenshots(self):
         """Generate 4 distinct screenshots for the pilot test"""
-        print("\n" + "="*60)
-        print("PILOT TEST: Generating 4 Screenshots for directional_light")
-        print("="*60 + "\n")
+        unreal.log("\n" + "="*60)
+        unreal.log("PILOT TEST: Generating 4 Screenshots for directional_light")
+        unreal.log("="*60 + "\n")
         
         # Screenshot 1: Wide scene view
         self.capture_screenshot_1_wide_view()
@@ -56,27 +59,23 @@ class PilotTestGenerator:
         # Screenshot 4: UI overlay (World Settings or similar)
         self.capture_screenshot_4_ui_overlay()
         
-        print("\n" + "="*60)
-        print("PILOT TEST COMPLETE")
-        print(f"Screenshots saved to: {self.output_dir}")
-        print("="*60 + "\n")
+        unreal.log("\n" + "="*60)
+        unreal.log("PILOT TEST COMPLETE")
+        unreal.log(f"Screenshots saved to: {self.output_dir}")
+        unreal.log("="*60 + "\n")
     
     def capture_screenshot_1_wide_view(self):
         """Screenshot 1: Wide view of the scene"""
-        print("[1/4] Capturing wide scene view...")
+        unreal.log("[1/4] Capturing wide scene view...")
         
         try:
-            # Set camera to wide angle
-            # (This would need actual camera positioning logic)
-            
-            self._capture_screenshot("step1_wide_view.png")
-            
+            self._capture_screenshot("step1_wide_view.bmp")
         except Exception as e:
-            print(f"  ✗ Error: {str(e)}")
+            unreal.log_error(f"  Error: {str(e)}")
     
     def capture_screenshot_2_details_panel(self):
         """Screenshot 2: Details Panel with directional light selected"""
-        print("[2/4] Capturing Details Panel with directional light...")
+        unreal.log("[2/4] Capturing Details Panel with directional light...")
         
         try:
             # Find and select directional light
@@ -91,41 +90,37 @@ class PilotTestGenerator:
             if directional_light:
                 # Select the light to show in Details Panel
                 self.level_lib.set_selected_level_actors([directional_light])
-                print(f"  → Selected: {directional_light.get_name()}")
+                unreal.log(f"  Selected: {directional_light.get_name()}")
+                
+                # Wait a moment for UI to update
+                import time
+                time.sleep(0.5)
                 
                 # Screenshot captures current UI state
-                self._capture_screenshot("step2_details_panel.png")
+                self._capture_screenshot("step2_details_panel.bmp")
             else:
-                print("  ⚠ No directional light found in scene")
+                unreal.log_warning("  No directional light found in scene")
                 
         except Exception as e:
-            print(f"  ✗ Error: {str(e)}")
+            unreal.log_error(f"  Error: {str(e)}")
     
     def capture_screenshot_3_alternate_angle(self):
         """Screenshot 3: Different camera angle"""
-        print("[3/4] Capturing alternate camera angle...")
+        unreal.log("[3/4] Capturing alternate camera angle...")
         
         try:
-            # This would set a different camera position
-            # For now, just take another screenshot
-            
-            self._capture_screenshot("step3_alternate_angle.png")
-            
+            self._capture_screenshot("step3_alternate_angle.bmp")
         except Exception as e:
-            print(f"  ✗ Error: {str(e)}")
+            unreal.log_error(f"  Error: {str(e)}")
     
     def capture_screenshot_4_ui_overlay(self):
         """Screenshot 4: UI overlay (World Settings, etc.)"""
-        print("[4/4] Capturing UI overlay...")
+        unreal.log("[4/4] Capturing UI overlay...")
         
         try:
-            # This would open a specific UI panel
-            # For now, just take another screenshot
-            
-            self._capture_screenshot("step4_ui_overlay.png")
-            
+            self._capture_screenshot("step4_ui_overlay.bmp")
         except Exception as e:
-            print(f"  ✗ Error: {str(e)}")
+            unreal.log_error(f"  Error: {str(e)}")
 
 
 def run_pilot_test():

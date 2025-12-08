@@ -10,6 +10,24 @@ import ctypes
 from ctypes import wintypes
 
 
+# Manual structure definitions for stripped-down ctypes in Unreal
+class BITMAPINFOHEADER(ctypes.Structure):
+    _fields_ = [
+        ('biSize', ctypes.c_uint32),
+        ('biWidth', ctypes.c_int32),
+        ('biHeight', ctypes.c_int32),
+        ('biPlanes', ctypes.c_uint16),
+        ('biBitCount', ctypes.c_uint16),
+        ('biCompression', ctypes.c_uint32),
+        ('biSizeImage', ctypes.c_uint32),
+        ('biXPelsPerMeter', ctypes.c_int32),
+        ('biYPelsPerMeter', ctypes.c_int32),
+        ('biClrUsed', ctypes.c_uint32),
+        ('biClrImportant', ctypes.c_uint32),
+    ]
+
+
+
 class WindowsPrintScreen:
     """Capture screenshots using Windows API - no external packages needed"""
     
@@ -18,7 +36,7 @@ class WindowsPrintScreen:
         self.user32 = ctypes.windll.user32
         self.gdi32 = ctypes.windll.gdi32
         
-    def capture_window(self, output_path, window_title="Unreal Editor"):
+    def capture_window(self, output_path, window_title="UEScenarioFactory - Unreal Editor"):
         """
         Capture window using Windows API
         
@@ -80,12 +98,10 @@ class WindowsPrintScreen:
     
     def _save_bitmap(self, hBitmap, width, height, filepath):
         """Save bitmap to BMP file using Windows API"""
-        bmpScreen = wintypes.BITMAP()
-        self.gdi32.GetObjectW(hBitmap, ctypes.sizeof(bmpScreen), ctypes.byref(bmpScreen))
         
         # BMP file header setup
-        bi = wintypes.BITMAPINFOHEADER()
-        bi.biSize = ctypes.sizeof(wintypes.BITMAPINFOHEADER)
+        bi = BITMAPINFOHEADER()
+        bi.biSize = ctypes.sizeof(BITMAPINFOHEADER)
         bi.biWidth = width
         bi.biHeight = height
         bi.biPlanes = 1

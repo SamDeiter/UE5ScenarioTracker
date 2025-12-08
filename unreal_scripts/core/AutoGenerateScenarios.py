@@ -9,10 +9,6 @@ import json
 import sys
 import os
 import time
-
-# Import our modules
-import importlib
-# Import our modules
 import importlib
 
 # Ensure we can import from the current directory (core)
@@ -37,7 +33,6 @@ from WindowsPrintScreen import capture_editor_window
 import SceneExporter
 importlib.reload(SceneExporter)
 from SceneExporter import SceneExporter
-
 
 
 def generate_scenario_step(scene_spec, scenario_id, step_id, output_base_path, prompt):
@@ -77,12 +72,10 @@ def generate_scenario_step(scene_spec, scenario_id, step_id, output_base_path, p
     if not success:
         unreal.log_warning(f"Screenshot capture failed for {step_id}")
     
-    # Calculate relative image path for web app (e.g., "directional_light/images/step_1.bmp")
-    # This assumes web app loads from the parent folder of [scenario_id]
+    # Calculate relative image path for web app
     image_rel_path = f"{scenario_id}/images/{step_id}.bmp"
     
-    # Export JSON (export_scene expects output_path and filename separately)
-    # Now passing image_path so it's included in the per-step export too
+    # Export JSON
     full_path, scene_data = exporter.export_scene(output_dir, step_id, image_rel_path)
     
     return {
@@ -93,7 +86,6 @@ def generate_scenario_step(scene_spec, scenario_id, step_id, output_base_path, p
     }
 
 
-
 def generate_scenario_assets(spec_file_path, output_base_path):
     """
     Main entry point - generate all assets for a scenario
@@ -102,9 +94,9 @@ def generate_scenario_assets(spec_file_path, output_base_path):
         spec_file_path (str): Path to JSON file with scene specifications
         output_base_path (str): Base path for Content/Scenarios folder
     """
-    unreal.log("╔" + "=" * 68 + "╗")
-    unreal.log("║" + " " * 15 + "Scenario Asset Generation" + " " * 28 + "║")
-    unreal.log("╚" + "=" * 68 + "╝")
+    unreal.log("=" * 70)
+    unreal.log("Scenario Asset Generation")
+    unreal.log("=" * 70)
     unreal.log("")
     
     # Load scene specifications
@@ -143,20 +135,18 @@ def generate_scenario_assets(spec_file_path, output_base_path):
             unreal.log_error(traceback.format_exc())
             continue
         
-        # Cleanup between steps to prevent memory/resource issues
+        # Cleanup between steps
         import gc
-        gc.collect()  # Python garbage collection
-        unreal.SystemLibrary.execute_console_command(None, "obj gc")  # UE garbage collection
+        gc.collect()
+        unreal.SystemLibrary.execute_console_command(None, "obj gc")
 
-    # Write final combined scenario JSON
+    # Write final combined scenario JS
     final_scenario_data = {
         "scenario_id": scenario_id,
         "steps": all_steps_data
     }
     
     output_dir = os.path.join(output_base_path, scenario_id)
-    
-    # Export as JS for the web app
     final_js_path = os.path.join(output_dir, f"{scenario_id}.js")
     
     js_content = f"""window.SCENARIOS = window.SCENARIOS || {{}};
@@ -168,33 +158,18 @@ window.SCENARIOS['{scenario_id}'] = {json.dumps(final_scenario_data, indent=2)};
         
     unreal.log(f"Final scenario exported to: {final_js_path}")
     
-    # Clean up temp screenshots after ALL steps complete
-    try:
-        project_dir = unreal.SystemLibrary.get_project_directory()
-        temp_screenshot_path = os.path.join(project_dir, "Saved", "Screenshots", "WindowsEditor")
-        if os.path.exists(temp_screenshot_path):
-            for f in os.listdir(temp_screenshot_path):
-                if f.endswith('.png'):
-                    file_path = os.path.join(temp_screenshot_path, f)
-                    os.remove(file_path)
-                    unreal.log(f"Cleaned up temp file: {f}")
-    except Exception as cleanup_error:
-        unreal.log_warning(f"Cleanup warning: {cleanup_error}")
-    
-    unreal.log("╔" + "=" * 68 + "╗")
-    unreal.log("║" + " " * 20 + "Generation Complete!" + " " * 26 + "║")
-    unreal.log("╚" + "=" * 68 + "╝")
+    unreal.log("=" * 70)
+    unreal.log("Generation Complete!")
+    unreal.log("=" * 70)
     unreal.log(f"Output: {os.path.join(output_base_path, scenario_id)}")
 
 
 # Entry point when run as script
 if __name__ == '__main__':
-    # Get arguments from command line or use defaults
     if len(sys.argv) >= 3:
         spec_file = sys.argv[1]
         output_path = sys.argv[2]
     else:
-        # Default paths for testing
         spec_file = "D:/temp/directional_light_spec.json"
         output_path = unreal.Paths.project_content_dir() + "Scenarios"
     

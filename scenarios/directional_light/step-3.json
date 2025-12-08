@@ -113,7 +113,7 @@
         1.0
       ],
       "dynamicShadowDistance": 50000,
-      "numDynamicShadowCascades": 8
+      "numDynamicShadowCascades": 10
     },
     {
       "label": "Actor",

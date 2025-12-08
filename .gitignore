@@ -46,3 +46,8 @@ build/
 *_log.txt
 *.bmp
 
+# Response/debug files
+responses/
+temp_spec.json
+prompts/
+

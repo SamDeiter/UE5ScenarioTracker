@@ -67,6 +67,12 @@ def generate_scenario_step(scene_spec, scenario_id, step_id, output_base_path, p
     
     # Capture screenshot using Windows API (Epic-compliant)
     screenshot_path = os.path.join(images_dir, f"{step_id}.png")
+    
+    # CRITICAL: Wait for viewport to fully render before capture
+    import time
+    unreal.EditorLevelLibrary.editor_invalidate_viewports()
+    time.sleep(2.0)  # Give viewport time to render
+    
     success = capture_editor_window(screenshot_path)
     
     if not success:

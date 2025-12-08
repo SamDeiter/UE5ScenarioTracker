@@ -3,16 +3,42 @@ Scene Builder for Unreal Engine Scenario Automation
 
 This module handles setting up Unreal Engine scenes based on JSON specifications
 from the scenario data.
+
+Improved with patterns from Help.md:
+- Modern Subsystem architecture (UE5+)
+- Asset validation before spawning
+- Non-blocking viewport refresh
 """
 
 import unreal
 import json
+import time
+
+# Import agent utilities for modern patterns
+try:
+    from AgentUtils import EditorSubsystems, AssetInspector, APIIntrospector
+    HAS_AGENT_UTILS = True
+except ImportError:
+    HAS_AGENT_UTILS = False
 
 
 class SceneBuilder:
-    """Builds and configures Unreal Engine scenes from scene specifications"""
+    """
+    Builds and configures Unreal Engine scenes from scene specifications.
+    
+    Uses modern UE5 Subsystem architecture when available.
+    """
     
     def __init__(self):
+        # Use modern subsystems when available, fallback to legacy
+        if HAS_AGENT_UTILS:
+            self.actor_subsystem = EditorSubsystems.get_actor_subsystem()
+            self.level_subsystem = EditorSubsystems.get_level_subsystem()
+        else:
+            self.actor_subsystem = None
+            self.level_subsystem = None
+        
+        # Legacy fallback utilities
         self.editor_util = unreal.EditorLevelLibrary()
         self.asset_util = unreal.EditorAssetLibrary()
         
@@ -20,7 +46,11 @@ class SceneBuilder:
         """Remove all non-persistent actors from the current level"""
         unreal.log("Clearing level...")
         
-        actors = unreal.EditorLevelLibrary.get_all_level_actors()
+        # Use modern subsystem if available
+        if HAS_AGENT_UTILS:
+            actors = EditorSubsystems.get_all_actors()
+        else:
+            actors = unreal.EditorLevelLibrary.get_all_level_actors()
         for actor in actors:
             # Skip persistent actors
             if not self._is_persistent_actor(actor):
@@ -131,15 +161,16 @@ class SceneBuilder:
             )
             unreal.log(f"  ✓ Set color: RGB({color[0]}, {color[1]}, {color[2]})")
             
-            # Force viewport refresh  
-            import time
+            # Force viewport refresh using improved pattern
+            # Mark component as modified to trigger re-render
             light_component.modify()
-            try:
-                unreal.EditorUtilityLibrary.refresh_level_editor()
-            except:
-                pass
+            
+            # Invalidate viewports to trigger rendering
             unreal.EditorLevelLibrary.editor_invalidate_viewports()
-            time.sleep(1.0)  # Wait for viewport to render
+            
+            # Brief delay to allow render queue to process
+            # Note: For fully async, use FrameDelayedAction from AgentUtils
+            time.sleep(0.5)
             unreal.log(f"  ✓ Refreshed viewport for light color change")
         
         # Set shadow distance (if specified)

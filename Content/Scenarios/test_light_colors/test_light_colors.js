@@ -211,7 +211,7 @@ window.SCENARIOS['test_light_colors'] = {
               ]
             },
             "lightType": "Directional",
-            "intensity": 5.0,
+            "intensity": 50.0,
             "color": [
               1.0,
               0.0,
@@ -446,7 +446,7 @@ window.SCENARIOS['test_light_colors'] = {
               ]
             },
             "lightType": "Directional",
-            "intensity": 5.0,
+            "intensity": 50.0,
             "color": [
               0.0,
               1.0,
@@ -681,7 +681,7 @@ window.SCENARIOS['test_light_colors'] = {
               ]
             },
             "lightType": "Directional",
-            "intensity": 5.0,
+            "intensity": 50.0,
             "color": [
               0.0,
               0.0,

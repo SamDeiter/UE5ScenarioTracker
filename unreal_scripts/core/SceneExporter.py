@@ -2,11 +2,22 @@
 Scene Exporter for Unreal Engine Scenario Automation
 
 Exports current scene state to JSON for verification and debugging.
+
+Improved with patterns from Help.md:
+- Proper viewport camera state retrieval
+- Modern Subsystem usage
 """
 
 import unreal
 import json
 import os
+
+# Import agent utilities for modern patterns
+try:
+    from AgentUtils import EditorSubsystems
+    HAS_AGENT_UTILS = True
+except ImportError:
+    HAS_AGENT_UTILS = False
 
 
 class SceneExporter:
@@ -40,7 +51,7 @@ class SceneExporter:
             scene_data["image_path"] = image_path
         
         # Export all actors
-        actors = unreal.EditorLevelLibrary.get_all_level_actors()
+        actors = self._get_all_actors()
         for actor in actors:
             if not self._is_persistent_actor(actor):
                 actor_data = self._export_actor(actor)
@@ -61,6 +72,12 @@ class SceneExporter:
         unreal.log(f"  Lights: {len(scene_data['lighting'])}")
         
         return full_path, scene_data
+    
+    def _get_all_actors(self):
+        """Get all level actors using modern subsystem if available"""
+        if HAS_AGENT_UTILS:
+            return EditorSubsystems.get_all_actors()
+        return unreal.EditorLevelLibrary.get_all_level_actors()
     
     def _is_persistent_actor(self, actor):
         """Check if actor is persistent (should not be exported)"""
@@ -170,12 +187,37 @@ class SceneExporter:
         return data
     
     def _get_camera_state(self):
-        """Get current viewport camera state"""
-        # Note: Getting exact viewport camera state requires EditorViewportClient
-        # This is a simplified version
+        """
+        Get current viewport camera state.
+        
+        Uses modern LevelEditorSubsystem when available for accurate values.
+        """
+        try:
+            if HAS_AGENT_UTILS:
+                location, rotation = EditorSubsystems.get_viewport_camera_info()
+                return {
+                    "location": [location.x, location.y, location.z],
+                    "rotation": [rotation.pitch, rotation.yaw, rotation.roll],
+                    "fov": 90  # Default FOV, would need CameraComponent for actual
+                }
+            else:
+                # Try legacy method
+                subsystem = unreal.get_editor_subsystem(unreal.LevelEditorSubsystem)
+                if subsystem:
+                    location, rotation = subsystem.get_level_viewport_camera_info()
+                    return {
+                        "location": [location.x, location.y, location.z],
+                        "rotation": [rotation.pitch, rotation.yaw, rotation.roll],
+                        "fov": 90
+                    }
+        except Exception as e:
+            unreal.log_warning(f"Could not get camera state: {e}")
+        
+        # Fallback to placeholder
         return {
             "location": [0, 0, 0],
             "rotation": [0, 0, 0],
             "fov": 90,
-            "note": "Camera state from viewport (simplified)"
+            "note": "Camera state unavailable"
         }
+

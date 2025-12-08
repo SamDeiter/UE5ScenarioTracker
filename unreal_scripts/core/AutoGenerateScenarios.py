@@ -66,14 +66,14 @@ def generate_scenario_step(scene_spec, scenario_id, step_id, output_base_path, p
     os.makedirs(images_dir, exist_ok=True)
     
     # Capture screenshot using Windows API (Epic-compliant)
-    screenshot_path = os.path.join(images_dir, f"{step_id}.bmp")
+    screenshot_path = os.path.join(images_dir, f"{step_id}.png")
     success = capture_editor_window(screenshot_path)
     
     if not success:
         unreal.log_warning(f"Screenshot capture failed for {step_id}")
     
     # Calculate relative image path for web app
-    image_rel_path = f"{scenario_id}/images/{step_id}.bmp"
+    image_rel_path = f"{scenario_id}/images/{step_id}.png"
     
     # Export JSON
     full_path, scene_data = exporter.export_scene(output_dir, step_id, image_rel_path)

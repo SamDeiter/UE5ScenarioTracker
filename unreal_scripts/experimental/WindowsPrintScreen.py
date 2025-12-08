@@ -8,6 +8,8 @@ import os
 import time
 import ctypes
 from ctypes import wintypes
+import struct
+import zlib
 
 
 # Manual structure definitions for stripped-down ctypes in Unreal
@@ -27,7 +29,6 @@ class BITMAPINFOHEADER(ctypes.Structure):
     ]
 
 
-
 class WindowsPrintScreen:
     """Capture screenshots using Windows API - no external packages needed"""
     
@@ -36,9 +37,9 @@ class WindowsPrintScreen:
         self.user32 = ctypes.windll.user32
         self.gdi32 = ctypes.windll.gdi32
         
-    def capture_window(self, output_path, window_title="UEScenarioFactory - Unreal Editor"):
+    def capture_window(self, output_path, window_title="UEGeneralFactory - Unreal Editor"):
         """
-        Capture window using Windows API
+        Capture window using Windows PrintWindow API (handles DWM composition properly)
         
         Args:
             output_path (str): Full path to save PNG file
@@ -56,35 +57,43 @@ class WindowsPrintScreen:
                 unreal.log_warning(f"Could not find window: {window_title}")
                 return False
             
-            # Bring window to foreground
+            # Bring window to foreground and wait for it to render
             self.user32.SetForegroundWindow(hwnd)
             time.sleep(0.5)
             
-            # Get window dimensions
+            # Get client area dimensions (excludes window frame)
             rect = wintypes.RECT()
-            self.user32.GetWindowRect(hwnd, ctypes.byref(rect))
+            self.user32.GetClientRect(hwnd, ctypes.byref(rect))
             width = rect.right - rect.left
             height = rect.bottom - rect.top
             
+            unreal.log(f"Capture dimensions: {width}x{height}")
+            
             # Get device contexts
-            hwndDC = self.user32.GetWindowDC(hwnd)
+            hwndDC = self.user32.GetDC(hwnd)
             mfcDC = self.gdi32.CreateCompatibleDC(hwndDC)
             saveBitMap = self.gdi32.CreateCompatibleBitmap(hwndDC, width, height)
             
             # Select bitmap
-            self.gdi32.SelectObject(mfcDC, saveBitMap)
+            old_obj = self.gdi32.SelectObject(mfcDC, saveBitMap)
             
-            # Copy window bits to bitmap
-            self.gdi32.BitBlt(mfcDC, 0, 0, width, height, hwndDC, 0, 0, 0x00CC0020)  # SRCCOPY
+            # Use PrintWindow instead of BitBlt - this handles DWM composition correctly
+            # PW_CLIENTONLY = 0x1 - captures only client area, avoiding duplicates
+            result = self.user32.PrintWindow(hwnd, mfcDC, 0x1)
             
-            # Save bitmap as BMP first (Windows native format)
-            bmp_path = output_path.replace('.png', '.bmp')
-            self._save_bitmap(saveBitMap, width, height, bmp_path)
+            if not result:
+                unreal.log_warning("PrintWindow failed, falling back to BitBlt")
+                # Fallback to BitBlt if PrintWindow fails
+                self.gdi32.BitBlt(mfcDC, 0, 0, width, height, hwndDC, 0, 0, 0x00CC0020)
             
-            # Convert BMP to PNG using Unreal's texture system
-            self._convert_bmp_to_png(bmp_path, output_path)
+            # Get bitmap bits for PNG encoding
+            bitmap_data = self._get_bitmap_bits(saveBitMap, width, height)
+            
+            # Save as PNG
+            self._save_png(bitmap_data, width, height, output_path)
             
             # Cleanup
+            self.gdi32.SelectObject(mfcDC, old_obj)
             self.gdi32.DeleteObject(saveBitMap)
             self.gdi32.DeleteDC(mfcDC)
             self.user32.ReleaseDC(hwnd, hwndDC)
@@ -94,12 +103,13 @@ class WindowsPrintScreen:
             
         except Exception as e:
             unreal.log_error(f"Screenshot failed: {e}")
+            import traceback
+            unreal.log_error(traceback.format_exc())
             return False
     
-    def _save_bitmap(self, hBitmap, width, height, filepath):
-        """Save bitmap to BMP file using Windows API"""
+    def _get_bitmap_bits(self, hBitmap, width, height):
+        """Extract raw bitmap data from HBITMAP"""
         
-        # BMP file header setup
         bi = BITMAPINFOHEADER()
         bi.biSize = ctypes.sizeof(BITMAPINFOHEADER)
         bi.biWidth = width
@@ -121,50 +131,62 @@ class WindowsPrintScreen:
         # Get bits
         hDC = self.user32.GetDC(None)
         self.gdi32.GetDIBits(hDC, hBitmap, 0, height, lpbitmap, ctypes.byref(bi), 0)
-        
-        # Write to file
-        with open(filepath, 'wb') as f:
-            # BMP file header
-            f.write(b'BM')
-            file_size = 54 + dwBmpSize
-            f.write(file_size.to_bytes(4, 'little'))
-            f.write(b'\x00\x00\x00\x00')  # Reserved
-            f.write((54).to_bytes(4, 'little'))  # Offset to pixel data
-            
-            # BMP info header
-            f.write(bi)
-            
-            # Pixel data
-            f.write(lpbitmap.raw)
-        
         self.user32.ReleaseDC(None, hDC)
+        
+        return lpbitmap.raw
     
-    def _convert_bmp_to_png(self, bmp_path, png_path):
-        """Convert BMP to PNG using Unreal's asset system"""
-        try:
-            # Import BMP as texture
-            task = unreal.AssetImportTask()
-            task.filename = bmp_path
-            task.destination_path = "/Game/Temp"
-            task.automated = True
-            task.save = False
-            
-            unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
-            
-            # If import successful, export as PNG
-            if task.imported_object_paths:
-                # Use Unreal's texture export
-                # For now, just use the BMP (can enhance later if PNG is required)
-                import shutil
-                # Note: BMP to PNG conversion would require PIL or similar
-                # For Epic licensing, keeping as BMP or using Unreal's export is safest
-                unreal.log("Screenshot saved as BMP (PNG conversion requires external libs)")
-                if png_path.endswith('.png'):
-                    # Just copy BMP with .png extension for now
-                    shutil.copy(bmp_path, png_path.replace('.png', '.bmp'))
-            
-        except Exception as e:
-            unreal.log_warning(f"BMP conversion skipped: {e}")
+    def _save_png(self, bitmap_data, width, height, filepath):
+        """
+        Save bitmap data as PNG using Python standard library only
+        Uses struct for binary packing and zlib for compression
+        """
+        
+        # Convert BGRA to RGBA and flip vertically (BMP is bottom-up)
+        rgba_data = bytearray()
+        bytes_per_row = width * 4
+        
+        for y in range(height - 1, -1, -1):  # Flip vertically
+            row_start = y * bytes_per_row
+            for x in range(width):
+                pixel_start = row_start + (x * 4)
+                b = bitmap_data[pixel_start]
+                g = bitmap_data[pixel_start + 1]
+                r = bitmap_data[pixel_start + 2]
+                a = bitmap_data[pixel_start + 3]
+                
+                # PNG scanlines must start with filter type byte (0 = no filter)
+                if x == 0:
+                    rgba_data.append(0)
+                
+                # Append RGBA
+                rgba_data.extend([r, g, b, a])
+        
+        # PNG signature
+        png_signature = b'\x89PNG\r\n\x1a\n'
+        
+        # IHDR chunk
+        ihdr_data = struct.pack('>IIBBBBB', width, height, 8, 6, 0, 0, 0)
+        ihdr_chunk = self._make_png_chunk(b'IHDR', ihdr_data)
+        
+        # IDAT chunk (compressed image data)
+        compressed_data = zlib.compress(bytes(rgba_data), 9)
+        idat_chunk = self._make_png_chunk(b'IDAT', compressed_data)
+        
+        # IEND chunk
+        iend_chunk = self._make_png_chunk(b'IEND', b'')
+        
+        # Write PNG file
+        with open(filepath, 'wb') as f:
+            f.write(png_signature)
+            f.write(ihdr_chunk)
+            f.write(idat_chunk)
+            f.write(iend_chunk)
+    
+    def _make_png_chunk(self, chunk_type, data):
+        """Create a PNG chunk with length, type, data, and CRC"""
+        chunk_data = chunk_type + data
+        crc = zlib.crc32(chunk_data) & 0xffffffff
+        return struct.pack('>I', len(data)) + chunk_data + struct.pack('>I', crc)
 
 
 # Simple function for easy use
@@ -173,7 +195,7 @@ def capture_editor_window(output_path):
     Capture Unreal Editor window - simple interface
     
     Args:
-        output_path (str): Full path to save screenshot
+        output_path (str): Full path to save screenshot (PNG format)
         
     Returns:
         bool: Success status

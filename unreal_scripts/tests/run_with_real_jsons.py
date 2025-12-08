@@ -64,6 +64,15 @@ for step_id in steps:
     with open(json_path, 'r') as f:
         scene_spec = json.load(f)
     
+    # DEBUG: Print lighting properties
+    print(f"\n📋 DEBUG: Properties for {step_id}:")
+    for light in scene_spec.get('lighting', []):
+        print(f"  Light type: {light.get('type')}")
+        print(f"  Properties found in JSON:")
+        for key in ['intensity', 'color', 'lightColor', 'dynamicShadowDistance', 'numDynamicShadowCascades']:
+            if key in light:
+                print(f"    - {key}: {light[key]}")
+    
     # Set up the scene (this calls clear_level internally)
     scene_builder.setup_scene(scene_spec)
     

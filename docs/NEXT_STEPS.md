@@ -58,23 +58,43 @@ This plan outlines the next development phase for the UE5ScenarioTracker applica
 
 ## Phase 2: Image Generation & Integration
 
-### 2.1 Unreal Engine Screenshot Automation
+### 2.1 Automation Feasibility Study (CRITICAL)
 
-**Goal**: Generate UE5 editor screenshots for each scenario step using the Unreal Python automation pipeline.
+**Goal**: Verify that the Unreal Python API allows for sufficient control over the Editor UI (opening specific windows, panels, and modifying tool settings) before committing to full automation. **We have not yet verified if we can programmatically manipulate these UI elements.**
 
 #### Tasks
 
-- [ ] Review existing Unreal automation scripts in your repository
-- [ ] Create/update Python script to:
-  - Load scenario specifications from JSON
-  - Set up scenes based on `sceneSetup` data
-  - Capture screenshots from specified camera positions
-  - Save images to `assets/generated/` directory
-- [ ] Generate images for `directional_light` scenario (pilot test)
-- [ ] Verify images display correctly in the web application
-- [ ] Batch generate images for all 21 scenarios
+- [ ] **Research**: Investigate Unreal Python API capabilities for:
+  - Opening/Closing specific Editor tabs and windows (e.g., Detail panel, World Settings, Lightmixer).
+  - **Details Panel**: Automating selection and ensuring specific properties/settings are visible (expanded and in view) for screenshots.
+  - **Complex Editors**: Automating interactions within the **Material Editor** and **Animation Blueprint** editor (e.g., selecting nodes, changing pin values).
+  - Modifying tool-specific settings dynamically.
+- [ ] **Prototype**: Run feasibility test script:
+  - Execute `unreal_scripts/tests/test_ui_automation.py` in UE5.6
+  - Follow instructions in `unreal_scripts/tests/PHASE_2.1_QUICKSTART.md`
+  - Document which capabilities are available vs. limited
+- [ ] **Pilot Test**: Generate 4 test screenshots:
+  - Run `unreal_scripts/tests/pilot_test_generator.py`
+  - Verify 4 distinct images are created with different camera angles/UI states
+- [ ] **Evaluate**: Determine if the current `sceneSetup` JSON structure supports the required API calls.
 
-### 2.2 Image Asset Management
+### 2.2 Unreal Engine Screenshot Automation (Conditional)
+
+**Goal**: Assuming Phase 2.1 supports it, implement the full automation pipeline.
+
+#### Tasks
+
+- [ ] Create/update Python script to:
+  - Load scenario specifications from JSON.
+  - Set up scenes based on validated `sceneSetup` data.
+  - Capture screenshots from specified camera positions.
+  - Save images to `assets/generated/` directory.
+- [ ] Generate images for `directional_light` scenario (pilot test).
+  - **Requirement**: Ensure at least 4 distinct screenshots are generated (different camera angles or scene states).
+- [ ] Verify images display correctly in the web application.
+- [ ] Batch generate images for all 21 scenarios.
+
+### 2.3 Image Asset Management
 
 - [ ] Ensure all generated images are in `assets/generated/`
 - [ ] Verify image paths in scenario files match actual files

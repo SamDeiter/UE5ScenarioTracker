@@ -32,6 +32,7 @@ node tools/generateScenarioAssets.js directional_light
 
 ### From Unreal Editor (Manual)
 
+
 ```python
 # In Unreal Python console
 import AutoGenerateScenarios

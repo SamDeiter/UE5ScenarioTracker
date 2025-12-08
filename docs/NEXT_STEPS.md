@@ -17,6 +17,9 @@ This plan outlines the next development phase for the UE5ScenarioTracker applica
 
 ### 1.1 Activate Existing Scenarios
 
+> [!NOTE]
+> **REVISIT AFTER PHASE 2**: Complete Phase 2 automation pipeline with the `directional_light` pilot scenario first. Once the full workflow is proven (scene setup → screenshot → export), come back and scale to all 21 scenarios.
+
 **Goal**: Add the 21 generated scenarios back to the application using the new manifest system.
 
 #### Tasks

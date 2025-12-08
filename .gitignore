@@ -39,3 +39,8 @@ scenarios_backup*/
 lms-build/
 *.zip
 build_log.txt
+
+# Build directory (generated files)
+build/
+*.spec.json
+*_log.txt

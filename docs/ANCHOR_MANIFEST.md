@@ -1,5 +1,9 @@
 # ANCHOR MANIFEST
 
+## Agent Collaboration
+<!-- anchor: agent-collaboration-guide -->
+docs/AGENTS.md
+
 ## Repository Structure
 <!-- anchor: repo-structure-overview -->
 docs/REPOSITORY_STRUCTURE.md

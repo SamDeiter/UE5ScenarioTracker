@@ -36,10 +36,11 @@ class WindowsPrintScreen:
         # Load Windows DLLs
         self.user32 = ctypes.windll.user32
         self.gdi32 = ctypes.windll.gdi32
+        self.dwmapi = ctypes.windll.dwmapi
         
-    def capture_window(self, output_path, window_title="UEGeneralFactory - Unreal Editor"):
+    def capture_window(self, output_path, window_title="UEScenarioFactory - Unreal Editor"):
         """
-        Capture window using Windows PrintWindow API (handles DWM composition properly)
+        Capture full window using Windows API with proper DWM flush
         
         Args:
             output_path (str): Full path to save PNG file
@@ -57,33 +58,44 @@ class WindowsPrintScreen:
                 unreal.log_warning(f"Could not find window: {window_title}")
                 return False
             
-            # Bring window to foreground and wait for it to render
+            # Make sure window is active and fully rendered
             self.user32.SetForegroundWindow(hwnd)
-            time.sleep(0.5)
+            self.user32.BringWindowToTop(hwnd)
+            time.sleep(0.2)
             
-            # Get client area dimensions (excludes window frame)
+            # Force DWM to flush and complete all rendering
+            try:
+                self.dwmapi.DwmFlush()
+            except:
+                pass  # DwmFlush may not be available on all systems
+            
+            time.sleep(0.3)
+            
+            # Get window dimensions
             rect = wintypes.RECT()
-            self.user32.GetClientRect(hwnd, ctypes.byref(rect))
+            self.user32.GetWindowRect(hwnd, ctypes.byref(rect))
             width = rect.right - rect.left
             height = rect.bottom - rect.top
             
-            unreal.log(f"Capture dimensions: {width}x{height}")
+            unreal.log(f"Window dimensions: {width}x{height}")
             
-            # Get device contexts
+            # Get window DC (not client DC - we want the full window)
             hwndDC = self.user32.GetDC(hwnd)
+            
+            # Create compatible DC and bitmap
             mfcDC = self.gdi32.CreateCompatibleDC(hwndDC)
             saveBitMap = self.gdi32.CreateCompatibleBitmap(hwndDC, width, height)
             
-            # Select bitmap
+            # Select bitmap into DC
             old_obj = self.gdi32.SelectObject(mfcDC, saveBitMap)
             
-            # Use PrintWindow instead of BitBlt - this handles DWM composition correctly
-            # PW_CLIENTONLY = 0x1 - captures only client area, avoiding duplicates
-            result = self.user32.PrintWindow(hwnd, mfcDC, 0x1)
+            # Use PrintWindow with rendered content flag
+            PW_RENDERFULLCONTENT = 0x00000002
+            result = self.user32.PrintWindow(hwnd, mfcDC, PW_RENDERFULLCONTENT)
             
             if not result:
-                unreal.log_warning("PrintWindow failed, falling back to BitBlt")
-                # Fallback to BitBlt if PrintWindow fails
+                unreal.log_warning("PrintWindow failed, trying BitBlt fallback")
+                # Fallback to BitBlt with source copy
                 self.gdi32.BitBlt(mfcDC, 0, 0, width, height, hwndDC, 0, 0, 0x00CC0020)
             
             # Get bitmap bits for PNG encoding
@@ -146,6 +158,9 @@ class WindowsPrintScreen:
         bytes_per_row = width * 4
         
         for y in range(height - 1, -1, -1):  # Flip vertically
+            # PNG scanlines must start with filter type byte (0 = no filter)
+            rgba_data.append(0)
+            
             row_start = y * bytes_per_row
             for x in range(width):
                 pixel_start = row_start + (x * 4)
@@ -153,10 +168,6 @@ class WindowsPrintScreen:
                 g = bitmap_data[pixel_start + 1]
                 r = bitmap_data[pixel_start + 2]
                 a = bitmap_data[pixel_start + 3]
-                
-                # PNG scanlines must start with filter type byte (0 = no filter)
-                if x == 0:
-                    rgba_data.append(0)
                 
                 # Append RGBA
                 rgba_data.extend([r, g, b, a])

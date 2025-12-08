@@ -15,13 +15,28 @@ import os
 class PilotTestGenerator:
     def __init__(self, output_dir="D:/temp/pilot_test"):
         self.output_dir = output_dir
-        self.automation_lib = unreal.AutomationLibrary()
         self.level_lib = unreal.EditorLevelLibrary()
         
         # Create output directory
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
             print(f"Created output directory: {output_dir}")
+    
+    def _capture_screenshot(self, filename):
+        """Capture screenshot using PIL (PrintScreen approach - NO DELAYS)"""
+        try:
+            from PIL import ImageGrab
+            
+            full_path = os.path.join(self.output_dir, filename)
+            screenshot = ImageGrab.grab()
+            screenshot.save(full_path, 'PNG')
+            
+            unreal.log(f"  ✓ Saved: {filename}")
+            return full_path
+            
+        except ImportError:
+            unreal.log_error("PIL/Pillow not available - cannot capture screenshots")
+            return None
     
     def generate_four_screenshots(self):
         """Generate 4 distinct screenshots for the pilot test"""
@@ -54,9 +69,7 @@ class PilotTestGenerator:
             # Set camera to wide angle
             # (This would need actual camera positioning logic)
             
-            output_path = os.path.join(self.output_dir, "step1_wide_view.png")
-            self.automation_lib.take_high_res_screenshot(1920, 1080, output_path)
-            print(f"  ✓ Saved: step1_wide_view.png")
+            self._capture_screenshot("step1_wide_view.png")
             
         except Exception as e:
             print(f"  ✗ Error: {str(e)}")
@@ -80,12 +93,8 @@ class PilotTestGenerator:
                 self.level_lib.set_selected_level_actors([directional_light])
                 print(f"  → Selected: {directional_light.get_name()}")
                 
-                # Give UI time to update
-                unreal.SystemLibrary.delay(unreal.EditorLevelLibrary, 0.5)
-                
-                output_path = os.path.join(self.output_dir, "step2_details_panel.png")
-                self.automation_lib.take_high_res_screenshot(1920, 1080, output_path)
-                print(f"  ✓ Saved: step2_details_panel.png")
+                # Screenshot captures current UI state
+                self._capture_screenshot("step2_details_panel.png")
             else:
                 print("  ⚠ No directional light found in scene")
                 
@@ -100,9 +109,7 @@ class PilotTestGenerator:
             # This would set a different camera position
             # For now, just take another screenshot
             
-            output_path = os.path.join(self.output_dir, "step3_alternate_angle.png")
-            self.automation_lib.take_high_res_screenshot(1920, 1080, output_path)
-            print(f"  ✓ Saved: step3_alternate_angle.png")
+            self._capture_screenshot("step3_alternate_angle.png")
             
         except Exception as e:
             print(f"  ✗ Error: {str(e)}")
@@ -115,9 +122,7 @@ class PilotTestGenerator:
             # This would open a specific UI panel
             # For now, just take another screenshot
             
-            output_path = os.path.join(self.output_dir, "step4_ui_overlay.png")
-            self.automation_lib.take_high_res_screenshot(1920, 1080, output_path)
-            print(f"  ✓ Saved: step4_ui_overlay.png")
+            self._capture_screenshot("step4_ui_overlay.png")
             
         except Exception as e:
             print(f"  ✗ Error: {str(e)}")

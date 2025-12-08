@@ -12,7 +12,7 @@ import time
 
 # Import our modules
 from SceneBuilder import SceneBuilder
-from SuperSimpleScreenshot import SuperSimpleScreenshot
+from SuperSimpleScreenshot import SuperSimpleScreenshot  # Fast PrintScreen approach
 from SceneExporter import SceneExporter
 
 

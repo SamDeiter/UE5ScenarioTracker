@@ -107,12 +107,12 @@
         ]
       },
       "lightType": "Directional",
-      "intensity": 3.0,
       "color": [
         1.0,
         1.0,
         1.0
-      ]
+      ],
+      "dynamicShadowDistance": 50000
     },
     {
       "label": "Actor",

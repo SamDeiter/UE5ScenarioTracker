@@ -12,13 +12,14 @@ import os
 class SceneExporter:
     """Exports Unreal Engine scene configuration to JSON"""
     
-    def export_scene(self, output_path, filename):
+    def export_scene(self, output_path, filename, image_path=None):
         """
         Export current scene state to JSON file
         
         Args:
             output_path (str): Directory to save JSON
             filename (str): Base filename (without extension)
+            image_path (str, optional): Relative path to the screenshot for this step
             
         Returns:
             str: Full path to exported JSON file
@@ -34,6 +35,9 @@ class SceneExporter:
             "camera": self._get_camera_state(),
             "level": unreal.EditorLevelLibrary.get_editor_world().get_name()
         }
+
+        if image_path:
+            scene_data["image_path"] = image_path
         
         # Export all actors
         actors = unreal.EditorLevelLibrary.get_all_level_actors()
@@ -56,7 +60,7 @@ class SceneExporter:
         unreal.log(f"  Actors: {len(scene_data['actors'])}")
         unreal.log(f"  Lights: {len(scene_data['lighting'])}")
         
-        return full_path
+        return full_path, scene_data
     
     def _is_persistent_actor(self, actor):
         """Check if actor is persistent (should not be exported)"""

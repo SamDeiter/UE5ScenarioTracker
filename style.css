@@ -69,19 +69,7 @@ body {
     animation: pulse-red-animation 1.5s infinite;
 }
 
-@keyframes pulse-red-animation {
 
-    0%,
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 0.8;
-        transform: scale(1.05);
-    }
-}
 
 /* Custom styles for code blocks inside prompts/feedback */
 code {

@@ -11,125 +11,121 @@ window.SCENARIOS['directional_light'] = {
             skill: 'lighting',
             title: 'Diagnosing the Shadow Cutoff',
             sceneSetup: {
-            "level": "ScenarioCapture_Level",
-            "actors": [
-                        {
-                                    "id": "directional_light",
-                                    "type": "DirectionalLight",
-                                    "transform": {
-                                                "location": [
-                                                            0,
-                                                            0,
-                                                            500
-                                                ],
-                                                "rotation": [
-                                                            -45,
-                                                            0,
-                                                            0
-                                                ],
-                                                "scale": [
-                                                            1,
-                                                            1,
-                                                            1
-                                                ]
-                                    },
-                                    "intensity": 3.0,
-                                    "lightColor": [
-                                                1.0,
-                                                0.95,
-                                                0.9
-                                    ],
-                                    "selected": true
+                "level": "ScenarioCapture_Level",
+                "actors": [
+                    {
+                        "id": "directional_light",
+                        "type": "DirectionalLight",
+                        "transform": {
+                            "location": [
+                                0,
+                                0,
+                                500
+                            ],
+                            "rotation": [
+                                -45,
+                                0,
+                                0
+                            ],
+                            "scale": [
+                                1,
+                                1,
+                                1
+                            ]
                         },
-                        {
-                                    "id": "landscape",
-                                    "type": "Landscape",
-                                    "material": "/Game/ScenarioAssets/Materials/M_Grass_Simple",
-                                    "transform": {
-                                                "location": [
-                                                            0,
-                                                            0,
-                                                            0
-                                                ],
-                                                "rotation": [
-                                                            0,
-                                                            0,
-                                                            0
-                                                ],
-                                                "scale": [
-                                                            100,
-                                                            100,
-                                                            100
-                                                ]
-                                    },
-                                    "terrainSize": [
-                                                127,
-                                                127
-                                    ]
+                        "intensity": 3.0,
+                        "lightColor": [
+                            1.0,
+                            0.95,
+                            0.9
+                        ],
+                        "selected": true
+                    },
+                    {
+                        "id": "landscape",
+                        "type": "Landscape",
+                        "material": "/Game/ScenarioAssets/Materials/M_Grass_Simple",
+                        "transform": {
+                            "location": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "rotation": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "scale": [
+                                100,
+                                100,
+                                100
+                            ]
                         },
-                        {
-                                    "id": "sky_sphere",
-                                    "type": "BP_Sky_Sphere",
-                                    "transform": {
-                                                "location": [
-                                                            0,
-                                                            0,
-                                                            0
-                                                ],
-                                                "rotation": [
-                                                            0,
-                                                            0,
-                                                            0
-                                                ],
-                                                "scale": [
-                                                            1,
-                                                            1,
-                                                            1
-                                                ]
-                                    }
+                        "terrainSize": [
+                            127,
+                            127
+                        ]
+                    },
+                    {
+                        "id": "sky_sphere",
+                        "type": "BP_Sky_Sphere",
+                        "transform": {
+                            "location": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "rotation": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "scale": [
+                                1,
+                                1,
+                                1
+                            ]
                         }
-            ],
-            "lighting": [
-                        {
-                                    "type": "SkyLight",
-                                    "intensity": 1.0,
-                                    "color": [
-                                                0.8,
-                                                0.9,
-                                                1.0
-                                    ]
-                        }
-            ],
-            "camera": {
-                        "location": [
-                                    0,
-                                    -800,
-                                    200
-                        ],
-                        "rotation": [
-                                    -10,
-                                    0,
-                                    0
-                        ],
-                        "fov": 90
+                    }
+                ],
+                "lighting": [
+                    {
+                        "type": "SkyLight",
+                        "intensity": 1.0,
+                        "color": [
+                            0.8,
+                            0.9,
+                            1.0
+                        ]
+                    }
+                ],
+                "camera": {
+                    "location": [
+                        0,
+                        -800,
+                        200
+                    ],
+                    "rotation": [
+                        -10,
+                        0,
+                        0
+                    ],
+                    "fov": 90
+                },
+                "postProcess": {
+                    "exposureCompensation": 0,
+                    "autoExposure": true
+                },
+                "ui": {
+                    "hideUI": true,
+                    "showGrid": false,
+                    "showOutliner": false
+                },
+                "uiTemplate": "viewport_only",
+                "notes": "Show shadow cutoff at ~50m distance. Shadows should be visible close to camera but disappear abruptly."
             },
-            "postProcess": {
-                        "exposureCompensation": 0,
-                        "autoExposure": true
-            },
-            "ui": {
-                        "hideUI": true,
-                        "showGrid": false,
-                        "showOutliner": false
-            },
-            "uiTemplate": "viewport_only",
-            "notes": "Show shadow cutoff at ~50m distance. Shadows should be visible close to camera but disappear abruptly."
-},
-            image: {
-                url: "assets/generated/directional_light_step-1.png",
-                alt: "UE5 Viewport showing shadow cutoff",
-                prompt: "Unreal Engine 5 editor interface, Viewport showing a directional light selected in the outliner. The shadows in the scene cut off abruptly at a short distance. Dark UI theme."
-            },
+            image_path: "directional_light/images/step-1.bmp",
             prompt: "<p>You observe that shadows from the Directional Light disappear completely after about 50 meters. You select the Directional Light in the Outliner.</p><strong>Which setting controls the maximum range of dynamic shadows for a Movable light?</strong>",
             choices: [
                 {
@@ -156,120 +152,121 @@ window.SCENARIOS['directional_light'] = {
             skill: 'lighting',
             title: 'Fixing Low Resolution Shadows',
             sceneSetup: {
-            "level": "ScenarioCapture_Level",
-            "actors": [
-                        {
-                                    "id": "directional_light",
-                                    "type": "DirectionalLight",
-                                    "transform": {
-                                                "location": [
-                                                            0,
-                                                            0,
-                                                            500
-                                                ],
-                                                "rotation": [
-                                                            -45,
-                                                            0,
-                                                            0
-                                                ],
-                                                "scale": [
-                                                            1,
-                                                            1,
-                                                            1
-                                                ]
-                                    },
-                                    "intensity": 3.0,
-                                    "lightColor": [
-                                                1.0,
-                                                0.95,
-                                                0.9
-                                    ],
-                                    "dynamicShadowDistance": 50000,
-                                    "selected": false
+                "level": "ScenarioCapture_Level",
+                "actors": [
+                    {
+                        "id": "directional_light",
+                        "type": "DirectionalLight",
+                        "transform": {
+                            "location": [
+                                0,
+                                0,
+                                500
+                            ],
+                            "rotation": [
+                                -45,
+                                0,
+                                0
+                            ],
+                            "scale": [
+                                1,
+                                1,
+                                1
+                            ]
                         },
-                        {
-                                    "id": "landscape",
-                                    "type": "Landscape",
-                                    "material": "/Game/ScenarioAssets/Materials/M_Grass_Simple",
-                                    "transform": {
-                                                "location": [
-                                                            0,
-                                                            0,
-                                                            0
-                                                ],
-                                                "rotation": [
-                                                            0,
-                                                            0,
-                                                            0
-                                                ],
-                                                "scale": [
-                                                            100,
-                                                            100,
-                                                            100
-                                                ]
-                                    },
-                                    "terrainSize": [
-                                                127,
-                                                127
-                                    ]
+                        "intensity": 3.0,
+                        "lightColor": [
+                            1.0,
+                            0.95,
+                            0.9
+                        ],
+                        "dynamicShadowDistance": 50000,
+                        "selected": false
+                    },
+                    {
+                        "id": "landscape",
+                        "type": "Landscape",
+                        "material": "/Game/ScenarioAssets/Materials/M_Grass_Simple",
+                        "transform": {
+                            "location": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "rotation": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "scale": [
+                                100,
+                                100,
+                                100
+                            ]
                         },
-                        {
-                                    "id": "sky_sphere",
-                                    "type": "BP_Sky_Sphere",
-                                    "transform": {
-                                                "location": [
-                                                            0,
-                                                            0,
-                                                            0
-                                                ],
-                                                "rotation": [
-                                                            0,
-                                                            0,
-                                                            0
-                                                ],
-                                                "scale": [
-                                                            1,
-                                                            1,
-                                                            1
-                                                ]
-                                    }
+                        "terrainSize": [
+                            127,
+                            127
+                        ]
+                    },
+                    {
+                        "id": "sky_sphere",
+                        "type": "BP_Sky_Sphere",
+                        "transform": {
+                            "location": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "rotation": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "scale": [
+                                1,
+                                1,
+                                1
+                            ]
                         }
-            ],
-            "lighting": [
-                        {
-                                    "type": "SkyLight",
-                                    "intensity": 1.0,
-                                    "color": [
-                                                0.8,
-                                                0.9,
-                                                1.0
-                                    ]
-                        }
-            ],
-            "camera": {
-                        "location": [
-                                    0,
-                                    -800,
-                                    200
-                        ],
-                        "rotation": [
-                                    -10,
-                                    0,
-                                    0
-                        ],
-                        "fov": 90
+                    }
+                ],
+                "lighting": [
+                    {
+                        "type": "SkyLight",
+                        "intensity": 1.0,
+                        "color": [
+                            0.8,
+                            0.9,
+                            1.0
+                        ]
+                    }
+                ],
+                "camera": {
+                    "location": [
+                        0,
+                        -800,
+                        200
+                    ],
+                    "rotation": [
+                        -10,
+                        0,
+                        0
+                    ],
+                    "fov": 90
+                },
+                "postProcess": {
+                    "exposureCompensation": 0,
+                    "autoExposure": true
+                },
+                "ui": {
+                    "hideUI": true,
+                    "showGrid": false
+                },
+                "uiTemplate": "viewport_only",
+                "notes": "Shadows extended to 500m but appearing pixelated/blocky in distance. Need to show low resolution artifacts."
             },
-            "postProcess": {
-                        "exposureCompensation": 0,
-                        "autoExposure": true
-            },
-            "ui": {
-                        "hideUI": true,
-                        "showGrid": false
-            },
-            "uiTemplate": "viewport_only",
-            "notes": "Shadows extended to 500m but appearing pixelated/blocky in distance. Need to show low resolution artifacts."
-},
+            image_path: "directional_light/images/step-2.bmp",
             prompt: "<p>You increased the distance to 500m, but now the distant shadows look blocky and pixelated because the same shadow map resolution is stretched over a larger area.</p><strong>How do you restore shadow sharpness?</strong>",
             choices: [
                 {
@@ -296,122 +293,123 @@ window.SCENARIOS['directional_light'] = {
             skill: 'lighting',
             title: 'Final Verification',
             sceneSetup: {
-            "level": "ScenarioCapture_Level",
-            "actors": [
-                        {
-                                    "id": "directional_light",
-                                    "type": "DirectionalLight",
-                                    "transform": {
-                                                "location": [
-                                                            0,
-                                                            0,
-                                                            500
-                                                ],
-                                                "rotation": [
-                                                            -45,
-                                                            0,
-                                                            0
-                                                ],
-                                                "scale": [
-                                                            1,
-                                                            1,
-                                                            1
-                                                ]
-                                    },
-                                    "intensity": 3.0,
-                                    "lightColor": [
-                                                1.0,
-                                                0.95,
-                                                0.9
-                                    ],
-                                    "dynamicShadowDistance": 50000,
-                                    "numDynamicShadowCascades": 8,
-                                    "selected": false
+                "level": "ScenarioCapture_Level",
+                "actors": [
+                    {
+                        "id": "directional_light",
+                        "type": "DirectionalLight",
+                        "transform": {
+                            "location": [
+                                0,
+                                0,
+                                500
+                            ],
+                            "rotation": [
+                                -45,
+                                0,
+                                0
+                            ],
+                            "scale": [
+                                1,
+                                1,
+                                1
+                            ]
                         },
-                        {
-                                    "id": "landscape",
-                                    "type": "Landscape",
-                                    "material": "/Game/ScenarioAssets/Materials/M_Grass_Simple",
-                                    "transform": {
-                                                "location": [
-                                                            0,
-                                                            0,
-                                                            0
-                                                ],
-                                                "rotation": [
-                                                            0,
-                                                            0,
-                                                            0
-                                                ],
-                                                "scale": [
-                                                            100,
-                                                            100,
-                                                            100
-                                                ]
-                                    },
-                                    "terrainSize": [
-                                                127,
-                                                127
-                                    ]
+                        "intensity": 3.0,
+                        "lightColor": [
+                            1.0,
+                            0.95,
+                            0.9
+                        ],
+                        "dynamicShadowDistance": 50000,
+                        "numDynamicShadowCascades": 8,
+                        "selected": false
+                    },
+                    {
+                        "id": "landscape",
+                        "type": "Landscape",
+                        "material": "/Game/ScenarioAssets/Materials/M_Grass_Simple",
+                        "transform": {
+                            "location": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "rotation": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "scale": [
+                                100,
+                                100,
+                                100
+                            ]
                         },
-                        {
-                                    "id": "sky_sphere",
-                                    "type": "BP_Sky_Sphere",
-                                    "transform": {
-                                                "location": [
-                                                            0,
-                                                            0,
-                                                            0
-                                                ],
-                                                "rotation": [
-                                                            0,
-                                                            0,
-                                                            0
-                                                ],
-                                                "scale": [
-                                                            1,
-                                                            1,
-                                                            1
-                                                ]
-                                    }
+                        "terrainSize": [
+                            127,
+                            127
+                        ]
+                    },
+                    {
+                        "id": "sky_sphere",
+                        "type": "BP_Sky_Sphere",
+                        "transform": {
+                            "location": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "rotation": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "scale": [
+                                1,
+                                1,
+                                1
+                            ]
                         }
-            ],
-            "lighting": [
-                        {
-                                    "type": "SkyLight",
-                                    "intensity": 1.0,
-                                    "color": [
-                                                0.8,
-                                                0.9,
-                                                1.0
-                                    ]
-                        }
-            ],
-            "camera": {
-                        "location": [
-                                    0,
-                                    -800,
-                                    200
-                        ],
-                        "rotation": [
-                                    -10,
-                                    0,
-                                    0
-                        ],
-                        "fov": 90
+                    }
+                ],
+                "lighting": [
+                    {
+                        "type": "SkyLight",
+                        "intensity": 1.0,
+                        "color": [
+                            0.8,
+                            0.9,
+                            1.0
+                        ]
+                    }
+                ],
+                "camera": {
+                    "location": [
+                        0,
+                        -800,
+                        200
+                    ],
+                    "rotation": [
+                        -10,
+                        0,
+                        0
+                    ],
+                    "fov": 90
+                },
+                "postProcess": {
+                    "exposureCompensation": 0,
+                    "autoExposure": true
+                },
+                "ui": {
+                    "hideUI": true,
+                    "showGrid": false,
+                    "showPIEButton": true
+                },
+                "uiTemplate": "viewport_only",
+                "notes": "Shadows clean and extended to full 500m. Quality maintained throughout range."
             },
-            "postProcess": {
-                        "exposureCompensation": 0,
-                        "autoExposure": true
-            },
-            "ui": {
-                        "hideUI": true,
-                        "showGrid": false,
-                        "showPIEButton": true
-            },
-            "uiTemplate": "viewport_only",
-            "notes": "Shadows clean and extended to full 500m. Quality maintained throughout range."
-},
+            image_path: "directional_light/images/step-3.bmp",
             prompt: "<p>The shadows look correct in the viewport.</p><strong>What is the final step to ensure the fix works in-game?</strong>",
             choices: [
                 {
@@ -432,120 +430,121 @@ window.SCENARIOS['directional_light'] = {
             skill: 'lighting',
             title: 'Scenario Complete',
             sceneSetup: {
-            "level": "ScenarioCapture_Level",
-            "actors": [
-                        {
-                                    "id": "directional_light",
-                                    "type": "DirectionalLight",
-                                    "transform": {
-                                                "location": [
-                                                            0,
-                                                            0,
-                                                            500
-                                                ],
-                                                "rotation": [
-                                                            -45,
-                                                            0,
-                                                            0
-                                                ],
-                                                "scale": [
-                                                            1,
-                                                            1,
-                                                            1
-                                                ]
-                                    },
-                                    "intensity": 3.0,
-                                    "lightColor": [
-                                                1.0,
-                                                0.95,
-                                                0.9
-                                    ],
-                                    "dynamicShadowDistance": 50000,
-                                    "numDynamicShadowCascades": 8
+                "level": "ScenarioCapture_Level",
+                "actors": [
+                    {
+                        "id": "directional_light",
+                        "type": "DirectionalLight",
+                        "transform": {
+                            "location": [
+                                0,
+                                0,
+                                500
+                            ],
+                            "rotation": [
+                                -45,
+                                0,
+                                0
+                            ],
+                            "scale": [
+                                1,
+                                1,
+                                1
+                            ]
                         },
-                        {
-                                    "id": "landscape",
-                                    "type": "Landscape",
-                                    "material": "/Game/ScenarioAssets/Materials/M_Grass_Simple",
-                                    "transform": {
-                                                "location": [
-                                                            0,
-                                                            0,
-                                                            0
-                                                ],
-                                                "rotation": [
-                                                            0,
-                                                            0,
-                                                            0
-                                                ],
-                                                "scale": [
-                                                            100,
-                                                            100,
-                                                            100
-                                                ]
-                                    },
-                                    "terrainSize": [
-                                                127,
-                                                127
-                                    ]
+                        "intensity": 3.0,
+                        "lightColor": [
+                            1.0,
+                            0.95,
+                            0.9
+                        ],
+                        "dynamicShadowDistance": 50000,
+                        "numDynamicShadowCascades": 8
+                    },
+                    {
+                        "id": "landscape",
+                        "type": "Landscape",
+                        "material": "/Game/ScenarioAssets/Materials/M_Grass_Simple",
+                        "transform": {
+                            "location": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "rotation": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "scale": [
+                                100,
+                                100,
+                                100
+                            ]
                         },
-                        {
-                                    "id": "sky_sphere",
-                                    "type": "BP_Sky_Sphere",
-                                    "transform": {
-                                                "location": [
-                                                            0,
-                                                            0,
-                                                            0
-                                                ],
-                                                "rotation": [
-                                                            0,
-                                                            0,
-                                                            0
-                                                ],
-                                                "scale": [
-                                                            1,
-                                                            1,
-                                                            1
-                                                ]
-                                    }
+                        "terrainSize": [
+                            127,
+                            127
+                        ]
+                    },
+                    {
+                        "id": "sky_sphere",
+                        "type": "BP_Sky_Sphere",
+                        "transform": {
+                            "location": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "rotation": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "scale": [
+                                1,
+                                1,
+                                1
+                            ]
                         }
-            ],
-            "lighting": [
-                        {
-                                    "type": "SkyLight",
-                                    "intensity": 1.0,
-                                    "color": [
-                                                0.8,
-                                                0.9,
-                                                1.0
-                                    ]
-                        }
-            ],
-            "camera": {
-                        "location": [
-                                    200,
-                                    -1000,
-                                    300
-                        ],
-                        "rotation": [
-                                    -15,
-                                    10,
-                                    0
-                        ],
-                        "fov": 90
+                    }
+                ],
+                "lighting": [
+                    {
+                        "type": "SkyLight",
+                        "intensity": 1.0,
+                        "color": [
+                            0.8,
+                            0.9,
+                            1.0
+                        ]
+                    }
+                ],
+                "camera": {
+                    "location": [
+                        200,
+                        -1000,
+                        300
+                    ],
+                    "rotation": [
+                        -15,
+                        10,
+                        0
+                    ],
+                    "fov": 90
+                },
+                "postProcess": {
+                    "exposureCompensation": 0.5,
+                    "autoExposure": true
+                },
+                "ui": {
+                    "hideUI": true,
+                    "showGrid": false
+                },
+                "uiTemplate": "viewport_only",
+                "notes": "Final beauty shot showing full 500m shadow range. Wide angle, elevated camera."
             },
-            "postProcess": {
-                        "exposureCompensation": 0.5,
-                        "autoExposure": true
-            },
-            "ui": {
-                        "hideUI": true,
-                        "showGrid": false
-            },
-            "uiTemplate": "viewport_only",
-            "notes": "Final beauty shot showing full 500m shadow range. Wide angle, elevated camera."
-},
+            image_path: "directional_light/images/conclusion.bmp",
             prompt: "You have successfully extended the shadow distance and maintained quality. The scene now looks correct at range.",
             choices: []
         }

@@ -11,14 +11,36 @@ import os
 import time
 
 # Import our modules
-sys.path.insert(0, r"C:\Users\Sam Deiter\Documents\GitHub\UE5ScenarioTracker\unreal_scripts\experimental")
+import importlib
+# Import our modules
+import importlib
+
+# Ensure we can import from the current directory (core)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
+
+# Also add experimental for WindowsPrintScreen
+experimental_dir = os.path.join(os.path.dirname(current_dir), "experimental")
+if experimental_dir not in sys.path:
+    sys.path.append(experimental_dir)
+
+# Force reload to avoid stale code in Unreal
+import SceneBuilder
+importlib.reload(SceneBuilder)
 from SceneBuilder import SceneBuilder
-from WindowsPrintScreen import capture_editor_window  # Epic-compliant screenshot
+
+import WindowsPrintScreen
+importlib.reload(WindowsPrintScreen)
+from WindowsPrintScreen import capture_editor_window
+
+import SceneExporter
+importlib.reload(SceneExporter)
 from SceneExporter import SceneExporter
 
 
 
-def generate_scenario_step(scene_spec, scenario_id, step_id, output_base_path):
+def generate_scenario_step(scene_spec, scenario_id, step_id, output_base_path, prompt):
     """
     Generate assets for a single scenario step
     
@@ -27,6 +49,10 @@ def generate_scenario_step(scene_spec, scenario_id, step_id, output_base_path):
         scenario_id (str): Scenario identifier
         step_id (str): Step identifier  
         output_base_path (str): Base output directory
+        prompt (str): Prompt text for this step
+        
+    Returns:
+        dict: Complete step data including image path and scene data
     """
     unreal.log("=" * 70)
     unreal.log(f"Generating: {scenario_id} / {step_id}")
@@ -51,8 +77,20 @@ def generate_scenario_step(scene_spec, scenario_id, step_id, output_base_path):
     if not success:
         unreal.log_warning(f"Screenshot capture failed for {step_id}")
     
+    # Calculate relative image path for web app (e.g., "directional_light/images/step_1.bmp")
+    # This assumes web app loads from the parent folder of [scenario_id]
+    image_rel_path = f"{scenario_id}/images/{step_id}.bmp"
+    
     # Export JSON (export_scene expects output_path and filename separately)
-    exporter.export_scene(output_dir, step_id)
+    # Now passing image_path so it's included in the per-step export too
+    full_path, scene_data = exporter.export_scene(output_dir, step_id, image_rel_path)
+    
+    return {
+        "step_id": step_id,
+        "prompt": prompt,
+        "image_path": image_rel_path,
+        "scene_data": scene_data
+    }
 
 
 
@@ -80,28 +118,55 @@ def generate_scenario_assets(spec_file_path, output_base_path):
     unreal.log(f"Steps: {len(steps)}")
     unreal.log("")
     
+    all_steps_data = []
+    
     # Process each step
     for i, step in enumerate(steps, 1):
         step_id = step['stepId']
         scene_setup = step['sceneSetup']
+        prompt = step.get('prompt', '')
         
         unreal.log(f"[{i}/{len(steps)}] Processing {step_id}...")
         
         try:
-            generate_scenario_step(
+            step_result = generate_scenario_step(
                 scene_setup,
                 scenario_id,
                 step_id,
-                output_base_path
+                output_base_path,
+                prompt
             )
+            all_steps_data.append(step_result)
         except Exception as e:
             unreal.log_error(f"Failed to generate {step_id}: {e}")
+            import traceback
+            unreal.log_error(traceback.format_exc())
             continue
         
         # Cleanup between steps to prevent memory/resource issues
         import gc
         gc.collect()  # Python garbage collection
         unreal.SystemLibrary.execute_console_command(None, "obj gc")  # UE garbage collection
+
+    # Write final combined scenario JSON
+    final_scenario_data = {
+        "scenario_id": scenario_id,
+        "steps": all_steps_data
+    }
+    
+    output_dir = os.path.join(output_base_path, scenario_id)
+    
+    # Export as JS for the web app
+    final_js_path = os.path.join(output_dir, f"{scenario_id}.js")
+    
+    js_content = f"""window.SCENARIOS = window.SCENARIOS || {{}};
+window.SCENARIOS['{scenario_id}'] = {json.dumps(final_scenario_data, indent=2)};
+"""
+    
+    with open(final_js_path, 'w') as f:
+        f.write(js_content)
+        
+    unreal.log(f"Final scenario exported to: {final_js_path}")
     
     # Clean up temp screenshots after ALL steps complete
     try:

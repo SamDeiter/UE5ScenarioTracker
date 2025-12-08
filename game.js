@@ -714,8 +714,25 @@ document.addEventListener('DOMContentLoaded', () => {
             ? `Step ${stepNumber} / ${totalSteps}: `
             : '';
 
-        // 5. Build the Step Prompt and Choices
+        // 5. Build screenshot HTML if image_path exists
+        let screenshotHtml = '';
+        if (step.image_path) {
+            const imageSrc = `scenarios/${step.image_path}`;
+            screenshotHtml = `
+                <div id="screenshot-container" class="screenshot-area mb-6">
+                    <img 
+                        src="${imageSrc}" 
+                        alt="Step ${stepNumber} - ${scenario.meta.title}" 
+                        class="w-full rounded-lg border border-neutral-700 shadow-lg"
+                        onerror="this.parentElement.classList.add('hidden'); console.warn('Failed to load image:', '${imageSrc}')"
+                    />
+                </div>
+            `;
+        }
+
+        // 6. Build the Step Prompt and Choices with screenshot
         const stepHtml = `
+            ${screenshotHtml}
             <div id="ticket-step-prompt" class="mb-6">
                 <h5 class="text-xl font-bold text-gray-200 mb-4">${stepCountPrefix}${step.title}</h5>
                 <div class="prose prose-invert max-w-none text-gray-300">${step.prompt}</div>
@@ -724,25 +741,6 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         ticketStepContent.innerHTML = stepHtml;
-
-        // 5a. OPTIONAL: Render screenshot if imagePath exists
-        if (step.imagePath) {
-            const imageHtml = `
-                <div id="step-screenshot" class="mb-6">
-                    <img 
-                        src="${step.imagePath}" 
-                        alt="Step ${stepNumber} - ${scenario.meta.title}" 
-                        class="w-full rounded-lg border border-neutral-600 shadow-lg"
-                        onerror="this.style.display='none'"
-                    />
-                </div>
-            `;
-            // Insert image AFTER prompt, BEFORE choices
-            const promptDiv = ticketStepContent.querySelector('#ticket-step-prompt');
-            if (promptDiv) {
-                promptDiv.insertAdjacentHTML('afterend', imageHtml);
-            }
-        }
 
         const choicesContainer = ticketStepContent.querySelector('#ticket-step-choices');
 

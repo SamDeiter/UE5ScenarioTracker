@@ -903,6 +903,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /**
    * Assessment modal rendering function (ONLY for final, global status).
+   * Delegated to AssessmentModal module.
    * @param {string} status - 'timeout' or 'complete'.
    * @param {number|null} [totalLoggedTime=null] - Total simulated time in hours.
    * @param {object} [stateToUse=scenarioState] - The state object to use for generating the key.
@@ -912,174 +913,12 @@ document.addEventListener("DOMContentLoaded", () => {
     totalLoggedTime = null,
     stateToUse = scenarioState
   ) {
-    // Delegate to AssessmentModal module if available
-    if (window.AssessmentModal) {
-      AssessmentModal.show(status, totalLoggedTime, stateToUse, {
-        pauseTimer: pauseMainTimer,
-        timesUpScreen: timesUpScreen,
-        jiraBoard: jiraBoard,
-      });
-      return;
-    }
-
-    // Fallback: Original inline implementation
-    pauseMainTimer(); // Ensure timer stops when the modal appears
-
-    let mainTitle, subText, mainTitleColor;
-    let finalStatsHtml = "";
-    let buttonHtml = "";
-
-    // Determine completion based on the state that was passed in
-    const allScenariosComplete = Object.values(stateToUse).every(
-      (s) => s.completed
-    );
-
-    if (status === "timeout") {
-      // TIME'S UP status
-      mainTitle = "Time's Up!";
-      subText = "The assessment period has ended. Assessment incomplete.";
-      mainTitleColor = "text-orange-400";
-
-      buttonHtml = `
-                <p class="text-sm text-gray-400 mt-4">This assessment is incomplete.</p>
-            `;
-    } else if (allScenariosComplete || totalLoggedTime !== null) {
-      // ASSESSMENT COMPLETE status
-
-      // 1. Calculate final scores
-      if (totalLoggedTime === null) {
-        // Should not happen if called correctly, but falls back to current live state if time is null
-        totalLoggedTime = Object.values(stateToUse).reduce(
-          (acc, s) => acc + s.loggedTime,
-          0
-        );
-      }
-
-      // Note: ScoringManager.calculateIdealTime correctly uses the global SCENARIOS data
-      const { idealTotalTime } = ScoringManager.calculateIdealTime();
-      const efficiencyScore =
-        totalLoggedTime > 0 ? idealTotalTime / totalLoggedTime : 0;
-      const finalEfficiencyPercent = Math.round(efficiencyScore * 100);
-      const passed = efficiencyScore >= PASS_THRESHOLD;
-
-      // 2. Generate Test Key (Using the state that was passed in)
-
-      const testKey = ScoringManager.generateTestKey(stateToUse);
-
-      // 3. Report to SCORM/LMS (silently - user doesn't see this)
-
-      if (typeof window.reportScoreAndGUIDToLMS12 === "function") {
-        const scormSuccess = window.reportScoreAndGUIDToLMS12(
-          finalEfficiencyPercent, // Score as percentage
-
-          testKey, // Test key (GUID)
-
-          100, // Max score
-
-          PASS_THRESHOLD * 100 // Pass threshold
-        );
-
-        console.log("SCORM data sent:", scormSuccess ? "Success" : "Failed");
-      } else {
-        console.warn("SCORM helper not loaded - test data not sent to LMS");
-      }
-
-      mainTitle = passed ? "Assessment Passed" : "Assessment Completed";
-
-      mainTitleColor = passed ? "text-green-500" : "text-yellow-500";
-
-      subText = passed
-        ? "Congratulations! Your results have been submitted to the LMS."
-        : "You completed all tickets. Your results have been submitted.";
-
-      // 4. Assemble Final Stats HTML (Reproducible Key added back)
-      finalStatsHtml = `
-                <div class="mt-4 border-t border-neutral-600 pt-4">
-                    <h4 class="text-xl font-bold ${mainTitleColor} mb-3">Final Time Report</h4>
-                    <div class="space-y-2 text-left max-w-sm mx-auto">
-                        <div class="flex justify-between text-sm text-gray-200">
-                            <span>Total Optimal Time (0.5h/step):</span>
-                            <span class="font-bold">${idealTotalTime.toFixed(
-                              1
-                            )} hrs</span>
-                        </div>
-                         <div class="flex justify-between text-sm text-gray-200">
-                            <span>Total Simulated Time (Choice Cost):</span>
-                            <span class="font-bold text-sm">${totalLoggedTime.toFixed(
-                              1
-                            )} hrs</span>
-                        </div>
-                        <div class="flex justify-between text-lg text-white border-t border-gray-500 pt-3">
-                            <span class="font-bold">Efficiency Score:</span>
-                            <span class="font-bold ${mainTitleColor}">${finalEfficiencyPercent}%</span>
-                        </div>
-                        <p class="text-xs text-gray-400 text-center">(Pass Threshold: ${
-                          PASS_THRESHOLD * 100
-                        }%)</p>
-                    </div>
-                </div>
-                
-                <div class="mt-4 border-t border-neutral-600 pt-4">
-                    <h4 class="text-xl font-bold text-gray-100 mb-3">Reproducible Test Key</h4>
-                    <p class="text-sm text-gray-400 mb-2">Copy this key to recreate this exact test path and results.</p>
-                    
-                    <div class="flex justify-center">
-                        <span id="test-key-display" class="font-mono text-xs md:text-sm bg-neutral-700/70 p-3 rounded-lg break-all max-w-full inline-block text-yellow-300">
-                            ${testKey}
-                        </span>
-                    </div>
-                    
-                    <button id="copy-key-btn" class="mt-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-all duration-200">
-                        Copy Key
-                    </button>
-                </div>
-            `;
-
-      buttonHtml = `
-                <p class="text-sm text-gray-400 mt-4">This assessment is complete.</p>
-            `;
-    }
-
-    // --- Render Modal ---
-    const modalContentHtml = `
-            <div id="final-modal-content" class="bg-gray-800 p-6 rounded-xl shadow-2xl text-center max-w-lg w-full max-h-[90vh] overflow-y-auto">
-                <h2 class="text-3xl font-extrabold ${mainTitleColor} mb-2">${mainTitle}</h2>
-                <p class="text-base text-gray-300 mb-2">${subText}</p>
-                
-                ${finalStatsHtml}
-
-                ${buttonHtml}
-            </div>
-        `;
-
-    timesUpScreen.innerHTML = modalContentHtml;
-    jiraBoard.classList.add("hidden");
-    timesUpScreen.classList.remove("hidden");
-
-    // Attach Copy button listener
-    if (allScenariosComplete || totalLoggedTime !== null) {
-      const copyButton = document.getElementById("copy-key-btn");
-      const keyDisplay = document.getElementById("test-key-display");
-
-      if (copyButton && keyDisplay) {
-        copyButton.addEventListener("click", () => {
-          const keyToCopy = keyDisplay.textContent;
-
-          // Use document.execCommand('copy') for better compatibility in iframe environments
-          const tempInput = document.createElement("textarea");
-          tempInput.value = keyToCopy;
-          document.body.appendChild(tempInput);
-          tempInput.select();
-          document.execCommand("copy");
-          document.body.removeChild(tempInput);
-
-          copyButton.textContent = "Copied!";
-          setTimeout(() => {
-            copyButton.textContent = "Copy Key";
-          }, 2000);
-        });
-      }
-    }
+    AssessmentModal.show(status, totalLoggedTime, stateToUse, {
+      pauseTimer: pauseMainTimer,
+      timesUpScreen: timesUpScreen,
+      jiraBoard: jiraBoard,
+      passThreshold: PASS_THRESHOLD,
+    });
   }
 
   // --- UI STATE TESTING HELPER (now using TestUtils module) ---

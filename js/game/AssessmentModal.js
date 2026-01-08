@@ -14,7 +14,8 @@ window.AssessmentModal = {
   show(status, totalLoggedTime = null, stateToUse = null, options = {}) {
     const state = stateToUse || window.GameState?.scenarioState || {};
     const config = window.APP_CONFIG || {};
-    const PASS_THRESHOLD = config.PASS_THRESHOLD || 0.7;
+    const PASS_THRESHOLD =
+      options.passThreshold || config.PASS_THRESHOLD || 0.8;
 
     // Pause timer if callback provided
     if (options.pauseTimer) {

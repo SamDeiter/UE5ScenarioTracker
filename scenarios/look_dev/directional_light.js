@@ -60,6 +60,13 @@ window.SCENARIOS["directional_light"] = {
             "<p>The lighting build completed after 10 minutes... but the shadows still cut off at the same distance. This approach doesn't seem to be working for this type of issue.</p>",
           next: "step-0",
         },
+        {
+          text: "Increase the Shadow Bias on the light",
+          type: "subtle",
+          feedback:
+            "<p>Shadow Bias controls the offset to prevent self-shadowing artifacts, not the maximum rendering distance. The shadows still disappear at 50 meters.</p>",
+          next: "step-0",
+        },
       ],
     },
     "step-0W": {
@@ -113,6 +120,13 @@ window.SCENARIOS["directional_light"] = {
             "<p>You experimented with various Exponent values but the shadows still disappear at the same point. The distribution changed, but not the distance itself.</p>",
           next: "step-1",
         },
+        {
+          text: "Light Source Soft Angle",
+          type: "subtle",
+          feedback:
+            "<p>The Soft Angle controls penumbra softness for PCSS shadows. After adjusting it, the shadow edges look different but they still cut off at the same distance.</p>",
+          next: "step-1",
+        },
       ],
     },
     "step-inv-1": {
@@ -141,6 +155,13 @@ window.SCENARIOS["directional_light"] = {
           type: "misguided",
           feedback:
             "<p>The shadows now extend incredibly far, but the frame rate dropped significantly. Your artist is complaining about performance. Maybe a more precise value would work better.</p>",
+          next: "step-inv-1",
+        },
+        {
+          text: "Set it to 10000 (100m)",
+          type: "subtle",
+          feedback:
+            "<p>The shadows now extend to 100m instead of 50m, but your level extends to 500m. The distant areas still have no shadows. You need a larger value.</p>",
           next: "step-inv-1",
         },
       ],
@@ -179,6 +200,13 @@ window.SCENARIOS["directional_light"] = {
           feedback:
             "<p>Light Source Angle controls shadow edge softness (penumbra), not resolution. The pixelation you're seeing is from stretched shadow maps, not soft edges.</p>",
           next: "step-2W",
+        },
+        {
+          text: "Decrease the Cascade Distribution Exponent",
+          type: "subtle",
+          feedback:
+            "<p>Lowering the exponent redistributes shadow resolution toward distant cascades, but with only 4 cascades the difference is minimal. More cascades would help more.</p>",
+          next: "step-2",
         },
       ],
     },
@@ -226,6 +254,20 @@ window.SCENARIOS["directional_light"] = {
             "<p>This is still a Movable light—building lighting won't affect dynamic shadows. You need to test the *runtime* behavior, not baked lighting.</p>",
           next: "step-3",
         },
+        {
+          text: "Save the level and close the editor",
+          type: "subtle",
+          feedback:
+            "<p>Saving is always good practice, but you haven't actually verified that the shadows work correctly at runtime. What if scalability settings override your changes in-game?</p>",
+          next: "step-3",
+        },
+        {
+          text: "Document the settings in Confluence",
+          type: "misguided",
+          feedback:
+            "<p>Documentation is important, but you should verify the fix works at runtime first. What if scalability settings override your changes for some players?</p>",
+          next: "step-3",
+        },
       ],
     },
     "step-ver-1": {
@@ -247,6 +289,20 @@ window.SCENARIOS["directional_light"] = {
           type: "misguided",
           feedback:
             "<p>You reviewed the Scalability settings and they look fine, but when testing on a team member's machine with 'Low' graphics, the shadows still cut off early. There must be a runtime override somewhere...</p>",
+          next: "step-ver-1",
+        },
+        {
+          text: "Check if Virtual Shadow Maps are enabled",
+          type: "subtle",
+          feedback:
+            "<p>Virtual Shadow Maps is a UE5 feature, but this level is using traditional Cascaded Shadow Maps. The console variable approach is more direct for checking CSM behavior.</p>",
+          next: "step-ver-1",
+        },
+        {
+          text: "Toggle Raytraced Shadows on and off",
+          type: "wrong",
+          feedback:
+            "<p>Raytraced shadows are a different shadow technique. The current setup uses CSM for dynamic shadows, so toggling raytrace won't help diagnose the scalability issue.</p>",
           next: "step-ver-1",
         },
       ],

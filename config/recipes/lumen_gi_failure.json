@@ -1,0 +1,70 @@
+{
+  "scenarios": {
+    "lumen_gi_failure": {
+      "steps": {
+        "setup": {
+          "actions": [
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "BP_SciFiPanel",
+              "component": "StaticMeshComponent",
+              "property": "EmissiveLightSourceContribution",
+              "value": 0.1
+            },
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "PostProcessVolume",
+              "component": "PostProcessComponent",
+              "property": "LumenSceneViewDistance",
+              "value": 5000.0
+            }
+          ]
+        },
+        "step-10": {
+          "actions": [
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "BP_SciFiPanel",
+              "component": "StaticMeshComponent",
+              "property": "EmissiveLightSourceContribution",
+              "value": 5.0
+            }
+          ]
+        },
+        "step-11": {
+          "actions": [
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "BP_SciFiPanel",
+              "component": "StaticMeshComponent",
+              "property": "DistanceFieldResolutionScale",
+              "value": 1.5
+            }
+          ]
+        },
+        "step-15": {
+          "actions": [
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "PostProcessVolume",
+              "component": "PostProcessComponent",
+              "property": "LumenSceneViewDistance",
+              "value": 25000.0
+            }
+          ]
+        },
+        "step-17": {
+          "actions": [
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "PostProcessVolume",
+              "component": "PostProcessComponent",
+              "property": "LumenFinalGatherQuality",
+              "value": 2.0
+            }
+          ]
+        }
+      }
+    }
+  }
+}

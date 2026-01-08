@@ -1,0 +1,1040 @@
+/* Use Tailwind's base styles, component styles, and utility styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   UE5 COLOR SYSTEM - CSS CUSTOM PROPERTIES
+   Professional Assessment/Evaluation Theme
+   ============================================ */
+:root {
+  /* Background Colors */
+  --ue-bg-darkest: #0a0a0f;
+  --ue-bg-darker: #0f0f14;
+  --ue-bg-dark: #16161d;
+  --ue-bg-medium: #1e1e28;
+  --ue-bg-lighter: #252532;
+  --ue-bg-code: #2a2a3a;
+
+  /* Border Colors */
+  --ue-border-base: #3a3a4a;
+  --ue-border-hover: #5a5a6a;
+  --ue-border-dark: #252535;
+  --ue-border-accent: #4a90d9;
+
+  /* Text Colors */
+  --ue-text-primary: #ffffff;
+  --ue-text-secondary: #e0e0e8;
+  --ue-text-tertiary: #b0b0c0;
+  --ue-text-muted: #808090;
+
+  /* Semantic Colors - Assessment */
+  --ue-success: #22c55e;
+  --ue-success-glow: rgba(34, 197, 94, 0.6);
+  --ue-success-bg: rgba(34, 197, 94, 0.15);
+
+  --ue-warning: #f59e0b;
+  --ue-warning-glow: rgba(245, 158, 11, 0.6);
+  --ue-warning-bg: rgba(245, 158, 11, 0.15);
+
+  --ue-error: #ef4444;
+  --ue-error-glow: rgba(239, 68, 68, 0.6);
+  --ue-error-bg: rgba(239, 68, 68, 0.15);
+
+  /* Assessment Accent Colors */
+  --assessment-primary: #4a90d9;
+  --assessment-primary-glow: rgba(74, 144, 217, 0.4);
+  --assessment-secondary: #7c3aed;
+
+  /* Category Colors (for scenario types) */
+  --cat-lighting: #fbbf24;
+  --cat-materials: #3b82f6;
+  --cat-blueprints: #a855f7;
+  --cat-physics: #f97316;
+  --cat-ui: #14b8a6;
+  --cat-audio: #ef4444;
+  --cat-animation: #22c55e;
+  --cat-rendering: #ec4899;
+
+  /* Neutral Glow */
+  --ue-neutral-glow: rgba(115, 115, 135, 0.2);
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+body {
+  background: linear-gradient(
+    180deg,
+    var(--ue-bg-darkest) 0%,
+    var(--ue-bg-darker) 100%
+  );
+  color: var(--ue-text-muted);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  min-height: 100vh;
+}
+
+/* ============================================
+   ASSESSMENT HEADER
+   ============================================ */
+.assessment-header {
+  background: linear-gradient(
+    135deg,
+    var(--ue-bg-dark) 0%,
+    var(--ue-bg-medium) 100%
+  );
+  border-bottom: 1px solid var(--ue-border-dark);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Timer styling */
+#countdown-timer {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
+   CATEGORY FILTER DROPDOWN
+   ============================================ */
+.category-dropdown {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+  min-width: 160px;
+  transition: all 0.2s ease;
+}
+
+.category-dropdown:hover {
+  border-color: var(--assessment-primary);
+  background-color: var(--ue-bg-medium);
+}
+
+.category-dropdown option {
+  background: var(--ue-bg-dark);
+  color: var(--ue-text-secondary);
+  padding: 8px;
+}
+
+/* Learning Area Badges (new categories) */
+.category-badge.worldbuilding {
+  color: #22d3ee;
+  border-color: #22d3ee;
+  background: rgba(34, 211, 238, 0.1);
+}
+
+.category-badge.game_dev,
+.category-badge.game-dev {
+  color: #a78bfa;
+  border-color: #a78bfa;
+  background: rgba(167, 139, 250, 0.1);
+}
+
+.category-badge.look_dev,
+.category-badge.look-dev {
+  color: #f472b6;
+  border-color: #f472b6;
+  background: rgba(244, 114, 182, 0.1);
+}
+
+.category-badge.tech_art,
+.category-badge.tech-art {
+  color: #fbbf24;
+  border-color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.category-badge.vfx {
+  color: #34d399;
+  border-color: #34d399;
+  background: rgba(52, 211, 153, 0.1);
+}
+
+/* ============================================
+   ASSESSMENT PROGRESS BAR
+   ============================================ */
+#assessment-progress {
+  background: var(--ue-bg-dark);
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: 1px solid var(--ue-border-dark);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.progress-track {
+  height: 8px;
+  background: var(--ue-bg-darkest);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+}
+
+/* ============================================
+   SCENARIO CARDS (Assessment Modules)
+   ============================================ */
+.scenario-card {
+  position: relative;
+  background: var(--ue-bg-dark);
+  border: 1px solid var(--ue-border-dark);
+  border-radius: 10px;
+  padding: 16px 16px 16px 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.scenario-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--ue-border-base);
+  transition: background 0.2s ease;
+}
+
+.scenario-card:hover {
+  background: var(--ue-bg-medium);
+  border-color: var(--ue-border-hover);
+  transform: translateX(2px);
+}
+
+.scenario-card:hover::before {
+  background: var(--assessment-primary);
+}
+
+.scenario-card.active {
+  background: rgba(74, 144, 217, 0.1);
+  border-color: var(--assessment-primary);
+}
+
+.scenario-card.active::before {
+  background: var(--assessment-primary);
+  box-shadow: 0 0 10px var(--assessment-primary-glow);
+}
+
+.scenario-card.completed {
+  opacity: 0.7;
+}
+
+.scenario-card.completed::before {
+  background: var(--ue-success);
+}
+
+/* Category Badge */
+.category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.category-badge.lighting {
+  color: var(--cat-lighting);
+  border-color: var(--cat-lighting);
+  background: rgba(251, 191, 36, 0.1);
+}
+.category-badge.materials {
+  color: var(--cat-materials);
+  border-color: var(--cat-materials);
+  background: rgba(59, 130, 246, 0.1);
+}
+.category-badge.blueprints {
+  color: var(--cat-blueprints);
+  border-color: var(--cat-blueprints);
+  background: rgba(168, 85, 247, 0.1);
+}
+.category-badge.physics {
+  color: var(--cat-physics);
+  border-color: var(--cat-physics);
+  background: rgba(249, 115, 22, 0.1);
+}
+.category-badge.rendering {
+  color: var(--cat-rendering);
+  border-color: var(--cat-rendering);
+  background: rgba(236, 72, 153, 0.1);
+}
+
+/* Status Pills */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.status-pill.not-started {
+  background: rgba(128, 128, 144, 0.15);
+  color: var(--ue-text-muted);
+  border: 1px solid rgba(128, 128, 144, 0.3);
+}
+
+.status-pill.in-progress {
+  background: var(--ue-warning-bg);
+  color: var(--ue-warning);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.status-pill.completed {
+  background: var(--ue-success-bg);
+  color: var(--ue-success);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+/* Question Count Badge */
+.question-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--ue-text-muted);
+}
+
+.question-count svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ============================================
+   QUESTION VIEW (Ticket Panel)
+   ============================================ */
+.question-header {
+  background: linear-gradient(135deg, #12121a 0%, #1a1a28 100%);
+  border-bottom: 1px solid var(--ue-border-dark);
+  padding: 20px 24px;
+}
+
+.question-number-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 12px;
+  background: linear-gradient(135deg, #1e3a5f, #2563eb);
+  border: 1px solid #3b82f6;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.step-progress-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ue-border-base);
+  transition: all 0.2s ease;
+}
+
+.step-dot.completed {
+  background: var(--ue-success);
+}
+
+.step-dot.current {
+  background: var(--assessment-primary);
+  box-shadow: 0 0 8px var(--assessment-primary-glow);
+  transform: scale(1.2);
+}
+
+/* Question Prompt Area */
+.question-prompt {
+  background: var(--ue-bg-dark);
+  border: 1px solid var(--ue-border-dark);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+
+.prompt-label {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--assessment-primary);
+  margin-bottom: 12px;
+  padding: 4px 10px;
+  background: rgba(74, 144, 217, 0.1);
+  border-radius: 4px;
+}
+
+/* ============================================
+   ANSWER OPTIONS (Evaluation Style)
+   ============================================ */
+.answer-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 20px;
+  background: var(--ue-bg-dark);
+  border: 1px solid var(--ue-border-dark);
+  border-left: 4px solid var(--ue-border-base);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 10px;
+}
+
+.answer-option:hover {
+  background: var(--ue-bg-medium);
+  border-color: var(--ue-border-hover);
+  border-left-color: var(--assessment-primary);
+  transform: translateX(4px);
+}
+
+.answer-option:active {
+  transform: translateX(2px);
+}
+
+.answer-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--ue-bg-medium);
+  border: 2px solid var(--ue-border-base);
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--ue-text-secondary);
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.answer-option:hover .answer-letter {
+  background: var(--assessment-primary);
+  border-color: var(--assessment-primary);
+  color: #fff;
+}
+
+.answer-text {
+  flex: 1;
+  color: var(--ue-text-secondary);
+  line-height: 1.5;
+}
+
+/* Debug Mode - Show Answer Types */
+.answer-option.debug-correct {
+  border-left-color: var(--ue-success);
+  background: var(--ue-success-bg);
+}
+
+.answer-option.debug-correct .answer-letter {
+  background: var(--ue-success);
+  border-color: var(--ue-success);
+  color: #fff;
+}
+
+.answer-option.debug-partial {
+  border-left-color: var(--ue-warning);
+  background: var(--ue-warning-bg);
+}
+
+.answer-option.debug-wrong {
+  border-left-color: var(--ue-error);
+  background: var(--ue-error-bg);
+}
+
+/* ============================================
+   FEEDBACK BANNERS
+   ============================================ */
+.feedback-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid;
+  animation: slideIn 0.3s ease-out;
+}
+
+.feedback-banner.incorrect {
+  background: var(--ue-error-bg);
+  border-left-color: var(--ue-error);
+}
+
+.feedback-banner.partial {
+  background: var(--ue-warning-bg);
+  border-left-color: var(--ue-warning);
+}
+
+.feedback-banner.correct {
+  background: var(--ue-success-bg);
+  border-left-color: var(--ue-success);
+}
+
+.feedback-icon {
+  font-size: 1.2rem;
+}
+
+.feedback-content {
+  flex: 1;
+}
+
+.feedback-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.feedback-text {
+  font-size: 0.85rem;
+  color: var(--ue-text-tertiary);
+  line-height: 1.5;
+}
+
+/* ============================================
+   RESULTS / SCORE DISPLAY
+   ============================================ */
+.result-card {
+  background: linear-gradient(
+    135deg,
+    var(--ue-bg-dark) 0%,
+    var(--ue-bg-medium) 100%
+  );
+  border: 1px solid var(--ue-border-dark);
+  border-radius: 16px;
+  padding: 32px;
+  text-align: center;
+}
+
+.score-display {
+  font-size: 4rem;
+  font-weight: 800;
+  line-height: 1;
+  margin: 16px 0;
+}
+
+.score-display.passed {
+  background: linear-gradient(135deg, #22c55e, #4ade80);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.score-display.failed {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.score-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ue-text-muted);
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--ue-border-dark);
+}
+
+.metric-row:last-child {
+  border-bottom: none;
+}
+
+.metric-label {
+  color: var(--ue-text-muted);
+}
+
+.metric-value {
+  font-weight: 600;
+  color: var(--ue-text-primary);
+}
+
+/* ============================================
+   CODE STYLING
+   ============================================ */
+code {
+  background-color: var(--ue-bg-code);
+  color: #7dd3fc;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace;
+  font-size: 0.875em;
+  border: 1px solid var(--ue-border-dark);
+}
+
+.prose code,
+#ticket-step-content code {
+  background-color: var(--ue-bg-code) !important;
+  color: #7dd3fc !important;
+  padding: 2px 8px !important;
+  border-radius: 4px;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  border: 1px solid var(--ue-border-dark);
+}
+
+.prose code::before,
+.prose code::after {
+  content: none !important;
+}
+
+/* Strong text styling */
+#ticket-step-content strong,
+#ticket-step-prompt strong,
+#ticket-step-feedback strong,
+.prose strong {
+  color: var(--ue-text-primary);
+  font-weight: 700;
+}
+
+/* Paragraph styling */
+#ticket-step-content p,
+#ticket-step-prompt p,
+#ticket-step-feedback p {
+  margin-bottom: 1rem;
+  color: var(--ue-text-tertiary);
+  line-height: 1.7;
+}
+
+/* ============================================
+   BACKLOG SCROLLABLE CONTAINER
+   ============================================ */
+#backlog-list {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+#backlog-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+#backlog-list::-webkit-scrollbar-track {
+  background: var(--ue-bg-darkest);
+  border-radius: 3px;
+}
+
+#backlog-list::-webkit-scrollbar-thumb {
+  background: var(--ue-border-base);
+  border-radius: 3px;
+}
+
+#backlog-list::-webkit-scrollbar-thumb:hover {
+  background: var(--ue-border-hover);
+}
+
+/* ============================================
+   DEBUG MODE STYLES
+   ============================================ */
+.debug-correct {
+  box-shadow: 0 0 15px 4px var(--ue-success-glow);
+  border-color: var(--ue-success);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes pulse-red-animation {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.pulse-red {
+  animation: pulse-red-animation 1.5s infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* ============================================
+   SCREENSHOT AREA - Preview Mode
+   ============================================ */
+.screenshot-area {
+  background: var(--ue-bg-darkest);
+  border: 1px solid var(--ue-border-dark);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  max-width: 320px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+.screenshot-area:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  border-color: var(--ue-border-hover);
+}
+
+.screenshot-area::after {
+  content: "🔍 Click to expand";
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: var(--ue-text-secondary);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.screenshot-area:hover::after {
+  opacity: 1;
+}
+
+.screenshot-area img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Image Modal Overlay */
+.image-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: zoom-out;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.image-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.image-modal-overlay img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 8px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+}
+
+.image-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.image-modal-close:hover {
+  opacity: 1;
+}
+
+/* ============================================
+   UX IMPROVEMENTS - TWO-COLUMN LAYOUT
+   ============================================ */
+.scenario-content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+  align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .scenario-content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.question-prompt {
+  background: linear-gradient(135deg, var(--ue-bg-medium) 0%, var(--ue-bg-dark) 100%);
+  border-left: 4px solid var(--assessment-primary);
+  border-radius: 8px;
+  padding: 20px 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.prompt-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--assessment-primary);
+  margin-bottom: 12px;
+}
+
+.prompt-text {
+  color: var(--ue-text-secondary);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.prompt-text p {
+  margin: 0 0 12px 0;
+}
+
+.prompt-text p:last-child {
+  margin-bottom: 0;
+}
+
+.prompt-text strong {
+  color: var(--ue-text-primary);
+  font-weight: 600;
+}
+
+.prompt-text code {
+  background: var(--ue-bg-code);
+  color: var(--cat-lighting);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.scenario-image-container {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  height: 100%;
+}
+
+.scenario-image-container .screenshot-area {
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scenario-image-container .screenshot-area img {
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* ============================================
+   UX IMPROVEMENTS - CHOICE STYLING
+   ============================================ */
+.choices-header {
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--ue-border-dark);
+}
+
+.choices-header span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ue-text-tertiary);
+}
+
+.choices-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.choice-button {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, var(--ue-bg-medium) 0%, var(--ue-bg-dark) 100%);
+  border: 1px solid var(--ue-border-dark);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.choice-button:hover {
+  border-color: var(--assessment-primary);
+  background: linear-gradient(135deg, var(--ue-bg-lighter) 0%, var(--ue-bg-medium) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 144, 217, 0.15);
+}
+
+.choice-letter {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ue-bg-darkest);
+  border: 1px solid var(--ue-border-base);
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--ue-text-tertiary);
+  transition: all 0.2s ease;
+}
+
+.choice-button:hover .choice-letter {
+  background: var(--assessment-primary);
+  border-color: var(--assessment-primary);
+  color: white;
+}
+
+.choice-text {
+  flex: 1;
+  color: var(--ue-text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.choice-text p {
+  margin: 0;
+}
+
+.choice-text code {
+  background: var(--ue-bg-code);
+  color: var(--cat-lighting);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.choice-text strong {
+  color: var(--ue-text-primary);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.glass-panel {
+  background: rgba(22, 22, 29, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--ue-border-dark);
+}
+
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    var(--assessment-primary),
+    var(--assessment-secondary)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+/* ============================================
+   CAPTURE PANEL STYLING
+   ============================================ */
+#capture-panel {
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+#capture-status-dot.ready {
+  background-color: var(--ue-success);
+  box-shadow: 0 0 10px var(--ue-success-glow);
+}
+
+#capture-status-dot.waiting {
+  background-color: var(--ue-warning);
+  box-shadow: 0 0 10px var(--ue-warning-glow);
+}
+
+#capture-log::-webkit-scrollbar {
+  width: 4px;
+}
+
+#capture-log::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 2px;
+}
+
+#capture-mode {
+  appearance: none;
+  cursor: pointer;
+}
+
+#btn-capture-now:not(:disabled):hover {
+  box-shadow: 0 0 15px var(--assessment-primary-glow);
+  filter: brightness(1.1);
+}

@@ -1,0 +1,78 @@
+/*
+ * UE5 Level Editor Simulator - CSS Variables
+ * Refined to match UE5 Slate UI exactly
+ */
+
+:root {
+    /* General Theme - UE5 Accurate */
+    --color-bg-dark: #1a1a1a;
+    --color-bg-medium: #242424;
+    --color-bg-light: #2a2a2a;
+    --color-text-main: #d0d0d0;
+    --color-accent-blue: #0d5aa7;
+    --color-border: #3a3a3a;
+    --color-border-light: #4a4a4a;
+    --color-border-dark: #1a1a1a;
+    --color-selection: rgba(255, 165, 0, 0.5);
+
+    /* Selection Highlight (UE5 Blue) */
+    --color-selection-blue: #0d5aa7;
+    --node-selection-outline: #F0B000;
+
+    /* UE5 Pixel Perfect Tokens */
+    --ue5-node-bg: rgba(10, 10, 10, 0.85);
+    --ue5-input-bg: #1a1a1a;
+    --ue5-input-border: #3a3a3a;
+    --ue5-selection-orange: #f0a000;
+    --ue5-panel-bg: #242424;
+    --ue5-border-color: #3a3a3a;
+    --ue5-category-gradient-top: #3a3a3a;
+    --ue5-category-gradient-bottom: #2a2a2a;
+
+    /* Main Backgrounds */
+    --bg-graph: #262626;
+    --bg-panel: #1a1a1a;
+    --bg-header: #1a1a1a;
+    
+    /* Grid Lines */
+    --grid-line-major: #353535;
+    --grid-line-minor: #2e2e2e;
+    
+    /* Text */
+    --text-primary: #d0d0d0;
+    --text-secondary: #909090;
+    --text-muted: #606060;
+
+    /* Fonts - UE5 uses Roboto */
+    --font-family: 'Roboto', 'Segoe UI', -apple-system, sans-serif;
+    --font-size-xs: 10px;
+    --font-size-sm: 11px;
+    --font-size-md: 12px;
+    --font-size-lg: 13px;
+
+    /* Spacing - Tighter for UE5 look */
+    --spacing-xs: 1px;
+    --spacing-sm: 2px;
+    --spacing-md: 4px;
+    --spacing-lg: 6px;
+    --spacing-xl: 10px;
+
+    /* Panel dimensions */
+    --outliner-width: 280px;
+    --details-width: 320px;
+    --header-height: 26px;
+    --menu-bar-height: 24px;
+    --main-toolbar-height: 48px;
+    --viewport-toolbar-height: 32px;
+    --toolbar-height: 32px; /* Legacy toolbar height */
+    
+    /* Row heights - Compact like UE5 */
+    --row-height: 20px;
+    --tree-row-height: 18px;
+    --property-row-height: 20px;
+    
+    /* Vector input colors */
+    --vector-x-color: #c83232;
+    --vector-y-color: #32a852;
+    --vector-z-color: #3264c8;
+}

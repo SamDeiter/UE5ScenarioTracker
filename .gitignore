@@ -1,0 +1,53 @@
+# Environment variables and secrets
+.env
+.env.local
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Temporary files
+temp/
+*.tmp
+
+# Backups
+*backup*/
+*_backup_*
+scenarios_backup*/
+
+# LMS Build Output (generated files, not source code)
+lms-build/
+*.zip
+build_log.txt
+
+# Build directory (generated files)
+build/
+*.spec.json
+*_log.txt
+*.bmp
+
+# Response/debug files
+responses/
+temp_spec.json
+prompts/
+

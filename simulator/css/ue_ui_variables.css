@@ -1,0 +1,33 @@
+:root {
+    /* UE5 Slate Design Tokens - Authoritative Colors */
+    --ue5-bg-main: #1c1c1c;
+    --ue5-bg-panel: #262626;
+    --ue5-bg-header: #2a2a2a;
+    --ue5-bg-input: #0d0d0d;
+    --ue5-bg-selected: #0d47a1;
+    
+    --ue5-border-main: #1a1a1a;
+    --ue5-border-light: #333333;
+    --ue5-border-accent: #0070e0;
+    
+    --ue5-text-primary: #e6e6e6;
+    --ue5-text-secondary: #999999;
+    --ue5-text-muted: #666666;
+    --ue5-text-accent: #ffd700; /* Yellow for modified */
+    
+    /* Layout Tokens */
+    --ue5-outliner-width: 280px;
+    --ue5-details-width: 350px;
+    --ue5-toolbar-height: 48px;
+    --ue5-menu-height: 28px;
+    --ue5-splitter-width: 4px;
+    
+    /* Typography */
+    --ue5-font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --ue5-font-size: 11px;
+
+    /* Axis Colors */
+    --ue5-axis-x: #ff4d4d;
+    --ue5-axis-y: #7cc036;
+    --ue5-axis-z: #4c80ff;
+}

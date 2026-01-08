@@ -1,0 +1,50 @@
+{
+  "scenarios": {
+    "directional_light": {
+      "title": "Fix Shadow Cutoff Issue",
+      "description": "Extend shadows from 50m to 500m while maintaining quality.",
+      "targetActor": "DirectionalLight",
+      "passingScore": 100,
+      "steps": [
+        {
+          "id": "step-1",
+          "screenshot": "screenshots/directional_light/step-1.png",
+          "instruction": "Select the DirectionalLight and expand 'Cascaded Shadow Maps'",
+          "objectives": []
+        },
+        {
+          "id": "step-2",
+          "screenshot": "screenshots/directional_light/step-2.png",
+          "instruction": "Set 'Dynamic Shadow Distance Movable Light' to 50000 (500m)",
+          "objectives": [
+            {
+              "property": "DynamicShadowDistanceMovableLight",
+              "expectedValue": 50000,
+              "tolerance": 5000,
+              "points": 50,
+              "hint": "Value is in centimeters. 500 meters = 50,000 cm."
+            }
+          ]
+        },
+        {
+          "id": "step-3",
+          "screenshot": "screenshots/directional_light/step-3.png",
+          "instruction": "Increase 'Num Dynamic Shadow Cascades' to 8",
+          "objectives": [
+            {
+              "property": "NumDynamicShadowCascades",
+              "expectedValue": 8,
+              "tolerance": 0,
+              "points": 50,
+              "hint": "More cascades = better quality over distance."
+            }
+          ]
+        }
+      ],
+      "conclusion": {
+        "screenshot": "screenshots/directional_light/conclusion.png",
+        "message": "Shadows now extend to 500m with proper quality distribution."
+      }
+    }
+  }
+}

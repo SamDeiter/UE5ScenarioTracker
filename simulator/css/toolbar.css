@@ -1,0 +1,295 @@
+/**
+ * toolbar.css - UE5 Editor Top UI Styling (Forensic Reconstruction)
+ */
+
+/* UE5 COLOR LOCK */
+:root {
+    --ue-bg-menu: #212121;
+    --ue-bg-toolbar: #1c1c1c;
+    --ue-bg-hover: #3a3a3a;
+    --ue-bg-active: #4a4a4a;
+    --ue-border-light: #2c2c2c;
+    --ue-border-dark: #141414;
+    --ue-text-primary: #d6d6d6;
+    --ue-text-muted: #888888;
+    --ue-play-green: #2ea043;
+    --ue-play-green-hover: #3eb053;
+    --ue-warning-yellow: #f2c94c;
+    
+    /* Forensic Dimensions */
+    --ue-menu-bar-h: 28px;
+    --ue-main-toolbar-h: 44px;
+    --ue-total-header-h: 72px;
+
+    /* Toolbar Specifics */
+    --tb-btn-radius: 4px;
+    --tb-gap: 6px;
+}
+
+#ue-header {
+    width: 100%;
+    height: var(--ue-total-header-h);
+    display: flex;
+    flex-direction: column;
+    background-color: var(--ue-bg-toolbar);
+}
+
+/* TOP MENU BAR */
+#menu-bar {
+    height: var(--ue-menu-bar-h) !important;
+    background-color: var(--ue-bg-menu) !important;
+    border-bottom: 1px solid #1a1a1a !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    z-index: 1000;
+}
+
+.menu-left {
+    display: flex;
+    align-items: center;
+}
+
+.ue-logo-main {
+    height: 14px;
+    margin-right: 12px;
+    opacity: 0.9;
+}
+
+.menu-items {
+    display: flex;
+}
+
+.menu-bar-item {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--ue-text-primary);
+    padding: 4px 10px;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.menu-bar-item:hover {
+    background-color: var(--ue-bg-hover);
+}
+
+.menu-bar-right {
+    display: flex;
+    align-items: center;
+}
+
+.project-name {
+    font-size: 11px;
+    color: #f2c94c; /* UE5 Gold/Orange for project names */
+    margin-right: 12px;
+    font-style: italic;
+    opacity: 0.8;
+}
+
+.window-controls {
+    display: flex;
+    height: 100%;
+}
+
+.win-btn {
+    width: 32px;
+    height: 28px;
+    background: transparent !important;
+    border: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #888;
+    padding: 0;
+}
+
+.win-btn:hover {
+    background-color: var(--ue-bg-hover) !important;
+    color: #fff;
+}
+
+.win-btn.win-close:hover {
+    background-color: #e81123 !important;
+    color: #fff;
+}
+
+/* MAIN TOOLBAR */
+#main-toolbar {
+    height: var(--ue-main-toolbar-h) !important;
+    background-color: var(--ue-bg-toolbar) !important;
+    border-bottom: 1px solid #111 !important;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    gap: 0 !important;
+    z-index: 999;
+}
+
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 4px;
+}
+
+.toolbar-separator {
+    width: 1px;
+    height: 24px;
+    background-color: #2a2a2a;
+    margin: 0 6px;
+}
+
+.toolbar-btn {
+    min-width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    padding: 6px;
+    border-radius: var(--tb-btn-radius);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+    transition: background 0.1s;
+}
+
+.toolbar-btn:hover {
+    background-color: #333333;
+}
+
+.toolbar-btn.active {
+    background-color: #444;
+}
+
+.toolbar-btn .toolbar-icon {
+    width: 16px;
+    height: 16px;
+    filter: brightness(0.9);
+}
+
+/* SELECTION MODE CAPSULE */
+.toolbar-dropdown-btn#selection-mode-btn {
+    height: 30px;
+    padding: 0 12px;
+    background-color: #252525;
+    border: 1px solid #333;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 8px;
+    margin: 0 4px;
+}
+
+.toolbar-dropdown-btn#selection-mode-btn:hover {
+    background-color: #333;
+    border-color: #444;
+}
+
+.toolbar-dropdown-btn#selection-mode-btn span {
+    font-size: 12px;
+    font-weight: 400;
+    color: #eee;
+}
+
+.toolbar-dropdown-btn#selection-mode-btn .toolbar-icon {
+    width: 14px;
+    height: 14px;
+}
+
+/* PLAY GROUP FORENSIC */
+.play-controls-group {
+    display: flex;
+    align-items: center;
+    background: #252525;
+    border-radius: 4px;
+    padding: 2px;
+    border: 1px solid #303030;
+}
+
+.play-main-btn {
+    width: 36px;
+    height: 30px;
+    background-color: var(--ue-play-green);
+    border: none;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.play-main-btn:hover {
+    background-color: var(--ue-play-green-hover);
+}
+
+.play-dropdown-trigger {
+    height: 30px;
+    padding: 0 4px;
+    background: #2ea043; /* Matches Play green in UE5 when grouped */
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    border-left: 1px solid rgba(0,0,0,0.2);
+    margin-right: 4px;
+}
+
+.play-dropdown-trigger:hover {
+    filter: brightness(1.1);
+}
+
+.toolbar-btn-sm {
+    width: 32px;
+    height: 30px;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #aaa;
+    border-radius: 3px;
+}
+
+.toolbar-btn-sm:hover {
+    background: #3a3a3a;
+    color: white;
+}
+
+.toolbar-btn-sm .toolbar-icon {
+    width: 14px;
+    height: 14px;
+}
+
+.toolbar-more-btn {
+    width: 20px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #666;
+}
+
+.toolbar-more-btn:hover {
+    color: #999;
+}
+
+/* PLATFORMS BTN */
+.platforms-btn {
+    height: 30px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 10px;
+    border-radius: 4px;
+}
+
+.platforms-btn:hover {
+    background: #333;
+}

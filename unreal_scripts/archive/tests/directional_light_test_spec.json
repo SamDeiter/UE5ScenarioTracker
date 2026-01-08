@@ -1,0 +1,113 @@
+{
+    "scenarioId": "directional_light",
+    "steps": [
+        {
+            "stepId": "step_1",
+            "sceneSetup": {
+                "actors": [
+                    {
+                        "type": "DirectionalLight",
+                        "name": "TestLight",
+                        "location": [
+                            0,
+                            0,
+                            500
+                        ],
+                        "rotation": [
+                            0,
+                            -45,
+                            0
+                        ]
+                    },
+                    {
+                        "type": "StaticMeshActor",
+                        "name": "TestCube",
+                        "location": [
+                            0,
+                            0,
+                            100
+                        ],
+                        "staticMesh": "/Engine/BasicShapes/Cube"
+                    }
+                ],
+                "settings": {
+                    "skylight": true
+                }
+            }
+        },
+        {
+            "stepId": "step_2",
+            "sceneSetup": {
+                "actors": [
+                    {
+                        "type": "DirectionalLight",
+                        "name": "TestLight",
+                        "location": [
+                            0,
+                            0,
+                            500
+                        ],
+                        "rotation": [
+                            0,
+                            -90,
+                            0
+                        ],
+                        "properties": {
+                            "Intensity": 10.0
+                        }
+                    },
+                    {
+                        "type": "StaticMeshActor",
+                        "name": "TestCube",
+                        "location": [
+                            0,
+                            0,
+                            100
+                        ],
+                        "staticMesh": "/Engine/BasicShapes/Cube"
+                    }
+                ]
+            }
+        },
+        {
+            "stepId": "step_3",
+            "sceneSetup": {
+                "actors": [
+                    {
+                        "type": "DirectionalLight",
+                        "name": "TestLight",
+                        "location": [
+                            0,
+                            0,
+                            500
+                        ],
+                        "rotation": [
+                            0,
+                            -45,
+                            0
+                        ],
+                        "properties": {
+                            "Intensity": 5.0,
+                            "LightColor": {
+                                "R": 1.0,
+                                "G": 0.8,
+                                "B": 0.6,
+                                "A": 1.0
+                            }
+                        }
+                    },
+                    {
+                        "type": "StaticMeshActor",
+                        "name": "TestCube",
+                        "location": [
+                            0,
+                            0,
+                            100
+                        ],
+                        "staticMesh": "/Engine/BasicShapes/Cube"
+                    }
+                ]
+            }
+        }
+    ]
+}

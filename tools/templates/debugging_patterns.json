@@ -1,0 +1,86 @@
+{
+    "prompts": {
+        "initial_investigation": "You've received a JIRA ticket about this issue. What's your first step?",
+        "check_actor_properties": "The actor is now selected. What property should you verify next?",
+        "verify_rendering_settings": "The actor settings look correct. Time to check rendering configuration.",
+        "investigate_project_settings": "The issue persists. You need to check project-wide settings.",
+        "check_lighting_setup": "The rendering config seems fine. What lighting component should you investigate?",
+        "verify_material_settings": "You need to confirm the material is configured correctly.",
+        "diagnose_performance": "The frame rate is low. What's your first diagnostic step?",
+        "narrow_bottleneck": "You've identified the bottleneck type. What's the next specific check?",
+        "visual_debug": "You need to visualize what's happening. Which debug view helps?"
+    },
+    "actions": {
+        "select_actor_viewport": "Select the problematic actor in the viewport or World Outliner",
+        "open_details_panel": "Open the Details panel for the selected actor",
+        "navigate_to_rendering": "In Details panel, expand the Rendering section",
+        "check_project_settings_rendering": "Navigate to Edit > Project Settings > Rendering",
+        "check_world_settings": "Open Window > World Settings",
+        "stat_unit": "Type `stat unit` in the console to check thread times",
+        "stat_gpu": "Type `stat gpu` in the console to see GPU breakdown",
+        "stat_game": "Type `stat game` in the console for game thread stats",
+        "show_collision": "Type `show collision` to visualize collision geometry",
+        "buffer_visualization": "Switch viewport to Buffer Visualization mode",
+        "wireframe_view": "Press Alt+2 or type `viewmode wireframe`",
+        "verify_mobility": "Check the Mobility property (Static/Stationary/Movable)",
+        "check_visibility": "Verify 'Visible' checkbox is enabled",
+        "check_skylight": "Locate the Sky Light actor in World Outliner"
+    },
+    "feedback_templates": {
+        "optimal_diagnostic": "Optimal Time: +{time}hrs. This is the standard diagnostic approach for this type of issue.",
+        "optimal_foundation": "Optimal Time: +{time}hrs. Starting with foundation diagnostics is the correct approach.",
+        "optimal_direct": "Optimal Time: +{time}hrs. This directly addresses the issue.",
+        "wrong_skip_foundation": "Extended Time: +{time}hrs. You skipped foundation diagnostic steps. You need broader context before using specific tools.",
+        "wrong_unrelated_system": "Extended Time: +{time}hrs. This targets a different system unrelated to the symptoms.",
+        "wrong_external_tool": "Extended Time: +{time}hrs. UE5 has built-in tools for this. External apps add unnecessary complexity.",
+        "wrong_legacy_technique": "Extended Time: +{time}hrs. This is a legacy UE4 technique not applicable to this rendering pipeline.",
+        "partial_works_but_slow": "Standard Time: +{time}hrs. This works but there's a more efficient approach.",
+        "partial_indirect": "Standard Time: +{time}hrs. This is an indirect way to solve the problem.",
+        "misguided_plausible": "Extended Time: +{time}hrs. This seems logical but targets the wrong property.",
+        "misguided_assumption": "Extended Time: +{time}hrs. This assumes a cause without evidence from diagnostics."
+    },
+    "common_detours": {
+        "skipped_stat_unit": {
+            "trigger": "Used GPU Profiler before `stat unit`",
+            "consequence": "Waste time in complex tool without knowing bottleneck type",
+            "recovery_steps": [
+                "Run `stat unit` to identify bottleneck",
+                "Return to proper diagnostic flow"
+            ]
+        },
+        "wrong_rendering_pipeline": {
+            "trigger": "Used baked lighting commands with Lumen",
+            "consequence": "Spent time on incompatible system",
+            "recovery_steps": [
+                "Realize Lumen is dynamic",
+                "Focus on Lumen-specific settings"
+            ]
+        },
+        "external_tool_used": {
+            "trigger": "Suggested Task Manager or RenderDoc",
+            "consequence": "UE5 built-in tools are more appropriate",
+            "recovery_steps": [
+                "Use UE5 console commands instead",
+                "Continue with proper workflow"
+            ]
+        }
+    },
+    "choice_patterns": {
+        "correct_broad_to_specific": {
+            "template": "{broad_diagnostic} → Check results → {specific_diagnostic}",
+            "example": "`stat unit` → GPU-bound → `stat gpu` → High BasePass → Profile materials"
+        },
+        "wrong_too_specific": {
+            "template": "Jump to {specific_tool} without {foundation_check}",
+            "example": "Open GPU Profiler without running `stat unit` first"
+        },
+        "partial_right_area": {
+            "template": "Check {correct_system} but use {inefficient_method}",
+            "example": "Check rendering settings but change random values instead of diagnosing"
+        },
+        "misguided_wrong_assumption": {
+            "template": "Assume {incorrect_cause} and check {wrong_system}",
+            "example": "Assume CPU issue and check Blueprint tick without evidence"
+        }
+    }
+}

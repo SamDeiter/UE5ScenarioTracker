@@ -1,0 +1,109 @@
+{
+    "wrong_answers": {
+        "lighting": [
+            "Adjust Sky Light intensity to extreme values",
+            "Rebuild lighting (when using dynamic Lumen)",
+            "Use legacy UE4 baked lighting approach",
+            "Modify Directional Light shadow bias unnecessarily",
+            "Place multiple Sphere Reflection Capture actors",
+            "Change material roughness to diagnose incorrectly"
+        ],
+        "blueprints": [
+            "Add excessive Print String nodes without identifying root cause",
+            "Check collision profiles when logic flow is the issue",
+            "Use Get All Actors of Class instead of direct references",
+            "Modify default values instead of runtime logic",
+            "Replace Destroy Actor with Set Hidden without fixing flow"
+        ],
+        "materials": [
+            "Change blend mode to Translucent (often breaks features)",
+            "Adjust texture compression settings unnecessarily",
+            "Rebuild all material instances",
+            "Modify UV channels without understanding the issue",
+            "Change material domain incorrectly"
+        ],
+        "world_partition": [
+            "Increase global streaming distance excessively",
+            "Modify HLOD settings when streaming is the issue",
+            "Check individual mesh LOD settings instead of actor streaming",
+            "Force all content to Always Loaded",
+            "Migrate to non-World Partition level"
+        ],
+        "physics": [
+            "Increase physics substeps globally",
+            "Modify collision complexity unnecessarily",
+            "Change physics material friction to extreme values",
+            "Enable CCD on all objects",
+            "Adjust mass to unrealistic values"
+        ],
+        "performance": [
+            "Lower all scalability settings to Low",
+            "Disable features instead of optimizing",
+            "Increase texture pool size arbitrarily",
+            "Rebuild all shaders",
+            "Clear derived data cache unnecessarily"
+        ]
+    },
+    "investigation_modules": [
+        "Switch to Buffer Visualization mode (e.g., World Reflection, Lumen Scene)",
+        "Check console for specific error messages",
+        "Use stat commands (stat unit, stat fps, stat virtualshadowmap)",
+        "Enable visual debugging (Show > Visualize > [feature])",
+        "Use breakpoints in Blueprint to trace execution flow",
+        "Check Output Log for warnings",
+        "Inspect Details panel for specific property",
+        "Use World Outliner to locate actors",
+        "Open Project Settings > Rendering section",
+        "Examine material graph connections",
+        "Check Data Layers panel for streaming state",
+        "Use PIE (Play In Editor) to reproduce issue",
+        "Test in Standalone Game mode",
+        "Profile with Unreal Insights"
+    ],
+    "verification_modules": [
+        "Test in PIE (Play In Editor)",
+        "Test in Standalone Game mode",
+        "Check stat unit/fps for performance",
+        "Verify with visualization mode (Nanite Overview, Lumen, etc.)",
+        "Confirm in shipping build",
+        "Test on target hardware",
+        "Verify with console commands",
+        "Check Output Log for errors",
+        "Save and reload the level",
+        "Restart the editor to clear transient bugs"
+    ],
+    "common_settings": {
+        "lighting": {
+            "project_settings": [
+                "Global Illumination Method: Lumen",
+                "Reflection Method: Lumen",
+                "Hardware Ray Tracing: Enabled/Disabled",
+                "Virtual Shadow Maps: Enabled"
+            ],
+            "actor_properties": [
+                "Mobility: Static/Stationary/Movable",
+                "Cast Shadows: Enabled",
+                "Visible in Ray Tracing: Enabled",
+                "Affects Global Illumination: Enabled"
+            ]
+        },
+        "world_partition": {
+            "data_layer_properties": [
+                "Runtime State: Loaded/Unloaded",
+                "Streaming Distance Override",
+                "Loading Policy: Runtime/On Demand"
+            ],
+            "actor_properties": [
+                "Is Spatially Loaded: Enabled",
+                "Data Layer Assignment",
+                "Is Streaming Source: Enabled"
+            ]
+        }
+    },
+    "prompt_templates": {
+        "step_generation": "Generate a troubleshooting step for: {problem}. Step should be specific, actionable, and include exact UI navigation. Format: 'Navigate to [location] and [action].'",
+        "wrong_answer_generation": "Generate a plausible but incorrect troubleshooting step that wastes time. Should be related to {category} but miss the actual issue. Make it realistic - something a developer might actually try.",
+        "feedback_correct": "Optimal Time Logged: {time}hrs. Correct approach.",
+        "feedback_wrong": "Extended Time Logged: +{time}hrs. This approach wastes time."
+    }
+}

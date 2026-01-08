@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UE5 Level Editor Simulator</title>
+    
+    <!-- Prevent caching during development -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Google Fonts - Roboto (UE5 style) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome (CDN for development, bundle for SCORM later) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/ue_ui_variables.css">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/outliner.css">
+    <link rel="stylesheet" href="css/details.css">
+    <link rel="stylesheet" href="css/details_parity.css">
+    <link rel="stylesheet" href="css/viewport_parity.css">
+    <link rel="stylesheet" href="css/icons.css">
+    <link rel="stylesheet" href="css/sprites.css">
+    <link rel="stylesheet" href="css/toolbar.css">
+    <link rel="stylesheet" href="css/status_bar.css">
+    <link rel="stylesheet" href="css/content_drawer.css">
+    <link rel="stylesheet" href="css/scrollbar.css">
+</head>
+<body>
+    <div id="app-container">
+        <!-- TOP UI (Forensic) -->
+        <div id="ue-header">
+            <div id="menu-bar"></div>
+            <div id="main-toolbar"></div>
+        </div>
+        
+        <div id="main-area">
+            <!-- TOOLBAR (Scenario Toolbar) -->
+            <div id="toolbar" style="display: none;">
+            <div class="toolbar-title">
+                <img src="../assets/icons/UE-Icon-2023-White.svg" alt="UE" class="ue-logo" onerror="this.style.display='none'">
+                <span>Level Editor Simulator</span>
+            </div>
+            <div class="toolbar-scenario">
+                <label for="scenario-select">Scenario:</label>
+                <select id="scenario-select">
+                    <option value="directional_light">Directional Light Fix</option>
+                </select>
+            </div>
+            <div class="toolbar-actions">
+                <button id="validate-btn" class="toolbar-btn">
+                    <i class="fas fa-check"></i>
+                    <span>Validate</span>
+                </button>
+                <button id="reset-btn" class="toolbar-btn">
+                    <i class="fas fa-undo"></i>
+                    <span>Reset</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- OUTLINER (Left) -->
+        <div id="outliner-panel">
+            <div id="outliner-content" style="display: flex; flex-direction: column; height: 100%;">
+                <!-- Toolbar for Outliner -->
+                <div class="search-row">
+                <div class="filter-dropdown-container">
+                    <i class="fas fa-filter filter-dropdown" id="filter-toggle" title="Open the Add Filter Menu to add or manage filters."></i>
+                    <div class="filter-dropdown-menu" id="filter-menu">
+                        <div class="filter-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Start typing to search">
+                        </div>
+                        <div class="dropdown-item">
+                            <i class="fas fa-undo"></i> Reset Filters
+                        </div>
+                        <div class="dropdown-item has-submenu">
+                            Custom Filters <i class="fas fa-chevron-right"></i>
+                        </div>
+                        <div class="dropdown-section">
+                            <div class="dropdown-section-header">COMMON FILTERS</div>
+                            <div class="dropdown-item has-submenu">
+                                <span class="filter-checkbox"><i class="far fa-square"></i></span>
+                                <img src="icons/StaticMesh.png" class="filter-icon"> Common Filters <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <div class="dropdown-item">
+                                <span class="filter-checkbox"><i class="far fa-square"></i></span>
+                                <img src="icons/StaticMesh.png" class="filter-icon"> Blueprint
+                            </div>
+                            <div class="dropdown-item">
+                                <span class="filter-checkbox"><i class="far fa-square"></i></span>
+                                <img src="icons/Folder.png" class="filter-icon"> Level Instance
+                            </div>
+                            <div class="dropdown-item">
+                                <span class="filter-checkbox"><i class="far fa-square"></i></span>
+                                <img src="icons/StaticMesh.png" class="filter-icon"> Niagara Actor
+                            </div>
+                            <div class="dropdown-item">
+                                <span class="filter-checkbox"><i class="far fa-square"></i></span>
+                                <img src="icons/StaticMesh.png" class="filter-icon"> Static Mesh Actor
+                            </div>
+                            <div class="dropdown-item">
+                                <span class="filter-checkbox"><i class="far fa-square"></i></span>
+                                <img src="icons/StaticMesh.png" class="filter-icon"> Skeletal Mesh Actor
+                            </div>
+                            <div class="dropdown-item">
+                                <span class="filter-checkbox"><i class="far fa-square"></i></span>
+                                <img src="icons/World.png" class="filter-icon"> World Partition HLOD
+                            </div>
+                        </div>
+                        <div class="dropdown-section">
+                            <div class="dropdown-section-header">TYPE FILTERS</div>
+                            <div class="dropdown-item has-submenu">
+                                <span class="filter-checkbox"><i class="far fa-square"></i></span>
+                                Animation <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <div class="dropdown-item has-submenu">
+                                <span class="filter-checkbox"><i class="far fa-square"></i></span>
+                                Environment <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <div class="dropdown-item has-submenu">
+                                <span class="filter-checkbox"><i class="far fa-square"></i></span>
+                                Geometry <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <div class="dropdown-item has-submenu">
+                                <span class="filter-checkbox"><i class="far fa-square"></i></span>
+                                Lights <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <div class="dropdown-item has-submenu">
+                                <span class="filter-checkbox"><i class="far fa-square"></i></span>
+                                Visual <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <div class="dropdown-item has-submenu">
+                                <span class="filter-checkbox"><i class="far fa-square"></i></span>
+                                World <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                        <div class="dropdown-section">
+                            <div class="dropdown-section-header">OTHER FILTERS</div>
+                            <div class="dropdown-item has-submenu checked">
+                                <span class="filter-checkbox"><i class="fas fa-check-square"></i></span>
+                                Revision Control <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <div class="dropdown-item has-submenu checked">
+                                <span class="filter-checkbox"><i class="fas fa-check-square"></i></span>
+                                File Management <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="outliner-search" placeholder="Search...">
+                </div>
+                <i class="fas fa-folder-plus add-btn" title="Create a new folder containing the current selection"></i>
+                <div class="settings-dropdown-container">
+                    <i class="fas fa-cog settings-btn" id="settings-toggle" title="Settings"></i>
+                    <div class="settings-dropdown" id="settings-menu">
+                        <div class="dropdown-section">
+                            <div class="dropdown-section-header">HIERARCHY</div>
+                            <div class="dropdown-item" id="expand-all">Expand All</div>
+                            <div class="dropdown-item" id="collapse-all">Collapse All</div>
+                            <div class="dropdown-item dropdown-checkbox checked">
+                                <i class="fas fa-check"></i> Stack Hierarchy Headers
+                            </div>
+                        </div>
+                        <div class="dropdown-section">
+                            <div class="dropdown-section-header">SHOW</div>
+                            <div class="dropdown-item dropdown-checkbox">
+                                <i class="fas fa-check"></i> Hide Temporary Actors
+                            </div>
+                            <div class="dropdown-item dropdown-checkbox">
+                                <i class="fas fa-check"></i> Hide Level Instance Content
+                            </div>
+                            <div class="dropdown-item dropdown-checkbox">
+                                <i class="fas fa-check"></i> Only Selected
+                            </div>
+                            <div class="dropdown-item dropdown-checkbox checked">
+                                <i class="fas fa-check"></i> Hide Actor Components
+                            </div>
+                        </div>
+                        <div class="dropdown-section">
+                            <div class="dropdown-section-header">OPTIONS</div>
+                            <div class="dropdown-item dropdown-checkbox checked">
+                                <i class="fas fa-check"></i> Always Frame Selection
+                            </div>
+                            <div class="dropdown-item dropdown-checkbox">
+                                <i class="fas fa-check"></i> Double Click toggles Current Folder
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filter Buttons -->
+            <div class="outliner-filters">
+                <button class="filter-btn">Uncontrolled</button>
+                <button class="filter-btn">Unsaved</button>
+            </div>
+            
+            <!-- Tree Header -->
+            <div class="tree-header">
+                <span>Item Label</span>
+                <span>Type</span>
+            </div>
+            
+            <!-- Actor Tree -->
+            <div class="panel-content" id="outliner-tree">
+                <!-- World Root -->
+                <div class="tree-item folder" data-actor-id="D1" data-expanded="true">
+                    <i class="fas fa-caret-down expand-arrow"></i>
+                    <i class="fas fa-eye visibility-icon visible"></i>
+                    <span class="actor-label"><img src="icons/World.png" class="actor-icon"> D1 (Editor)</span>
+                    <span class="actor-type">World</span>
+                </div>
+                
+                <!-- Lighting Folder -->
+                <div class="tree-item folder indent-1" data-actor-id="Lighting" data-expanded="true">
+                    <i class="fas fa-caret-down expand-arrow"></i>
+                    <i class="fas fa-eye visibility-icon visible"></i>
+                    <span class="actor-label"><img src="icons/Folder.png" class="actor-icon folder-icon"> Lighting</span>
+                    <span class="actor-type">Folder</span>
+                </div>
+                <div class="tree-item indent-2" data-actor-id="DirectionalLight" data-parent="Lighting">
+                    <span class="expand-arrow-spacer"></span>
+                    <i class="fas fa-eye visibility-icon visible"></i>
+                    <span class="actor-label"><img src="icons/DirectionalLight.png" class="actor-icon"> DirectionalLight</span>
+                    <span class="actor-type">DirectionalLight</span>
+                </div>
+                <div class="tree-item indent-2" data-actor-id="ExponentialHeightFog" data-parent="Lighting">
+                    <span class="expand-arrow-spacer"></span>
+                    <i class="fas fa-eye visibility-icon visible"></i>
+                    <span class="actor-label"><img src="icons/ExponentialHeightFog.png" class="actor-icon"> ExponentialHeightFog</span>
+                    <span class="actor-type">ExponentialHe</span>
+                </div>
+                <div class="tree-item indent-2" data-actor-id="SkyAtmosphere" data-parent="Lighting">
+                    <span class="expand-arrow-spacer"></span>
+                    <i class="fas fa-eye visibility-icon visible"></i>
+                    <span class="actor-label"><img src="icons/SkyAtmosphere.png" class="actor-icon"> SkyAtmosphere</span>
+                    <span class="actor-type">SkyAtmosphere</span>
+                </div>
+                <div class="tree-item indent-2" data-actor-id="SkyLight" data-parent="Lighting">
+                    <span class="expand-arrow-spacer"></span>
+                    <i class="fas fa-eye visibility-icon visible"></i>
+                    <span class="actor-label"><img src="icons/SkyLight.png" class="actor-icon"> SkyLight</span>
+                    <span class="actor-type">SkyLight</span>
+                </div>
+                <div class="tree-item indent-2" data-actor-id="SM_SkySphere" data-parent="Lighting">
+                    <span class="expand-arrow-spacer"></span>
+                    <i class="fas fa-eye visibility-icon visible"></i>
+                    <span class="actor-label"><img src="icons/StaticMesh.png" class="actor-icon"> SM_SkySphere</span>
+                    <span class="actor-type">StaticMeshAct</span>
+                </div>
+                <div class="tree-item indent-2" data-actor-id="VolumetricCloud" data-parent="Lighting">
+                    <span class="expand-arrow-spacer"></span>
+                    <i class="fas fa-eye visibility-icon visible"></i>
+                    <span class="actor-label"><img src="icons/VolumetricCloud.png" class="actor-icon"> VolumetricCloud</span>
+                    <span class="actor-type">VolumetricClou</span>
+                </div>
+                
+                <!-- Static Meshes (direct children of D1) -->
+                <div class="tree-item indent-1" data-actor-id="Cube_25m_1">
+                    <span class="expand-arrow-spacer"></span>
+                    <i class="fas fa-eye visibility-icon visible"></i>
+                    <span class="actor-label"><img src="icons/StaticMesh.png" class="actor-icon"> Cube_25m</span>
+                    <span class="actor-type">StaticMeshAct</span>
+                </div>
+                <div class="tree-item indent-1" data-actor-id="Cube_25m_2">
+                    <span class="expand-arrow-spacer"></span>
+                    <i class="fas fa-eye visibility-icon visible"></i>
+                    <span class="actor-label"><img src="icons/StaticMesh.png" class="actor-icon"> Cube_25m</span>
+                    <span class="actor-type">StaticMeshAct</span>
+                </div>
+                <div class="tree-item indent-1" data-actor-id="Cube_50m_1">
+                    <span class="expand-arrow-spacer"></span>
+                    <i class="fas fa-eye visibility-icon visible"></i>
+                    <span class="actor-label"><img src="icons/StaticMesh.png" class="actor-icon"> Cube_50m</span>
+                    <span class="actor-type">StaticMeshAct</span>
+                </div>
+                <div class="tree-item indent-1" data-actor-id="Cube_50m_2">
+                    <span class="expand-arrow-spacer"></span>
+                    <i class="fas fa-eye visibility-icon visible"></i>
+                    <span class="actor-label"><img src="icons/StaticMesh.png" class="actor-icon"> Cube_50m</span>
+                    <span class="actor-type">StaticMeshAct</span>
+                </div>
+                <div class="tree-item indent-1" data-actor-id="Cube_75m_1">
+                    <span class="expand-arrow-spacer"></span>
+                    <i class="fas fa-eye visibility-icon visible"></i>
+                    <span class="actor-label"><img src="icons/StaticMesh.png" class="actor-icon"> Cube_75m</span>
+                    <span class="actor-type">StaticMeshAct</span>
+                </div>
+                <div class="tree-item indent-1" data-actor-id="Cube_75m_2">
+                    <span class="expand-arrow-spacer"></span>
+                    <i class="fas fa-eye visibility-icon visible"></i>
+                    <span class="actor-label"><img src="icons/StaticMesh.png" class="actor-icon"> Cube_75m</span>
+                    <span class="actor-type">StaticMeshAct</span>
+                </div>
+                <div class="tree-item indent-1" data-actor-id="Cube_100m_1">
+                    <span class="expand-arrow-spacer"></span>
+                    <i class="fas fa-eye visibility-icon visible"></i>
+                    <span class="actor-label"><img src="icons/StaticMesh.png" class="actor-icon"> Cube_100m</span>
+                    <span class="actor-type">StaticMeshAct</span>
+                </div>
+                <div class="tree-item indent-1" data-actor-id="Cube_100m_2">
+                    <span class="expand-arrow-spacer"></span>
+                    <i class="fas fa-eye visibility-icon visible"></i>
+                    <span class="actor-label"><img src="icons/StaticMesh.png" class="actor-icon"> Cube_100m</span>
+                    <span class="actor-type">StaticMeshAct</span>
+                </div>
+                <div class="tree-item indent-1" data-actor-id="Landscape">
+                    <span class="expand-arrow-spacer"></span>
+                    <i class="fas fa-eye visibility-icon visible"></i>
+                    <span class="actor-label"><img src="icons/Landscape.png" class="actor-icon"> Landscape</span>
+                    <span class="actor-type">Landscape</span>
+                </div>
+                <div class="tree-item indent-1" data-actor-id="PlayerStart">
+                    <span class="expand-arrow-spacer"></span>
+                    <i class="fas fa-eye visibility-icon visible"></i>
+                    <span class="actor-label"><img src="icons/PlayerStart.png" class="actor-icon"> PlayerStart</span>
+                    <span class="actor-type">PlayerStart</span>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="tree-footer">
+                <span id="actor-count">16 actors (0 selected)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Splitter: Outliner | Viewport -->
+        <div class="panel-splitter panel-splitter-vertical" id="splitter-left" data-resize="outliner"></div>
+
+        <!-- VIEWPORT (Center) -->
+            <div id="viewport-panel">
+                <div id="viewport-toolbar"></div>
+                <!-- Scenario Info Overlay -->
+                <div id="scenario-info" style="display: none; position: absolute; top: 10px; left: 10px; right: 10px; background: rgba(0,0,0,0.85); border: 1px solid var(--ue5-border-color); border-radius: 4px; padding: 12px; z-index: 10;">
+                    <button id="close-scenario-info" style="position: absolute; top: 8px; right: 8px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px; padding: 4px;">&times;</button>
+                    <div class="scenario-title" style="font-size: 14px; font-weight: bold; color: var(--color-accent-blue); margin-bottom: 4px; padding-right: 20px;"></div>
+                    <div class="scenario-desc" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 6px;"></div>
+                    <div class="scenario-objectives" style="font-size: 10px; color: var(--text-muted);"></div>
+                </div>
+    <img id="viewport-image" src="assets/generated/directional_light/step-1.png" 
+         alt="Viewport" 
+         onerror="this.src='icons/ue5/LightActor_16x.png'; this.onerror=null;">
+            </div>
+
+        <!-- Splitter: Viewport | Details -->
+
+        <div class="panel-splitter panel-splitter-vertical" id="splitter-right" data-resize="details"></div>
+
+
+
+        <!-- DETAILS PANEL (Right) -->
+        <div id="details-panel">
+            <div id="details-properties-area" style="display: flex; flex-direction: column; height: 100%;">
+                
+                <!-- Actor Title Bar (Consolidated UE5 Style) -->
+                <div id="details-actor-section" class="details-actor-section">
+                    <div class="details-actor-row-main">
+                        <div class="actor-info-left">
+                            <img id="details-header-icon" src="icons/ue5/LightActor_16x.png" class="details-icon">
+                            <span id="details-actor-name-text">DirectionalLight</span>
+                        </div>
+                        
+                        <div class="details-actor-actions-right">
+                            <button class="add-component-btn-v2">
+                                <i class="fas fa-plus"></i>
+                                <span>Add</span>
+                            </button>
+                            <button class="actor-action-btn"><i class="fas fa-share-alt"></i></button>
+                            <button class="actor-action-btn"><i class="fas fa-question-circle"></i></button>
+                            <button class="actor-action-btn"><i class="fas fa-lock"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Component Hierarchy Breadcrumb -->
+                    <div class="details-hierarchy-row">
+                        <div class="hierarchy-item actor">
+                            <img src="icons/ue5/LightActor_16x.png" class="hierarchy-icon">
+                            <span>DirectionalLight (Self)</span>
+                        </div>
+                        <div class="hierarchy-item component selected">
+                            <span class="hierarchy-indent"></span>
+                            <img src="icons/ue5/Light_Movable_16x.png" class="hierarchy-icon">
+                            <span>DirectionalLightComponent (LightComponent0)</span>
+                            <a href="#" class="edit-link">Edit in C++</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search & Utilities Bar -->
+                <div class="details-utility-bar">
+                    <div class="search-container">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="details-search" placeholder="Search Details">
+                    </div>
+                    <div class="utility-actions">
+                        <button class="util-btn active" title="Show All"><i class="fas fa-list"></i></button>
+                        <button class="util-btn" title="Favorites"><i class="far fa-star"></i></button>
+                        <button class="util-btn" id="details-settings-btn"><i class="fas fa-cog"></i></button>
+                    </div>
+                </div>
+
+                <!-- Filter Navigation Pills -->
+                <div class="details-filter-nav">
+                    <button class="filter-pill">General</button>
+                    <button class="filter-pill">Actor</button>
+                    <button class="filter-pill">LOD</button>
+                    <button class="filter-pill">Misc</button>
+                    <button class="filter-pill">Physics</button>
+                    <button class="filter-pill">Rendering</button>
+                    <button class="filter-pill">Streaming</button>
+                    <button class="filter-pill active">All</button>
+                </div>
+            
+                <!-- Properties Content -->
+                <div class="panel-content" id="details-content">
+                    <!-- Empty state -->
+                    <div id="details-empty" class="details-empty">
+                        <i class="fas fa-mouse-pointer"></i>
+                        <span>Select an actor to view details</span>
+                    </div>
+                    
+                    <!-- Properties (populated by JS) -->
+                    <div id="details-properties" style="display: none;">
+                        <div class="dynamic-properties"></div>
+                    </div>
+                </div> <!-- End panel-content -->
+            </div> <!-- End details-properties-area -->
+        </div> <!-- End details-panel -->
+        
+        <!-- STATUS BAR (Bottom) -->
+        <div id="ue-status-bar">
+            <div class="status-bar-left">
+                <button class="content-drawer-toggle" id="drawer-toggle-btn">
+                    <i class="fas fa-folder"></i>
+                    <span>Content Drawer</span>
+                </button>
+                <div class="console-input-wrapper">
+                    <span class="console-label">Cmd</span>
+                    <input type="text" class="console-input" placeholder="Enter Console Command">
+                </div>
+            </div>
+            
+            <div class="status-bar-right">
+                <div class="status-indicator" title="Source Control">
+                    <i class="fas fa-share-nodes"></i>
+                </div>
+                <div class="status-indicator warning" title="Derived Data Cache">
+                    <span>DDC</span>
+                </div>
+                <div class="status-indicator" title="Output Log">
+                    <span>Output Log</span>
+                </div>
+                <div class="level-status">
+                    <span>D1*</span>
+                </div>
+            </div>
+        </div>
+    </div> <!-- End main-area -->
+
+    <!-- JavaScript - Modular Architecture -->
+    <script src="js/ModuleLoader.js"></script>
+    <script src="js/ui/ContentDrawer.js"></script>
+    <script src="js/ui/DockingManager.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

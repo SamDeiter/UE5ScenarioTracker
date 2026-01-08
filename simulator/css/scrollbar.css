@@ -1,0 +1,168 @@
+/**
+ * scrollbar.css - Forensic UE5 Scrollbar Styling
+ * Achieves 1:1 parity with UE5 Slate scrollbars including arrows.
+ */
+
+/* Target all scrollable areas in the editor */
+.panel-content, 
+.ue5-tab-bar,
+.ue5-tab-content,
+.details-properties,
+#outliner-tree,
+#details-content,
+#details-properties,
+.dynamic-properties,
+.filter-dropdown-menu {
+    scrollbar-width: thin;
+    scrollbar-color: #444 #1a1a1b;
+    overflow-y: auto !important; /* Ensure they are actually scrollable */
+}
+
+/* Force show webkit scrollbars */
+.panel-content::-webkit-scrollbar,
+.ue5-tab-content::-webkit-scrollbar,
+#outliner-tree::-webkit-scrollbar,
+#details-content::-webkit-scrollbar,
+.dynamic-properties::-webkit-scrollbar {
+    display: block !important;
+}
+
+/* Chrome/Edge/Safari support - The Webkit Engine */
+
+/* 1. Main scrollbar container */
+::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+}
+
+/* 2. The track (background) */
+::-webkit-scrollbar-track {
+    background: #1a1a1b;
+    border-left: 1px solid #141414;
+}
+
+/* 3. The thumb (draggable part) */
+::-webkit-scrollbar-thumb {
+    background: #444; 
+    border: 3px solid #1a1a1b;
+    border-radius: 7px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #5b5b5b;
+    border: 2px solid #1a1a1b;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: #777;
+}
+
+/* 4. Arrows (Buttons) - Forensic Parity */
+::-webkit-scrollbar-button:single-button {
+    background-color: #1a1a1b;
+    display: block;
+    background-size: 8px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Up arrow */
+::-webkit-scrollbar-button:single-button:vertical:decrement {
+    height: 14px;
+    width: 14px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill='%23666' d='M50 25 L15 75 L85 75 Z'/></svg>");
+}
+
+::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill='%23aaa' d='M50 25 L15 75 L85 75 Z'/></svg>");
+}
+
+/* Down arrow */
+::-webkit-scrollbar-button:single-button:vertical:increment {
+    height: 14px;
+    width: 14px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill='%23666' d='M50 75 L15 25 L85 25 Z'/></svg>");
+}
+
+::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill='%23aaa' d='M50 75 L15 25 L85 25 Z'/></svg>");
+}
+
+/* Horizontal Arrows */
+::-webkit-scrollbar-button:single-button:horizontal:decrement {
+    width: 14px;
+    height: 14px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill='%23666' d='M25 50 L75 15 L75 85 Z'/></svg>");
+}
+
+::-webkit-scrollbar-button:single-button:horizontal:increment {
+    width: 14px;
+    height: 14px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill='%23666' d='M75 50 L25 15 L25 85 Z'/></svg>");
+}
+
+/* Corner where horizontal and vertical meet */
+::-webkit-scrollbar-corner {
+    background: #1a1a1b;
+}
+
+/* POSITIONING FIX: "Wrong side" logic */
+.scrollbar-left {
+    direction: rtl;
+}
+
+.scrollbar-left > * {
+    direction: ltr; /* Reset content direction */
+}
+
+/* Specific Panel Fixes */
+
+/* Viewport should NEVER have a scrollbar */
+#viewport-panel,
+#viewport-panel .ue5-tab-content,
+#viewport-panel .tab-panel {
+    overflow: hidden !important;
+}
+
+/* Ensure Outliner scrolls correctly */
+#details-content,
+#details-properties,
+.details-properties {
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #444 #1a1a1b;
+}
+
+/* Explicitly enable scrollbars for these containers */
+#details-content::-webkit-scrollbar,
+#details-properties::-webkit-scrollbar,
+.details-properties::-webkit-scrollbar {
+    width: 6px !important;
+    display: block !important;
+}
+
+#details-content::-webkit-scrollbar-thumb,
+#details-properties::-webkit-scrollbar-thumb,
+.details-properties::-webkit-scrollbar-thumb {
+    background: #444 !important;
+    border-radius: 3px;
+    border: 1px solid #1a1a1b;
+}
+
+#details-content::-webkit-scrollbar-thumb:hover,
+#details-properties::-webkit-scrollbar-thumb:hover,
+.details-properties::-webkit-scrollbar-thumb:hover {
+    background: #666 !important;
+}
+
+/* Outliner tree fix */
+#outliner-tree {
+    overflow-y: auto !important;
+    overflow-x: hidden;
+}
+
+#outliner-tree::-webkit-scrollbar {
+    width: 6px !important;
+    display: block !important;
+}

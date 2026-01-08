@@ -1,0 +1,51 @@
+{
+  "scenarios": {
+    "directional_light": {
+      "title": "Directional Light Shadow Cutoff",
+      "steps": [
+        {
+          "id": "step-0",
+          "desc": "Initial observation",
+          "shadow_distance": 5000,
+          "cascades": 4
+        },
+        {
+          "id": "step-1",
+          "desc": "Diagnosing the cutoff",
+          "shadow_distance": 5000,
+          "cascades": 4
+        },
+        {
+          "id": "step-inv-1",
+          "desc": "Understanding the value",
+          "shadow_distance": 5000,
+          "cascades": 4
+        },
+        {
+          "id": "step-2",
+          "desc": "Blocky shadows problem",
+          "shadow_distance": 50000,
+          "cascades": 4
+        },
+        {
+          "id": "step-3",
+          "desc": "Verifying the fix",
+          "shadow_distance": 50000,
+          "cascades": 8
+        },
+        {
+          "id": "step-ver-1",
+          "desc": "Runtime verification",
+          "shadow_distance": 50000,
+          "cascades": 8
+        },
+        {
+          "id": "conclusion",
+          "desc": "Complete!",
+          "shadow_distance": 50000,
+          "cascades": 8
+        }
+      ]
+    }
+  }
+}

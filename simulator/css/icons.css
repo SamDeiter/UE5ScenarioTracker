@@ -1,0 +1,84 @@
+/**
+ * UE5 Icons CSS Utility
+ * 
+ * Provides easy-to-use CSS classes for UE5 icons.
+ * Icons are loaded from /icons/ue5/ directory.
+ * 
+ * Usage:
+ *   <span class="ue5-icon icon-directional-light"></span>
+ *   <img class="ue5-icon-img" src="icons/ue5/LightActor_16x.png" alt="">
+ */
+
+/* Base icon styles */
+.ue5-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.ue5-icon-img {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+}
+
+.ue5-icon-img.size-40 {
+  width: 40px;
+  height: 40px;
+}
+
+/* Actor Icons */
+.icon-light { background-image: url('../icons/ue5/LightActor_16x.png'); }
+.icon-light-movable { background-image: url('../icons/ue5/Light_Movable_16x.png'); }
+.icon-light-adjustable { background-image: url('../icons/ue5/Light_Adjustable_16x.png'); }
+.icon-static-mesh { background-image: url('../icons/ue5/box_16px.png'); }
+.icon-landscape { background-image: url('../icons/ue5/Landscape_16x.png'); }
+.icon-sound { background-image: url('../icons/ue5/SoundActor_16x.png'); }
+.icon-volume { background-image: url('../icons/ue5/Volume_16x.png'); }
+.icon-group { background-image: url('../icons/ue5/GroupActor_16x.png'); }
+.icon-emitter { background-image: url('../icons/ue5/Emitter_16x.png'); }
+.icon-scene { background-image: url('../icons/ue5/Scene_16px.png'); }
+.icon-sphere { background-image: url('../icons/ue5/Sphere_16px.png'); }
+.icon-capsule { background-image: url('../icons/ue5/Capsule_16px.png'); }
+.icon-arrow { background-image: url('../icons/ue5/Arrow_16px.png'); }
+.icon-spline { background-image: url('../icons/ue5/Spline_16px.png'); }
+
+/* Mobility Icons */
+.icon-mobility-static { background-image: url('../icons/ue5/Static_16x.png'); }
+.icon-mobility-movable { background-image: url('../icons/ue5/Movable_16x.png'); }
+.icon-mobility-stationary { background-image: url('../icons/ue5/Adjustable_16x.png'); }
+
+/* Tab/Panel Icons */
+.icon-tab-outliner { background-image: url('../icons/ue5/icon_tab_SceneOutliner_16x.png'); }
+.icon-tab-details { background-image: url('../icons/ue5/icon_tab_SelectionDetails_16x.png'); }
+.icon-tab-content-browser { background-image: url('../icons/ue5/icon_tab_ContentBrowser_16x.png'); }
+.icon-tab-levels { background-image: url('../icons/ue5/icon_tab_Levels_16x.png'); }
+.icon-tab-layers { background-image: url('../icons/ue5/icon_tab_Layers_16x.png'); }
+.icon-tab-viewport { background-image: url('../icons/ue5/icon_tab_Viewports_16x.png'); }
+.icon-tab-output-log { background-image: url('../icons/ue5/icon_tab_OutputLog_16x.png'); }
+.icon-tab-message-log { background-image: url('../icons/ue5/icon_tab_MessageLog_16x.png'); }
+.icon-tab-plugins { background-image: url('../icons/ue5/icon_tab_Plugins_16x.png'); }
+.icon-tab-toolbar { background-image: url('../icons/ue5/icon_tab_Toolbars_16x.png'); }
+.icon-tab-undo-history { background-image: url('../icons/ue5/icon_tab_UndoHistory_16px.png'); }
+.icon-tab-stats { background-image: url('../icons/ue5/icon_tab_Stats_16x.png'); }
+.icon-tab-data-layers { background-image: url('../icons/ue5/icon_tab_DataLayers_16x.png'); }
+
+/* Toolbar Icons */
+.icon-play { background-image: url('../icons/ue5/icon_play_40x.png'); }
+.icon-stop { background-image: url('../icons/ue5/icon_stop_40x.png'); }
+.icon-simulate { background-image: url('../icons/ue5/icon_simulate_40x.png'); }
+
+/* Component Icons */
+.icon-child-actor { background-image: url('../icons/ue5/ChildActorComponent_16px.png'); }
+.icon-spring-arm { background-image: url('../icons/ue5/SpringArmComponent_16px.png'); }
+.icon-timeline { background-image: url('../icons/ue5/TimelineComponent_16px.png'); }
+.icon-projectile { background-image: url('../icons/ue5/ProjectileMovementComponent_16px.png'); }
+.icon-rotating { background-image: url('../icons/ue5/RotatingMovementComponent_16px.png'); }
+
+/* Brush Icons */
+.icon-brush { background-image: url('../icons/ue5/Brush_16x.png'); }
+.icon-brush-add { background-image: url('../icons/ue5/Brush_Add_16x.png'); }
+.icon-brush-subtract { background-image: url('../icons/ue5/Brush_Subtract_16x.png'); }

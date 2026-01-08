@@ -1,0 +1,67 @@
+{
+  "scenarios": {
+    "ConstraintDoorFail": {
+      "steps": {
+        "step-1": {
+          "actions": [
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "BP_SteelDoor_C",
+              "component": "SkeletalMeshComponent",
+              "property": "simulate_physics",
+              "value": false
+            },
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "BP_Explosion_C",
+              "component": "RadialForceComponent",
+              "property": "force_channel",
+              "value": 0
+            }
+          ]
+        },
+        "step-10": {
+          "actions": [
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "BP_SteelDoor_C",
+              "component": "SkeletalMeshComponent",
+              "property": "collision_response_visibility",
+              "value": 1
+            }
+          ]
+        },
+        "step-14": {
+          "actions": [
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "PhysicsConstraint",
+              "property": "linear_breakable",
+              "value": true
+            }
+          ]
+        },
+        "step-16": {
+          "actions": [
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "PhysicsConstraint",
+              "property": "linear_break_threshold",
+              "value": 50000
+            }
+          ]
+        },
+        "step-18": {
+          "actions": [
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "PhysicsConstraint",
+              "property": "angular_break_threshold",
+              "value": 100000
+            }
+          ]
+        }
+      }
+    }
+  }
+}

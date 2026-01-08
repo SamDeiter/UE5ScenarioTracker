@@ -1,0 +1,436 @@
+
+/* =====================================================
+   UE5 1:1 PARITY - DETAILS PANEL SLATE THEME
+   ===================================================== */
+
+#details-header {
+    background-color: #262626;
+    border-bottom: 2px solid #111;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Top Nav (Details Label) */
+.details-top-nav {
+    background-color: #2a2a2a;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #111;
+}
+
+.details-caption {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #ccc;
+    width: 100%;
+}
+
+.details-close-btn {
+    margin-left: auto;
+    background: transparent;
+    border: none;
+    color: #666;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Actor Header Row */
+.details-actor-section {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.details-actor-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.details-icon {
+    width: 16px;
+    height: 16px;
+}
+
+#details-actor-name-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.details-title-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 4px;
+}
+
+.title-action-btn {
+    background: transparent;
+    border: none;
+    color: #888;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 2px 4px;
+}
+
+/* Add Component Button */
+.details-add-row {
+    display: flex;
+}
+
+.add-component-btn {
+    background-color: #2e5a2e;
+    border: 1px solid #4a8a4a;
+    border-radius: 4px;
+    color: #9fdf9f;
+    padding: 4px 12px;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.btn-green-add {
+    background: linear-gradient(to bottom, #3c3c3c, #2c2c2c);
+    color: #4caf50;
+    font-weight: bold;
+    border: 1px solid #111;
+    padding: 2px 10px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.btn-green-add:hover {
+    background: linear-gradient(to bottom, #444, #333);
+    color: #66bb6a;
+}
+
+/* Hierarchy / Breadcrumb */
+.details-hierarchy-row {
+    background-color: #1a1a1a;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.hierarchy-item {
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #aaa;
+}
+
+.hierarchy-item.selected {
+    background-color: #113c6a;
+    color: #fff;
+}
+
+.hierarchy-indent {
+    width: 12px;
+}
+
+.hierarchy-icon {
+    width: 14px;
+    height: 14px;
+}
+
+.edit-link {
+    margin-left: auto;
+    color: #4a90e2;
+    text-decoration: none;
+}
+
+/* Utility Bar (Search + Star/Cog) */
+.details-utility-bar {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    gap: 8px;
+    background-color: #262626;
+    border-top: 1px solid #333;
+}
+
+.search-container {
+    flex: 1;
+    background-color: #0d0d0d;
+    border: 1px solid #444;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    padding: 2px 6px;
+    gap: 6px;
+}
+
+.search-container i {
+    color: #555;
+    font-size: 10px;
+}
+
+.search-container input {
+    background: transparent;
+    border: none;
+    color: #ccc;
+    font-size: 11px;
+    outline: none;
+    width: 100%;
+}
+
+.utility-actions {
+    display: flex;
+    gap: 2px;
+}
+
+.util-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: #888;
+    padding: 4px;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.util-btn.active {
+    color: #3498db;
+}
+
+/* Filter Nav Pills */
+.details-filter-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 4px 8px 8px;
+    background-color: #262626;
+}
+
+.filter-pill {
+    background-color: #333;
+    border: 1px solid #444;
+    border-radius: 12px;
+    color: #aaa;
+    font-size: 10px;
+    padding: 2px 10px;
+    cursor: pointer;
+}
+
+.filter-pill.active {
+    background-color: #113c6a;
+    border-color: #3498db;
+    color: #fff;
+}
+
+/* Category Headers (Accurate Gradients) */
+.category-header {
+    background: linear-gradient(180deg, #3d3d3d 0%, #333333 100%);
+    border-top: 1px solid #4d4d4d;
+    border-bottom: 1px solid #111;
+    height: 22px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #ccc;
+}
+
+.category-toggle {
+    font-size: 10px;
+    color: #888;
+    width: 12px;
+    text-align: center;
+}
+
+/* High Fidelity Property Row */
+.property-row {
+    background-color: #262626;
+    border-bottom: 1px solid #1a1a1a;
+    min-height: 24px;
+    display: grid;
+    grid-template-columns: var(--name-column-width, 40%) 1fr 26px;
+}
+
+.property-name-col {
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    border-right: 1px solid #111;
+    overflow: hidden;
+}
+
+.property-val-col {
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.property-actions-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid #1a1a1a;
+}
+
+/* Modified Indicator (Yellow Bar) */
+.modified-indicator {
+    width: 3px;
+    height: 100%;
+    background-color: transparent;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 5;
+}
+
+.modified-indicator.active {
+    background-color: #f2c94c;
+}
+
+/* Vector Input Group (UE5 Transform) */
+.vector-input-group {
+    display: flex;
+    gap: 4px;
+    width: 100%;
+    padding-right: 8px;
+}
+
+.vector-field-wrapper {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    background-color: #0d0d0d;
+    border: 1px solid #111;
+    border-radius: 3px;
+    height: 20px;
+    overflow: hidden;
+}
+
+.vector-color-bar {
+    width: 3px;
+    height: 14px;
+    margin-left: 2px;
+    border-radius: 1px;
+}
+
+.vector-color-bar.red { background-color: #ff4c4c; }
+.vector-color-bar.green { background-color: #4cff4c; }
+.vector-color-bar.blue { background-color: #4c4cff; }
+
+.vector-input-v2 {
+    background: transparent;
+    border: none;
+    color: #eee;
+    font-size: 11px;
+    padding: 0 4px;
+    width: 100%;
+    outline: none;
+    text-align: left;
+}
+
+/* Transform Label Button (Absolute/Relative) */
+.transform-label-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: #ccc;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 4px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.transform-label-btn:hover {
+    background-color: #333;
+    border-color: #444;
+}
+
+.transform-label-btn i {
+    font-size: 8px;
+    opacity: 0.6;
+}
+
+.transform-space-indicator {
+    font-size: 10px;
+    color: #666;
+    margin-left: 4px;
+}
+
+/* Mobility Button Group */
+.mobility-button-group {
+    background-color: #1a1a1a;
+    border-radius: 3px;
+    margin: 2px 8px 2px 4px;
+    display: flex;
+    padding: 1px;
+    border: 1px solid #111;
+}
+
+.mobility-toggle {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #888;
+    font-size: 10px;
+    padding: 2px 8px;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.mobility-toggle.active {
+    background-color: #3e3e3e;
+    color: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.mobility-toggle:hover:not(.active) {
+    background-color: #2a2a2a;
+    color: #ccc;
+}
+
+/* UE5 Reset Button */
+.ue-reset-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    opacity: 0.6;
+}
+
+.ue-reset-btn:hover {
+    opacity: 1;
+}
+
+.ue-reset-btn img {
+    width: 14px;
+    height: 14px;
+}
+
+/* Scale Lock */
+.scale-lock-icon {
+    background: transparent;
+    border: none;
+    color: #666;
+    font-size: 10px;
+    margin-right: 4px;
+    cursor: pointer;
+}
+
+.scale-lock-icon.locked {
+    color: #aaa;
+}

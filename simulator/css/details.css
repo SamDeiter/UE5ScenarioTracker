@@ -1,0 +1,1295 @@
+/*
+ * UE5 Level Editor Simulator - Details Panel Styles
+ * Property editor with collapsible categories
+ */
+
+/* Details Header with Actor Name */
+.details-actor-header {
+    background-color: var(--bg-header);
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.details-actor-name {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.details-actor-name i {
+    color: #FFD700;
+}
+
+.details-actor-name .add-btn {
+    margin-left: auto;
+    background-color: #2d5a2d;
+    border: 1px solid #4a8a4a;
+    border-radius: 3px;
+    color: #8FBC8F;
+    padding: 2px 8px;
+    font-size: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.details-actor-name .add-btn:hover {
+    background-color: #3d6a3d;
+    color: white;
+}
+
+.details-actor-type {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.details-actor-type .edit-link {
+    margin-left: auto;
+    color: #4a90e2;
+    text-decoration: none;
+    font-size: 10px;
+}
+
+.details-actor-type .edit-link:hover {
+    text-decoration: underline;
+}
+
+/* Filter Tabs */
+.details-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+    background-color: var(--bg-header);
+}
+
+.details-tab {
+    background-color: var(--color-bg-light);
+    border: 1px solid var(--ue5-input-border);
+    border-radius: 3px;
+    color: var(--text-secondary);
+    font-size: 10px;
+    padding: 2px 8px;
+    cursor: pointer;
+}
+
+.details-tab:hover {
+    background-color: #444;
+    color: var(--text-primary);
+}
+
+    background-color: #444;
+    color: var(--text-primary);
+}
+
+/* Duplicate removed - active state already defined above */
+
+/* Category Section */
+.category {
+    border-bottom: 1px solid var(--color-border);
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 3px 6px;
+    background: linear-gradient(180deg, var(--ue5-category-gradient-top) 0%, var(--ue5-category-gradient-bottom) 100%);
+    border-top: 1px solid var(--color-border-light);
+    border-bottom: 1px solid var(--color-border-dark);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+    user-select: none;
+    min-height: 20px;
+}
+
+.category-header:hover {
+    background: linear-gradient(180deg, #404040 0%, #333333 100%);
+}
+
+.category-header .expand-icon {
+    font-size: 10px;
+    color: var(--text-secondary);
+    transition: transform 0.2s;
+}
+
+.category-header.collapsed .expand-icon {
+    transform: rotate(-90deg);
+}
+
+.category-content {
+    display: block;
+}
+
+.category-header.collapsed + .category-content {
+    display: none;
+}
+
+/* Property Row */
+.property-row {
+    display: grid;
+    grid-template-columns: var(--name-column-width, 40%) 1fr 26px;
+    align-items: center;
+    padding: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    min-height: 24px;
+}
+
+.property-row:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.property-name {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    padding-right: var(--spacing-sm);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.property-value {
+    display: flex;
+    align-items: center;
+}
+
+/* Property Input Types */
+.property-input {
+    width: 100%;
+    background-color: var(--ue5-input-bg);
+    border: 1px solid var(--ue5-input-border);
+    border-radius: 2px;
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    padding: 2px 4px;
+    height: 18px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.property-input:focus {
+    border-color: var(--color-accent-blue);
+    background-color: #222;
+}
+
+.property-input:hover {
+    border-color: #444;
+}
+
+/* Number input with scrubber */
+.property-input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.property-input[type="number"]::-webkit-inner-spin-button,
+.property-input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}
+
+/* Checkbox - UE5 Style */
+.property-checkbox {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background-color: var(--ue5-input-bg);
+    border: 1px solid var(--ue5-input-border);
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+}
+
+.property-checkbox:hover {
+    border-color: #555;
+}
+
+.property-checkbox:checked {
+    background-color: var(--color-accent-blue);
+    border-color: var(--color-accent-blue);
+}
+
+.property-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* Dropdown */
+.property-select {
+    width: 100%;
+    background-color: var(--ue5-input-bg);
+    border: 1px solid var(--ue5-input-border);
+    border-radius: 2px;
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    padding: 4px 8px;
+    outline: none;
+    cursor: pointer;
+}
+
+.property-select:focus {
+    border-color: var(--color-accent-blue);
+}
+
+/* Validation States */
+.property-row.correct .property-input {
+    border-color: #4CAF50;
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+.property-row.incorrect .property-input {
+    border-color: #f44336;
+    background-color: rgba(244, 67, 54, 0.1);
+}
+
+/* Empty State */
+.details-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+}
+
+.details-empty i {
+    font-size: 32px;
+    margin-bottom: var(--spacing-md);
+    opacity: 0.5;
+}
+
+/* Vector3 Input (Location, Rotation, Scale) */
+.vector3-input {
+    display: flex;
+    gap: 4px;
+    width: 100%;
+}
+
+.vector3-input .axis-input {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background-color: var(--ue5-input-bg);
+    border: 1px solid var(--ue5-input-border);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.vector3-input .axis-label {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 4px 6px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    min-width: 18px;
+    text-align: center;
+}
+
+.vector3-input .axis-label.x { color: #e74c3c; }
+.vector3-input .axis-label.y { color: #2ecc71; }
+.vector3-input .axis-label.z { color: #3498db; }
+
+.vector3-input .axis-value {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    padding: 4px 6px;
+    outline: none;
+    width: 100%;
+    min-width: 40px;
+}
+
+.vector3-input .axis-input:focus-within {
+    border-color: var(--color-accent-blue);
+}
+
+/* Color Picker */
+.color-picker-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.color-preview {
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--ue5-input-border);
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.color-input {
+    width: 0;
+    height: 0;
+    opacity: 0;
+    position: absolute;
+}
+
+.color-hex {
+    flex: 1;
+    background-color: var(--ue5-input-bg);
+    border: 1px solid var(--ue5-input-border);
+    border-radius: 2px;
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    padding: 4px 8px;
+    font-family: monospace;
+}
+
+/* Asset Reference */
+.asset-reference {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+}
+
+.asset-reference .asset-name {
+    flex: 1;
+    background-color: var(--ue5-input-bg);
+    border: 1px solid var(--ue5-input-border);
+    border-radius: 2px;
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    padding: 4px 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.asset-reference .browse-btn {
+    background-color: var(--color-bg-light);
+    border: 1px solid var(--ue5-input-border);
+    border-radius: 2px;
+    color: var(--text-secondary);
+    padding: 4px 8px;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.asset-reference .browse-btn:hover {
+    background-color: #444;
+    color: var(--text-primary);
+}
+
+/* Sub-property (nested) */
+.property-row.sub-property {
+    padding-left: calc(var(--spacing-md) + 16px);
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.property-row.sub-property .property-name {
+    color: var(--text-muted);
+}
+
+/* Mobility dropdown colors */
+.mobility-static { color: #888; }
+.mobility-stationary { color: #f1c40f; }
+.mobility-movable { color: #2ecc71; }
+
+/* Reset button for properties */
+.reset-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 2px 4px;
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.property-row:hover .reset-btn {
+    opacity: 1;
+}
+
+.reset-btn:hover {
+    color: var(--color-accent-blue);
+}
+
+/* Sub-category (nested within category) */
+.sub-category {
+    border-left: 2px solid rgba(255, 255, 255, 0.1);
+    margin-left: 8px;
+    margin-bottom: 4px;
+}
+
+.sub-category-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    user-select: none;
+}
+
+.sub-category-header:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.sub-category-header .expand-icon {
+    font-size: 9px;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+}
+
+.sub-category-header.collapsed .expand-icon {
+    transform: rotate(-90deg);
+}
+
+.sub-category-content {
+    display: block;
+}
+
+.sub-category-header.collapsed + .sub-category-content {
+    display: none;
+}
+
+.sub-category .property-row {
+    padding-left: calc(var(--spacing-md) + 8px);
+}
+
+
+
+/* =====================================================
+   TRANSFORM SECTION - UE5 Style Dropdowns & Mobility
+   ===================================================== */
+
+/* Transform row with dropdown label */
+.transform-row {
+    grid-template-columns: auto 1fr;
+}
+
+.transform-label-dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding-right: 8px;
+}
+
+.transform-mode-select {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    padding: 4px 16px 4px 4px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    min-width: 70px;
+}
+
+.transform-mode-select:hover {
+    color: var(--text-primary);
+}
+
+.transform-dropdown-arrow {
+    position: absolute;
+    right: 8px;
+    font-size: 8px;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.scale-lock-icon {
+    font-size: 10px;
+    color: var(--text-muted);
+    cursor: pointer;
+    margin-right: 4px; /* Move to right of label, left of input */
+}
+
+.scale-lock-icon:hover {
+    color: var(--text-primary);
+}
+
+.scale-lock-icon.locked {
+    color: var(--color-accent-blue);
+}
+
+/* Vector Input Styling (Location, Rotation, Scale) */
+.vector-input {
+    display: flex;
+    gap: 1px; /* Very tight spacing like UE5 */
+    flex: 1;
+    max-width: 600px; /* Prevent over-stretching on wide screens */
+    align-items: center;
+}
+
+.vector-field {
+    display: flex;
+    align-items: center;
+    background-color: var(--ue5-bg-input);
+    border: 1px solid #111;
+    border-radius: 2px;
+    flex: 1;
+    min-width: 0; /* Allow shrinking */
+    height: 20px;
+}
+
+.vector-label {
+    width: 14px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    color: #111; /* Dark text on bright colored label */
+    border-radius: 1px 0 0 1px;
+    flex-shrink: 0;
+}
+
+.vector-label.x { background-color: var(--ue5-axis-x); }
+.vector-label.y { background-color: var(--ue5-axis-y); }
+.vector-label.z { background-color: var(--ue5-axis-z); }
+
+.vector-value {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 10px;
+    padding: 0 4px;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+}
+
+.vector-value:focus {
+    outline: none;
+    background-color: #222;
+}
+
+/* Hide number arrows */
+.vector-value::-webkit-inner-spin-button,
+.vector-value::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Mobility toggle buttons */
+.mobility-buttons {
+    display: flex;
+    gap: 0;
+}
+
+.mobility-btn {
+    background: var(--ue5-input-bg);
+    border: 1px solid var(--ue5-input-border);
+    color: var(--text-muted);
+    font-size: 10px;
+    padding: 4px 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mobility-btn:first-child {
+    border-radius: 2px 0 0 2px;
+}
+
+.mobility-btn:last-child {
+    border-radius: 0 2px 2px 0;
+}
+
+.mobility-btn:not(:last-child) {
+    border-right: none;
+}
+
+.mobility-btn:hover {
+    background: var(--color-bg-light);
+    color: var(--text-primary);
+}
+
+.mobility-btn.active {
+    background: #404040;
+    border-color: #888;
+    color: white;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.3);
+}
+
+/* Unit label after input (e.g., "lux") */
+.input-with-unit {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+}
+
+.input-with-unit .property-input {
+    flex: 1;
+}
+
+.input-unit {
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+/* Lighting Channels buttons (0, 1, 2) */
+.lighting-channels {
+    display: flex;
+    gap: 4px;
+}
+
+.channel-btn {
+    background: var(--ue5-input-bg);
+    border: 1px solid var(--ue5-input-border);
+    color: var(--text-muted);
+    font-size: 10px;
+    padding: 4px 10px;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.channel-btn.active {
+    background: var(--color-accent-blue);
+    border-color: var(--color-accent-blue);
+    color: white;
+}
+
+.channel-btn:hover:not(.active) {
+    background: var(--color-bg-light);
+}
+
+/* =====================================================
+   TRANSFORM CUSTOM DROPDOWNS - UE5 Style
+   ===================================================== */
+
+.transform-row {
+    grid-template-columns: auto 1fr;
+}
+
+.transform-label-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.transform-label-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--ue5-input-bg);
+    border: 1px solid var(--ue5-input-border);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.transform-label-btn:hover {
+    background: var(--color-bg-light);
+    border-color: var(--ue5-input-border);
+    color: var(--text-primary);
+}
+
+.transform-label-btn .chevron {
+    font-size: 8px;
+    color: var(--text-muted);
+}
+
+/* Scale lock button */
+.scale-lock-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 11px;
+    cursor: pointer;
+    padding: 2px 4px;
+}
+
+.scale-lock-btn:hover {
+    color: var(--text-primary);
+}
+
+.scale-lock-btn.locked i {
+    color: var(--color-accent-blue);
+}
+
+/* Transform dropdown menu */
+.transform-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    background: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 3px;
+    min-width: 150px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    margin-top: 2px;
+}
+
+.transform-dropdown.visible {
+    display: block;
+}
+
+.transform-dropdown .dropdown-title {
+    padding: 8px 12px;
+    font-size: 10px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.transform-dropdown .dropdown-divider {
+    height: 1px;
+    background: linear-gradient(to right, #444, transparent);
+    margin: 0 8px 4px 8px;
+}
+
+.transform-dropdown .dropdown-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 12px;
+    color: white;
+}
+
+.transform-dropdown .dropdown-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.transform-dropdown .dropdown-option input[type="radio"] {
+    display: none;
+}
+
+.transform-dropdown .radio-circle {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid #666;
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.transform-dropdown .dropdown-option input[type="radio"]:checked + .radio-circle {
+    border-color: var(--color-accent-blue);
+    background: var(--color-accent-blue);
+}
+
+.transform-dropdown .dropdown-option input[type="radio"]:checked + .radio-circle::after {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: white;
+}
+
+/* =====================================================
+   DETAILS PANEL COLUMN RESIZER
+   ===================================================== */
+
+.details-column-resizer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: transparent;
+    cursor: col-resize;
+    z-index: 50;
+    transition: background 0.15s;
+}
+
+.details-column-resizer:hover,
+.details-column-resizer.dragging {
+    background: var(--color-accent-blue);
+}
+
+/* Adjust property row to support variable column widths */
+#details-properties {
+    --name-column-width: 40%;
+    position: relative;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.property-row {
+    display: grid;
+    grid-template-columns: var(--name-column-width, 40%) 1fr 26px;
+    align-items: center;
+    min-height: 24px;
+    border-bottom: 1px solid #1a1a1a;
+}
+
+.property-name-col {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding-left: 2px;
+    overflow: hidden;
+    border-right: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.property-name {
+    font-size: 11px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 4px;
+}
+
+.property-value {
+    padding-left: 8px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.modified-indicator {
+    width: 3px;
+    height: 100%;
+    background-color: transparent;
+    flex-shrink: 0;
+}
+
+.modified-indicator.active {
+    background-color: #f1c40f;
+}
+
+.property-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding-right: 4px;
+}
+
+/* =====================================================
+   PROPERTY RESET BUTTONS (Right column)
+   ===================================================== */
+
+/* Reset buttons for properties */
+.property-reset {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.3;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.property-reset:hover {
+    opacity: 1;
+    color: var(--text-primary);
+}
+
+/* Show reset button more visibly when property is modified */
+.property-row.modified .property-reset {
+    opacity: 0.7;
+    color: var(--color-accent-blue);
+}
+
+.property-row.modified .property-reset:hover {
+    opacity: 1;
+}
+
+/* Transform row also needs reset column */
+.transform-row {
+    grid-template-columns: auto 1fr 24px !important;
+}
+
+/* =====================================================
+   UE5-STYLE PANEL TITLE BAR
+   ===================================================== */
+
+.panel-title-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, #2a2a2a, #1e1e1e);
+    border-bottom: 1px solid #0d0d0d;
+    padding: 0;
+    min-height: 28px;
+}
+
+.title-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.ue-logo-small {
+    width: 24px;
+    height: 24px;
+    padding: 4px 8px;
+    opacity: 0.8;
+}
+
+.panel-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    padding: 4px 10px;
+    font-size: 11px;
+    color: var(--text-primary);
+    cursor: pointer;
+    margin-left: -1px;
+}
+
+.panel-tab.active {
+    background: #262626;
+    border-color: #444;
+}
+
+.panel-tab i {
+    font-size: 10px;
+    color: var(--text-secondary);
+}
+
+.tab-close {
+    margin-left: 8px;
+    color: var(--text-muted);
+    font-size: 9px;
+    cursor: pointer;
+    padding: 2px;
+}
+
+.tab-close:hover {
+    color: var(--text-primary);
+}
+
+.title-bar-right {
+    display: flex;
+    align-items: center;
+}
+
+.window-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.window-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.window-btn.close:hover {
+    background: #c42b1c;
+    color: white;
+}
+
+/* =====================================================
+   ACTOR HEADER SECTION (UE5-style)
+   ===================================================== */
+
+.details-actor-header {
+    border-bottom: 1px solid var(--ue5-border-color);
+}
+
+/* Consolidated Actor Row (UE5 Style) */
+.details-actor-row-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 12px;
+    background: #2a2a2a;
+    border-bottom: 1px solid #111;
+}
+
+.actor-info-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.details-icon {
+    width: 16px;
+    height: 16px;
+}
+
+#details-actor-name-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.details-actor-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.add-component-btn-v2 {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #333333;
+    border: 1px solid #444;
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 11px;
+    padding: 2px 10px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.add-component-btn-v2 i {
+    color: #4CAF50; /* UE5 Green Plus */
+    font-size: 12px;
+}
+
+.add-component-btn-v2:hover {
+    background: #444;
+    border-color: #555;
+}
+
+.actor-action-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px;
+    opacity: 0.6;
+    transition: all 0.1s;
+}
+
+.actor-action-btn:hover {
+    color: var(--text-primary);
+    opacity: 1;
+}
+
+/* Instance Row (highlighted selected) */
+.instance-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.instance-row.selected {
+    background: linear-gradient(to right, #0d47a1, #1565c0);
+    color: white;
+}
+
+.instance-icon {
+    font-size: 10px;
+    color: inherit;
+}
+
+/* Component Tree Row */
+.component-tree-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px 4px 20px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: #1e1e1e;
+}
+
+.tree-indent {
+    width: 12px;
+    border-left: 1px solid #444;
+    height: 14px;
+    margin-left: 4px;
+}
+
+.component-icon {
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.edit-cpp-link {
+    margin-left: auto;
+    color: #5dade2;
+    font-size: 10px;
+    text-decoration: none;
+}
+
+.edit-cpp-link:hover {
+    text-decoration: underline;
+}
+
+/* =====================================================
+   HORIZONTAL SECTION SPLITTER - UE5 Style
+   ===================================================== */
+
+.details-h-splitter {
+    height: 4px;
+    background-color: #3a3a3a;
+    cursor: row-resize;
+    transition: background-color 0.15s;
+    z-index: 200;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.details-h-splitter:hover,
+.details-h-splitter.dragging {
+    background-color: #555;
+}
+
+/* Minimal height to keep splitter grabbable - UE5 allows nearly full collapse */
+#details-actor-section {
+    min-height: 20px;
+}
+
+#details-content {
+    min-height: 20px;
+}
+
+/* =====================================================
+   UE5 HIGH-FIDELITY PROPERTY UI (1:1 Parity)
+   ===================================================== */
+
+/* Vertical "Modified" indicator - Yellow for changed, gray for default */
+.modified-indicator {
+    width: 3px;
+    height: 100%;
+    background-color: transparent;
+    margin-right: 6px;
+    flex-shrink: 0;
+}
+
+.modified-indicator.active {
+    background-color: #ffd700; /* Yellow */
+}
+
+.property-row:hover .modified-indicator:not(.active) {
+    background-color: #444; /* Dark gray for default values on hover */
+}
+
+/* Advanced property toggle (arrow at category bottom) */
+.advanced-property-toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px;
+    background-color: rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.advanced-property-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+/* Advanced property row style */
+.property-row.advanced-property {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Disabled state for EditCondition failures */
+.property-row.disabled {
+    opacity: 0.5;
+    filter: grayscale(0.8);
+    pointer-events: none;
+}
+
+.property-row.disabled .property-name,
+.property-row.disabled .property-value {
+    color: var(--text-muted);
+}
+
+/* High-fidelity reset button */
+.property-reset-v2 {
+    background: transparent;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    padding: 2px 4px;
+    font-size: 11px;
+    visibility: hidden;
+}
+
+.property-row:hover .property-reset-v2 {
+    /* Always show on hover in UE5, but yellow when modified */
+    visibility: visible;
+}
+
+.property-row.modified .property-reset-v2 {
+    visibility: visible;
+    color: #ffd700;
+}
+
+.property-row.modified .property-name {
+    color: var(--text-primary); /* Slightly brighter when modified */
+}
+
+/* Details Search Row */
+.details-search-row {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    gap: 4px;
+    background-color: var(--bg-header);
+    border-bottom: 1px solid var(--ue5-border-color);
+}
+
+.search-utilities {
+    display: flex;
+    gap: 2px;
+}
+
+.search-util-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-muted);
+    font-size: 11px;
+    padding: 4px 6px;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.search-util-btn:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: #444;
+    color: var(--text-primary);
+}

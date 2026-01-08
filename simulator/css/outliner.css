@@ -1,0 +1,241 @@
+/*
+ * UE5 Level Editor Simulator - Outliner Panel Styles
+ * World Outliner tree view with actor list
+ */
+
+/* Outliner Filter Buttons */
+.outliner-filters {
+    display: flex;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.filter-btn {
+    background-color: var(--color-bg-light);
+    border: 1px solid var(--ue5-input-border);
+    border-radius: 3px;
+    color: var(--text-secondary);
+    font-size: 10px;
+    padding: 2px 8px;
+    cursor: pointer;
+}
+
+.filter-btn:hover {
+    background-color: #444;
+    color: var(--text-primary);
+}
+
+.filter-btn.active {
+    background-color: var(--color-selection-blue);
+    border-color: var(--color-selection-blue);
+    color: white;
+}
+
+/* Tree Column Headers */
+.tree-header {
+    display: grid;
+    grid-template-columns: 1fr 80px;
+    padding: var(--spacing-xs) var(--spacing-md);
+    background-color: var(--bg-header);
+    border-bottom: 1px solid var(--color-border);
+    font-size: 10px;
+    color: var(--text-secondary);
+}
+
+/* Tree Items */
+.tree-item {
+    display: grid;
+    grid-template-columns: 14px 18px 1fr 70px;
+    align-items: center;
+    padding: 0 4px;
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    color: var(--text-main);
+    border-left: 2px solid transparent;
+    user-select: none;
+    height: var(--tree-row-height);
+    min-height: var(--tree-row-height);
+}
+
+.tree-item:nth-child(odd) {
+    background-color: rgba(255, 255, 255, 0.01);
+}
+
+.tree-item:hover {
+    background-color: #2e2e2e;
+}
+
+.tree-item.selected {
+    background-color: var(--color-selection-blue);
+    color: white;
+}
+
+/* Expand arrow */
+.tree-item .expand-arrow {
+    font-size: 10px;
+    color: var(--text-muted);
+    transition: transform 0.15s;
+    cursor: pointer;
+}
+
+.tree-item .expand-arrow:hover {
+    color: var(--text-primary);
+}
+
+.tree-item.collapsed .expand-arrow {
+    transform: rotate(-90deg);
+}
+
+.tree-item .expand-arrow-spacer {
+    width: 10px;
+    display: inline-block;
+}
+
+/* Visibility icon - hidden by default, visible on hover/selection */
+.tree-item .visibility-icon {
+    color: var(--text-muted);
+    font-size: 10px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.tree-item:hover .visibility-icon,
+.tree-item.selected .visibility-icon {
+    opacity: 1;
+}
+
+.tree-item .visibility-icon:hover {
+    color: var(--text-primary);
+}
+
+.tree-item .visibility-icon.visible {
+    color: var(--text-primary);
+}
+
+.tree-item .actor-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: var(--spacing-sm);
+    vertical-align: middle;
+}
+
+/* For i tag icons (Font Awesome fallback) */
+.tree-item i.actor-icon {
+    font-size: 12px;
+    width: auto;
+    height: auto;
+}
+
+/* Actor Type Colors */
+.tree-item .actor-icon.light {
+    color: #FFD700;
+}
+
+.tree-item .actor-icon.mesh {
+    color: #00BFFF;
+}
+
+.tree-item .actor-icon.terrain {
+    color: #8B4513;
+}
+
+.tree-item .actor-icon.camera {
+    color: #FF6347;
+}
+
+.tree-item .actor-icon.folder-icon {
+    color: #FFC107;
+}
+
+.tree-item .actor-icon.player {
+    color: #00BCD4;
+}
+
+.tree-item .actor-icon.default {
+    color: var(--text-secondary);
+}
+
+.tree-item .actor-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tree-item .actor-type {
+    font-size: 10px;
+    color: var(--text-secondary);
+    text-align: right;
+}
+
+/* Nested items (children) - supports deep nesting */
+.tree-item.indent-1 { padding-left: calc(var(--spacing-md) + 16px); }
+.tree-item.indent-2 { padding-left: calc(var(--spacing-md) + 32px); }
+.tree-item.indent-3 { padding-left: calc(var(--spacing-md) + 48px); }
+.tree-item.indent-4 { padding-left: calc(var(--spacing-md) + 64px); }
+.tree-item.indent-5 { padding-left: calc(var(--spacing-md) + 80px); }
+.tree-item.indent-6 { padding-left: calc(var(--spacing-md) + 96px); }
+.tree-item.indent-7 { padding-left: calc(var(--spacing-md) + 112px); }
+.tree-item.indent-8 { padding-left: calc(var(--spacing-md) + 128px); }
+.tree-item.indent-9 { padding-left: calc(var(--spacing-md) + 144px); }
+.tree-item.indent-10 { padding-left: calc(var(--spacing-md) + 160px); }
+
+/* Hidden children (collapsed folder) */
+.tree-item.hidden-child {
+    display: none;
+}
+
+/* Tree footer */
+.tree-footer {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 10px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--color-border);
+    background-color: var(--bg-header);
+}
+
+/* Drag and Drop States */
+.tree-item[draggable="true"] {
+    cursor: grab;
+}
+
+.tree-item[draggable="true"]:active {
+    cursor: grabbing;
+}
+
+.tree-item.dragging {
+    opacity: 0.5;
+    background-color: rgba(0, 120, 215, 0.2);
+}
+
+.tree-item.drag-over {
+    border-top: 2px solid var(--color-selection-blue);
+    background-color: rgba(0, 120, 215, 0.1);
+}
+
+.tree-item.drag-over-below {
+    border-bottom: 2px solid var(--color-selection-blue);
+}
+
+.tree-item.drag-over-into {
+    background-color: rgba(0, 120, 215, 0.3);
+    outline: 1px dashed var(--color-selection-blue);
+}
+
+/* Inline folder name input */
+.folder-name-input {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--color-selection-blue);
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    padding: 1px 4px;
+    width: 120px;
+    outline: none;
+}
+
+.folder-name-input:focus {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: var(--color-selection-blue);
+}

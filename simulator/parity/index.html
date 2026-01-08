@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UE5 Toolbar Reconstruction</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="ue-header">
+        <!-- TOP MENU BAR (28px) -->
+        <div id="ue-menu-bar">
+            <div class="menu-left">
+                <img src="../../assets/icons/UE-Icon-2023-White.svg" class="ue-logo-main" alt="UE">
+                <nav class="menu-nav">
+                    <div class="menu-item">File</div>
+                    <div class="menu-item">Edit</div>
+                    <div class="menu-item">Window</div>
+                    <div class="menu-item">Tools</div>
+                    <div class="menu-item">Build</div>
+                    <div class="menu-item">Select</div>
+                    <div class="menu-item">Actor</div>
+                    <div class="menu-item">Help</div>
+                </nav>
+            </div>
+            
+            <div class="menu-center">
+                <div class="warning-indicator">
+                    <img src="../icons/ue5/icon_tab_Levels_16x.png" class="warning-icon">
+                    <span class="warning-text">D1*</span>
+                </div>
+            </div>
+
+            <div class="menu-right">
+                <span class="project-title">UEScenarioFactory</span>
+                <div class="window-controls">
+                    <div class="win-btn win-min">
+                        <svg width="10" height="1" viewBox="0 0 10 1"><rect width="10" height="1" fill="currentColor"/></svg>
+                    </div>
+                    <div class="win-btn win-max">
+                        <svg width="10" height="10" viewBox="0 0 10 10"><path d="M0,0V10H10V0ZM1,1H9V9H1Z" fill="currentColor"/></svg>
+                    </div>
+                    <div class="win-btn win-close">
+                        <svg width="10" height="10" viewBox="0 0 10 10"><path d="M0,0L10,10M0,10L10,0" stroke="currentColor" stroke-width="1.2"/></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN TOOLBAR (44px) -->
+        <div id="ue-main-toolbar">
+            <!-- Group: File/Content -->
+            <div class="toolbar-group">
+                <button class="icon-btn" title="Save">
+                    <img src="../icons/ue5/icon_tab_SaveLayout_16x.png" alt="Save">
+                </button>
+                <button class="icon-btn" title="Content Browser">
+                    <img src="../icons/ue5/icon_tab_ContentBrowser_16x.png" alt="Content">
+                </button>
+            </div>
+
+            <div class="group-separator"></div>
+
+            <!-- Group: Mode -->
+            <div class="toolbar-group">
+                <div class="toolbar-dropdown" id="mode-dropdown">
+                    <img src="../icons/ue5/icon_tab_SelectionDetails_16x.png" class="dd-icon">
+                    <span class="dd-text">Selection Mode</span>
+                    <img src="../icons/ue5/Arrow_16px.png" class="dd-caret">
+                </div>
+            </div>
+
+            <div class="group-separator"></div>
+
+            <!-- Group: Add/Blueprints/Cine -->
+            <div class="toolbar-group">
+                <div class="icon-dropdown" title="Add">
+                    <img src="../icons/ue5/icon_tab_BuildSubmit_16x.png" alt="Add" style="filter: brightness(2) saturate(0) contrast(2);">
+                    <img src="../icons/ue5/Arrow_16px.png" class="btn-caret">
+                </div>
+                <div class="icon-dropdown" title="Blueprints">
+                    <img src="../icons/ue5/icon_tab_BlueprintDebugger_16x.png" alt="BP">
+                    <img src="../icons/ue5/Arrow_16px.png" class="btn-caret">
+                </div>
+                <div class="icon-dropdown" title="Cinematics">
+                    <img src="../icons/ue5/icon_tab_Cinematics_16x.png" alt="Cine">
+                    <img src="../icons/ue5/Arrow_16px.png" class="btn-caret">
+                </div>
+            </div>
+
+            <div class="group-separator"></div>
+
+            <!-- Group: Play Controls -->
+            <div class="toolbar-group play-group">
+                <button class="play-btn-main">
+                    <img src="../icons/ue5/icon_play_40x.png" style="width: 14px; height: 14px;">
+                </button>
+                <button class="icon-btn sm">
+                     <i class="pause-symbol">||</i>
+                </button>
+                <button class="icon-btn sm">
+                    <img src="../icons/ue5/icon_stop_40x.png" style="width: 14px; height: 14px;">
+                </button>
+                <div class="toolbar-ellipsis">
+                    <svg width="2" height="10" viewBox="0 0 2 10"><circle cx="1" cy="1.5" r="1" fill="#666"/><circle cx="1" cy="5" r="1" fill="#666"/><circle cx="1" cy="8.5" r="1" fill="#666"/></svg>
+                </div>
+            </div>
+
+            <div class="group-separator"></div>
+
+            <!-- Group: Platforms -->
+            <div class="toolbar-group">
+                <div class="toolbar-dropdown">
+                    <img src="../icons/ue5/icon_tab_DeviceManager_16x.png" class="dd-icon">
+                    <span class="dd-text">Platforms</span>
+                    <img src="../icons/ue5/Arrow_16px.png" class="dd-caret">
+                </div>
+            </div>
+
+            <div class="toolbar-spacer"></div>
+
+            <!-- Settings -->
+            <div class="toolbar-group">
+                <button class="icon-btn settings-cog">
+                    <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8,10.5a2.5,2.5,0,1,1,2.5-2.5A2.5,2.5,0,0,1,8,10.5ZM16,8a8.2,8.2,0,0,0-.1-1.2l-1.8-.3-.4-1,1.1-1.5L13.4,2.6,11.9,3.7l-1-.4L10.6.1l-2.6,0-.3,1.8-1,.4L5.2,1.2l-1.4,1.4,1.1,1.5-.4,1-1.8.3L2.6,8a8.2,8.2,0,0,0,.1,1.2l1.8.3.4,1-1.1,1.5,1.4,1.4,1.5-1.1,1,.4.3,1.8,2.6,0,.3-1.8,1-.4,1.5,1.1,1.4-1.4-1.1-1.5.4-1,1.8-.3A8.2,8.2,0,0,0,16,8Z" fill="currentColor"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="toolbar.js"></script>
+</body>
+</html>

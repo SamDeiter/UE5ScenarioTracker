@@ -398,7 +398,11 @@
     <script src="scenarios/worldbuilding/DataLayerStreamingOverride.js" defer></script>
     <script src="scenarios/tech_art/generator.js" defer></script>
 
-    <!-- Load Game Logic SECOND (using defer, ensuring it runs after scenarios) -->
-    <script src="game.js?v=2" defer></script>
+    <!-- Game Logic Modules (load before game.js) -->
+    <script src="js/game/GameState.js" defer></script>
+    <script src="js/game/AssessmentModal.js" defer></script>
+
+    <!-- Load Game Logic LAST (using defer, ensuring it runs after all modules) -->
+    <script src="game.js?v=3" defer></script>
   </body>
 </html>

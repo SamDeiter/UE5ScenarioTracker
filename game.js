@@ -1150,6 +1150,17 @@ document.addEventListener("DOMContentLoaded", () => {
     totalLoggedTime = null,
     stateToUse = scenarioState
   ) {
+    // Delegate to AssessmentModal module if available
+    if (window.AssessmentModal) {
+      AssessmentModal.show(status, totalLoggedTime, stateToUse, {
+        pauseTimer: pauseMainTimer,
+        timesUpScreen: timesUpScreen,
+        jiraBoard: jiraBoard,
+      });
+      return;
+    }
+
+    // Fallback: Original inline implementation
     pauseMainTimer(); // Ensure timer stops when the modal appears
 
     let mainTitle, subText, mainTitleColor;

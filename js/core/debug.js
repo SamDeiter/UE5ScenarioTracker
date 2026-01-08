@@ -73,8 +73,9 @@ const DebugManager = (function () {
 
   /**
    * Show password input modal
+   * @param {Function} onSuccess - Callback to run when password is correct
    */
-  function showPasswordModal() {
+  function showPasswordModal(onSuccess = null) {
     if (passwordModalVisible) return;
     passwordModalVisible = true;
 
@@ -113,8 +114,13 @@ const DebugManager = (function () {
 
     const checkPassword = () => {
       if (input.value === password) {
-        toggle(); // Enable Debug Mode
         cleanup();
+        // Call the success callback if provided, otherwise toggle internally
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          toggle();
+        }
       } else {
         input.value = "";
         input.placeholder = "Incorrect Password!";

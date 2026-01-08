@@ -207,70 +207,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /**
-   * Shows the password input modal when the secret key combination is pressed.
+
+   * Shows the password input modal (delegated to DebugManager)
    */
   function showPasswordModal() {
-    if (debugAccessState.passwordModalVisible) return;
-    debugAccessState.passwordModalVisible = true;
-
-    const modalHtml = `
-            <div id="password-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-[999] flex items-center justify-center">
-                <div class="bg-gray-800 p-8 rounded-xl shadow-2xl text-center max-w-sm w-full">
-                    <h3 class="text-xl font-bold text-neutral-100 mb-4">Administrator Access Required</h3>
-                    <p class="text-gray-300 mb-6">Enter the password to enable Debug Mode:</p>
-                    <input type="password" id="password-input" placeholder="Password..." 
-                           class="w-full p-3 rounded-lg bg-neutral-700 border border-neutral-600 text-yellow-300 focus:ring-emerald-500 focus:border-emerald-500 text-center mb-4">
-                    <div class="flex justify-around space-x-3">
-                        <button id="submit-password" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition-all duration-200">
-                            Enable
-                        </button>
-                        <button id="cancel-password" class="flex-1 bg-neutral-600 hover:bg-neutral-700 text-white font-semibold py-2 rounded-lg transition-all duration-200">
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-
-    document.body.insertAdjacentHTML("beforeend", modalHtml);
-
-    const modal = document.getElementById("password-modal");
-    const input = document.getElementById("password-input");
-
-    input.focus();
-
-    const cleanup = () => {
-      modal.remove();
-      debugAccessState.passwordModalVisible = false;
-    };
-
-    const checkPassword = () => {
-      if (input.value === DEBUG_PASSWORD) {
-        toggleDebugMode(); // Enable Debug Mode
-        cleanup();
-      } else {
-        input.value = "";
-        input.placeholder = "Incorrect Password!";
-        input.classList.add("ring-2", "ring-red-500");
-        setTimeout(() => {
-          input.classList.remove("ring-2", "ring-red-500");
-        }, 1000);
-      }
-    };
-
-    document
-      .getElementById("submit-password")
-      .addEventListener("click", checkPassword);
-    document
-      .getElementById("cancel-password")
-      .addEventListener("click", cleanup);
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        checkPassword();
-      } else if (e.key === "Escape") {
-        cleanup();
-      }
-    });
+    DebugManager.showPasswordModal(toggleDebugMode);
   }
 
   /**

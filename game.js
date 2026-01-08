@@ -92,39 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return btoa(utf8Bytes);
   }
 
-  // --- TIMER & TIME UTILITIES ---
-
-  /**
-   * Converts total seconds into MM:SS format for display.
-   */
-  function formatTime(totalSeconds) {
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = Math.floor(totalSeconds % 60);
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
-      2,
-      "0"
-    )}`;
-  }
-
-  /**
-   * Calculates the time cost in hours based on the choice type.
-   * @param {string} type - 'correct', 'partial', 'misguided', 'wrong'.
-   * @returns {number} Time cost in hours.
-   */
-  function getTimeCostForChoice(type) {
-    switch (type) {
-      case "correct":
-        return 0.5; // Optimal
-      case "partial":
-        return 1.0; // Standard
-      case "misguided":
-        return 1.5; // Extended
-      case "wrong":
-        return 2.0; // Maximum
-      default:
-        return 0;
-    }
-  }
+  // --- TIMER & TIME UTILITIES (now using TimerManager module) ---
 
   // --- TIMER LOGIC ---
 
@@ -133,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
    */
   function updateMainTimerDisplay() {
     // 1. Update Display
-    countdownTimer.textContent = formatTime(timeRemaining);
+    countdownTimer.textContent = TimerManager.formatTime(timeRemaining);
 
     // 2. Update Color/Pulse based on time left
     countdownTimer.classList.remove(
@@ -486,23 +454,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /**
-   * Calculates the total ideal time (0.5 hours per step) across all scenarios.
-   */
-  function calculateTotalIdealTime() {
-    let totalSteps = 0;
-
-    Object.values(window.SCENARIOS).forEach((scenario) => {
-      if (scenario.steps) {
-        // Only count steps marked as core tasks if needed, but for simplicity, counting all steps now
-        totalSteps += Object.keys(scenario.steps).length;
-      }
-    });
-    return {
-      totalSteps: totalSteps,
-      idealTotalTime: totalSteps * 0.5,
-    };
-  }
+  // calculateIdealTime is now provided by ScoringManager module
 
   /**
    * Serializes all scenario choices into a compact, stable Base64 JSON string.
@@ -577,7 +529,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 scenario.steps[stepId] &&
                 scenario.steps[stepId].choices.length > originalIndex
               ) {
-                recalculateTime += getTimeCostForChoice(
+                recalculateTime += ScoringManager.getTimeCost(
                   scenario.steps[stepId].choices[originalIndex].type
                 );
               }
@@ -649,25 +601,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --- UI RENDERING & FLOW ---
-
-  /**
-   * Determines the color class for time logged vs. estimate.
-   */
-  function getLoggedTimeColorClass(logged, estimate) {
-    if (logged <= estimate) {
-      return "text-green-400";
-    }
-
-    const overBudgetRatio = logged / estimate;
-
-    if (overBudgetRatio <= 1.2) {
-      return "text-yellow-400";
-    } else if (overBudgetRatio <= 1.4) {
-      return "text-orange-400";
-    } else {
-      return "text-red-400";
-    }
-  }
+  // getTimeColorClass is now provided by ScoringManager module
 
   /**
    * Renders the list of tickets in the backlog (left column) - Assessment Module Style.
@@ -825,7 +759,10 @@ document.addEventListener("DOMContentLoaded", () => {
       // Metrics row
       let metricsHtml = "";
       if (state.completed) {
-        const loggedColorClass = getLoggedTimeColorClass(logged, estimate);
+        const loggedColorClass = ScoringManager.getTimeColorClass(
+          logged,
+          estimate
+        );
         metricsHtml = `
                     <div class="flex justify-between text-xs mt-2">
                         <span class="text-gray-500">Time Logged</span>
@@ -978,7 +915,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 8. Create Choice Buttons with letter prefixes
     shuffledChoices.forEach((choice, shuffledIndex) => {
-      const timeCost = getTimeCostForChoice(choice.type);
+      const timeCost = ScoringManager.getTimeCost(choice.type);
       const letter = letters[shuffledIndex] || String(shuffledIndex + 1);
 
       const btn = document.createElement("button");
@@ -1304,7 +1241,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const estimateHours = scenario.meta.estimateHours;
     const loggedHours = state.loggedTime;
 
-    const timeColorClass = getLoggedTimeColorClass(loggedHours, estimateHours);
+    const timeColorClass = ScoringManager.getTimeColorClass(
+      loggedHours,
+      estimateHours
+    );
 
     // Calculate overrun/underrun
     const timeDifference = loggedHours - estimateHours;
@@ -1472,8 +1412,8 @@ document.addEventListener("DOMContentLoaded", () => {
         );
       }
 
-      // Note: calculateTotalIdealTime correctly uses the global SCENARIOS data
-      const { idealTotalTime } = calculateTotalIdealTime();
+      // Note: ScoringManager.calculateIdealTime correctly uses the global SCENARIOS data
+      const { idealTotalTime } = ScoringManager.calculateIdealTime();
       const efficiencyScore =
         totalLoggedTime > 0 ? idealTotalTime / totalLoggedTime : 0;
       const finalEfficiencyPercent = Math.round(efficiencyScore * 100);

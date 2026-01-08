@@ -876,91 +876,29 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /**
-   * Shows inline feedback for incorrect choices in a professional manner.
+   * Shows inline feedback for choices (delegated to FeedbackManager with navigation logic).
    * @param {Object} choice - The choice object containing feedback text and type.
    * @param {Function} callback - Function to call after feedback is shown.
    */
   function showChoiceFeedback(choice, callback) {
-    // Determine feedback styling based on choice type - professional color scheme
-    let borderColor = "border-red-500";
-    let bgColor = "bg-red-900/10";
-    let textColor = "text-red-300";
-    let severity = "Consider this...";
-    let icon = "ⓘ";
-
-    if (choice.type === "correct") {
-      borderColor = "border-green-500";
-      bgColor = "bg-green-900/20";
-      textColor = "text-green-300";
-      severity = "Correct!";
-      icon = "✓";
-    } else if (choice.type === "partial" || choice.type === "plausible") {
-      borderColor = "border-yellow-500";
-      bgColor = "bg-yellow-900/10";
-      textColor = "text-yellow-300";
-      severity = "Almost there...";
-    } else if (choice.type === "misguided" || choice.type === "subtle") {
-      borderColor = "border-orange-500";
-      bgColor = "bg-orange-900/10";
-      textColor = "text-orange-300";
-      severity = "Think about it...";
-    }
-
-    // Create inline feedback banner - professional and subtle
-    const feedbackBanner = document.createElement("div");
-    feedbackBanner.id = "inline-feedback-banner";
-    feedbackBanner.className = `${bgColor} ${borderColor} border-l-4 p-4 mb-6 rounded-r-lg animate-slideIn`;
-    feedbackBanner.innerHTML = `
-            <div class="flex items-start gap-3">
-                <div class="${textColor} text-lg">${icon}</div>
-                <div class="flex-1">
-                    <div class="${textColor} font-semibold text-sm mb-1">${severity}</div>
-                    <div class="text-gray-300 text-sm leading-relaxed prose prose-sm prose-invert">
-                        ${
-                          choice.feedback ||
-                          "This approach may not be optimal. Please reconsider."
-                        }
-                    </div>
-                </div>
-                <button class="text-gray-400 hover:text-gray-200 transition-colors" onclick="this.parentElement.parentElement.remove()">
-                    ×
-                </button>
-            </div>
-        `;
-
-    // Insert banner at the top of step content (before prompt)
     const stepContent = document.getElementById("ticket-step-content");
-    if (stepContent && stepContent.firstChild) {
-      stepContent.insertBefore(feedbackBanner, stepContent.firstChild);
 
-      // Scroll banner into view smoothly
-      feedbackBanner.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    // Determine if this leads to a new step
+    const targetStep = choice.next;
+    const willNavigate = targetStep !== currentStepId;
 
-      // Auto-dismiss after 5 seconds for better UX
-      setTimeout(() => {
-        if (feedbackBanner.parentElement) {
-          feedbackBanner.style.opacity = "0";
-          feedbackBanner.style.transition = "opacity 0.5s";
-          setTimeout(() => feedbackBanner.remove(), 500);
-        }
-      }, 5000);
-    }
-
-    // Call callback - delayed if it leads to a new step
-    if (callback) {
-      const scenarioData = window.SCENARIOS[currentScenarioId];
-      const step = scenarioData.steps[currentStepId];
-      const targetStep = choice.next;
-
-      if (targetStep !== currentStepId) {
-        // If it leads to a new step, give them time to read it
-        console.log("[Game] Feedback will auto-navigate in 1.5s...");
-        setTimeout(callback, 1500);
-      } else {
-        // If it stays on the same step, just run the callback (which might do nothing per my update above)
-        callback();
-      }
-    }
+    // Use FeedbackManager to show feedback
+    FeedbackManager.showChoiceFeedback({
+      choice: choice,
+      container: stepContent,
+      onContinue:
+        callback && willNavigate
+          ? () => {
+              console.log("[Game] Feedback will auto-navigate in 1.5s...");
+              setTimeout(callback, 1500);
+            }
+          : callback,
+    });
   }
 
   /**

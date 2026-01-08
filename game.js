@@ -770,6 +770,12 @@ document.addEventListener("DOMContentLoaded", () => {
       // Attach data
       btn.dataset.choiceNext = choice.next;
       btn.dataset.choiceTimeCost = timeCost;
+      btn.dataset.choiceType = choice.type || "wrong";
+
+      // Store feedback for filler choices (encode to handle HTML)
+      if (choice.feedback) {
+        btn.dataset.choiceFeedback = encodeURIComponent(choice.feedback);
+      }
 
       const originalIndexInChoices = step.choices.indexOf(choice);
       btn.dataset.originalIndex =
@@ -803,21 +809,45 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.classList.add("processing");
     });
 
-    const { choiceNext, choiceTimeCost, originalIndex } = choiceButton.dataset;
+    const {
+      choiceNext,
+      choiceTimeCost,
+      originalIndex,
+      choiceFeedback,
+      choiceType,
+    } = choiceButton.dataset;
     const timeCost = parseFloat(choiceTimeCost);
     const index = parseInt(originalIndex, 10);
 
     // Get the choice data to access feedback
     const scenarioData = window.SCENARIOS[currentScenarioId];
     const step = scenarioData.steps[currentStepId];
-    const choice = step.choices[index];
+
+    // Handle filler choices (index=-1) vs original choices
+    let choice;
+    if (index === -1 || index < 0) {
+      // Filler choice - construct from dataset
+      choice = {
+        text:
+          choiceButton.querySelector(".choice-text")?.textContent?.trim() || "",
+        type: choiceType || "wrong",
+        feedback: choiceFeedback
+          ? decodeURIComponent(choiceFeedback)
+          : "<p>This approach won't help here. Try a different option.</p>",
+        next: choiceNext || currentStepId,
+      };
+      console.log("[Game] Processing filler choice:", choice.type);
+    } else {
+      choice = step.choices[index];
+    }
+
     const isCorrect = choice && choice.type === "correct";
 
     // 1. Log the time cost (updates global state)
     const state = scenarioState[currentScenarioId];
     state.loggedTime += timeCost;
 
-    // 2. Record the original index of the choice made
+    // 2. Record the original index of the choice made (or -1 for fillers)
     state.choicesMade[currentStepId] = index;
 
     saveScenarioState();

@@ -565,95 +565,24 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderBacklog() {
     backlogList.innerHTML = "";
 
-    const scenarioKeys = Object.keys(window.SCENARIOS);
+    // Use BacklogRenderer module for filtering
+    const validScenarios = BacklogRenderer.getValidScenarios();
+    const filteredScenarios = BacklogRenderer.filterByCategory(
+      validScenarios,
+      currentCategoryFilter
+    );
 
-    const validScenarios = scenarioKeys
-      .map((id) => ({ id, data: window.SCENARIOS[id] }))
-      .filter(
-        (item) =>
-          item.data &&
-          item.data.meta &&
-          item.data.meta.title &&
-          typeof item.data.meta.estimateHours !== "undefined"
-      );
-
-    // Apply category filter
-    const filteredScenarios = validScenarios.filter((item) => {
-      if (currentCategoryFilter === "all") return true;
-
-      // Get category from meta and normalize it
-      const meta = item.data.meta;
-      let rawCategory = (meta.category || "").toLowerCase();
-
-      // Normalize: replace non-alphanumeric with single underscore, trim underscores
-      let category = rawCategory
-        .replace(/[^a-z0-9]+/g, "_")
-        .replace(/^_+|_+$/g, "");
-
-      // Map old category names to new learning area filter values
-      const categoryMap = {
-        // Lighting & Rendering variations
-        lighting_rendering: "look_dev",
-        lighting: "look_dev",
-        rendering: "look_dev",
-        // Materials & Shaders variations
-        materials_shaders: "look_dev",
-        materials: "look_dev",
-        shaders: "look_dev",
-        // Physics & Collisions variations
-        physics_collisions: "game_dev",
-        physics: "game_dev",
-        collisions: "game_dev",
-        // Blueprints & Logic variations
-        blueprints_logic: "game_dev",
-        blueprints: "game_dev",
-        logic: "game_dev",
-        // Sequencer & Cinematics variations
-        sequencer_cinematics: "vfx",
-        sequencer: "vfx",
-        cinematics: "vfx",
-        // Asset Management variations
-        asset_management: "tech_art",
-        assets: "tech_art",
-        // World Partition & Streaming variations
-        world_partition_streaming: "worldbuilding",
-        world_partition: "worldbuilding",
-        streaming: "worldbuilding",
-        // UI variations
-        ui: "game_dev",
-        user_interface: "game_dev",
-        // Direct matches for new categories
-        worldbuilding: "worldbuilding",
-        game_dev: "game_dev",
-        look_dev: "look_dev",
-        tech_art: "tech_art",
-        vfx: "vfx",
-      };
-
-      const mappedCategory = categoryMap[category] || category;
-      return mappedCategory === currentCategoryFilter;
-    });
-
-    // Update overall progress display if it exists
+    // Update progress display
     const completedCount = filteredScenarios.filter(
       (item) => scenarioState[item.id]?.completed
     ).length;
-    const progressText = document.getElementById("progress-text");
-    const progressBar = document.getElementById("progress-bar");
-    if (progressText) {
-      const filterLabel =
-        currentCategoryFilter === "all"
-          ? ""
-          : ` (${currentCategoryFilter.replace("_", " ")})`;
-      progressText.textContent = `${completedCount} of ${filteredScenarios.length} modules complete${filterLabel}`;
-    }
-    if (progressBar) {
-      const percentage =
-        filteredScenarios.length > 0
-          ? (completedCount / filteredScenarios.length) * 100
-          : 0;
-      progressBar.style.width = `${percentage}%`;
-    }
+    const filterLabel =
+      currentCategoryFilter === "all" ? "" : currentCategoryFilter;
+    BacklogRenderer.updateProgressDisplay(
+      completedCount,
+      filteredScenarios.length,
+      filterLabel
+    );
 
     filteredScenarios.forEach((item, index) => {
       const scenarioId = item.id;

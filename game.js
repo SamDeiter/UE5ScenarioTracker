@@ -634,7 +634,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // 3. Get or create shuffled choices (only shuffle once per step)
     const cacheKey = `${scenarioId}_${stepId}`;
     if (!shuffledChoicesCache[cacheKey]) {
-      shuffledChoicesCache[cacheKey] = [...step.choices].sort(
+      // Enhance choices to ensure exactly 4 options
+      const skill = step.skill || "general";
+      const enhancedChoices = window.ChoiceEnhancer
+        ? ChoiceEnhancer.padChoices(step.choices, skill, stepId)
+        : step.choices;
+
+      shuffledChoicesCache[cacheKey] = [...enhancedChoices].sort(
         () => Math.random() - 0.5
       );
     }

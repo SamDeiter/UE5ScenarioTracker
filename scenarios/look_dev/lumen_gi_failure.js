@@ -62,6 +62,13 @@ window.SCENARIOS["lumen_gi_failure"] = {
             "<p>You checked the PPV settings - Lumen is enabled. If it were disabled, the GI wouldn't work at ANY distance.</p>",
           next: "step-0",
         },
+        {
+          text: "The mesh is too small to contribute significant GI",
+          type: "wrong",
+          feedback:
+            "<p>You measured the display - it's 10 meters wide. Size isn't the problem when it works fine up close.</p>",
+          next: "step-0",
+        },
       ],
     },
     "step-1": {
@@ -90,6 +97,13 @@ window.SCENARIOS["lumen_gi_failure"] = {
           type: "wrong",
           feedback:
             "<p>That's a collision setting, completely unrelated to lighting. Back to the Details panel...</p>",
+          next: "step-1",
+        },
+        {
+          text: "Use as Occluder",
+          type: "wrong",
+          feedback:
+            "<p>That's for occlusion culling optimization, not lighting contribution. Try a lighting-related property.</p>",
           next: "step-1",
         },
       ],
@@ -122,6 +136,13 @@ window.SCENARIOS["lumen_gi_failure"] = {
             "<p>You moved on without adjusting it... but the mesh contribution really does need a boost for large emissive surfaces.</p>",
           next: "step-3",
         },
+        {
+          text: "Set it to 50.0 for maximum effect",
+          type: "misguided",
+          feedback:
+            "<p>That's way too high - it's causing bloom artifacts and unrealistic lighting. 5.0 is a more reasonable boost.</p>",
+          next: "step-3",
+        },
       ],
     },
     "step-3": {
@@ -152,6 +173,13 @@ window.SCENARIOS["lumen_gi_failure"] = {
             "<p>Final Gather Quality affects bounce quality, not the maximum calculation distance. The GI still cuts off.</p>",
           next: "step-3",
         },
+        {
+          text: "Ray Lighting Mode",
+          type: "wrong",
+          feedback:
+            "<p>That controls the lighting evaluation method, not the distance at which GI is calculated.</p>",
+          next: "step-3",
+        },
       ],
     },
     "step-4": {
@@ -180,6 +208,13 @@ window.SCENARIOS["lumen_gi_failure"] = {
           type: "wrong",
           feedback:
             "<p>10,000 units = 100 meters. But you're past that range when viewing from 50m away from an emissive that needs to affect surfaces behind you. Increase it.</p>",
+          next: "step-4",
+        },
+        {
+          text: "Set it to 5,000 units (half the default)",
+          type: "wrong",
+          feedback:
+            "<p>Reducing the view distance made the problem WORSE. Now GI cuts off even closer. You need to increase it.</p>",
           next: "step-4",
         },
       ],

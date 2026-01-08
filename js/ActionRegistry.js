@@ -51,10 +51,16 @@ window.ActionRegistry = {
   },
 };
 
-// --- CORE ACTION HANDLERS ---
-
 // Action: set_ue_property
 // Uses the Remote Control API to execute a recipe via AutomationExecutor.py
+// Performance: Uses 500ms timeout + 30s cache to avoid blocking UI when UE5 is offline
+
+// Connection state cache
+let ue5ConnectionFailed = false;
+let ue5FailedAt = 0;
+const UE5_RETRY_DELAY = 30000; // 30 seconds before retrying failed connection
+const UE5_TIMEOUT_MS = 500; // 500ms timeout for faster failure
+
 ActionRegistry.register("set_ue_property", {
   validate(params) {
     if (!params.scenario) return "set_ue_property requires 'scenario'";
@@ -62,6 +68,14 @@ ActionRegistry.register("set_ue_property", {
     return null;
   },
   async execute(params) {
+    // Skip if we know UE5 is offline (cache for 30s)
+    if (ue5ConnectionFailed && Date.now() - ue5FailedAt < UE5_RETRY_DELAY) {
+      console.log(
+        "[ActionRegistry] Skipping UE5 action - connection cached as offline"
+      );
+      return;
+    }
+
     // 1. Ensure recipe is loaded
     await RecipeRegistry.loadRecipe(params.scenario);
 
@@ -78,18 +92,34 @@ ActionRegistry.register("set_ue_property", {
     const payload = JSON.stringify({ actions: actions });
     const cmd = `import AutomationExecutor; import importlib; importlib.reload(AutomationExecutor); AutomationExecutor.run_recipe(${payload})`;
 
+    // 4. Create abort controller with 500ms timeout for fast failure
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), UE5_TIMEOUT_MS);
+
     try {
       const response = await fetch("http://localhost:30010/remote/execution", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ command: cmd }),
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
+
       if (!response.ok) throw new Error(`UE5 HTTP Error: ${response.status}`);
+
+      // Reset failure state on success
+      ue5ConnectionFailed = false;
       console.log(`[ActionRegistry] UE5 recipe executed for ${params.step}`);
     } catch (err) {
+      clearTimeout(timeout);
+
+      // Cache the failure to skip future attempts for 30s
+      ue5ConnectionFailed = true;
+      ue5FailedAt = Date.now();
+
       console.warn(
         "[ActionRegistry] UE5 Connection failed. Action ignored.",
-        err
+        err.name === "AbortError" ? "(timeout)" : err
       );
     }
   },

@@ -192,6 +192,156 @@ const BacklogRenderer = (function () {
     return card;
   }
 
+  /**
+   * Full backlog render function
+   * @param {Object} options - Render options
+   * @param {HTMLElement} options.container - The backlog list container
+   * @param {Object} options.scenarioState - Current scenario states
+   * @param {Object} options.interruptedSteps - Map of interrupted steps per scenario
+   * @param {string} options.currentScenarioId - Currently active scenario ID
+   * @param {string} options.currentCategoryFilter - Current category filter
+   * @param {Function} options.onSelectScenario - Callback when a scenario is selected
+   */
+  function render(options) {
+    const {
+      container,
+      scenarioState,
+      interruptedSteps,
+      currentScenarioId,
+      currentCategoryFilter,
+      onSelectScenario,
+    } = options;
+
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    const validScenarios = getValidScenarios();
+    const filteredScenarios = filterByCategory(
+      validScenarios,
+      currentCategoryFilter
+    );
+
+    // Update progress display
+    const completedCount = filteredScenarios.filter(
+      (item) => scenarioState[item.id]?.completed
+    ).length;
+    const filterLabel =
+      currentCategoryFilter === "all" ? "" : currentCategoryFilter;
+    updateProgressDisplay(
+      completedCount,
+      filteredScenarios.length,
+      filterLabel
+    );
+
+    filteredScenarios.forEach((item, index) => {
+      const scenarioId = item.id;
+      const scenario = item.data;
+      const state = scenarioState[scenarioId];
+
+      const meta = scenario.meta;
+      const title = meta.title;
+      const category = (meta.category || "General").toLowerCase();
+
+      let estimate = parseFloat(meta.estimateHours);
+      if (isNaN(estimate)) estimate = 0;
+
+      const card = document.createElement("div");
+      const isActive = currentScenarioId === scenarioId && !state.completed;
+
+      // Build class list for scenario card
+      let cardClasses = "scenario-card mb-3";
+      if (state.completed) cardClasses += " completed";
+      if (isActive) cardClasses += " active";
+
+      card.className = cardClasses;
+      card.dataset.scenarioId = scenarioId;
+
+      // Status pill HTML
+      let statusPillHtml;
+      const logged = state.loggedTime;
+
+      if (state.completed) {
+        statusPillHtml = `<span class="status-pill completed">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Completed
+        </span>`;
+      } else {
+        const savedStepId = interruptedSteps[scenarioId];
+        if (savedStepId && savedStepId !== scenario.start) {
+          statusPillHtml = `<span class="status-pill in-progress">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            In Progress
+          </span>`;
+        } else {
+          statusPillHtml = `<span class="status-pill not-started">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+            </svg>
+            Not Started
+          </span>`;
+        }
+      }
+
+      // Metrics row
+      let metricsHtml = "";
+      if (state.completed) {
+        const loggedColorClass = ScoringManager.getTimeColorClass(
+          logged,
+          estimate
+        );
+        metricsHtml = `
+          <div class="flex justify-between text-xs mt-2">
+            <span class="text-gray-500">Time Logged</span>
+            <span class="${loggedColorClass} font-semibold">${logged.toFixed(
+          1
+        )} hrs</span>
+          </div>
+        `;
+      } else if (logged > 0) {
+        metricsHtml = `
+          <div class="flex justify-between text-xs mt-2">
+            <span class="text-gray-500">Progress</span>
+            <span class="text-yellow-400 font-semibold">${logged.toFixed(
+              1
+            )} hrs logged</span>
+          </div>
+        `;
+      }
+
+      const html = `
+        <div class="flex items-start justify-between mb-2">
+          <span class="category-badge ${category}">${category}</span>
+        </div>
+        <h4 class="font-bold text-sm ${
+          state.completed ? "text-gray-500 line-through" : "text-gray-100"
+        } mb-1">
+          Module ${index + 1}: ${title}
+        </h4>
+        <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-700/50">
+          ${statusPillHtml}
+          <span class="text-xs text-gray-500">${estimate.toFixed(
+            1
+          )} hrs est.</span>
+        </div>
+        ${metricsHtml}
+      `;
+
+      card.innerHTML = html;
+
+      if (!state.completed) {
+        card.addEventListener("click", () => onSelectScenario(scenarioId));
+      }
+
+      container.appendChild(card);
+    });
+  }
+
   // Public API
   return {
     normalizeCategory,
@@ -199,6 +349,7 @@ const BacklogRenderer = (function () {
     getValidScenarios,
     updateProgressDisplay,
     createScenarioCard,
+    render,
     CATEGORY_MAP,
   };
 })();

@@ -32,6 +32,19 @@ window.APP_CONFIG = {
     enableScormTracking: true,
     showTimerByDefault: true,
   },
+
+  // Time budget thresholds for color coding
+  TIME_BUDGET_THRESHOLDS: {
+    excellent: 1.2, // <= 120% of budget = green
+    acceptable: 1.4, // <= 140% of budget = yellow
+    // > 140% = red
+  },
+
+  // UE5 Connection settings
+  UE5_CONNECTION: {
+    retryDelayMs: 30000, // 30 seconds before retrying
+    timeoutMs: 500, // 500ms timeout for faster failure
+  },
 };
 
 // Allow environment override (for local development)

@@ -11,16 +11,19 @@ const TimerManager = (function () {
   let timerContainer = null;
   let onTimeUp = null;
 
-  // Configuration (will be set from APP_CONFIG)
-  let TOTAL_TIME = 30 * 60;
-  let LOW_TIME_WARNING = 5 * 60;
+  // Configuration (defaults from APP_CONFIG)
+  const appConfig = window.APP_CONFIG || {};
+  let TOTAL_TIME = appConfig.TOTAL_TEST_TIME_SECONDS || 30 * 60;
+  let LOW_TIME_WARNING = appConfig.LOW_TIME_WARNING_SECONDS || 5 * 60;
 
   /**
    * Initialize the timer with configuration and callbacks
    */
   function init(config = {}) {
-    TOTAL_TIME = config.totalTime || 30 * 60;
-    LOW_TIME_WARNING = config.lowTimeWarning || 5 * 60;
+    TOTAL_TIME =
+      config.totalTime || appConfig.TOTAL_TEST_TIME_SECONDS || 30 * 60;
+    LOW_TIME_WARNING =
+      config.lowTimeWarning || appConfig.LOW_TIME_WARNING_SECONDS || 5 * 60;
     timerElement =
       config.timerElement || document.getElementById("countdown-timer");
     timerContainer = timerElement ? timerElement.parentElement : null;

@@ -71,7 +71,9 @@ window.ScenarioManager = {
     const timeCost = state.loggedTime || 0;
     const efficiency =
       timeCost > 0 ? (scenarioIdealTime / timeCost) * 100 : 100;
-    const passed = efficiency >= 70;
+    const passThresholdPercent =
+      (window.APP_CONFIG?.PASS_THRESHOLD || 0.8) * 100;
+    const passed = efficiency >= passThresholdPercent;
 
     // Get remaining incomplete scenarios
     const incompleteScenarios = Object.entries(window.SCENARIOS || {})

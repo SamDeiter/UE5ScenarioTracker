@@ -54,10 +54,14 @@ const ScoringManager = (function () {
     }
 
     const overBudgetRatio = logged / estimate;
+    const thresholds = window.APP_CONFIG?.TIME_BUDGET_THRESHOLDS || {
+      excellent: 1.2,
+      acceptable: 1.4,
+    };
 
-    if (overBudgetRatio <= 1.2) {
+    if (overBudgetRatio <= thresholds.excellent) {
       return "text-yellow-400";
-    } else if (overBudgetRatio <= 1.4) {
+    } else if (overBudgetRatio <= thresholds.acceptable) {
       return "text-orange-400";
     } else {
       return "text-red-400";

@@ -58,8 +58,9 @@ window.ActionRegistry = {
 // Connection state cache
 let ue5ConnectionFailed = false;
 let ue5FailedAt = 0;
-const UE5_RETRY_DELAY = 30000; // 30 seconds before retrying failed connection
-const UE5_TIMEOUT_MS = 500; // 500ms timeout for faster failure
+const ue5Config = window.APP_CONFIG?.UE5_CONNECTION || {};
+const UE5_RETRY_DELAY = ue5Config.retryDelayMs || 30000; // 30 seconds before retrying failed connection
+const UE5_TIMEOUT_MS = ue5Config.timeoutMs || 500; // 500ms timeout for faster failure
 
 ActionRegistry.register("set_ue_property", {
   validate(params) {

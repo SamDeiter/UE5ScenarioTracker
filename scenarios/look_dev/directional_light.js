@@ -83,6 +83,27 @@ window.SCENARIOS["directional_light"] = {
             "<p>Right—dynamic shadow settings are on the light itself.</p>",
           next: "step-1",
         },
+        {
+          text: "Try rebuilding lighting with higher quality settings",
+          type: "wrong",
+          feedback:
+            "<p>Higher quality baked lighting won't help—Movable lights don't use baked shadows at all. The shadow settings are on the light actor.</p>",
+          next: "step-0W",
+        },
+        {
+          text: "Check the Post Process Volume exposure settings",
+          type: "misguided",
+          feedback:
+            "<p>Post Process handles color grading and exposure, not shadow rendering distance. The shadow cutoff is controlled by the light itself.</p>",
+          next: "step-0W",
+        },
+        {
+          text: "Convert the light to Stationary mobility",
+          type: "subtle",
+          feedback:
+            "<p>Changing mobility would switch to a different shadow system entirely. For a Movable light, you need to adjust its specific shadow distance settings.</p>",
+          next: "step-0W",
+        },
       ],
     },
     "step-1": {
@@ -223,6 +244,27 @@ window.SCENARIOS["directional_light"] = {
           feedback:
             "<p>Right! Cascades divide the shadow distance into slices, each with its own shadow map. More cascades = better quality distribution.</p>",
           next: "step-3",
+        },
+        {
+          text: "Shadow map resolution in Project Settings",
+          type: "misguided",
+          feedback:
+            "<p>Global shadow resolution affects all shadows and would impact performance everywhere. Cascades let you distribute quality more efficiently over distance.</p>",
+          next: "step-2W",
+        },
+        {
+          text: "Light Source Soft Angle",
+          type: "wrong",
+          feedback:
+            "<p>You already tried adjusting the angle settings. The problem is resolution distribution, not edge softness. Think about how CSM divides its shadow budget.</p>",
+          next: "step-2W",
+        },
+        {
+          text: "Shadow Filter Sharpen setting",
+          type: "subtle",
+          feedback:
+            "<p>Sharpening can help with soft edges but won't fix the fundamental resolution problem of stretching shadows over 500 meters with only 4 cascades.</p>",
+          next: "step-2W",
         },
       ],
     },

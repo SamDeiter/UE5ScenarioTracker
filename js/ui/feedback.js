@@ -49,25 +49,23 @@ const FeedbackManager = (function () {
 
     // Create feedback HTML
     const feedbackHtml = `
-      <div class="feedback-banner ${config.cssClass} animate-slideIn">
-        <span class="feedback-icon">${config.icon}</span>
-        <div class="feedback-content">
+      <div class="feedback-banner ${config.cssClass} animate-slideIn flex items-center gap-4">
+        <span class="feedback-icon flex-shrink-0">${config.icon}</span>
+        <div class="feedback-content flex-grow">
           <div class="feedback-title ${config.color}">${config.title}</div>
           <p class="feedback-text">${
             choice.feedback || "No feedback available."
           }</p>
         </div>
+        ${
+          !isCorrect
+            ? `<button id="feedback-continue-btn" 
+                class="ml-auto flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 text-sm">
+              Continue
+            </button>`
+            : ""
+        }
       </div>
-      ${
-        !isCorrect
-          ? `
-        <button id="feedback-continue-btn" 
-                class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all duration-200">
-          Continue
-        </button>
-      `
-          : ""
-      }
     `;
 
     // Insert at top of container

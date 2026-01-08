@@ -390,8 +390,11 @@ document.addEventListener("DOMContentLoaded", () => {
             (stepId) => {
               const originalIndex =
                 newScenarioState[scenarioId].choicesMade[stepId];
+              // Skip filler choices (originalIndex = -1) and invalid indices
               if (
+                originalIndex >= 0 &&
                 scenario.steps[stepId] &&
+                scenario.steps[stepId].choices &&
                 scenario.steps[stepId].choices.length > originalIndex
               ) {
                 recalculateTime += ScoringManager.getTimeCost(

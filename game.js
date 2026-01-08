@@ -78,22 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let timeRemaining = TOTAL_TEST_TIME_SECONDS; // Remaining time on the countdown timer
 
-  // --- ENCODING UTILITIES (Restored for Test Key Generation) ---
-  /**
-   * Encodes a string to a Unicode-safe Base64 string.
-   */
-  function base64EncodeUnicode(str) {
-    const utf8Bytes = encodeURIComponent(str).replace(
-      /%([0-9A-F]{2})/g,
-      function (match, p1) {
-        return String.fromCharCode("0x" + p1);
-      }
-    );
-    return btoa(utf8Bytes);
-  }
-
-  // --- TIMER & TIME UTILITIES (now using TimerManager module) ---
-
   // --- TIMER LOGIC ---
 
   /**
@@ -454,35 +438,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // calculateIdealTime is now provided by ScoringManager module
-
-  /**
-   * Serializes all scenario choices into a compact, stable Base64 JSON string.
-   * RESTORED FOR TRACKING PURPOSES.
-   */
-  function generateTestKey(stateToSerialize = scenarioState) {
-    const compactData = {};
-
-    Object.keys(stateToSerialize).forEach((scenarioId) => {
-      const state = stateToSerialize[scenarioId];
-      if (Object.keys(state.choicesMade).length > 0) {
-        // choicesMade contains the original (unshuffled) index, ensuring stability.
-        compactData[scenarioId] = state.choicesMade;
-      }
-    });
-
-    if (Object.keys(compactData).length === 0) {
-      return "No Choices Recorded";
-    }
-
-    try {
-      const jsonString = JSON.stringify(compactData);
-      return base64EncodeUnicode(jsonString);
-    } catch (e) {
-      console.error("Failed to generate test key:", e);
-      return "ERROR_SERIALIZING_CHOICES";
-    }
-  }
+  // generateTestKey and calculateIdealTime are now provided by ScoringManager module
 
   // --- STATE MANAGEMENT ---
 
@@ -1421,7 +1377,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // 2. Generate Test Key (Using the state that was passed in)
 
-      const testKey = generateTestKey(stateToUse);
+      const testKey = ScoringManager.generateTestKey(stateToUse);
 
       // 3. Report to SCORM/LMS (silently - user doesn't see this)
 

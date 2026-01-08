@@ -3,6 +3,10 @@
 .env.local
 *.env
 
+# Node
+node_modules/
+coverage/
+
 # Python
 __pycache__/
 *.py[cod]

@@ -1,0 +1,30 @@
+{
+  "name": "ue5scenariotracker",
+  "version": "1.0.0",
+  "description": "Interactive debugging assessment tool for UE5 knowledge testing.",
+  "main": "game.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "preview": "python -m http.server 8000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SamDeiter/UE5ScenarioTracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SamDeiter/UE5ScenarioTracker/issues"
+  },
+  "homepage": "https://github.com/SamDeiter/UE5ScenarioTracker#readme",
+  "devDependencies": {
+    "jsdom": "^27.4.0",
+    "vitest": "^4.0.16"
+  }
+}

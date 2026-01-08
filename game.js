@@ -490,7 +490,7 @@ document.addEventListener("DOMContentLoaded", () => {
    */
   function renderStep(scenarioId, stepId) {
     const scenario = window.SCENARIOS[scenarioId];
-    const step = scenario.steps[stepId];
+    const step = scenario?.steps?.[stepId];
 
     if (!step) {
       console.error(`Step "${stepId}" not found in scenario "${scenarioId}"`);
@@ -510,161 +510,14 @@ document.addEventListener("DOMContentLoaded", () => {
       resumeMainTimer();
     }
 
-    // 3. Get or create shuffled choices (only shuffle once per step)
-    const cacheKey = `${scenarioId}_${stepId}`;
-    if (!shuffledChoicesCache[cacheKey]) {
-      // Enhance choices to ensure exactly 4 options
-      const skill = step.skill || "general";
-      const enhancedChoices = window.ChoiceEnhancer
-        ? ChoiceEnhancer.padChoices(step.choices, skill, stepId)
-        : step.choices;
-
-      shuffledChoicesCache[cacheKey] = [...enhancedChoices].sort(
-        () => Math.random() - 0.5
-      );
-    }
-    const shuffledChoices = shuffledChoicesCache[cacheKey];
-
-    // 4. Determine Step Number for display
-    const stepKeys = Object.keys(scenario.steps).filter(
-      (k) => k !== "conclusion"
-    );
-    const stepIndex = stepKeys.indexOf(stepId);
-    const stepNumber = stepIndex !== -1 ? stepIndex + 1 : 1;
-    const totalSteps = stepKeys.length;
-
-    // 5. Build step progress dots (HIDDEN per user request)
-    let progressDotsHtml = '<div class="step-progress-container hidden">';
-    stepKeys.forEach((key, idx) => {
-      let dotClass = "step-dot";
-      if (idx < stepIndex) dotClass += " completed";
-      else if (idx === stepIndex) dotClass += " current";
-      progressDotsHtml += `<div class="${dotClass}"></div>`;
+    // 3. Delegate UI rendering to StepRenderer module
+    StepRenderer.render(scenarioId, stepId, {
+      container: ticketStepContent,
+      isDebugMode: isDebugMode,
+      shuffledChoicesCache: shuffledChoicesCache,
+      onChoiceClick: handleChoice,
+      onRenderComplete: renderBacklog,
     });
-    progressDotsHtml += `<span class="ml-3 text-xs text-gray-500">Question ${stepNumber} of ${totalSteps}</span></div>`;
-
-    // 6. Build screenshot HTML if image_path exists
-    let screenshotHtml = "";
-    if (step.image_path) {
-      let imageSrc = step.image_path;
-      if (!imageSrc.startsWith("assets/")) {
-        // Look in scenario-specific folder: assets/generated/scenario_id/image.png
-        imageSrc = `assets/generated/${scenarioId}/${imageSrc}`;
-      }
-      screenshotHtml = `
-                <div class="screenshot-area mb-6" onclick="openImageModal('${imageSrc}')">
-                    <img 
-                        src="${imageSrc}" 
-                        alt="${
-                          scenario.meta ? scenario.meta.title : scenario.title
-                        }" 
-                        class="w-full rounded-lg border border-gray-700"
-                        onerror="this.src='assets/generated/${scenarioId}/viewport.png'; this.onerror=function(){ this.src='assets/generated/directional_light/viewport.png'; this.onerror=null; };"
-                    />
-                </div>
-            `;
-    }
-
-    // 7. Build the Step Prompt and Choices with assessment styling
-    // Layout: Two-column (Prompt | Image) -> Choices below
-    const stepHtml = `
-            <div class="scenario-content-grid">
-                <div class="question-prompt">
-                    <span class="prompt-label">Scenario</span>
-                    <div class="prompt-text">${step.prompt}</div>
-                </div>
-                ${
-                  screenshotHtml
-                    ? `<div class="scenario-image-container">${screenshotHtml}</div>`
-                    : ""
-                }
-            </div>
-            <div class="choices-header">
-                <span>Select your response:</span>
-            </div>
-            <div id="ticket-step-choices" class="choices-container"></div>
-        `;
-
-    ticketStepContent.innerHTML = stepHtml;
-
-    const choicesContainer = ticketStepContent.querySelector(
-      "#ticket-step-choices"
-    );
-    const letters = ["A", "B", "C", "D", "E", "F", "G", "H"];
-
-    // 8. Create Choice Buttons with letter prefixes
-    shuffledChoices.forEach((choice, shuffledIndex) => {
-      const timeCost = ScoringManager.getTimeCost(choice.type);
-      const letter = letters[shuffledIndex] || String(shuffledIndex + 1);
-
-      const btn = document.createElement("button");
-
-      // Determine button styling based on debug mode
-      let extraClasses = "";
-      let debugLabelHtml = "";
-
-      if (isDebugMode) {
-        if (choice.type === "correct") {
-          extraClasses = "debug-correct";
-        } else if (choice.type === "partial") {
-          extraClasses = "debug-partial";
-        } else if (choice.type === "misguided") {
-          extraClasses = "debug-wrong";
-        } else {
-          extraClasses = "debug-wrong";
-        }
-
-        const typeLabels = {
-          correct: "OPTIMAL",
-          partial: "ACCEPTABLE",
-          misguided: "SUBOPTIMAL",
-          wrong: "INCORRECT",
-        };
-        debugLabelHtml = `
-                    <div class="text-xs mt-2 pt-2 border-t border-gray-700/50">
-                        <span class="font-semibold uppercase tracking-wider ${
-                          choice.type === "correct"
-                            ? "text-green-400"
-                            : choice.type === "partial"
-                            ? "text-yellow-400"
-                            : "text-red-400"
-                        }">${typeLabels[choice.type] || "INCORRECT"}</span>
-                        <span class="text-gray-500 ml-2">+${timeCost.toFixed(
-                          1
-                        )} hrs</span>
-                    </div>
-                `;
-      }
-
-      btn.className = `choice-button ${extraClasses}`;
-
-      btn.innerHTML = `
-                <span class="choice-letter">${letter}</span>
-                <div class="choice-text">
-                    ${choice.text}
-                    ${debugLabelHtml}
-                </div>
-            `;
-
-      // Attach data
-      btn.dataset.choiceNext = choice.next;
-      btn.dataset.choiceTimeCost = timeCost;
-      btn.dataset.choiceType = choice.type || "wrong";
-
-      // Store feedback for filler choices (encode to handle HTML)
-      if (choice.feedback) {
-        btn.dataset.choiceFeedback = encodeURIComponent(choice.feedback);
-      }
-
-      const originalIndexInChoices = step.choices.indexOf(choice);
-      btn.dataset.originalIndex =
-        originalIndexInChoices !== -1 ? originalIndexInChoices : -1;
-
-      btn.addEventListener("click", () => handleChoice(btn));
-      choicesContainer.appendChild(btn);
-    });
-
-    renderBacklog();
   }
 
   /**

@@ -116,6 +116,12 @@ window.StepRenderer = {
 
       btn.dataset.choiceNext = choice.next;
       btn.dataset.choiceTimeCost = timeCost;
+      btn.dataset.choiceType = choice.type || "wrong";
+
+      // Store feedback for filler choices (encode to handle HTML)
+      if (choice.feedback) {
+        btn.dataset.choiceFeedback = encodeURIComponent(choice.feedback);
+      }
 
       const originalIndex = step.choices.indexOf(choice);
       btn.dataset.originalIndex = originalIndex !== -1 ? originalIndex : -1;

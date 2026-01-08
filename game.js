@@ -913,6 +913,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // Render the chosen step
     renderStep(scenarioId, currentStepId);
 
+    // Auto-scroll to scenario content on mobile (when layout stacks vertically)
+    // Use setTimeout to ensure DOM has fully updated after render
+    if (window.innerWidth < 768) {
+      setTimeout(() => {
+        ticketContent.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+
     // Notify Capture UI for metadata sync
     window.dispatchEvent(
       new CustomEvent("scenario:step", {

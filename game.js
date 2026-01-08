@@ -1,37 +1,4 @@
-// --- IMAGE MODAL FUNCTIONS (Global scope for onclick handlers) ---
-function openImageModal(imageSrc) {
-  let modal = document.getElementById("image-modal-overlay");
-  if (!modal) {
-    // Create modal if it doesn't exist
-    modal = document.createElement("div");
-    modal.id = "image-modal-overlay";
-    modal.className = "image-modal-overlay";
-    modal.innerHTML = `
-      <span class="image-modal-close" onclick="closeImageModal()">&times;</span>
-      <img src="" alt="Expanded view" />
-    `;
-    modal.onclick = (e) => {
-      if (e.target === modal) closeImageModal();
-    };
-    document.body.appendChild(modal);
-  }
-  modal.querySelector("img").src = imageSrc;
-  modal.classList.add("active");
-  document.body.style.overflow = "hidden";
-}
-
-function closeImageModal() {
-  const modal = document.getElementById("image-modal-overlay");
-  if (modal) {
-    modal.classList.remove("active");
-    document.body.style.overflow = "";
-  }
-}
-
-// Close modal on Escape key
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") closeImageModal();
-});
+// --- IMAGE MODAL FUNCTIONS now in js/ui/image-modal.js ---
 
 // Wait for the DOM to be fully loaded before running the game logic
 document.addEventListener("DOMContentLoaded", () => {

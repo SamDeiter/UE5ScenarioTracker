@@ -51,13 +51,13 @@ window.SCENARIOS['nanite_wpo_failure'] = {
                     "text": "Increase the Skylight's Source Cubemap resolution.",
                     "type": "plausible",
                     "feedback": "Cubemap resolution affects reflections, not distance shading artifacts. +0.2 hrs.",
-                    "next": null
+                    "next": "step-1"
                 },
                 {
                     "text": "Check if the mesh has a custom depth stencil mask applied.",
                     "type": "subtle",
                     "feedback": "Depth stencil affects rendering passes, not Nanite/Lumen GI. +0.1 hrs.",
-                    "next": null
+                    "next": "step-1"
                 }
             ]
         },
@@ -82,13 +82,13 @@ window.SCENARIOS['nanite_wpo_failure'] = {
                     "text": "Increase the Skylight's Source Cubemap resolution.",
                     "type": "plausible",
                     "feedback": "Cubemap resolution affects reflections, not distance shading artifacts. +0.2 hrs.",
-                    "next": null
+                    "next": "step-2"
                 },
                 {
                     "text": "Check if the mesh has a custom depth stencil mask applied.",
                     "type": "subtle",
                     "feedback": "Depth stencil affects rendering passes, not Nanite/Lumen GI. +0.1 hrs.",
-                    "next": null
+                    "next": "step-2"
                 }
             ]
         },
@@ -113,13 +113,13 @@ window.SCENARIOS['nanite_wpo_failure'] = {
                     "text": "Verify the mesh isn't marked as hidden in game.",
                     "type": "plausible",
                     "feedback": "The mesh is visible - the issue is shading, not visibility. +0.15 hrs.",
-                    "next": null
+                    "next": "step-3"
                 },
                 {
                     "text": "Check the ray tracing quality settings in Project Settings.",
                     "type": "subtle",
                     "feedback": "Ray tracing is separate from Lumen software GI. +0.12 hrs.",
-                    "next": null
+                    "next": "step-3"
                 }
             ]
         },
@@ -144,13 +144,13 @@ window.SCENARIOS['nanite_wpo_failure'] = {
                     "text": "Check the ray tracing quality settings in Project Settings.",
                     "type": "subtle",
                     "feedback": "Ray tracing is separate from Lumen software GI. +0.12 hrs.",
-                    "next": null
+                    "next": "step-4"
                 },
                 {
                     "text": "Check the mesh's LOD settings and force a specific LOD level.",
                     "type": "plausible",
                     "feedback": "LOD settings don't affect Nanite meshes in the same way. +0.2 hrs.",
-                    "next": null
+                    "next": "step-4"
                 }
             ]
         },
@@ -175,13 +175,13 @@ window.SCENARIOS['nanite_wpo_failure'] = {
                     "text": "Rebuild the Lumen scene cache from the Build menu.",
                     "type": "subtle",
                     "feedback": "Lumen scene data is dynamic and doesn't require manual rebuilding. +0.15 hrs.",
-                    "next": null
+                    "next": "step-5"
                 },
                 {
                     "text": "Increase the Skylight's Source Cubemap resolution.",
                     "type": "plausible",
                     "feedback": "Cubemap resolution affects reflections, not distance shading artifacts. +0.2 hrs.",
-                    "next": null
+                    "next": "step-5"
                 }
             ]
         },
@@ -206,13 +206,13 @@ window.SCENARIOS['nanite_wpo_failure'] = {
                     "text": "Increase the Skylight's Source Cubemap resolution.",
                     "type": "plausible",
                     "feedback": "Cubemap resolution affects reflections, not distance shading artifacts. +0.2 hrs.",
-                    "next": null
+                    "next": "step-6"
                 },
                 {
                     "text": "Check if the mesh has a custom depth stencil mask applied.",
                     "type": "subtle",
                     "feedback": "Depth stencil affects rendering passes, not Nanite/Lumen GI. +0.1 hrs.",
-                    "next": null
+                    "next": "step-6"
                 }
             ]
         },
@@ -237,13 +237,13 @@ window.SCENARIOS['nanite_wpo_failure'] = {
                     "text": "Rebuild the Lumen scene cache from the Build menu.",
                     "type": "subtle",
                     "feedback": "Lumen scene data is dynamic and doesn't require manual rebuilding. +0.15 hrs.",
-                    "next": null
+                    "next": "step-7"
                 },
                 {
                     "text": "Increase the Skylight's Source Cubemap resolution.",
                     "type": "plausible",
                     "feedback": "Cubemap resolution affects reflections, not distance shading artifacts. +0.2 hrs.",
-                    "next": null
+                    "next": "step-7"
                 }
             ]
         },
@@ -268,13 +268,13 @@ window.SCENARIOS['nanite_wpo_failure'] = {
                     "text": "Check the ray tracing quality settings in Project Settings.",
                     "type": "subtle",
                     "feedback": "Ray tracing is separate from Lumen software GI. +0.12 hrs.",
-                    "next": null
+                    "next": "step-8"
                 },
                 {
                     "text": "Check the mesh's LOD settings and force a specific LOD level.",
                     "type": "plausible",
                     "feedback": "LOD settings don't affect Nanite meshes in the same way. +0.2 hrs.",
-                    "next": null
+                    "next": "step-8"
                 }
             ]
         },
@@ -299,13 +299,13 @@ window.SCENARIOS['nanite_wpo_failure'] = {
                     "text": "Rebuild the Lumen scene cache from the Build menu.",
                     "type": "subtle",
                     "feedback": "Lumen scene data is dynamic and doesn't require manual rebuilding. +0.15 hrs.",
-                    "next": null
+                    "next": "step-9"
                 },
                 {
                     "text": "Increase the Skylight's Source Cubemap resolution.",
                     "type": "plausible",
                     "feedback": "Cubemap resolution affects reflections, not distance shading artifacts. +0.2 hrs.",
-                    "next": null
+                    "next": "step-9"
                 }
             ]
         },
@@ -330,13 +330,13 @@ window.SCENARIOS['nanite_wpo_failure'] = {
                     "text": "Increase the Skylight's Source Cubemap resolution.",
                     "type": "plausible",
                     "feedback": "Cubemap resolution affects reflections, not distance shading artifacts. +0.2 hrs.",
-                    "next": null
+                    "next": "step-10"
                 },
                 {
                     "text": "Check if the mesh has a custom depth stencil mask applied.",
                     "type": "subtle",
                     "feedback": "Depth stencil affects rendering passes, not Nanite/Lumen GI. +0.1 hrs.",
-                    "next": null
+                    "next": "step-10"
                 }
             ]
         },
@@ -361,13 +361,13 @@ window.SCENARIOS['nanite_wpo_failure'] = {
                     "text": "Check if the mesh has a custom depth stencil mask applied.",
                     "type": "subtle",
                     "feedback": "Depth stencil affects rendering passes, not Nanite/Lumen GI. +0.1 hrs.",
-                    "next": null
+                    "next": "step-11"
                 },
                 {
                     "text": "Verify the mesh isn't marked as hidden in game.",
                     "type": "plausible",
                     "feedback": "The mesh is visible - the issue is shading, not visibility. +0.15 hrs.",
-                    "next": null
+                    "next": "step-11"
                 }
             ]
         },
@@ -392,13 +392,13 @@ window.SCENARIOS['nanite_wpo_failure'] = {
                     "text": "Increase the Skylight's Source Cubemap resolution.",
                     "type": "plausible",
                     "feedback": "Cubemap resolution affects reflections, not distance shading artifacts. +0.2 hrs.",
-                    "next": null
+                    "next": "step-12"
                 },
                 {
                     "text": "Check if the mesh has a custom depth stencil mask applied.",
                     "type": "subtle",
                     "feedback": "Depth stencil affects rendering passes, not Nanite/Lumen GI. +0.1 hrs.",
-                    "next": null
+                    "next": "step-12"
                 }
             ]
         },
@@ -423,13 +423,13 @@ window.SCENARIOS['nanite_wpo_failure'] = {
                     "text": "Rebuild the Lumen scene cache from the Build menu.",
                     "type": "subtle",
                     "feedback": "Lumen scene data is dynamic and doesn't require manual rebuilding. +0.15 hrs.",
-                    "next": null
+                    "next": "step-13"
                 },
                 {
                     "text": "Increase the Skylight's Source Cubemap resolution.",
                     "type": "plausible",
                     "feedback": "Cubemap resolution affects reflections, not distance shading artifacts. +0.2 hrs.",
-                    "next": null
+                    "next": "step-13"
                 }
             ]
         },
@@ -454,13 +454,13 @@ window.SCENARIOS['nanite_wpo_failure'] = {
                     "text": "Check if the mesh has a custom depth stencil mask applied.",
                     "type": "subtle",
                     "feedback": "Depth stencil affects rendering passes, not Nanite/Lumen GI. +0.1 hrs.",
-                    "next": null
+                    "next": "step-14"
                 },
                 {
                     "text": "Verify the mesh isn't marked as hidden in game.",
                     "type": "plausible",
                     "feedback": "The mesh is visible - the issue is shading, not visibility. +0.15 hrs.",
-                    "next": null
+                    "next": "step-14"
                 }
             ]
         },
@@ -485,13 +485,13 @@ window.SCENARIOS['nanite_wpo_failure'] = {
                     "text": "Check the mesh's LOD settings and force a specific LOD level.",
                     "type": "plausible",
                     "feedback": "LOD settings don't affect Nanite meshes in the same way. +0.2 hrs.",
-                    "next": null
+                    "next": "step-15"
                 },
                 {
                     "text": "Rebuild the Lumen scene cache from the Build menu.",
                     "type": "subtle",
                     "feedback": "Lumen scene data is dynamic and doesn't require manual rebuilding. +0.15 hrs.",
-                    "next": null
+                    "next": "step-15"
                 }
             ]
         },
@@ -516,13 +516,13 @@ window.SCENARIOS['nanite_wpo_failure'] = {
                     "text": "Check the mesh's LOD settings and force a specific LOD level.",
                     "type": "plausible",
                     "feedback": "LOD settings don't affect Nanite meshes in the same way. +0.2 hrs.",
-                    "next": null
+                    "next": "step-16"
                 },
                 {
                     "text": "Rebuild the Lumen scene cache from the Build menu.",
                     "type": "subtle",
                     "feedback": "Lumen scene data is dynamic and doesn't require manual rebuilding. +0.15 hrs.",
-                    "next": null
+                    "next": "step-16"
                 }
             ]
         },
@@ -547,13 +547,13 @@ window.SCENARIOS['nanite_wpo_failure'] = {
                     "text": "Verify the mesh isn't marked as hidden in game.",
                     "type": "plausible",
                     "feedback": "The mesh is visible - the issue is shading, not visibility. +0.15 hrs.",
-                    "next": null
+                    "next": "step-17"
                 },
                 {
                     "text": "Check the ray tracing quality settings in Project Settings.",
                     "type": "subtle",
                     "feedback": "Ray tracing is separate from Lumen software GI. +0.12 hrs.",
-                    "next": null
+                    "next": "step-17"
                 }
             ]
         },
@@ -578,13 +578,13 @@ window.SCENARIOS['nanite_wpo_failure'] = {
                     "text": "Increase the Skylight's Source Cubemap resolution.",
                     "type": "plausible",
                     "feedback": "Cubemap resolution affects reflections, not distance shading artifacts. +0.2 hrs.",
-                    "next": null
+                    "next": "step-18"
                 },
                 {
                     "text": "Check if the mesh has a custom depth stencil mask applied.",
                     "type": "subtle",
                     "feedback": "Depth stencil affects rendering passes, not Nanite/Lumen GI. +0.1 hrs.",
-                    "next": null
+                    "next": "step-18"
                 }
             ]
         },

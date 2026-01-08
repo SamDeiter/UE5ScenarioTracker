@@ -26,17 +26,18 @@ window.Validator = {
         errors.push(`Scenario "${id}" meta "estimateHours" must be a number.`);
     }
 
-    // 2. Lifecycle Phases
-    if (!scenario.setup)
-      errors.push(`Scenario "${id}" is missing "setup" array.`);
-    if (!scenario.fault)
-      errors.push(
-        `Scenario "${id}" is missing "fault" object (initial problem).`
-      );
-    if (!scenario.fix)
-      errors.push(
-        `Scenario "${id}" is missing "fix" array (expected solution actions).`
-      );
+    // 2. Lifecycle Phases (optional - many older scenarios don't have these)
+    // These are only used for UE5 Remote Control integration, not core gameplay
+    // if (!scenario.setup)
+    //   errors.push(`Scenario "${id}" is missing "setup" array.`);
+    // if (!scenario.fault)
+    //   errors.push(
+    //     `Scenario "${id}" is missing "fault" object (initial problem).`
+    //   );
+    // if (!scenario.fix)
+    //   errors.push(
+    //     `Scenario "${id}" is missing "fix" array (expected solution actions).`
+    //   );
 
     // 3. Steps Validation
     if (!scenario.steps || typeof scenario.steps !== "object") {

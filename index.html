@@ -354,8 +354,13 @@
     <!-- <script src="questions.js" defer></script> -->
     <!-- OLD: Contains legacy scenario data -->
 
+    <!-- Load Configuration FIRST (no defer - needed immediately) -->
+    <script src="js/config.js"></script>
+    <script src="js/Validator.js" defer></script>
+
     <!-- Load Scenario Template Factory (provides helper functions) -->
     <script src="scenarios/00_template.js" defer></script>
+
 
     <!-- Load Scenario Manifest (initializes window.SCENARIOS) -->
     <script src="scenarios/00_manifest.js" defer></script>

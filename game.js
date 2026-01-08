@@ -35,11 +35,12 @@ document.addEventListener("keydown", (e) => {
 
 // Wait for the DOM to be fully loaded before running the game logic
 document.addEventListener("DOMContentLoaded", () => {
-  // --- GLOBAL CONFIGURATION ---
-  const TOTAL_TEST_TIME_SECONDS = 30 * 60; // Total 30 minutes for the assessment countdown timer
-  const LOW_TIME_WARNING_SECONDS = 5 * 60; // Time remaining threshold to trigger pulsing red timer
-  const PASS_THRESHOLD = 0.8; // Pass if (Ideal Time / Logged Time) >= 80%
-  const DEBUG_PASSWORD = "IloveUnreal"; // Secret password to enable Debug Mode
+  // --- GLOBAL CONFIGURATION (from js/config.js) ---
+  const config = window.APP_CONFIG || {};
+  const TOTAL_TEST_TIME_SECONDS = config.TOTAL_TEST_TIME_SECONDS || 30 * 60;
+  const LOW_TIME_WARNING_SECONDS = config.LOW_TIME_WARNING_SECONDS || 5 * 60;
+  const PASS_THRESHOLD = config.PASS_THRESHOLD || 0.8;
+  const DEBUG_PASSWORD = config.DEBUG_PASSWORD || "DISABLED";
 
   // --- DEBUG ACCESS STATE ---
   let debugAccessState = {
@@ -1042,44 +1043,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     renderBacklog();
-  }
-
-  /**
-   * Marks the current scenario as complete and returns to the backlog.
-   */
-  function finishScenario() {
-    if (!currentScenarioId) return;
-
-    console.log("[Game] Finishing scenario:", currentScenarioId);
-
-    // Mark as completed
-    if (scenarioState[currentScenarioId]) {
-      scenarioState[currentScenarioId].completed = true;
-    }
-
-    // Clear any interrupted step for this scenario
-    delete interruptedSteps[currentScenarioId];
-
-    // Save state
-    saveScenarioState();
-    saveCurrentTicketState();
-
-    // Clear current scenario
-    currentScenarioId = null;
-    currentStepId = null;
-
-    // Return to backlog
-    renderBacklog();
-
-    // Show the backlog column
-    const ticketStep = document.getElementById("ticket-step");
-    if (ticketStep) {
-      ticketStep.innerHTML = `
-        <div class="flex items-center justify-center h-full text-gray-500">
-          <p>Select a module from the left to begin.</p>
-        </div>
-      `;
-    }
   }
 
   /**

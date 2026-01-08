@@ -957,6 +957,15 @@ code {
   line-height: 1.5;
 }
 
+/* Processing state - prevent rapid clicking */
+.choice-button.processing,
+.choice-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+  pointer-events: none;
+  transform: none !important;
+}
+
 .choice-text p {
   margin: 0;
 }

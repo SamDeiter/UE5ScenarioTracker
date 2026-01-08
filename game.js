@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentStepId = null; // Key of the current question step within the scenario
   let interruptedSteps = {}; // Stores the last active step for non-completed scenarios
   let isDebugMode = false; // Flag for debug visualization/controls
+  let isProcessingChoice = false; // Flag to prevent rapid clicking race conditions
   let mainTimerInterval = null; // ID for the setInterval used for the 30-minute countdown
   let shuffledChoicesCache = {}; // Stores shuffled choice order per scenario+step so it doesn't reshuffle on retry
   let currentCategoryFilter = "all"; // Current category filter selection
@@ -782,6 +783,20 @@ document.addEventListener("DOMContentLoaded", () => {
    * Called when a user clicks an answer choice.
    */
   async function handleChoice(choiceButton) {
+    // Prevent rapid clicking - ignore if already processing
+    if (isProcessingChoice) {
+      console.log("[Game] Choice already processing, ignoring click");
+      return;
+    }
+    isProcessingChoice = true;
+
+    // Disable all choice buttons visually
+    const allButtons = document.querySelectorAll(".choice-button");
+    allButtons.forEach((btn) => {
+      btn.disabled = true;
+      btn.classList.add("processing");
+    });
+
     const { choiceNext, choiceTimeCost, originalIndex } = choiceButton.dataset;
     const timeCost = parseFloat(choiceTimeCost);
     const index = parseInt(originalIndex, 10);
@@ -839,6 +854,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } catch (err) {
       console.error("[Game] Failed to process choice via Engine:", err);
+    } finally {
+      // Re-enable clicking after processing (with slight delay for render)
+      setTimeout(() => {
+        isProcessingChoice = false;
+        const allButtons = document.querySelectorAll(".choice-button");
+        allButtons.forEach((btn) => {
+          btn.disabled = false;
+          btn.classList.remove("processing");
+        });
+      }, 100);
     }
   }
 

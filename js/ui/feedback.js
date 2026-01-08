@@ -49,7 +49,9 @@ const FeedbackManager = (function () {
 
     // Create feedback HTML
     const feedbackHtml = `
-      <div class="feedback-banner ${config.cssClass} animate-slideIn flex items-center gap-4">
+      <div class="feedback-banner ${
+        config.cssClass
+      } animate-slideIn flex items-center gap-4">
         <span class="feedback-icon flex-shrink-0">${config.icon}</span>
         <div class="feedback-content flex-grow">
           <div class="feedback-title ${config.color}">${config.title}</div>
@@ -61,7 +63,7 @@ const FeedbackManager = (function () {
           !isCorrect
             ? `<button id="feedback-continue-btn" 
                 class="ml-auto flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 text-sm">
-              Continue
+              Try Again
             </button>`
             : ""
         }

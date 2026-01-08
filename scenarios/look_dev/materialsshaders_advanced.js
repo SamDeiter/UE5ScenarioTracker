@@ -195,25 +195,6 @@ window.SCENARIOS['WPOShadowDetachment'] = {
         },
 
         
-        'step-1': {
-            skill: 'materials',
-            title: 'The Symptom',
-            prompt: "Your foliage or mesh is animated using World Position Offset for wind, but its shadow stays in the original position or appears detached and floating away from the object. The lit mesh and its shadow no longer line up. What do you check first?",
-            choices: [
-                {
-                    text: "Check Logs/View Modes]",
-                    type: 'correct',
-                    feedback: "You switch to lighting and shadow visualization view modes and notice that the mesh's WPO animation is visible in the base pass, but the shadow map still looks like the undeformed, original mesh. This strongly suggests the shadow pass isn't respecting the WPO displacement.",
-                    next: 'step-inv-A'
-                },
-                {
-                    text: "Wrong Guess]",
-                    type: 'wrong',
-                    feedback: "You try adjusting light intensity and changing the sun angle, but the shadow still appears detached and doesn't follow the animated mesh. Clearly this isn't just a simple lighting strength or angle problem.",
-                    next: 'step-1W'
-                },
-            ]
-        },
 
         'step-inv-A': {
             skill: 'materials',
@@ -283,19 +264,6 @@ window.SCENARIOS['WPOShadowDetachment'] = {
             ]
         },
 
-        'step-3': {
-            skill: 'materials',
-            title: 'The Fix',
-            prompt: "You now know the cause: the World Position Offset isn't being handled correctly for the shadow pass, so the shadow is cast from the original mesh instead of the displaced one. How do you fix it?",
-            choices: [
-                {
-                    text: "Enable 'Shadow Pass Switch' or correct shadow bias.]",
-                    type: 'correct',
-                    feedback: "In the material, you use a Shadow Pass Switch to control how WPO is applied for shadow casting, ensuring that the shadow pass uses a version of the displacement that matches the visible animation (or a simplified variant that still lines up). Where needed, you also refine the light's Shadow Bias settings to avoid minor detachment artifacts. After recompiling the material, the mesh and its shadow move together with the wind instead of separating.",
-                    next: 'step-ver-A'
-                },
-            ]
-        },
 
         'step-ver-A': {
             skill: 'materials',
@@ -325,263 +293,25 @@ window.SCENARIOS['WPOShadowDetachment'] = {
             ]
         },
 
-        'step-4': {
-            skill: 'materials',
-            title: 'Verification',
-            prompt: "You re-run the scene in PIE and watch the wind-animated meshes and their shadows over time. How do you verify that the issue is resolved?",
-            choices: [
-                {
-                    text: "Play in Editor]",
-                    type: 'correct',
-                    feedback: "In PIE, as the wind animates the foliage or mesh via World Position Offset, the shadow now deforms or shifts appropriately with it rather than staying behind or floating away. The silhouette and shadow stay aligned from multiple camera angles, confirming that the Shadow Pass Switch / shadow bias fix worked.",
-                    next: 'conclusion'
-                },
-            ]
-        },
                 }
             ]
         },
         
-        'step-inv-1': {
-            skill: 'materials',
-            title: 'Shadow Pass Inspection',
-            prompt: "You've confirmed the base pass shows WPO, but the shadow doesn't. Now, let's directly inspect the shadow pass. What view modes or console commands help visualize how shadows are being generated?",
-            choices: [
-                {
-                    text: "Use ShowFlag.VisualizeShadows / Shadow Frustums]",
-                    type: 'correct',
-                    feedback: "You activate 'ShowFlag.VisualizeShadows' and 'ShowFlag.ShadowFrustums' in the viewport. This clearly shows that the shadow map itself is being generated from the static, undeformed mesh, even as the visible mesh animates. The shadow frustums also appear to be calculated based on the static mesh.",
-                    next: 'step-inv-2'
-                },
-                {
-                    text: "Check Mesh Collision Complexity]",
-                    type: 'wrong',
-                    feedback: "You inspect the mesh's collision settings, thinking it might influence shadow generation. However, collision complexity primarily affects physics interactions and ray casts, not the visual shadow map generation from WPO-animated geometry. This is a red herring.",
-                    next: 'step-rh-1'
-                },
-            ]
-        },
 
-        'step-inv-2': {
-            skill: 'materials',
-            title: 'Material Pass Debugging',
-            prompt: "You've seen the shadow pass isn't reflecting WPO. Before diving into the material graph, are there any other visualization tools or console commands that can give clues about how the material is behaving in different rendering passes, specifically regarding WPO?",
-            choices: [
-                {
-                    text: "Use Buffer Visualization -> World Position, or Shader Complexity]",
-                    type: 'correct',
-                    feedback: "You switch to 'Buffer Visualization -> World Position' and observe the animated mesh's world position accurately reflecting the WPO. Then, you check 'Shader Complexity' to ensure no unexpected shader branches or high instruction counts are present, confirming the base pass is processing WPO as expected, further isolating the issue to the shadow pass.",
-                    next: 'step-inv-1'
-                },
-                {
-                    text: "Adjust Post Process Volume settings]",
-                    type: 'wrong',
-                    feedback: "You try tweaking post-process settings like Ambient Occlusion or Screen Space Reflections, thinking they might influence shadow appearance. However, these effects are applied *after* shadow generation and don't address the fundamental mismatch between the mesh's WPO and its shadow's position. This is a misdirection.",
-                    next: 'step-inv-2W'
-                },
-            ]
-        },
 
-        'step-rh-1': {
-            skill: 'materials',
-            title: 'Dead End: Mesh Bounds Misconception',
-            prompt: "You suspected the mesh's bounding box or collision might be misaligned, causing the shadow to be cast incorrectly. You've adjusted the mesh's bounds scale or rebuilt collision, but the shadow detachment persists. Why was this a red herring?",
-            choices: [
-                {
-                    text: "Realize bounds/collision don't affect WPO shadow casting]",
-                    type: 'correct',
-                    feedback: "You realize that while mesh bounds are important for culling and LODs, and collision for physics, they don't directly dictate how World Position Offset is applied to vertices for shadow map generation. The problem lies deeper in the material's rendering passes.",
-                    next: 'step-inv-2'
-                },
-            ]
-        },
 
-        'step-inv-2W': {
-            skill: 'materials',
-            title: 'Dead End: Post Process Misdirection',
-            prompt: "You tried tweaking post-process settings like Ambient Occlusion or Screen Space Reflections, thinking they might influence shadow appearance. However, the core issue of the shadow detaching from the WPO-animated mesh remains. Why was this a misdirection?",
-            choices: [
-                {
-                    text: "Understand post-process effects are applied *after* shadow generation]",
-                    type: 'correct',
-                    feedback: "You correctly identify that post-process effects operate on the final rendered image or G-buffer data, long after shadow maps have been generated. They cannot correct a fundamental mismatch in vertex positions between the base pass and the shadow pass. You need to focus on the material itself.",
-                    next: 'step-inv-1'
-                },
-            ]
-        },
 
-        'step-ver-1': {
-            skill: 'materials',
-            title: 'Standalone Verification',
-            prompt: "The fix appears to work in PIE. To be absolutely sure, how would you verify this in a more production-like environment, ruling out editor-specific behaviors?",
-            choices: [
-                {
-                    text: "Launch in Standalone Game or Packaged Build]",
-                    type: 'correct',
-                    feedback: "You launch the project in 'Standalone Game' mode or create a small packaged build. This ensures that the fix holds up outside of the editor's specific rendering pipeline and confirms it's robust for deployment. The shadows remain correctly attached and animated.",
-                    next: 'step-ver-2'
-                },
-            ]
-        },
 
-        'step-ver-2': {
-            skill: 'materials',
-            title: 'Performance & Robustness Check',
-            prompt: "The shadow now follows the WPO mesh. What final checks should you perform to ensure the solution is robust and doesn't introduce new problems, especially regarding performance?",
-            choices: [
-                {
-                    text: "Monitor 'stat unit' and 'stat gpu' for overhead, test on different hardware/platforms]",
-                    type: 'correct',
-                    feedback: "You enable 'stat unit' and 'stat gpu' to monitor frame time and GPU performance. You ensure that applying WPO in the shadow pass doesn't introduce significant overhead. You also consider testing on different hardware or target platforms to confirm the solution's robustness and performance consistency.",
-                    next: 'step-ver-1'
-                },
-            ]
-        },
 
         
-        'step-1': {
-            skill: 'materials',
-            title: 'The Symptom',
-            prompt: "Your foliage or mesh is animated using World Position Offset for wind, but its shadow stays in the original position or appears detached and floating away from the object. The lit mesh and its shadow no longer line up. What do you check first?",
-            choices: [
-                {
-                    text: "Check Logs/View Modes]",
-                    type: 'correct',
-                    feedback: "You switch to lighting and shadow visualization view modes and notice that the mesh's WPO animation is visible in the base pass, but the shadow map still looks like the undeformed, original mesh. This strongly suggests the shadow pass isn't respecting the WPO displacement.",
-                    next: 'step-inv-A'
-                },
-                {
-                    text: "Wrong Guess]",
-                    type: 'wrong',
-                    feedback: "You try adjusting light intensity and changing the sun angle, but the shadow still appears detached and doesn't follow the animated mesh. Clearly this isn't just a simple lighting strength or angle problem.",
-                    next: 'step-1W'
-                },
-            ]
-        },
 
-        'step-inv-A': {
-            skill: 'materials',
-            title: 'Shadow Pass Inspection',
-            prompt: "You've confirmed the base pass shows WPO, but the shadow doesn't. Now, let's directly inspect the shadow pass. What view modes or console commands help visualize how shadows are being generated?",
-            choices: [
-                {
-                    text: "Use ShowFlag.VisualizeShadows / Shadow Frustums]",
-                    type: 'correct',
-                    feedback: "You activate 'ShowFlag.VisualizeShadows' and 'ShowFlag.ShadowFrustums' in the viewport. This clearly shows that the shadow map itself is being generated from the static, undeformed mesh, even as the visible mesh animates. The shadow frustums also appear to be calculated based on the static mesh.",
-                    next: 'step-inv-A'
-                },
-                {
-                    text: "Check Mesh Collision Complexity]",
-                    type: 'wrong',
-                    feedback: "You inspect the mesh's collision settings, thinking it might influence shadow generation. However, collision complexity primarily affects physics interactions and ray casts, not the visual shadow map generation from WPO-animated geometry. This is a red herring.",
-                    next: 'step-rh-A'
-                },
-            ]
-        },
 
-        'step-inv-B': {
-            skill: 'materials',
-            title: 'Material Pass Debugging',
-            prompt: "You've seen the shadow pass isn't reflecting WPO. Before diving into the material graph, are there any other visualization tools or console commands that can give clues about how the material is behaving in different rendering passes, specifically regarding WPO?",
-            choices: [
-                {
-                    text: "Use Buffer Visualization -> World Position, or Shader Complexity]",
-                    type: 'correct',
-                    feedback: "You switch to 'Buffer Visualization -> World Position' and observe the animated mesh's world position accurately reflecting the WPO. Then, you check 'Shader Complexity' to ensure no unexpected shader branches or high instruction counts are present, confirming the base pass is processing WPO as expected, further isolating the issue to the shadow pass.",
-                    next: 'step-inv-B'
-                },
-                {
-                    text: "Adjust Post Process Volume settings]",
-                    type: 'wrong',
-                    feedback: "You try tweaking post-process settings like Ambient Occlusion or Screen Space Reflections, thinking they might influence shadow appearance. However, these effects are applied *after* shadow generation and don't address the fundamental mismatch between the mesh's WPO and its shadow's position. This is a misdirection.",
-                    next: 'step-rh-B'
-                },
-            ]
-        },
 
-        'step-rh-A': {
-            skill: 'materials',
-            title: 'Dead End: Mesh Bounds Misconception',
-            prompt: "You suspected the mesh's bounding box or collision might be misaligned, causing the shadow to be cast incorrectly. You've adjusted the mesh's bounds scale or rebuilt collision, but the shadow detachment persists. Why was this a red herring?",
-            choices: [
-                {
-                    text: "Realize bounds/collision don't affect WPO shadow casting]",
-                    type: 'correct',
-                    feedback: "You realize that while mesh bounds are important for culling and LODs, and collision for physics, they don't directly dictate how World Position Offset is applied to vertices for shadow map generation. The problem lies deeper in the material's rendering passes.",
-                    next: 'step-inv-A'
-                },
-            ]
-        },
 
-        'step-rh-B': {
-            skill: 'materials',
-            title: 'Dead End: Post Process Misdirection',
-            prompt: "You tried tweaking post-process settings like Ambient Occlusion or Screen Space Reflections, thinking they might influence shadow appearance. However, the core issue of the shadow detaching from the WPO-animated mesh remains. Why was this a misdirection?",
-            choices: [
-                {
-                    text: "Understand post-process effects are applied *after* shadow generation]",
-                    type: 'correct',
-                    feedback: "You correctly identify that post-process effects operate on the final rendered image or G-buffer data, long after shadow maps have been generated. They cannot correct a fundamental mismatch in vertex positions between the base pass and the shadow pass. You need to focus on the material itself.",
-                    next: 'step-inv-B'
-                },
-            ]
-        },
 
-        'step-3': {
-            skill: 'materials',
-            title: 'The Fix',
-            prompt: "You now know the cause: the World Position Offset isn't being handled correctly for the shadow pass, so the shadow is cast from the original mesh instead of the displaced one. How do you fix it?",
-            choices: [
-                {
-                    text: "Enable 'Shadow Pass Switch' or correct shadow bias.]",
-                    type: 'correct',
-                    feedback: "In the material, you use a Shadow Pass Switch to control how WPO is applied for shadow casting, ensuring that the shadow pass uses a version of the displacement that matches the visible animation (or a simplified variant that still lines up). Where needed, you also refine the light's Shadow Bias settings to avoid minor detachment artifacts. After recompiling the material, the mesh and its shadow move together with the wind instead of separating.",
-                    next: 'step-ver-A'
-                },
-            ]
-        },
 
-        'step-ver-A': {
-            skill: 'materials',
-            title: 'Standalone Verification',
-            prompt: "The fix appears to work in PIE. To be absolutely sure, how would you verify this in a more production-like environment, ruling out editor-specific behaviors?",
-            choices: [
-                {
-                    text: "Launch in Standalone Game or Packaged Build]",
-                    type: 'correct',
-                    feedback: "You launch the project in 'Standalone Game' mode or create a small packaged build. This ensures that the fix holds up outside of the editor's specific rendering pipeline and confirms it's robust for deployment. The shadows remain correctly attached and animated.",
-                    next: 'step-ver-A'
-                },
-            ]
-        },
 
-        'step-ver-B': {
-            skill: 'materials',
-            title: 'Performance & Robustness Check',
-            prompt: "The shadow now follows the WPO mesh. What final checks should you perform to ensure the solution is robust and doesn't introduce new problems, especially regarding performance?",
-            choices: [
-                {
-                    text: "Monitor 'stat unit' and 'stat gpu' for overhead, test on different hardware/platforms]",
-                    type: 'correct',
-                    feedback: "You enable 'stat unit' and 'stat gpu' to monitor frame time and GPU performance. You ensure that applying WPO in the shadow pass doesn't introduce significant overhead. You also consider testing on different hardware or target platforms to confirm the solution's robustness and performance consistency.",
-                    next: 'step-ver-B'
-                },
-            ]
-        },
 
-        'step-4': {
-            skill: 'materials',
-            title: 'Verification',
-            prompt: "You re-run the scene in PIE and watch the wind-animated meshes and their shadows over time. How do you verify that the issue is resolved?",
-            choices: [
-                {
-                    text: "Play in Editor]",
-                    type: 'correct',
-                    feedback: "In PIE, as the wind animates the foliage or mesh via World Position Offset, the shadow now deforms or shifts appropriately with it rather than staying behind or floating away. The silhouette and shadow stay aligned from multiple camera angles, confirming that the Shadow Pass Switch / shadow bias fix worked.",
-                    next: 'conclusion'
-                },
-            ]
-        },
 
         'conclusion': {
             skill: 'materials',

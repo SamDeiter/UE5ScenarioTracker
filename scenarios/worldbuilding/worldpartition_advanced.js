@@ -195,99 +195,10 @@ window.SCENARIOS['DistantCityNotLoading'] = {
             ]
         },
         
-        'step-inv-1': {
-            skill: 'world_partition',
-            title: 'Console Confirmation of Missing HLODs',
-            prompt: "You confirmed visually that distant HLOD cells are not loading. To confirm the system status and ensure the engine is even attempting to stream them, what console command provides targeted HLOD streaming statistics?",
-            choices: [
-                {
-                    text: "Use r.WorldPartition.HLOD.ShowStats 1]",
-                    type: 'correct',
-                    feedback: "This command confirms that the engine is requesting HLODs for the distant cells, but the 'Loaded' count remains zero, indicating the assets are missing or invalid. This confirms the issue is asset generation, not just visualization.",
-                    next: 'step-inv-2'
-                },
-                {
-                    text: "Use stat streaming]",
-                    type: 'wrong',
-                    feedback: "While useful, 'stat streaming' focuses on texture and general asset streaming, not specifically the HLOD proxy meshes required for distant visibility.",
-                    next: 'step-inv-2'
-                },
-            ]
-        },
 
-        'step-inv-2': {
-            skill: 'world_partition',
-            title: 'Inspecting Actor HLOD Assignment',
-            prompt: "Since the HLOD assets are confirmed missing, you need to check if the city actors were correctly configured to be included in the HLOD generation process. You select several key city meshes in the World Partition editor. What property are you primarily looking for in the Details panel?",
-            choices: [
-                {
-                    text: "Details Panel: HLOD Layer setting",
-                    type: 'correct',
-                    feedback: "You confirm that many critical city actors are either set to 'None' or assigned to an HLOD Layer that is configured to skip generation (e.g., a layer only meant for foliage). This confirms the generation process failed because the inputs were ignored, leading directly to the root cause identification.",
-                    next: 'step-rh-1'
-                },
-                {
-                    text: "Details Panel: Distance Field Resolution",
-                    type: 'misguided',
-                    feedback: "You check the Distance Field settings, thinking this might affect distant representation, but Distance Fields are primarily used for lighting/shadowing (like Lumen or AO), not for generating the visible proxy meshes needed for HLOD streaming.",
-                    next: 'step-rh-1'
-                },
-            ]
-        },
 
-        'step-rh-1': {
-            skill: 'rendering',
-            title: 'Dead End: Chasing Distance Fields',
-            prompt: "You spent time adjusting Mesh Distance Field settings. While this might improve distant shadows or lighting, it has no effect on the actual visibility of the city's geometry at long range. What is the fundamental difference between Distance Fields and HLODs in this context?",
-            choices: [
-                {
-                    text: "Realize Distance Fields are lighting/shadow proxies, HLODs are visible geometry proxies.",
-                    type: 'correct',
-                    feedback: "You correctly pivot back. HLODs create simplified, visible geometry meshes for streaming, whereas Distance Fields are volumetric representations used by lighting systems. The city needs a visible mesh proxy.",
-                    next: 'step-rh-1'
-                },
-            ]
-        },
 
-        'step-ver-1': {
-            skill: 'deployment',
-            title: 'Standalone Build Test',
-            prompt: "PIE tests are often unreliable for streaming issues compared to a packaged build, especially concerning cooked assets like HLODs. To ensure the generated HLOD assets are correctly cooked, packaged, and streamed in a real scenario, what is the next critical verification step?",
-            choices: [
-                {
-                    text: "Package the project and run a Standalone build]",
-                    type: 'correct',
-                    feedback: "You package the project. Running the standalone executable confirms that the HLODs stream correctly outside of the editor environment, validating the cooking process successfully included the new proxy meshes.",
-                    next: 'step-ver-2'
-                },
-                {
-                    text: "Check the Content Browser for the HLOD assets]",
-                    type: 'wrong',
-                    feedback: "While you can see the assets, checking the Content Browser doesn't verify that the engine correctly streams them during runtime in a packaged environment.",
-                    next: 'step-ver-2'
-                },
-            ]
-        },
 
-        'step-ver-2': {
-            skill: 'optimization',
-            title: 'Performance Check',
-            prompt: "Generating HLODs fixes visibility, but poorly configured HLODs (too high poly count, too many draw calls) can hurt performance. How do you verify that the newly generated distant city representation is performant and hasn't introduced a new bottleneck?",
-            choices: [
-                {
-                    text: "Use stat unit and stat streaming in the standalone build]",
-                    type: 'correct',
-                    feedback: "You run `stat unit` and confirm that the GPU/Draw thread times remain stable when looking at the distant city. You also use `stat streaming` to ensure the HLOD assets are loaded efficiently without causing excessive memory spikes, confirming the fix is optimized.",
-                    next: 'conclusion'
-                },
-                {
-                    text: "Run the CPU profiler for 30 seconds]",
-                    type: 'wrong',
-                    feedback: "While profiling is good, using `stat unit` and streaming stats provides immediate, real-time feedback on the cost of the newly loaded geometry and streaming budget, which is more targeted for this specific fix.",
-                    next: 'conclusion'
-                },
-            ]
-        },
 
         'conclusion': {
             skill: 'world_partition',

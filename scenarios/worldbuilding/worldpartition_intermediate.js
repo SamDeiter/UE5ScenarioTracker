@@ -201,105 +201,10 @@ window.SCENARIOS['LandmarkUnloading'] = {
             ]
         },
         
-        'step-1A': {
-            skill: 'console_commands',
-            title: 'Step 1A: Check Streaming Metrics',
-            prompt: "You confirmed the actor is streaming out. Before changing the actor, you want to verify the current streaming distance settings being applied to the cell containing the Clock Tower. Which console command helps confirm the active streaming range and cell status?",
-            choices: [
-                {
-                    text: "Use r.WorldPartition.Streaming.Debug]",
-                    type: 'correct',
-                    feedback: "You use the debug command and confirm that the effective streaming distance for the Clock Tower's cell is indeed the default, short range (e.g., 100m/200m), which is insufficient for a critical landmark. This confirms the grid rules are the problem.",
-                    next: 'step-1B'
-                },
-                {
-                    text: "Use stat unit]",
-                    type: 'wrong',
-                    feedback: "This command shows frame time and performance metrics, not the active streaming distance or cell status. You need a World Partition specific command.",
-                    next: 'step-1A'
-                },
-            ]
-        },
 
-        'step-1B': {
-            skill: 'data_layers',
-            title: 'Step 1B: Data Layer Activation Status',
-            prompt: "The Clock Tower is assigned to the 'Mission_A_Landmarks' Data Layer. You suspect this layer might be inactive, forcing the actor to rely solely on spatial loading. How do you check the current runtime status of this specific Data Layer?",
-            choices: [
-                {
-                    text: "Use Data Layer Debugger/Console Command]",
-                    type: 'correct',
-                    feedback: "You use the Data Layer Debugger panel or the console command `wp.DataLayer.List` and confirm that 'Mission_A_Landmarks' is currently *inactive* by default, meaning the actor is relying solely on spatial loading, which is why it unloads.",
-                    next: 'step-1A'
-                },
-                {
-                    text: "Check the actor's 'Is Spatially Loaded' flag]",
-                    type: 'wrong',
-                    feedback: "You already know the actor is spatially loaded. You need to check the Data Layer status itself, as that is the intended mechanism for overriding spatial loading.",
-                    next: 'step-1B'
-                },
-            ]
-        },
 
-        'step-2R': {
-            skill: 'world_partition',
-            title: 'Step 2R: Red Herring: Global Streaming Distance Tweak',
-            prompt: "You know the default streaming distance is too short. Instead of fixing the specific actor, you decide to increase the global streaming distance for all cells in the World Settings to 500 meters. What is the immediate consequence of this heavy-handed change?",
-            choices: [
-                {
-                    text: "Observe massive performance hit]",
-                    type: 'correct',
-                    feedback: "The Clock Tower now stays loaded, but so do hundreds of other distant, non-critical props and actors across the map. Your memory usage and streaming budget spike significantly, confirming this is an inefficient, global solution that negatively impacts overall game performance.",
-                    next: 'step-2R'
-                },
-                {
-                    text: "The Clock Tower still unloads]",
-                    type: 'wrong',
-                    feedback: "Incorrect. Increasing the global distance *would* keep the Clock Tower loaded, but the performance cost is the real issue you must address.",
-                    next: 'step-2R'
-                },
-            ]
-        },
 
-        'step-4A': {
-            skill: 'performance',
-            title: 'Step 4A: Verification: Performance Check',
-            prompt: "The Clock Tower now stays loaded via the Data Layer fix. You must ensure this targeted fix didn't introduce unnecessary overhead. What metrics do you check to confirm efficiency?",
-            choices: [
-                {
-                    text: "Check Streaming Stats and Memory]",
-                    type: 'correct',
-                    feedback: "You use `stat streaming` and `stat unit` while moving through the level. You confirm that only the Clock Tower's cell/Data Layer remains active at distance, and the overall memory footprint and streaming time remain stable, validating the targeted approach.",
-                    next: 'step-4B'
-                },
-                {
-                    text: "Check the actor's LODs again]",
-                    type: 'wrong',
-                    feedback: "The issue was streaming, not rendering. Checking LODs is irrelevant to the performance impact of keeping the actor loaded.",
-                    next: 'step-4A'
-                },
-            ]
-        },
 
-        'step-4B': {
-            skill: 'packaging',
-            title: 'Step 4B: Verification: Standalone Build',
-            prompt: "The fix works perfectly in PIE and the performance is acceptable. What is the final, crucial step to ensure the Data Layer activation logic functions correctly in the final product?",
-            choices: [
-                {
-                    text: "Package and Test Standalone Build]",
-                    type: 'correct',
-                    feedback: "You create a packaged build and run the mission. Testing in a standalone environment confirms that the mission Blueprint correctly activates the Data Layer and keeps the Clock Tower loaded, ruling out editor-specific streaming behavior.",
-                    next: 'conclusion'
-                },
-                {
-                    text: "Run a Load Test in the Editor]",
-                    type: 'wrong',
-                    feedback: "While useful, editor load tests don't perfectly replicate the runtime environment of a packaged game, especially regarding streaming and Data Layer initialization.",
-                    next: 'step-4B'
-                },
-            ]
-        },
 
         'conclusion': {
             skill: 'world_partition',

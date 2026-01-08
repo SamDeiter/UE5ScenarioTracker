@@ -172,75 +172,10 @@ window.SCENARIOS['FogBandingArtifacts'] = {
             ]
         },
         
-        'step-1R': {
-            skill: 'rendering',
-            title: 'Red Herring: Adjusting Fog Density Curves',
-            prompt: "You realize the banding is depth-related, but you try to mask it by aggressively tweaking the density falloff curve in the Exponential Height Fog component, hoping to make the distant fog less noticeable. What is the outcome?",
-            choices: [
-                {
-                    text: "Observe the result]",
-                    type: 'wrong',
-                    feedback: "While the overall look changes, the underlying grid structure remains the same. The hard, visible slices persist in the distance, proving that density curves cannot fix a fundamental resolution mismatch.",
-                    next: 'step-1R'
-                },
-            ]
-        },
 
-        'step-2A': {
-            skill: 'rendering',
-            title: 'Deep Dive: Visualizing the Grid',
-            prompt: "You are certain the grid is the issue. What specific console command allows you to visualize the actual 3D grid allocation and confirm the size of the depth slices causing the banding?",
-            choices: [
-                {
-                    text: "Execute r.VolumetricFog.VisualizeGrid 1]",
-                    type: 'correct',
-                    feedback: "Executing `r.VolumetricFog.VisualizeGrid 1` immediately shows the grid structure. You confirm that the depth slices are extremely large and sparse, especially in the distance, visually matching the banding artifacts you see in the scene.",
-                    next: 'step-2B'
-                },
-            ]
-        },
 
-        'step-2B': {
-            skill: 'performance',
-            title: 'Analyzing Grid Allocation Performance',
-            prompt: "You know the grid is stretched. Before fixing it, you check performance using `stat gpu`. What is the typical performance signature of a volumetric fog setup where the view distance is too high for the grid resolution?",
-            choices: [
-                {
-                    text: "Check GPU stats]",
-                    type: 'correct',
-                    feedback: "The GPU time for volumetric fog is often low (because the grid is coarse), but the engine struggles with inconsistent sampling and integration across the vast, stretched volume, sometimes leading to hitching or unstable frame times when the camera moves, confirming the current settings are inefficiently allocating resources.",
-                    next: 'step-2A'
-                },
-            ]
-        },
 
-        'step-4A': {
-            skill: 'testing',
-            title: 'Verification: Standalone Build Test',
-            prompt: "The fix looks perfect in PIE. However, rendering artifacts sometimes behave differently outside the editor environment due to different culling or optimization settings. What is the next crucial verification step?",
-            choices: [
-                {
-                    text: "Run a Standalone Game build]",
-                    type: 'correct',
-                    feedback: "You run a standalone build. The banding remains resolved, confirming the fix is robust. This step is vital because editor overhead or specific PIE settings can sometimes mask or exaggerate rendering issues.",
-                    next: 'step-4B'
-                },
-            ]
-        },
 
-        'step-4B': {
-            skill: 'performance',
-            title: 'Verification: Performance Regression Check',
-            prompt: "You fixed the banding by increasing the grid resolution (or reducing view distance). This change impacts performance. What is the final check to ensure the fix didn't introduce a new, unacceptable performance bottleneck?",
-            choices: [
-                {
-                    text: "Enable stat unit and stat gpu]",
-                    type: 'correct',
-                    feedback: "You confirm that while the GPU time for volumetric fog might have slightly increased due to the finer grid, the overall frame rate remains acceptable and stable. You verify that the cost is justified by the visual quality improvement.",
-                    next: 'step-4A'
-                },
-            ]
-        },
 
         'conclusion': {
             skill: 'rendering',

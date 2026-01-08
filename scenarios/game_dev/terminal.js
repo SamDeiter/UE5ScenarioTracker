@@ -198,101 +198,11 @@ window.SCENARIOS['WidgetInputFailure'] = {
             ]
         },
         
-        'step-A1': {
-            skill: 'console',
-            title: 'Initial Input Visualization',
-            prompt: "Before diving into Blueprints, you want a real-time view of where input is being consumed. What console command helps visualize input routing and focus targets?",
-            choices: [
-                {
-                    text: "Execute ShowDebug Input]",
-                    type: 'correct',
-                    feedback: "Executing `ShowDebug Input` confirms that the Player Controller is successfully receiving input events, but the 'Input Mode' is listed as 'Game Only', and the UMG widget is not listed as having keyboard focus. This confirms the routing issue.",
-                    next: 'step-A1'
-                },
-                {
-                    text: "Execute Stat Input]",
-                    type: 'wrong',
-                    feedback: "`Stat Input` shows performance metrics related to input processing, but it doesn't visualize the routing or focus state. This doesn't help diagnose why the widget is ignored.",
-                    next: 'step-A1W'
-                },
-            ]
-        },
 
-        'step-A1W': {
-            skill: 'console',
-            title: 'Dead End: Wrong Console Command',
-            prompt: "You used the wrong console command. You need a tool that shows input consumption and focus targets, not just performance metrics.",
-            choices: [
-                {
-                    text: "Revert and use ShowDebug Input]",
-                    type: 'correct',
-                    feedback: "You revert and use the correct diagnostic tool to confirm the input routing issue.",
-                    next: 'step-A1'
-                },
-            ]
-        },
 
-        'step-RH1': {
-            skill: 'ui',
-            title: 'Red Herring: Z-Order and Visibility',
-            prompt: "You suspect the widget might be visually obscured or its Z-Order is too low, preventing mouse clicks from registering, even though the input mode is the primary suspect. You check the widget's Z-Order when added to the viewport.",
-            choices: [
-                {
-                    text: "Confirm Z-Order is high (e.g., 10)]",
-                    type: 'correct',
-                    feedback: "You confirm the Z-Order is high, ruling out rendering order or visual occlusion as the cause of the input failure. The problem remains the Player Controller's input routing configuration.",
-                    next: 'step-RH1'
-                },
-                {
-                    text: "Try setting Visibility to Self Hit Test Invisible]",
-                    type: 'wrong',
-                    feedback: "Setting the widget to 'Self Hit Test Invisible' means it will ignore input entirely. This makes the problem worse!",
-                    next: 'step-RH1W'
-                },
-            ]
-        },
 
-        'step-RH1W': {
-            skill: 'ui',
-            title: 'Dead End: Making it Worse',
-            prompt: "You accidentally told the widget to ignore input. You must revert this change and focus on the Player Controller settings.",
-            choices: [
-                {
-                    text: "Revert and refocus on input mode]",
-                    type: 'correct',
-                    feedback: "You revert the visibility change and return to investigating the Player Controller's input mode and focus settings.",
-                    next: 'step-RH1'
-                },
-            ]
-        },
 
-        'step-V1': {
-            skill: 'testing',
-            title: 'Verification: Standalone Game Test',
-            prompt: "PIE testing is complete, but sometimes input handling differs slightly in packaged or standalone builds, especially regarding mouse capture. How do you perform the final verification to ensure robustness?",
-            choices: [
-                {
-                    text: "Launch the game in Standalone Mode]",
-                    type: 'correct',
-                    feedback: "The terminal works perfectly in Standalone mode, confirming the fix is robust across different execution environments and that the mouse cursor is correctly captured by the UI.",
-                    next: 'step-V2'
-                },
-            ]
-        },
 
-        'step-V2': {
-            skill: 'optimization',
-            title: 'Verification: Performance Overhead Check',
-            prompt: "Switching input modes, showing the mouse cursor, and capturing focus can sometimes introduce minor hitches or performance overhead. What console command do you use to quickly check the frame time and game thread performance during the input mode switch?",
-            choices: [
-                {
-                    text: "Use the console command stat unit]",
-                    type: 'correct',
-                    feedback: "You observe the frame time before, during, and after the switch. The switch is instantaneous and causes no noticeable spike in Game or Draw time. Final validation complete.",
-                    next: 'conclusion'
-                },
-            ]
-        },
 
         'conclusion': {
             skill: 'ui',

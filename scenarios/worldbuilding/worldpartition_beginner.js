@@ -183,87 +183,10 @@ window.SCENARIOS['FoliagePoppingInTooClose'] = {
             ]
         },
         
-        'step-A': {
-            skill: 'world_partition',
-            title: 'Step A: Confirming Streaming Metrics',
-            prompt: "Before diving into the editor settings, you want quantitative proof that the streaming distance is indeed the issue. Which console command provides the most relevant data about World Partition cell loading distances and status?",
-            choices: [
-                {
-                    text: "Use stat worldpartition]",
-                    type: 'correct',
-                    feedback: "You run `stat worldpartition` and confirm that the problematic cells are indeed only loading when the player distance is less than 1500 units (15 meters), confirming the loading range is set too low for these specific cells.",
-                    next: 'step-A'
-                },
-                {
-                    text: "Use stat unit]",
-                    type: 'wrong',
-                    feedback: "`stat unit` shows performance metrics (FPS, draw calls) but doesn't provide specific data on *why* cells are loading late. You need a more targeted command.",
-                    next: 'step-A'
-                },
-            ]
-        },
 
-        'step-B': {
-            skill: 'world_partition',
-            title: 'Step B: Inspecting Data Layer Asset Configuration',
-            prompt: "The debug view showed the foliage belongs to a specific Data Layer (e.g., 'DL_Foliage_Small'). You suspect the loading range is inherited from this asset. Where do you check the actual streaming configuration for this specific Data Layer Asset?",
-            choices: [
-                {
-                    text: "Open the Data Layer Asset and check Streaming Settings]",
-                    type: 'correct',
-                    feedback: "You open the Data Layer Asset and find that the 'Loading Range' property is explicitly set to 1500 units, overriding the default World Partition settings. This is the direct cause of the close pop-in.",
-                    next: 'step-B'
-                },
-                {
-                    text: "Try disabling HLOD generation for the foliage actors]",
-                    type: 'misguided',
-                    feedback: "Disabling HLOD generation might slightly change performance, but it doesn't address the fundamental issue of the underlying World Partition cell streaming distance, which is controlled by the Data Layer configuration.",
-                    next: 'step-RH'
-                },
-            ]
-        },
 
-        'step-RH': {
-            skill: 'world_partition',
-            title: 'Dead End: Red Herring - HLOD Misdirection',
-            prompt: "Disabling HLODs didn't fix the pop-in distance. The actors still only appear when you are 10m away. You realize the issue is not *what* is loading, but *when* the cell containing them is loading.",
-            choices: [
-                {
-                    text: "Re-examine Data Layer Streaming Settings]",
-                    type: 'correct',
-                    feedback: "You return to inspecting the Data Layer Asset, realizing that the Loading Range property is the key setting that needs adjustment.",
-                    next: 'step-B'
-                },
-            ]
-        },
 
-        'step-V1': {
-            skill: 'testing',
-            title: 'Step V1: Standalone Game Verification',
-            prompt: "You confirmed the fix in PIE, but World Partition behavior can sometimes differ in cooked builds. How do you ensure the increased loading range is correctly applied in a production environment?",
-            choices: [
-                {
-                    text: "Launch the Standalone Game]",
-                    type: 'correct',
-                    feedback: "You launch the standalone game and confirm that the foliage loads correctly at the new, farther distance. This verifies that the Data Layer Asset changes were correctly saved and packaged.",
-                    next: 'step-V2'
-                },
-            ]
-        },
 
-        'step-V2': {
-            skill: 'optimization',
-            title: 'Step V2: Checking Performance Overhead',
-            prompt: "Increasing the loading range means more actors are loaded and potentially rendered simultaneously. You must verify that this change hasn't introduced a massive performance regression.",
-            choices: [
-                {
-                    text: "Use stat unit and stat streaming]",
-                    type: 'correct',
-                    feedback: "You run `stat unit` and confirm that the frame rate remains stable. You also run `stat streaming` to ensure the increased loading range hasn't caused excessive memory usage or streaming stalls. The performance impact is acceptable.",
-                    next: 'conclusion'
-                },
-            ]
-        },
 
         'conclusion': {
             skill: 'world_partition',

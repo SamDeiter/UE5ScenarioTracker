@@ -210,113 +210,11 @@ window.SCENARIOS['InvisibleFogParticles'] = {
             ]
         },
         
-        'step-A': {
-            skill: 'rendering',
-            title: 'Isolating the Volumetric Effect',
-            prompt: "You confirmed the particles are failing to interact with the volumetric fog lighting. To definitively isolate the issue to the fog interaction, you use a console command to temporarily disable the feature. Which command is most appropriate?",
-            choices: [
-                {
-                    text: "r.VolumetricFog 0]",
-                    type: 'correct',
-                    feedback: "Disabling volumetric fog confirms that the particles render perfectly fine when the fog volume is removed. This strongly indicates the problem lies in how the particle material interacts with the volumetric lighting pass, not a general translucency or spawning issue.",
-                    next: 'step-B'
-                },
-                {
-                    text: "r.TranslucencyLightingVolume 0]",
-                    type: 'wrong',
-                    feedback: "This command relates to standard translucency lighting volumes, not the specific volumetric fog system. The particles remain invisible in the dense fog.",
-                    next: 'step-A'
-                },
-            ]
-        },
 
-        'step-B': {
-            skill: 'rendering',
-            title: 'Analyzing Volumetric Contribution',
-            prompt: "You know the fog is the culprit. Before checking the material settings, you want to visualize what the engine sees. Which specific view mode or visualization helps you confirm that the particles are failing to write data into the volumetric fog pass?",
-            choices: [
-                {
-                    text: "View Mode: Volumetric Fog]",
-                    type: 'correct',
-                    feedback: "Switching to the Volumetric Fog view mode shows the density and lighting contribution of the fog volume. When the particles fire, they show no visible contribution or shadowing effect within this visualization, confirming they are being ignored by the volumetric pass. Time to check the material.",
-                    next: 'step-A'
-                },
-                {
-                    text: "View Mode: Shader Complexity]",
-                    type: 'wrong',
-                    feedback: "Shader Complexity is useful for performance optimization but doesn't show the actual volumetric contribution or lack thereof.",
-                    next: 'step-B'
-                },
-            ]
-        },
 
-        'step-C': {
-            skill: 'niagara',
-            title: 'Red Herring - Niagara Depth Settings',
-            prompt: "You've identified the material as the likely source, but before applying the fix, you check a common particle pitfall: depth interaction. You notice the Niagara system uses 'Depth Buffer' interaction modules. You try disabling the module, thinking it might be interfering with the fog depth calculation.",
-            choices: [
-                {
-                    text: "Disable Depth Buffer Module]",
-                    type: 'wrong',
-                    feedback: "Disabling the depth buffer module might introduce sorting artifacts (particles clipping through geometry) but does not address the core issue of the material failing to interact with the volumetric lighting pass. The particles still vanish in the fog.",
-                    next: 'step-C_W'
-                },
-            ]
-        },
 
-        'step-C_W': {
-            skill: 'materials',
-            title: 'Dead End: Niagara Tweak',
-            prompt: "The Niagara depth module wasn't the issue. You must return to the material settings to find the flag that enables volumetric interaction.",
-            choices: [
-                {
-                    text: "Proceed to Material Fix]",
-                    type: 'correct',
-                    feedback: "You realize the fix must be in the material details panel, specifically related to volumetric shadowing.",
-                    next: 'step-C'
-                },
-            ]
-        },
 
-        'step-D': {
-            skill: 'optimization',
-            title: 'Performance Impact Assessment',
-            prompt: "The visual bug is fixed, but enabling 'Apply Volumetric Translucent Shadow' can be performance-intensive. How do you verify that the fix hasn't introduced unacceptable frame rate drops?",
-            choices: [
-                {
-                    text: "Use stat unit and stat gpu]",
-                    type: 'correct',
-                    feedback: "You run `stat unit` and `stat gpu` while the particle system is active inside the fog. You observe a measurable increase in GPU time under the 'Volumetric Fog' category, but the overall frame rate remains acceptable, confirming the fix is viable for performance.",
-                    next: 'step-E'
-                },
-                {
-                    text: "Check the Material Instruction Count]",
-                    type: 'wrong',
-                    feedback: "While instruction count is important, the performance hit from volumetric translucent shadows is primarily due to the rendering cost of the volumetric pass itself, not just the shader complexity. You need to check runtime GPU metrics.",
-                    next: 'step-D'
-                },
-            ]
-        },
 
-        'step-E': {
-            skill: 'testing',
-            title: 'Standalone Build Confirmation',
-            prompt: "Rendering issues sometimes manifest differently in PIE versus a packaged build. What is the final step to ensure this fix is robust and ready for production?",
-            choices: [
-                {
-                    text: "Test in Standalone Game or Packaged Build]",
-                    type: 'correct',
-                    feedback: "You launch the game in Standalone mode and confirm the particles render correctly within the fog, ensuring that the fix holds up under production-like conditions and scalability settings are not overriding the material flag.",
-                    next: 'step-D'
-                },
-                {
-                    text: "Run a GPU Trace in PIE]",
-                    type: 'wrong',
-                    feedback: "A GPU trace is useful for deep optimization but doesn't replace the necessity of testing the final behavior in a standalone environment.",
-                    next: 'step-E'
-                },
-            ]
-        },
 
         'conclusion': {
             skill: 'materials',

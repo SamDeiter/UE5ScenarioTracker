@@ -522,116 +522,73 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /**
    * Called when a user clicks an answer choice.
-   */
-  /**
-   * Called when a user clicks an answer choice.
+   * Delegates parsing and navigation to ChoiceHandler module.
    */
   async function handleChoice(choiceButton) {
-    // Prevent rapid clicking - ignore if already processing
-    if (isProcessingChoice) {
+    // Prevent rapid clicking - use ChoiceHandler state
+    if (ChoiceHandler.isProcessing()) {
       console.log("[Game] Choice already processing, ignoring click");
       return;
     }
-    isProcessingChoice = true;
+    ChoiceHandler.setProcessing(true);
 
-    // Disable all choice buttons visually
-    const allButtons = document.querySelectorAll(".choice-button");
-    allButtons.forEach((btn) => {
-      btn.disabled = true;
-      btn.classList.add("processing");
-    });
-
-    const {
-      choiceNext,
-      choiceTimeCost,
-      originalIndex,
-      choiceFeedback,
-      choiceType,
-    } = choiceButton.dataset;
-    const timeCost = parseFloat(choiceTimeCost);
-    const index = parseInt(originalIndex, 10);
-
-    // Get the choice data to access feedback
+    // Get current step data
     const scenarioData = window.SCENARIOS[currentScenarioId];
     const step = scenarioData.steps[currentStepId];
 
-    // Handle filler choices (index=-1) vs original choices
-    let choice;
-    if (index === -1 || index < 0) {
-      // Filler choice - construct from dataset
-      choice = {
-        text:
-          choiceButton.querySelector(".choice-text")?.textContent?.trim() || "",
-        type: choiceType || "wrong",
-        feedback: choiceFeedback
-          ? decodeURIComponent(choiceFeedback)
-          : "<p>This approach won't help here. Try a different option.</p>",
-        next: choiceNext || currentStepId,
-      };
-      console.log("[Game] Processing filler choice:", choice.type);
-    } else {
-      choice = step.choices[index];
-    }
+    // Parse choice using ChoiceHandler
+    const { choice, timeCost, index, choiceNext, isCorrect } =
+      ChoiceHandler.parseChoice(choiceButton, step);
 
-    const isCorrect = choice && choice.type === "correct";
-
-    // 1. Log the time cost (updates global state)
+    // Update scenario state
     const state = scenarioState[currentScenarioId];
     state.loggedTime += timeCost;
-
-    // 2. Record the original index of the choice made (or -1 for fillers)
     state.choicesMade[currentStepId] = index;
-
     saveScenarioState();
 
-    // --- NEW: Process via Scenario Engine ---
+    // Process via Scenario Engine
     try {
       const result = await ScenarioEngine.makeChoice(index);
       console.log("[Game] Choice processed:", result);
 
-      if (result.type === "complete") {
-        console.log("[Game] Scenario transition to finish...");
-        finishScenario();
-        return;
-      }
+      // Get navigation action from ChoiceHandler
+      const action = ChoiceHandler.getNavigationAction({
+        result,
+        isCorrect,
+        choice,
+        currentStepId,
+        choiceNext,
+      });
 
-      // 3. Handle Navigation and Feedback
-      if (isCorrect && choice && choice.feedback) {
-        console.log("[Game] Showing feedback for correct choice");
-        // Correct answer - show positive feedback first, then navigate
-        showChoiceFeedback(choice, () => {
-          currentStepId = result.step.id || choiceNext;
-          renderStep(currentScenarioId, currentStepId);
-        });
-      } else if (!isCorrect && choice && choice.feedback) {
-        console.log("[Game] Showing feedback for suboptimal choice");
-        // Wrong answer - show feedback first, then navigate
-        showChoiceFeedback(choice, () => {
-          // If we are staying on the same step, don't re-render everything (which clears feedback)
-          if (result.step.id === currentStepId) {
+      // Execute navigation action
+      switch (action.type) {
+        case "finish":
+          finishScenario();
+          return;
+        case "navigate-with-feedback":
+          showChoiceFeedback(choice, () => {
+            if (action.stepId !== currentStepId) {
+              currentStepId = action.stepId;
+              renderStep(currentScenarioId, currentStepId);
+            }
+          });
+          break;
+        case "stay-with-feedback":
+          showChoiceFeedback(choice, () => {
             console.log("[Game] Staying on current step, feedback displayed.");
-          } else {
-            currentStepId = result.step.id || choiceNext;
-            renderStep(currentScenarioId, currentStepId);
-          }
-        });
-      } else {
-        // Move immediately (no feedback to show)
-        currentStepId = result.step.id || choiceNext;
-        renderStep(currentScenarioId, currentStepId);
+          });
+          break;
+        case "navigate":
+        default:
+          currentStepId = action.stepId;
+          renderStep(currentScenarioId, currentStepId);
+          break;
       }
     } catch (err) {
       console.error("[Game] Failed to process choice via Engine:", err);
     } finally {
-      // Re-enable clicking after processing (with slight delay for render)
-      setTimeout(() => {
-        isProcessingChoice = false;
-        const allButtons = document.querySelectorAll(".choice-button");
-        allButtons.forEach((btn) => {
-          btn.disabled = false;
-          btn.classList.remove("processing");
-        });
-      }, 100);
+      // Re-enable clicking after processing
+      setTimeout(() => ChoiceHandler.setProcessing(false), 100);
     }
   }
 

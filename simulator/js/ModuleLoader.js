@@ -34,6 +34,11 @@ const ModuleLoader = (function () {
     { name: "TabManager", path: "js/ui/TabManager.js", required: false },
     { name: "Splitter", path: "js/ui/Splitter.js", required: false },
     {
+      name: "PropertyInputFactory",
+      path: "js/ui/PropertyInputFactory.js",
+      required: false,
+    },
+    {
       name: "DetailsController",
       path: "js/ui/DetailsController.js",
       required: false,

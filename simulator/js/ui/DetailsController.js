@@ -31,6 +31,13 @@ class DetailsController {
     this.transformSpace = "World"; // 'World' or 'Local' (Absolute toggle)
     this.showAdvanced = {}; // Track advanced toggle per category
 
+    // Initialize input factory
+    if (typeof PropertyInputFactory !== "undefined") {
+      this.inputFactory = new PropertyInputFactory({
+        onChange: (name, value) => this._onPropertyChange(name, value),
+      });
+    }
+
     this._init();
   }
 
@@ -633,31 +640,14 @@ class DetailsController {
 
     const currentValue = value !== undefined ? value : prop.default;
 
-    // Create input based on type
+    // Create input based on type - delegate to PropertyInputFactory
     let inputEl;
-    switch (prop.type) {
-      case "float":
-      case "int":
-        inputEl = this._createNumberInput(prop, currentValue);
-        break;
-      case "bool":
-        inputEl = this._createCheckbox(prop, currentValue);
-        break;
-      case "color":
-        inputEl = this._createColorPicker(prop, currentValue);
-        break;
-      case "enum":
-        inputEl = this._createEnumSelect(prop, currentValue);
-        break;
-      default:
-        // Handle vector/object types to avoid [object Object]
-        if (typeof currentValue === "object" && currentValue !== null) {
-          inputEl = document.createElement("span");
-          inputEl.textContent = JSON.stringify(currentValue);
-        } else {
-          inputEl = document.createElement("span");
-          inputEl.textContent = String(currentValue);
-        }
+    if (this.inputFactory) {
+      inputEl = this.inputFactory.create(prop, currentValue);
+    } else {
+      // Fallback for when factory is not available
+      inputEl = document.createElement("span");
+      inputEl.textContent = String(currentValue);
     }
 
     if (!isEnabled && inputEl.querySelector) {
@@ -719,102 +709,8 @@ class DetailsController {
     return !!actorProperties[condition];
   }
 
-  /**
-   * Create number input
-   */
-  _createNumberInput(prop, value) {
-    const wrapper = document.createElement("div");
-    wrapper.style.cssText = "display: flex; align-items: center; flex: 1;";
-
-    const input = document.createElement("input");
-    input.type = "number";
-    input.className = "property-input";
-    input.value = value;
-    input.min = prop.min !== undefined ? prop.min : "";
-    input.max = prop.max !== undefined ? prop.max : "";
-    input.step = prop.type === "int" ? 1 : 0.01;
-    input.style.cssText = "flex: 1; min-width: 60px;";
-
-    input.addEventListener("change", () => {
-      const newValue =
-        prop.type === "int" ? parseInt(input.value) : parseFloat(input.value);
-      this._onPropertyChange(prop.name, newValue);
-    });
-
-    wrapper.appendChild(input);
-
-    if (prop.units) {
-      const unitLabel = document.createElement("span");
-      unitLabel.className = "unit-label";
-      unitLabel.textContent = prop.units;
-      unitLabel.style.cssText =
-        "margin-left: 4px; color: #888; font-size: 11px;";
-      wrapper.appendChild(unitLabel);
-    }
-
-    return wrapper;
-  }
-
-  /**
-   * Create checkbox
-   */
-  _createCheckbox(prop, value) {
-    const wrapper = document.createElement("label");
-    wrapper.style.cssText =
-      "display: flex; align-items: center; cursor: pointer;";
-
-    const input = document.createElement("input");
-    input.type = "checkbox";
-    input.checked = value;
-    input.addEventListener("change", () => {
-      this._onPropertyChange(prop.name, input.checked);
-    });
-
-    wrapper.appendChild(input);
-
-    return wrapper;
-  }
-
-  /**
-   * Create color picker
-   */
-  _createColorPicker(prop, value) {
-    const input = document.createElement("input");
-    input.type = "color";
-    input.className = "color-picker";
-    input.value = value || "#FFFFFF";
-    input.style.cssText =
-      "width: 60px; height: 24px; border: 1px solid #444; cursor: pointer;";
-
-    input.addEventListener("change", () => {
-      this._onPropertyChange(prop.name, input.value);
-    });
-
-    return input;
-  }
-
-  /**
-   * Create enum select
-   */
-  _createEnumSelect(prop, value) {
-    const select = document.createElement("select");
-    select.className = "property-select";
-    select.style.cssText = "flex: 1;";
-
-    for (const option of prop.options) {
-      const opt = document.createElement("option");
-      opt.value = option;
-      opt.textContent = option;
-      opt.selected = option === value;
-      select.appendChild(opt);
-    }
-
-    select.addEventListener("change", () => {
-      this._onPropertyChange(prop.name, select.value);
-    });
-
-    return select;
-  }
+  // Input creation methods have been extracted to PropertyInputFactory.js
+  // The factory is initialized in the constructor and used via this.inputFactory.create()
 
   /**
    * Internal change handler

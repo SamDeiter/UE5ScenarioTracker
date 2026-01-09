@@ -174,6 +174,87 @@ window.ScenarioManager = {
       });
     }
   },
+
+  /**
+   * Render the single ticket completion screen
+   * @param {string} scenarioId - The scenario ID
+   * @param {object} options - Configuration
+   */
+  renderSingleConclusion(scenarioId, options = {}) {
+    const scenario = window.SCENARIOS?.[scenarioId];
+    if (!scenario) return;
+
+    const { container, state, onClose } = options;
+    if (!container) return;
+
+    const estimateHours = scenario.meta?.estimateHours || 2;
+    const loggedHours = state?.loggedTime || 0;
+
+    const timeColorClass = ScoringManager.getTimeColorClass(
+      loggedHours,
+      estimateHours
+    );
+
+    // Calculate overrun/underrun
+    const timeDifference = loggedHours - estimateHours;
+    const diffColorClass =
+      timeDifference > 0 ? "text-red-400" : "text-green-400";
+    const diffLabel = timeDifference > 0 ? "Over" : "Under";
+    const diffValue = Math.abs(timeDifference);
+
+    let summaryMessage;
+    if (loggedHours <= estimateHours) {
+      summaryMessage =
+        "Excellent outcome! The solution was found well within the estimated time.";
+    } else if (loggedHours <= estimateHours * 1.5) {
+      summaryMessage =
+        "Solid work. The solution was delivered, requiring a moderate but acceptable amount of time.";
+    } else {
+      summaryMessage =
+        "Ticket resolved. The issue was complex, resulting in a higher time log than originally estimated.";
+    }
+
+    const conclusionHtml = `
+      <div class="text-center p-8">
+        <h3 class="text-3xl font-bold ${timeColorClass} mb-6">Ticket Resolved</h3>
+        <p class="text-lg text-gray-300 mb-8">${summaryMessage}</p>
+
+        <div class="max-w-md mx-auto bg-neutral-700/50 p-6 rounded-lg">
+          <h4 class="text-xl font-semibold text-gray-100 mb-4">Ticket Time Breakdown (Step Cost)</h4>
+          <div class="space-y-3 text-left">
+            <div class="flex justify-between text-gray-300">
+              <span>Logged Fix Time:</span>
+              <span class="font-bold">${loggedHours.toFixed(1)} hrs</span>
+            </div>
+            <div class="flex justify-between text-gray-300">
+              <span>Original Estimate:</span>
+              <span class="font-bold text-green-400">${estimateHours.toFixed(
+                1
+              )} hrs</span>
+            </div>
+            <div class="flex justify-between text-lg text-white border-t border-gray-500 pt-3 mt-3">
+              <span class="font-bold">${diffLabel} Budget By:</span>
+              <span class="font-bold ${diffColorClass}">${diffValue.toFixed(
+      1
+    )} hrs</span>
+            </div>
+          </div>
+        </div>
+
+        <button id="close-scenario-btn" class="mt-8 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md transition-all duration-200">
+          Back to Backlog
+        </button>
+      </div>
+    `;
+
+    container.innerHTML = conclusionHtml;
+
+    // Attach close button handler
+    const closeBtn = document.getElementById("close-scenario-btn");
+    if (closeBtn && onClose) {
+      closeBtn.addEventListener("click", onClose);
+    }
+  },
 };
 
 console.log("[ScenarioManager] Module loaded");

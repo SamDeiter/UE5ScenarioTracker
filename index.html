@@ -386,35 +386,44 @@
 
 
 
-    <!-- Load All Scenarios (cleaned up - 17 remaining) -->
-    <!-- game_dev -->
+    <!-- Load All Scenarios (29 total) -->
+    <!-- game_dev (9) -->
     <script src="scenarios/game_dev/ComponentMobilityBlock.js" defer></script>
     <script src="scenarios/game_dev/DestroyActorStopsExecutionFlow.js" defer></script>
     <script src="scenarios/game_dev/LockedCinematicCleanup.js" defer></script>
     <script src="scenarios/game_dev/SecurityDoorLogicGap.js" defer></script>
     <script src="scenarios/game_dev/SequencerLightRestoreStateIssue.js" defer></script>
     <script src="scenarios/game_dev/VaultSequenceLockup.js" defer></script>
-    <!-- look_dev -->
+    <script src="scenarios/game_dev/InputActionNotResponding.js" defer></script>
+    <script src="scenarios/game_dev/AIBehaviorTreeBlackboardIssue.js" defer></script>
+    <script src="scenarios/game_dev/ReplicationVariableNotSyncing.js" defer></script>
+    <!-- look_dev (7) -->
     <script src="scenarios/look_dev/BlackMaterialDueToEmissiveMiswiring.js" defer></script>
     <script src="scenarios/look_dev/BlackMetallicObject.js" defer></script>
     <script src="scenarios/look_dev/DecalTextureAlphaMaskFailure.js" defer></script>
-    <!-- tech_art -->
+    <script src="scenarios/look_dev/MaterialNotRenderingInPIE.js" defer></script>
+    <script src="scenarios/look_dev/TextureBlurryDespiteHighRes.js" defer></script>
+    <script src="scenarios/look_dev/LumenReflectionIncorrectColor.js" defer></script>
+    <script src="scenarios/look_dev/SubstrateMaterialLayerConflict.js" defer></script>
+    <!-- tech_art (6) -->
     <script src="scenarios/tech_art/DanglingAssetRedirectors.js" defer></script>
     <script src="scenarios/tech_art/MaterialParameterAndAnimJitter.js" defer></script>
     <script src="scenarios/tech_art/MismatchedSkeletonReference.js" defer></script>
     <script src="scenarios/tech_art/RedirectorAndBulkLoadConflict.js" defer></script>
     <script src="scenarios/tech_art/generator.js" defer></script>
-    <!-- vfx -->
+    <script src="scenarios/tech_art/AnimationRetargetBoneNaming.js" defer></script>
+    <!-- vfx (5) -->
     <script src="scenarios/vfx/nanite_wpo_failure.js" defer></script>
     <script src="scenarios/vfx/VolumetricShadowingPerformance.js" defer></script>
     <script src="scenarios/vfx/NiagaraEmitterNotSpawning.js" defer></script>
     <script src="scenarios/vfx/SequencerCameraCutNotPlaying.js" defer></script>
     <script src="scenarios/vfx/NiagaraDataInterfaceBindingError.js" defer></script>
-    <!-- worldbuilding -->
+    <!-- worldbuilding (4) -->
     <script src="scenarios/worldbuilding/ForcedDataLayerUnload.js" defer></script>
     <script src="scenarios/worldbuilding/WorldPartitionDeepDive.js" defer></script>
     <script src="scenarios/worldbuilding/WorldPartitionActorNotLoading.js" defer></script>
     <script src="scenarios/worldbuilding/WorldPartitionCellBoundaryPopIn.js" defer></script>
+
 
     <!-- Game Logic Modules (load before game.js) -->
     <script src="js/game/GameState.js" defer></script>

@@ -1,93 +1,118 @@
 # Scenario Data Schema
 
-Each scenario file in the `scenarios/` directory (e.g., `golem.js`) adds a new entry to the global `window.SCENARIOS` object.
+Each scenario file in the `scenarios/` directory adds a new entry to the global `window.SCENARIOS` object.
 
 ## File Structure
 
 ```javascript
-window.SCENARIOS['unique_scenario_id'] = {
+window.SCENARIOS['ScenarioId'] = {
   meta: { ... },
-  start: "step-id",
+  setup: [...],      // Optional
+  fault: { ... },    // Optional
+  expected: { ... }, // Optional
+  fix: [...],        // Optional
+  start: "step-1",
   steps: { ... }
 };
 ```
 
 ## Fields Description
 
-### 1. Root Object
-*   **Key**: A unique string ID for the scenario (e.g., `'golem'`, `'terminal'`). This must match the filename for consistency.
+### 1. Root Object Key
 
-### 2. `meta` Object
-Contains high-level information about the scenario (ticket).
-*   `title` (String): The display title of the ticket.
-*   `description` (String): A brief summary of the issue.
-*   `estimateHours` (Number): The "estimated" time to fix this issue. Used for scoring.
+A unique PascalCase string ID for the scenario (e.g., `'AIBehaviorTreeBlackboardIssue'`). Should match the filename.
 
-### 3. `start` (String)
-*   The ID of the first step to load (usually `'step-1'`).
+### 2. `meta` Object (Required)
 
-### 4. `steps` Object
-A dictionary where keys are step IDs (e.g., `'step-1'`, `'step-2'`) and values are step objects.
+| Field | Type | Description |
+|-------|------|-------------|
+| `title` | String | Display title of the ticket |
+| `description` | String | Brief summary of the issue |
+| `estimateHours` | Number | Expected time for ideal path (used for scoring) |
+| `difficulty` | String | `"Beginner"`, `"Intermediate"`, or `"Advanced"` |
+| `category` | String | Skill category: `"Lighting"`, `"Blueprints"`, `"Materials"`, `"Physics"`, `"Animation"`, `"VFX"`, `"Worldbuilding"`, etc. |
 
-#### Step Object Structure
-*   `skill` (String): The category of skill being tested (e.g., `'lighting'`, `'cpp'`, `'perf'`).
-*   `title` (String): The title of the specific step.
-*   `prompt` (HTML String): The question or situation description. Can contain HTML tags like `<p>`, `<code>`, `<strong>`.
-*   `choices` (Array of Objects): A list of possible answers.
+### 3. `setup` Array (Optional)
 
-#### Choice Object Structure
-*   `text` (HTML String): The text displayed on the button.
-*   `type` (String): Determines the score/time cost.
-    *   `'correct'`: Best answer. Low time cost (0.5h).
-    *   `'partial'`: Okay answer, but not optimal. Medium time cost (1.0h).
-    *   `'misguided'`: Plausible but incorrect path. High time cost (1.5h).
-    *   `'wrong'`: Completely incorrect. Max time cost (2.0h).
-*   `feedback` (HTML String): The explanation shown after clicking.
-*   `next` (String): The ID of the next step to load (e.g., `'step-2'`), or `'conclusion'` to finish the scenario.
+Actions to configure the scenario's initial state.
 
-## Example Template
+### 4. `fault` Object (Optional)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `description` | String | What's broken |
+| `visual_cue` | String | What the user visually observes |
+
+### 5. `expected` Object (Optional)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `description` | String | Desired behavior after fix |
+| `validation_action` | String | How to verify success |
+
+### 6. `fix` Array (Optional)
+
+Actions to restore correct state (for automation).
+
+### 7. `start` (String, Required)
+
+The ID of the first step (usually `'step-1'`).
+
+### 8. `steps` Object (Required)
+
+Dictionary of step objects keyed by step ID.
+
+#### Step Object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `skill` | String | Skill being tested (e.g., `'blueprints'`, `'lighting'`) |
+| `title` | String | Step title |
+| `image_path` | String | Path to step image: `assets/generated/ScenarioId/step-1.png` |
+| `prompt` | HTML String | Question/situation with `<p>`, `<code>`, `<strong>` |
+| `choices` | Array | List of answer choices |
+
+#### Choice Object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `text` | HTML String | Button text |
+| `type` | String | Answer quality (see below) |
+| `feedback` | HTML String | Explanation shown after selection |
+| `next` | String | Next step ID, `'conclusion'`, or same step to retry |
+
+#### Choice Types
+
+| Type | Description | Time Cost |
+|------|-------------|-----------|
+| `correct` | Best answer | +0.1h (Optimal) |
+| `plausible` | Could work, not ideal | +0.1-0.15h |
+| `obvious` | Common misconception | +0.15-0.2h |
+| `subtle` | Plausible but wrong path | +0.1-0.2h |
+
+### 9. `conclusion` Step (Required)
+
+The final step summarizing what was learned.
 
 ```javascript
-window.SCENARIOS['my_new_scenario'] = {
-  meta: {
-    title: "My New Scenario Title",
-    description: "Brief description of the problem.",
-    estimateHours: 2.0
-  },
-  start: "step-1",
-  steps: {
-    'step-1': {
-      skill: 'debugging',
-      title: 'Step 1: The Beginning',
-      prompt: "<p>What is the first thing you check?</p>",
-      choices: [
-        {
-          text: 'Check the logs',
-          type: 'correct',
-          feedback: "<p><strong>Correct:</strong> Logs are the best place to start.</p>",
-          next: 'step-2'
-        },
-        {
-          text: 'Guess randomly',
-          type: 'wrong',
-          feedback: "<p><strong>Wrong:</strong> Never guess.</p>",
-          next: 'step-2'
-        }
-      ]
-    },
-    'step-2': {
-      skill: 'debugging',
-      title: 'Step 2: The Fix',
-      prompt: "<p>You found the error. How do you fix it?</p>",
-      choices: [
-        {
-          text: 'Apply the patch',
-          type: 'correct',
-          feedback: "<p><strong>Correct:</strong> Fixed!</p>",
-          next: 'conclusion'
-        }
-      ]
-    }
-  }
-};
+conclusion: {
+  skill: "complete",
+  title: "Scenario Complete",
+  image_path: "assets/generated/ScenarioId/conclusion.png",
+  prompt: "<p><strong>Well done!</strong></p><h4>Key Takeaways:</h4><ul>...</ul>",
+  choices: [
+    { text: "Complete Scenario", type: "correct", feedback: "", next: "end" }
+  ]
+}
 ```
+
+## Image Path Convention
+
+All images go in: `assets/generated/{ScenarioId}/`
+
+- `step-1.png`, `step-2.png`, ... `step-N.png`
+- `conclusion.png`
+
+## Example
+
+See `_TEMPLATE.js` for a complete working example.

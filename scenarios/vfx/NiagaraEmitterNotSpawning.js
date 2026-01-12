@@ -3,7 +3,7 @@ window.SCENARIOS["NiagaraEmitterNotSpawning"] = {
     title: "Niagara Emitter Not Spawning Particles",
     description:
       "A Niagara particle system placed in the level shows no visible particles during Play in Editor, despite no errors in the Output Log.",
-    estimateHours: 0.75,
+    estimateHours: 1.0,
     difficulty: "Beginner",
     category: "VFX",
   },
@@ -54,14 +54,14 @@ window.SCENARIOS["NiagaraEmitterNotSpawning"] = {
         },
         {
           text: "Check the <strong>World Settings</strong> for global particle system scalability overrides.",
-          type: "misguided",
+          type: "obvious",
           feedback:
             "<strong>Extended Time:</strong> +0.2hrs. Scalability settings affect quality, not whether particles spawn at all. Start with the component's own activation settings.",
           next: "step-1",
         },
         {
           text: "Rebuild lighting to ensure particles receive proper illumination from the scene.",
-          type: "wrong",
+          type: "subtle",
           feedback:
             "<strong>Extended Time:</strong> +0.25hrs. Lighting affects how particles look, not whether they spawn. This is unrelated to the core issue.",
           next: "step-1",
@@ -70,112 +70,334 @@ window.SCENARIOS["NiagaraEmitterNotSpawning"] = {
     },
     "step-2": {
       skill: "vfx",
-      title: "Investigating Spawn Settings",
+      title: "Checking Auto Activate",
       image_path: "assets/generated/NiagaraEmitterNotSpawning/step-2.png",
       prompt:
-        "<p>You confirm <code>Auto Activate</code> is enabled, but particles still don't appear. You open the Niagara System asset in the <strong>Niagara Editor</strong>.</p><p><strong>What do you check next?</strong></p>",
+        "<p>You select the Niagara System component in the level. Where exactly do you find the <code>Auto Activate</code> setting?</p><p><strong>Where is this property located?</strong></p>",
       choices: [
         {
-          text: "Examine the <strong>Emitter Properties</strong> module and verify <code>Sim Target</code> is set to <code>CPUSim</code> or <code>GPUSim</code> appropriately.",
+          text: "In the <strong>Details Panel</strong>, look under the <code>Activation</code> category for the <code>Auto Activate</code> checkbox.",
           type: "correct",
           feedback:
-            "<strong>Optimal Time:</strong> +0.1hrs. If <code>Sim Target</code> is set to GPU but the project doesn't support GPU particles, or vice versa, particles won't simulate.",
+            "<strong>Optimal Time:</strong> +0.1hrs. The Activation category contains settings that control when the particle system starts.",
           next: "step-3",
         },
         {
-          text: "Add a new <strong>Spawn Rate</strong> module to increase the number of particles per second.",
+          text: "Open the Niagara System asset and check the <strong>System Properties</strong> panel.",
           type: "plausible",
           feedback:
-            "<strong>Extended Time:</strong> +0.1hrs. Adding spawn modules might help, but first verify the existing simulation target is compatible with your project settings.",
+            "<strong>Extended Time:</strong> +0.1hrs. The asset has different settings. Per-instance Auto Activate is on the component in the level.",
           next: "step-2",
         },
         {
-          text: "Check the <strong>Renderer</strong> module's <code>Material</code> slot for a valid material assignment.",
-          type: "misguided",
+          text: "Right-click the component and select <strong>Properties</strong> from the context menu.",
+          type: "obvious",
           feedback:
-            "<strong>Extended Time:</strong> +0.15hrs. Material assignment is important, but wouldn't cause zero particles if the system was working. Check simulation settings first.",
+            "<strong>Extended Time:</strong> +0.1hrs. There's no Properties context menu. Use the Details Panel on the right side of the editor.",
           next: "step-2",
         },
         {
-          text: "Increase the <code>Fixed Bounds</code> size in <strong>System Properties</strong> to ensure particles aren't culled.",
-          type: "wrong",
+          text: "Check the <strong>World Outliner</strong> for activation state icons.",
+          type: "subtle",
           feedback:
-            "<strong>Extended Time:</strong> +0.15hrs. Bounds affect culling at distance, not complete failure to spawn. This is not the root cause.",
+            "<strong>Extended Time:</strong> +0.1hrs. The outliner shows hierarchy, not component properties. Use the Details Panel.",
           next: "step-2",
         },
       ],
     },
     "step-3": {
       skill: "vfx",
-      title: "Root Cause Identified",
+      title: "Verifying Auto Activate Status",
       image_path: "assets/generated/NiagaraEmitterNotSpawning/step-3.png",
       prompt:
-        "<p>You discover the <code>Sim Target</code> is set to <code>GPUSim</code>, but examining <strong>Project Settings</strong> > <strong>Niagara</strong> shows GPU simulation is disabled for this project.</p><p><strong>How do you resolve this?</strong></p>",
+        "<p>You find that <code>Auto Activate</code> is already enabled. The system should be activating but still no particles appear.</p><p><strong>What do you check next?</strong></p>",
       choices: [
         {
-          text: "Change the emitter's <code>Sim Target</code> to <code>CPUSim</code> in the <strong>Emitter Properties</strong> module.",
+          text: "Open the Niagara System asset in the <strong>Niagara Editor</strong> and check the <code>Emitter Properties</code> module for simulation settings.",
           type: "correct",
           feedback:
-            "<strong>Optimal Time:</strong> +0.1hrs. Switching to CPU simulation ensures the particles can run on any hardware configuration without requiring GPU compute support.",
+            "<strong>Optimal Time:</strong> +0.1hrs. If the component is configured correctly, the issue may be inside the Niagara System asset itself.",
           next: "step-4",
         },
         {
-          text: "Enable <code>Allow GPU Particles</code> in <strong>Project Settings</strong> > <strong>Rendering</strong> > <strong>Niagara</strong>.",
+          text: "Check if there's a Blueprint that's calling <code>Deactivate</code> on the particle system.",
           type: "plausible",
           feedback:
-            "<strong>Extended Time:</strong> +0.15hrs. This would also work, but requires a project-wide change and potential testing on lower-end hardware. Changing the emitter is safer.",
-          next: "step-4",
-        },
-        {
-          text: "Convert the Niagara System to a legacy <strong>Cascade</strong> particle system instead.",
-          type: "wrong",
-          feedback:
-            "<strong>Extended Time:</strong> +0.3hrs. Cascade is deprecated. The correct fix is to adjust the simulation target, not downgrade your particle system.",
+            "<strong>Extended Time:</strong> +0.15hrs. Script interference is possible, but check the asset configuration first before debugging Blueprints.",
           next: "step-3",
         },
         {
-          text: "Set <code>Scalability Mode</code> to <code>Self</code> to bypass project-level restrictions.",
-          type: "misguided",
+          text: "Increase the <code>Bounds Scale</code> to ensure particles aren't being culled immediately.",
+          type: "subtle",
           feedback:
-            "<strong>Extended Time:</strong> +0.15hrs. Scalability mode affects LOD behavior, not the fundamental simulation target compatibility.",
+            "<strong>Extended Time:</strong> +0.1hrs. Bounds affect visibility at distance. If no particles spawn at all, it's not a culling issue.",
+          next: "step-3",
+        },
+        {
+          text: "Delete and re-add the Niagara component to reset any cached state.",
+          type: "obvious",
+          feedback:
+            "<strong>Extended Time:</strong> +0.15hrs. Re-adding won't fix configuration issues. Check the asset contents first.",
           next: "step-3",
         },
       ],
     },
     "step-4": {
       skill: "vfx",
-      title: "Verification",
+      title: "Opening the Niagara Editor",
       image_path: "assets/generated/NiagaraEmitterNotSpawning/step-4.png",
       prompt:
-        "<p>You changed the <code>Sim Target</code> to <code>CPUSim</code> and saved the asset.</p><p><strong>How do you verify the fix works correctly?</strong></p>",
+        "<p>You double-click the Niagara System asset to open it. The <strong>Niagara Editor</strong> opens showing emitters and modules.</p><p><strong>What should you examine first?</strong></p>",
       choices: [
         {
-          text: "Press <strong>Play in Editor</strong> and confirm particles are now visible, then use <code>stat Niagara</code> to verify active emitter count.",
+          text: "Select the emitter and check the <code>Emitter Properties</code> module to verify the <code>Sim Target</code> setting.",
           type: "correct",
           feedback:
-            "<strong>Optimal Time:</strong> +0.1hrs. Visual confirmation plus the <code>stat Niagara</code> command provides quantitative proof that the emitter is now simulating correctly.",
+            "<strong>Optimal Time:</strong> +0.1hrs. Sim Target controls whether particles simulate on CPU or GPU. Incompatible settings cause silent failure.",
+          next: "step-5",
+        },
+        {
+          text: "Look at the <code>Spawn Rate</code> module to see if particles are being spawned.",
+          type: "plausible",
+          feedback:
+            "<strong>Extended Time:</strong> +0.1hrs. Spawn Rate is important but if Sim Target is incompatible, spawn rate doesn't matter.",
+          next: "step-4",
+        },
+        {
+          text: "Check the <code>Sprite Renderer</code> module for material assignment.",
+          type: "subtle",
+          feedback:
+            "<strong>Extended Time:</strong> +0.1hrs. Material issues cause invisible (but spawning) particles. Check simulation compatibility first.",
+          next: "step-4",
+        },
+        {
+          text: "Review the <code>Particle Spawn</code> stack to see what initial properties are set.",
+          type: "obvious",
+          feedback:
+            "<strong>Extended Time:</strong> +0.1hrs. Spawn properties affect behavior but not whether simulation runs. Check Emitter Properties.",
+          next: "step-4",
+        },
+      ],
+    },
+    "step-5": {
+      skill: "vfx",
+      title: "Understanding Sim Target",
+      image_path: "assets/generated/NiagaraEmitterNotSpawning/step-5.png",
+      prompt:
+        "<p>You find the <code>Sim Target</code> is set to <code>GPUCompute Sim</code>. What does this setting control?</p><p><strong>What is the significance of Sim Target?</strong></p>",
+      choices: [
+        {
+          text: "It determines whether particles simulate on the GPU or CPU. GPU simulation requires specific project settings and hardware support.",
+          type: "correct",
+          feedback:
+            "<strong>Optimal Time:</strong> +0.1hrs. If GPU simulation is disabled in project settings or unsupported, GPU emitters won't work.",
+          next: "step-6",
+        },
+        {
+          text: "It controls the target platform the particle system is optimized for.",
+          type: "plausible",
+          feedback:
+            "<strong>Extended Time:</strong> +0.1hrs. It's about simulation location (CPU vs GPU), not platform targeting specifically.",
+          next: "step-5",
+        },
+        {
+          text: "It sets the maximum number of particles the system can simulate simultaneously.",
+          type: "obvious",
+          feedback:
+            "<strong>Extended Time:</strong> +0.1hrs. Particle count is a separate setting. Sim Target is about where computation happens.",
+          next: "step-5",
+        },
+        {
+          text: "It determines whether the simulation runs in the editor or only at runtime.",
+          type: "subtle",
+          feedback:
+            "<strong>Extended Time:</strong> +0.1hrs. Both CPU and GPU sim run in editor. The choice is about compute location, not editor vs runtime.",
+          next: "step-5",
+        },
+      ],
+    },
+    "step-6": {
+      skill: "vfx",
+      title: "Checking Project Settings",
+      image_path: "assets/generated/NiagaraEmitterNotSpawning/step-6.png",
+      prompt:
+        "<p>You need to verify if GPU simulation is enabled in the project. Where do you check this setting?</p><p><strong>Where are the Niagara GPU settings?</strong></p>",
+      choices: [
+        {
+          text: "Open <strong>Project Settings</strong> > <strong>Engine</strong> > <strong>Rendering</strong> and look for Niagara GPU simulation settings.",
+          type: "correct",
+          feedback:
+            "<strong>Optimal Time:</strong> +0.1hrs. The Rendering section contains GPU-related settings including Niagara compute options.",
+          next: "step-7",
+        },
+        {
+          text: "Check <strong>Project Settings</strong> > <strong>Plugins</strong> > <strong>Niagara</strong> for simulation mode.",
+          type: "plausible",
+          feedback:
+            "<strong>Extended Time:</strong> +0.1hrs. Niagara plugin settings exist but GPU sim is in the Rendering category.",
+          next: "step-6",
+        },
+        {
+          text: "Look in <strong>Editor Preferences</strong> for Niagara performance settings.",
+          type: "subtle",
+          feedback:
+            "<strong>Extended Time:</strong> +0.1hrs. Editor Preferences affect the editor UI. Project Settings control runtime behavior.",
+          next: "step-6",
+        },
+        {
+          text: "Check the Niagara System's <strong>System Properties</strong> for per-asset GPU control.",
+          type: "obvious",
+          feedback:
+            "<strong>Extended Time:</strong> +0.1hrs. Per-asset settings exist but the global enable/disable is in Project Settings.",
+          next: "step-6",
+        },
+      ],
+    },
+    "step-7": {
+      skill: "vfx",
+      title: "Identifying the Issue",
+      image_path: "assets/generated/NiagaraEmitterNotSpawning/step-7.png",
+      prompt:
+        "<p>You discover that GPU particle simulation is disabled in Project Settings. Your emitter uses <code>GPUCompute Sim</code>.</p><p><strong>What is the best fix for this situation?</strong></p>",
+      choices: [
+        {
+          text: "Change the emitter's <code>Sim Target</code> from <code>GPUCompute Sim</code> to <code>CPUSim</code> in the Emitter Properties module.",
+          type: "correct",
+          feedback:
+            "<strong>Optimal Time:</strong> +0.1hrs. Switching to CPU simulation ensures compatibility without requiring project-wide changes.",
+          next: "step-8",
+        },
+        {
+          text: "Enable GPU simulation in Project Settings to support this emitter.",
+          type: "plausible",
+          feedback:
+            "<strong>Extended Time:</strong> +0.15hrs. This works but requires testing on all target platforms to ensure GPU support is available.",
+          next: "step-8",
+        },
+        {
+          text: "Create a new Niagara System from scratch using a CPU-based template.",
+          type: "obvious",
+          feedback:
+            "<strong>Extended Time:</strong> +0.25hrs. Recreating is wasteful. Simply change the Sim Target on the existing emitter.",
+          next: "step-7",
+        },
+        {
+          text: "Add a fallback CPU emitter that activates when GPU isn't available.",
+          type: "subtle",
+          feedback:
+            "<strong>Extended Time:</strong> +0.2hrs. Fallback systems are advanced. For now, just switch to CPU simulation.",
+          next: "step-7",
+        },
+      ],
+    },
+    "step-8": {
+      skill: "vfx",
+      title: "Making the Change",
+      image_path: "assets/generated/NiagaraEmitterNotSpawning/step-8.png",
+      prompt:
+        "<p>You change <code>Sim Target</code> to <code>CPUSim</code> in the Niagara Editor. What should you do before testing?</p><p><strong>What is the next step?</strong></p>",
+      choices: [
+        {
+          text: "Click <strong>Apply</strong> and <strong>Save</strong> the Niagara System asset to persist the change.",
+          type: "correct",
+          feedback:
+            "<strong>Optimal Time:</strong> +0.05hrs. Saving ensures the change is applied to all instances of this system in the level.",
+          next: "step-9",
+        },
+        {
+          text: "Compile the emitter using the <strong>Compile</strong> button in the toolbar.",
+          type: "plausible",
+          feedback:
+            "<strong>Extended Time:</strong> +0.05hrs. The system auto-compiles on change. Saving is the important step for persistence.",
+          next: "step-8",
+        },
+        {
+          text: "Close the Niagara Editor; changes are applied automatically.",
+          type: "subtle",
+          feedback:
+            "<strong>Extended Time:</strong> +0.1hrs. Closing without saving may lose changes. Explicitly save the asset.",
+          next: "step-8",
+        },
+        {
+          text: "Restart the editor to fully reload the particle system.",
+          type: "obvious",
+          feedback:
+            "<strong>Extended Time:</strong> +0.15hrs. Restart is unnecessary. Saving applies changes immediately.",
+          next: "step-8",
+        },
+      ],
+    },
+    "step-9": {
+      skill: "vfx",
+      title: "Initial Test",
+      image_path: "assets/generated/NiagaraEmitterNotSpawning/step-9.png",
+      prompt:
+        "<p>You've saved the Niagara System. How do you verify the particles now spawn correctly?</p><p><strong>What is the best test method?</strong></p>",
+      choices: [
+        {
+          text: "Press <strong>Play in Editor</strong> and observe the particle system location to confirm particles are now visible.",
+          type: "correct",
+          feedback:
+            "<strong>Optimal Time:</strong> +0.1hrs. PIE is the quickest way to verify runtime particle behavior.",
+          next: "step-10",
+        },
+        {
+          text: "Use the <strong>Preview</strong> window in the Niagara Editor to see if particles appear.",
+          type: "plausible",
+          feedback:
+            "<strong>Extended Time:</strong> +0.1hrs. The preview is useful but PIE tests the actual in-level component behavior.",
+          next: "step-9",
+        },
+        {
+          text: "Check the Content Browser thumbnail for an updated particle preview.",
+          type: "subtle",
+          feedback:
+            "<strong>Extended Time:</strong> +0.1hrs. Thumbnails may not update immediately. Runtime testing is more reliable.",
+          next: "step-9",
+        },
+        {
+          text: "Package the project to test final runtime behavior.",
+          type: "obvious",
+          feedback:
+            "<strong>Extended Time:</strong> +0.5hrs. Packaging for basic verification is excessive. Use PIE.",
+          next: "step-9",
+        },
+      ],
+    },
+    "step-10": {
+      skill: "vfx",
+      title: "Final Verification",
+      image_path: "assets/generated/NiagaraEmitterNotSpawning/step-10.png",
+      prompt:
+        "<p>Particles are now visible in PIE! How do you confirm the system is running efficiently and correctly?</p><p><strong>What additional verification should you perform?</strong></p>",
+      choices: [
+        {
+          text: "Use the <code>stat Niagara</code> console command to see active emitter count and particle simulation statistics.",
+          type: "correct",
+          feedback:
+            "<strong>Optimal Time:</strong> +0.1hrs. stat Niagara provides quantitative data about active systems and particle counts.",
           next: "conclusion",
         },
         {
-          text: "Check the <strong>Content Browser</strong> thumbnail to see if particles appear in the preview.",
+          text: "Visually compare the particle effect to the original design reference.",
           type: "plausible",
           feedback:
-            "<strong>Extended Time:</strong> +0.1hrs. Thumbnail preview can indicate success, but runtime testing in PIE is the definitive verification method.",
-          next: "step-4",
+            "<strong>Extended Time:</strong> +0.1hrs. Visual comparison is good for art direction but doesn't verify technical health. Use stat commands.",
+          next: "step-10",
         },
         {
-          text: "Open the <strong>Niagara Debugger</strong> panel and look for error messages.",
-          type: "misguided",
+          text: "Check <code>stat fps</code> to ensure particles don't cause performance issues.",
+          type: "subtle",
           feedback:
-            "<strong>Extended Time:</strong> +0.1hrs. The debugger is useful for complex issues, but simple PIE testing is faster for verifying this fix.",
-          next: "step-4",
+            "<strong>Extended Time:</strong> +0.1hrs. FPS is useful but stat Niagara gives more specific information about particle behavior.",
+          next: "step-10",
         },
         {
-          text: "Package the project and test on target hardware to ensure compatibility.",
-          type: "wrong",
+          text: "Open the <strong>Session Frontend</strong> to view particle system profiling data.",
+          type: "obvious",
           feedback:
-            "<strong>Extended Time:</strong> +0.5hrs. Packaging for every small fix is excessive. PIE testing is sufficient for this verification.",
-          next: "step-4",
+            "<strong>Extended Time:</strong> +0.15hrs. Session Frontend is for detailed profiling. stat Niagara is quicker for basic verification.",
+          next: "step-10",
         },
       ],
     },
@@ -184,7 +406,7 @@ window.SCENARIOS["NiagaraEmitterNotSpawning"] = {
       title: "Scenario Complete",
       image_path: "assets/generated/NiagaraEmitterNotSpawning/conclusion.png",
       prompt:
-        "<p><strong>Well done!</strong></p><p>You've successfully diagnosed and fixed a Niagara particle system that wasn't spawning.</p><h4>Key Takeaways:</h4><ul><li><code>Auto Activate</code> — Must be enabled for automatic particle spawning</li><li><code>Sim Target</code> — Must match project GPU/CPU simulation capabilities</li><li><code>stat Niagara</code> — Use to verify emitter activity at runtime</li><li><strong>Emitter Properties</strong> — Primary location for simulation configuration</li></ul>",
+        "<p><strong>Well done!</strong></p><p>You've successfully diagnosed and fixed a Niagara particle system that wasn't spawning.</p><h4>Key Takeaways:</h4><ul><li><code>Auto Activate</code> — Must be enabled on the component for automatic spawning</li><li><code>Sim Target</code> — Must match project GPU/CPU simulation capabilities</li><li><code>CPUSim</code> — Compatible with all hardware; use for maximum compatibility</li><li><code>GPUCompute Sim</code> — Requires GPU particle support enabled in Project Settings</li><li><code>stat Niagara</code> — Console command to verify emitter activity at runtime</li><li><strong>Emitter Properties</strong> — Primary location for simulation configuration</li></ul>",
       choices: [
         {
           text: "Complete Scenario",

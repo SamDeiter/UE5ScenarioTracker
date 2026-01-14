@@ -314,9 +314,13 @@ const BacklogRenderer = (function () {
         `;
       }
 
+      // Get the normalized (parent) category for the badge
+      const normalizedCat = normalizeCategory(category);
+      const categoryDisplay = normalizedCat.replace(/_/g, " ").toUpperCase();
+
       const html = `
         <div class="flex items-start justify-between mb-2">
-          <span class="category-badge ${category}">${category}</span>
+          <span class="category-badge ${normalizedCat}">${categoryDisplay}</span>
         </div>
         <h4 class="font-bold text-sm ${
           state.completed ? "text-gray-500 line-through" : "text-gray-100"

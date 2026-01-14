@@ -55,13 +55,16 @@ window.StepRenderer = {
       if (!imageSrc.startsWith("assets/")) {
         imageSrc = `assets/generated/${scenarioId}/${imageSrc}`;
       }
+      // Try .jpg first (optimized format), then .png as fallback
+      const jpgSrc = imageSrc.replace(/\.png$/, ".jpg");
+      const pngSrc = imageSrc;
       screenshotHtml = `
-        <div class="screenshot-area mb-6" onclick="openImageModal('${imageSrc}')">
+        <div class="screenshot-area mb-6" onclick="openImageModal('${jpgSrc}')">
           <img 
-            src="${imageSrc}" 
+            src="${jpgSrc}" 
             alt="${scenario.meta?.title || scenario.title}" 
             class="w-full rounded-lg border border-gray-700"
-            onerror="this.src='assets/generated/${scenarioId}/viewport.png'; this.onerror=function(){ this.src='assets/generated/directional_light/viewport.png'; this.onerror=null; };"
+            onerror="this.src='${pngSrc}'; this.onerror=function(){ this.src='assets/generated/${scenarioId}/viewport.jpg'; this.onerror=function(){ this.src='assets/generated/${scenarioId}/viewport.png'; this.onerror=null; }; };"
           />
         </div>
       `;

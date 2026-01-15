@@ -1,7 +1,7 @@
 === SCENARIOS NEEDING IMAGES ===
 BlackMaterialDueToEmissiveMiswiring: 16/16 (MISSING VIEWPORT)
-BlackMetallicObject: 12/16 (MISSING VIEWPORT)
-ComponentMobilityBlock: 10/14 (MISSING VIEWPORT)
+BlackMetallicObject: 16/16 (MISSING VIEWPORT)
+ComponentMobilityBlock: 14/14 (MISSING VIEWPORT)
 ConstraintDoorFail: 9/13 (MISSING VIEWPORT)
 DanglingAssetRedirectors: 11/16 (MISSING VIEWPORT)
 DataLayerStreamingOverride: 13/13 (MISSING VIEWPORT)
@@ -23,6 +23,6 @@ WorldPartitionDeepDive: 19/19 (MISSING VIEWPORT)
 
 === SUMMARY ===
 Total steps/conclusion expected: 340
-Total steps/conclusion present:  293
-REMAINING TO GENERATE (steps):   47
+Total steps/conclusion present:  301
+REMAINING TO GENERATE (steps):   39
 Scenarios needing attention:    21

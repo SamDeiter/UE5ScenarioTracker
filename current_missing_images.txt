@@ -12,7 +12,7 @@ ForcedDataLayerUnload: 15/15 (MISSING VIEWPORT)
 LockedCinematicCleanup: 10/13 (MISSING VIEWPORT)
 MaterialParameterAndAnimJitter: 12/21 (MISSING VIEWPORT)
 MismatchedSkeletonReference: 20/20 (MISSING VIEWPORT)
-NaniteVSMInstabilityOnMovement: 9/13 (MISSING VIEWPORT)
+NaniteVSMInstabilityOnMovement: 13/13 (MISSING VIEWPORT)
 PhysicsLeverFailure: 11/15 (MISSING VIEWPORT)
 RedirectorAndBulkLoadConflict: 16/16 (MISSING VIEWPORT)
 SecurityDoorLogicGap: 11/13 (MISSING VIEWPORT)
@@ -23,6 +23,6 @@ WorldPartitionDeepDive: 19/19 (MISSING VIEWPORT)
 
 === SUMMARY ===
 Total steps/conclusion expected: 340
-Total steps/conclusion present:  301
-REMAINING TO GENERATE (steps):   39
+Total steps/conclusion present:  305
+REMAINING TO GENERATE (steps):   35
 Scenarios needing attention:    21

@@ -7,7 +7,7 @@ DanglingAssetRedirectors: 16/16 (MISSING VIEWPORT)
 DataLayerStreamingOverride: 13/13 (MISSING VIEWPORT)
 DecalTextureAlphaMaskFailure: 15/15 (MISSING VIEWPORT)
 DestroyActorStopsExecutionFlow: 16/16 (MISSING VIEWPORT)
-EmissiveGILightingFix: 12/23 (MISSING VIEWPORT)
+EmissiveGILightingFix: 23/23 (MISSING VIEWPORT)
 ForcedDataLayerUnload: 15/15 (MISSING VIEWPORT)
 LockedCinematicCleanup: 13/13 (MISSING VIEWPORT)
 MaterialParameterAndAnimJitter: 21/21 (MISSING VIEWPORT)
@@ -23,6 +23,6 @@ WorldPartitionDeepDive: 19/19 (MISSING VIEWPORT)
 
 === SUMMARY ===
 Total steps/conclusion expected: 340
-Total steps/conclusion present:  326
-REMAINING TO GENERATE (steps):   14
+Total steps/conclusion present:  337
+REMAINING TO GENERATE (steps):   3
 Scenarios needing attention:    21

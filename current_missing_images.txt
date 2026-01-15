@@ -6,16 +6,16 @@ ConstraintDoorFail: 9/13 (MISSING VIEWPORT)
 DanglingAssetRedirectors: 11/16 (MISSING VIEWPORT)
 DataLayerStreamingOverride: 13/13 (MISSING VIEWPORT)
 DecalTextureAlphaMaskFailure: 15/15 (MISSING VIEWPORT)
-DestroyActorStopsExecutionFlow: 14/16 (MISSING VIEWPORT)
+DestroyActorStopsExecutionFlow: 16/16 (MISSING VIEWPORT)
 EmissiveGILightingFix: 12/23 (MISSING VIEWPORT)
 ForcedDataLayerUnload: 15/15 (MISSING VIEWPORT)
-LockedCinematicCleanup: 10/13 (MISSING VIEWPORT)
+LockedCinematicCleanup: 13/13 (MISSING VIEWPORT)
 MaterialParameterAndAnimJitter: 12/21 (MISSING VIEWPORT)
 MismatchedSkeletonReference: 20/20 (MISSING VIEWPORT)
 NaniteVSMInstabilityOnMovement: 13/13 (MISSING VIEWPORT)
 PhysicsLeverFailure: 11/15 (MISSING VIEWPORT)
 RedirectorAndBulkLoadConflict: 16/16 (MISSING VIEWPORT)
-SecurityDoorLogicGap: 11/13 (MISSING VIEWPORT)
+SecurityDoorLogicGap: 13/13 (MISSING VIEWPORT)
 SequencerLightRestoreStateIssue: 21/16 (MISSING VIEWPORT)
 VaultSequenceLockup: 19/19 (MISSING VIEWPORT)
 VolumetricShadowingPerformance: 18/18 (MISSING VIEWPORT)
@@ -23,6 +23,6 @@ WorldPartitionDeepDive: 19/19 (MISSING VIEWPORT)
 
 === SUMMARY ===
 Total steps/conclusion expected: 340
-Total steps/conclusion present:  305
-REMAINING TO GENERATE (steps):   35
+Total steps/conclusion present:  312
+REMAINING TO GENERATE (steps):   28
 Scenarios needing attention:    21

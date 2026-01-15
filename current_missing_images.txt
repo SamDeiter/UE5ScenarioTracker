@@ -2,7 +2,7 @@
 BlackMaterialDueToEmissiveMiswiring: 16/16 (MISSING VIEWPORT)
 BlackMetallicObject: 16/16 (MISSING VIEWPORT)
 ComponentMobilityBlock: 14/14 (MISSING VIEWPORT)
-ConstraintDoorFail: 9/13 (MISSING VIEWPORT)
+ConstraintDoorFail: 13/13 (MISSING VIEWPORT)
 DanglingAssetRedirectors: 16/16 (MISSING VIEWPORT)
 DataLayerStreamingOverride: 13/13 (MISSING VIEWPORT)
 DecalTextureAlphaMaskFailure: 15/15 (MISSING VIEWPORT)
@@ -13,7 +13,7 @@ LockedCinematicCleanup: 13/13 (MISSING VIEWPORT)
 MaterialParameterAndAnimJitter: 21/21 (MISSING VIEWPORT)
 MismatchedSkeletonReference: 20/20 (MISSING VIEWPORT)
 NaniteVSMInstabilityOnMovement: 13/13 (MISSING VIEWPORT)
-PhysicsLeverFailure: 11/15 (MISSING VIEWPORT)
+PhysicsLeverFailure: 15/15 (MISSING VIEWPORT)
 RedirectorAndBulkLoadConflict: 16/16 (MISSING VIEWPORT)
 SecurityDoorLogicGap: 13/13 (MISSING VIEWPORT)
 SequencerLightRestoreStateIssue: 21/16 (MISSING VIEWPORT)
@@ -23,6 +23,6 @@ WorldPartitionDeepDive: 19/19 (MISSING VIEWPORT)
 
 === SUMMARY ===
 Total steps/conclusion expected: 340
-Total steps/conclusion present:  337
-REMAINING TO GENERATE (steps):   3
+Total steps/conclusion present:  345
+REMAINING TO GENERATE (steps):   -5
 Scenarios needing attention:    21

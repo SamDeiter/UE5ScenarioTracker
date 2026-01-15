@@ -18,11 +18,11 @@ RedirectorAndBulkLoadConflict: 16/16 (MISSING VIEWPORT)
 SecurityDoorLogicGap: 11/13 (MISSING VIEWPORT)
 SequencerLightRestoreStateIssue: 21/16 (MISSING VIEWPORT)
 VaultSequenceLockup: 15/19 (MISSING VIEWPORT)
-VolumetricShadowingPerformance: 10/18 (MISSING VIEWPORT)
-WorldPartitionDeepDive: 14/19 (MISSING VIEWPORT)
+VolumetricShadowingPerformance: 18/18 (MISSING VIEWPORT)
+WorldPartitionDeepDive: 19/19 (MISSING VIEWPORT)
 
 === SUMMARY ===
 Total steps/conclusion expected: 340
-Total steps/conclusion present:  270
-REMAINING TO GENERATE (steps):   70
+Total steps/conclusion present:  283
+REMAINING TO GENERATE (steps):   57
 Scenarios needing attention:    21

@@ -17,12 +17,12 @@ PhysicsLeverFailure: 11/15 (MISSING VIEWPORT)
 RedirectorAndBulkLoadConflict: 16/16 (MISSING VIEWPORT)
 SecurityDoorLogicGap: 11/13 (MISSING VIEWPORT)
 SequencerLightRestoreStateIssue: 21/16 (MISSING VIEWPORT)
-VaultSequenceLockup: 15/19 (MISSING VIEWPORT)
+VaultSequenceLockup: 19/19 (MISSING VIEWPORT)
 VolumetricShadowingPerformance: 18/18 (MISSING VIEWPORT)
 WorldPartitionDeepDive: 19/19 (MISSING VIEWPORT)
 
 === SUMMARY ===
 Total steps/conclusion expected: 340
-Total steps/conclusion present:  289
-REMAINING TO GENERATE (steps):   51
+Total steps/conclusion present:  293
+REMAINING TO GENERATE (steps):   47
 Scenarios needing attention:    21

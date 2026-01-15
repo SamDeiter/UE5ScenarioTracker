@@ -49,9 +49,15 @@ window.StepRenderer = {
     const shuffledChoices = shuffledChoicesCache[cacheKey];
 
     // Build screenshot HTML
+    // Auto-derive image path from step ID if not explicitly set
+    let imageSrc = step.image_path;
+    if (!imageSrc && stepId) {
+      // Derive from step ID, e.g., "step-1" -> "step-1.png"
+      imageSrc = `${stepId}.png`;
+    }
+
     let screenshotHtml = "";
-    if (step.image_path) {
-      let imageSrc = step.image_path;
+    if (imageSrc) {
       if (!imageSrc.startsWith("assets/")) {
         imageSrc = `assets/generated/${scenarioId}/${imageSrc}`;
       }

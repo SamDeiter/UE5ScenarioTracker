@@ -90,7 +90,7 @@
     <div class="header">
       <h1 id="current-scenario">Select a Scenario</h1>
       <div class="header-actions">
-        <button class="btn btn-secondary" id="play-btn" onclick="playScenario()" style="display:none;">▶ Play in Tracker</button>
+        <button class="btn btn-secondary" id="play-btn" onclick="playScenario()" disabled>▶ Play in Tracker</button>
         <select id="export-category" class="btn btn-secondary" style="padding: 8px 12px;">
           <option value="">-- Export Category --</option>
           <option value="game_dev">🎮 Game Dev</option>
@@ -253,7 +253,7 @@
       document.getElementById('info-category').textContent = scenario.meta?.category || 'Unknown';
       document.getElementById('info-time').textContent = scenario.meta?.estimateHours ? `${scenario.meta.estimateHours}h` : '-';
       document.getElementById('scenario-info').classList.add('visible');
-      document.getElementById('play-btn').style.display = 'inline-block';
+      document.getElementById('play-btn').disabled = false;
       
       const viewer = document.getElementById('step-viewer');
       const stepsObj = scenario.steps || {};

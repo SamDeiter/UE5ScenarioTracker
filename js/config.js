@@ -56,3 +56,44 @@ if (typeof process !== "undefined" && process.env) {
 }
 
 console.log("[Config] Application configuration loaded");
+
+// Handle URL parameter for direct scenario launch
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const scenarioId = params.get("scenario");
+
+  if (scenarioId) {
+    console.log(`[Config] Auto-start scenario requested: ${scenarioId}`);
+    window.APP_CONFIG.AUTO_START_SCENARIO = scenarioId;
+
+    // Wait for DOM and scenarios to load, then auto-start
+    window.addEventListener("load", function () {
+      setTimeout(function () {
+        const scenario = window.SCENARIOS?.[scenarioId];
+        if (scenario && window.ScenarioEngine) {
+          console.log(`[Config] Auto-starting scenario: ${scenarioId}`);
+
+          // Hide backlog and show game view
+          const backlogView = document.getElementById("backlog-view");
+          const gameView = document.getElementById("game-view");
+          if (backlogView) backlogView.classList.add("hidden");
+          if (gameView) gameView.classList.remove("hidden");
+
+          // Start the scenario
+          window.ScenarioEngine.load(scenarioId, scenario);
+
+          // Render first step if StepRenderer exists
+          if (window.StepRenderer) {
+            const step = window.ScenarioEngine.getCurrentStep();
+            if (step) {
+              const container = document.getElementById("step-container");
+              if (container) window.StepRenderer.render(step, container);
+            }
+          }
+        } else {
+          console.warn(`[Config] Scenario not found: ${scenarioId}`);
+        }
+      }, 500); // Give time for scripts to initialize
+    });
+  }
+})();

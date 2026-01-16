@@ -89,9 +89,13 @@ OUTPUT FORMAT (JSON only, no markdown):
     return prompt
 
 
-def call_gemini(api_key: str, prompt: str, model: str = "gemini-1.5-flash") -> dict:
-    """Call Gemini API and return parsed JSON"""
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+# Model priority list - try in order
+MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.0-flash-lite"]
+
+
+def call_gemini(api_key: str, prompt: str, model: str = None) -> dict:
+    """Call Gemini API and return parsed JSON. Falls back to alternate models on failure."""
+    models_to_try = [model] if model else MODELS
     
     headers = {"Content-Type": "application/json"}
     data = {
@@ -102,31 +106,42 @@ def call_gemini(api_key: str, prompt: str, model: str = "gemini-1.5-flash") -> d
         }
     }
     
-    try:
-        print(f"  Calling Gemini ({model})...")
-        resp = requests.post(url, headers=headers, json=data, timeout=60)
-        resp.raise_for_status()
+    for current_model in models_to_try:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{current_model}:generateContent?key={api_key}"
         
-        result = resp.json()
-        text = result['candidates'][0]['content']['parts'][0]['text']
-        
-        # Clean up any markdown fences
-        text = text.replace('```json', '').replace('```', '').strip()
-        
-        # Count tokens (approximate)
-        input_tokens = result.get('usageMetadata', {}).get('promptTokenCount', 0)
-        output_tokens = result.get('usageMetadata', {}).get('candidatesTokenCount', 0)
-        print(f"  Tokens used: {input_tokens} in / {output_tokens} out = {input_tokens + output_tokens} total")
-        
-        return json.loads(text)
-        
-    except requests.exceptions.RequestException as e:
-        print(f"  API Error: {e}")
-        return None
-    except json.JSONDecodeError as e:
-        print(f"  JSON Parse Error: {e}")
-        print(f"  Raw text: {text[:200]}...")
-        return None
+        try:
+            print(f"  Calling Gemini ({current_model})...")
+            resp = requests.post(url, headers=headers, json=data, timeout=60)
+            
+            if resp.status_code == 404:
+                print(f"  Model {current_model} not found, trying next...")
+                continue
+                
+            resp.raise_for_status()
+            
+            result = resp.json()
+            text = result['candidates'][0]['content']['parts'][0]['text']
+            
+            # Clean up any markdown fences
+            text = text.replace('```json', '').replace('```', '').strip()
+            
+            # Count tokens (approximate)
+            input_tokens = result.get('usageMetadata', {}).get('promptTokenCount', 0)
+            output_tokens = result.get('usageMetadata', {}).get('candidatesTokenCount', 0)
+            print(f"  Tokens used: {input_tokens} in / {output_tokens} out = {input_tokens + output_tokens} total")
+            
+            return json.loads(text)
+            
+        except requests.exceptions.RequestException as e:
+            print(f"  API Error with {current_model}: {e}")
+            continue
+        except json.JSONDecodeError as e:
+            print(f"  JSON Parse Error: {e}")
+            print(f"  Raw text: {text[:200]}...")
+            return None
+    
+    print("  All models failed!")
+    return None
 
 
 def validate_scenario(data: dict) -> tuple[bool, list]:

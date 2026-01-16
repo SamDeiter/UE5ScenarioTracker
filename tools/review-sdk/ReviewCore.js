@@ -70,6 +70,11 @@ class ReviewCore {
       this.config.onShowItem(item);
     }
 
+    // Direct callback for UI internal syncing
+    if (this.onShowItemInternal) {
+      this.onShowItemInternal(item);
+    }
+
     if (this.ui && this.ui.update) {
       this.ui.update(this.state, this.config.items);
     }
@@ -80,18 +85,19 @@ class ReviewCore {
   /**
    * Update the status of the current item
    */
-  updateCurrentStatus(status, note = "") {
+  updateCurrentStatus(status, note = "", highlights = []) {
     const currentItem = this.config.items[this.state.currentIndex];
     if (!currentItem) return;
 
     this.state.itemStatuses[currentItem.id] = {
       status,
       note,
+      highlights,
       updatedAt: new Date().toISOString(),
     };
 
     if (this.config.onStatusUpdate) {
-      this.config.onStatusUpdate(currentItem.id, status, note);
+      this.config.onStatusUpdate(currentItem.id, status, note, highlights);
     }
 
     if (this.ui && this.ui.update) {
@@ -120,12 +126,13 @@ class ReviewCore {
     return {
       appId: this.config.appId,
       exportedAt: new Date().toISOString(),
-      items: this.config.items.map((item) => ({
+      results: this.config.items.map((item) => ({
         id: item.id,
         title: item.title,
         status: this.state.itemStatuses[item.id] || {
           status: "pending",
           note: "",
+          highlights: [],
         },
       })),
     };

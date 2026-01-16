@@ -3,6 +3,241 @@
  * Implements the user interface for the ReviewCore SDK using Web Components.
  */
 
+class ReviewHighlightOverlay extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.highlights = [];
+    this.isDrawing = false;
+    this.startPos = { x: 0, y: 0 };
+    this.active = false;
+  }
+
+  connectedCallback() {
+    this.render();
+    this.setupListeners();
+  }
+
+  setupListeners() {
+    this.shadowRoot.addEventListener("mousedown", (e) => {
+      if (!this.active) return;
+      this.isDrawing = true;
+      const rect = this.getBoundingClientRect();
+      this.startPos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      this.currentHighlight = {
+        x1: this.startPos.x,
+        y1: this.startPos.y,
+        x2: this.startPos.x,
+        y2: this.startPos.y,
+      };
+      this.render();
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      if (!this.isDrawing) return;
+      const rect = this.getBoundingClientRect();
+      this.currentHighlight.x2 = e.clientX - rect.left;
+      this.currentHighlight.y2 = e.clientY - rect.top;
+      this.render();
+    });
+
+    window.addEventListener("mouseup", () => {
+      if (!this.isDrawing) return;
+      this.isDrawing = false;
+      this.highlights.push({ ...this.currentHighlight });
+      this.currentHighlight = null;
+      this.render();
+    });
+  }
+
+  clear() {
+    this.highlights = [];
+    this.render();
+  }
+
+  getHighlights() {
+    return this.highlights;
+  }
+
+  setHighlights(h) {
+    this.highlights = h || [];
+    this.render();
+  }
+
+  render() {
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          pointer-events: ${this.active ? "auto" : "none"};
+          z-index: 10001;
+          cursor: ${this.active ? "crosshair" : "default"};
+        }
+        svg {
+          width: 100%;
+          height: 100%;
+        }
+        .highlight {
+          fill: rgba(239, 68, 68, 0.2);
+          stroke: #ef4444;
+          stroke-width: 2;
+          stroke-dasharray: 4;
+        }
+        .guide-text {
+          position: fixed;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: rgba(0,0,0,0.8);
+          color: white;
+          padding: 8px 16px;
+          border-radius: 4px;
+          font-family: 'Inter', sans-serif;
+          font-size: 14px;
+          pointer-events: none;
+          display: ${this.active ? "block" : "none"};
+        }
+      </style>
+      <div class="guide-text">Click and drag to highlight areas with issues. Press ESC when done.</div>
+      <svg>
+        ${this.highlights
+          .map(
+            (h) => `
+          <rect class="highlight" 
+            x="${Math.min(h.x1, h.x2)}" 
+            y="${Math.min(h.y1, h.y2)}" 
+            width="${Math.abs(h.x2 - h.x1)}" 
+            height="${Math.abs(h.y2 - h.y1)}" />
+        `,
+          )
+          .join("")}
+        ${
+          this.currentHighlight
+            ? `
+          <rect class="highlight" 
+            x="${Math.min(this.currentHighlight.x1, this.currentHighlight.x2)}" 
+            y="${Math.min(this.currentHighlight.y1, this.currentHighlight.y2)}" 
+            width="${Math.abs(this.currentHighlight.x2 - this.currentHighlight.x1)}" 
+            height="${Math.abs(this.currentHighlight.y2 - this.currentHighlight.y1)}" />
+        `
+            : ""
+        }
+      </svg>
+    `;
+  }
+}
+window.customElements.define(
+  "review-highlight-overlay",
+  ReviewHighlightOverlay,
+);
+
+class ReviewIssueDialog extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.onConfirm = null;
+    this.onCancel = null;
+    this.onHighlight = null;
+  }
+
+  show(initialNote = "", highlights = []) {
+    this.style.display = "flex";
+    this.render(initialNote, highlights);
+    this.shadowRoot.querySelector("textarea").focus();
+  }
+
+  hide() {
+    this.style.display = "none";
+  }
+
+  render(note = "", highlights = []) {
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: rgba(0,0,0,0.8);
+          z-index: 10002;
+          align-items: center;
+          justify-content: center;
+          font-family: 'Inter', sans-serif;
+        }
+        .dialog {
+          background: #1a1a1a;
+          border: 1px solid #333;
+          border-radius: 8px;
+          width: 500px;
+          padding: 24px;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        h2 { margin: 0 0 16px 0; color: #fff; font-size: 18px; }
+        textarea {
+          width: 100%;
+          background: #0a0a0a;
+          border: 1px solid #444;
+          color: #eee;
+          padding: 12px;
+          border-radius: 4px;
+          height: 150px;
+          resize: vertical;
+          margin-bottom: 16px;
+          box-sizing: border-box;
+          font-family: inherit;
+        }
+        .actions { display: flex; justify-content: flex-end; gap: 12px; }
+        .btn {
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 14px;
+          border: 1px solid #444;
+          background: #333;
+          color: #ccc;
+        }
+        .btn:hover { background: #444; color: #fff; }
+        .btn-danger { background: #ef4444; border-color: #dc2626; color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .highlight-count {
+          font-size: 11px;
+          color: #888;
+          margin-bottom: 8px;
+          display: block;
+        }
+      </style>
+      <div class="dialog">
+        <h2>Report Issue</h2>
+        <span class="highlight-count">${highlights.length} areas highlighted</span>
+        <textarea placeholder="Describe the issue in detail...">${note}</textarea>
+        <div class="actions">
+          <button class="btn" id="cancel-dlg">Cancel</button>
+          <button class="btn" id="highlight-dlg">🖌️ Highlight Area</button>
+          <button class="btn btn-danger" id="submit-dlg">Save Issue</button>
+        </div>
+      </div>
+    `;
+
+    this.shadowRoot.getElementById("cancel-dlg").onclick = () =>
+      this.onCancel?.();
+    this.shadowRoot.getElementById("highlight-dlg").onclick = () => {
+      const currentNote = this.shadowRoot.querySelector("textarea").value;
+      this.onHighlight?.(currentNote);
+    };
+    this.shadowRoot.getElementById("submit-dlg").onclick = () => {
+      const note = this.shadowRoot.querySelector("textarea").value;
+      this.onConfirm?.(note);
+    };
+  }
+}
+window.customElements.define("review-issue-dialog", ReviewIssueDialog);
+
 class ReviewBar extends HTMLElement {
   constructor() {
     super();
@@ -179,23 +414,71 @@ class ReviewBar extends HTMLElement {
       this.onExport?.();
   }
 }
-
-customElements.define("review-bar", ReviewBar);
+window.customElements.define("review-bar", ReviewBar);
 
 window.ReviewUI = {
   createBar: (core) => {
-    const bar = document.createElement("review-bar");
+    // Ensure styles are available
+    if (!document.getElementById("review-sdk-styles")) {
+      const style = document.createElement("style");
+      style.id = "review-sdk-styles";
+      style.textContent = `
+            body { margin-bottom: 60px !important; }
+        `;
+      document.head.appendChild(style);
+    }
 
+    const bar = document.createElement("review-bar");
+    const overlay = document.createElement("review-highlight-overlay");
+    const dialog = document.createElement("review-issue-dialog");
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(dialog);
+    document.body.appendChild(bar);
+
+    // Wire up Bar
     bar.onPrev = () => core.showItem(core.state.currentIndex - 1);
     bar.onNext = () => core.showItem(core.state.currentIndex + 1);
     bar.onVerify = () => core.updateCurrentStatus("verified");
     bar.onIssue = () => {
-      const note = prompt("What is the issue?");
-      if (note !== null) core.updateCurrentStatus("issue", note);
+      const currentStatus =
+        core.state.itemStatuses[core.config.items[core.state.currentIndex].id];
+      dialog.show(currentStatus?.note || "", currentStatus?.highlights || []);
     };
     bar.onExport = () => core.storage.save("report", core.exportData());
 
-    document.body.appendChild(bar);
+    // Wire up Dialog
+    dialog.onCancel = () => dialog.hide();
+    dialog.onConfirm = (note) => {
+      core.updateCurrentStatus("issue", note, overlay.getHighlights());
+      dialog.hide();
+      overlay.setHighlights([]);
+    };
+    dialog.onHighlight = (currentNote) => {
+      dialog.hide();
+      overlay.active = true;
+      overlay.render();
+
+      const escListener = (e) => {
+        if (e.key === "Escape") {
+          overlay.active = false;
+          overlay.render();
+          dialog.show(currentNote, overlay.getHighlights());
+          window.removeEventListener("keydown", escListener);
+        }
+      };
+      window.addEventListener("keydown", escListener);
+    };
+
+    // When core shows a new item, update everything
+    core.onShowItemInternal = (item) => {
+      const status = core.state.itemStatuses[item.id];
+      overlay.setHighlights(status?.highlights || []);
+    };
+
+    core.ui = bar;
+    bar.update(core.state, core.config.items);
+
     return bar;
   },
 };

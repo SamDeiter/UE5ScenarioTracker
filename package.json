@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/SamDeiter/UE5ScenarioTracker#readme",
   "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.16",
     "jsdom": "^27.4.0",
     "vitest": "^4.0.16"
   }

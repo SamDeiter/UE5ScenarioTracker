@@ -45,6 +45,33 @@ const BacklogRenderer = (function () {
   };
 
   /**
+   * Get difficulty level based on estimated hours
+   * @param {number} estimateHours - Estimated hours for the scenario
+   * @param {number} questionCount - Number of questions in the scenario
+   * @returns {Object} {class: string, label: string}
+   */
+  function getDifficulty(estimateHours, questionCount = 0) {
+    // Calculate a difficulty score based on time and question count
+    const timeScore = estimateHours || 0;
+
+    // Thresholds:
+    // Easy: < 0.5 hours
+    // Medium: 0.5 - 1.0 hours
+    // Hard: 1.0 - 1.5 hours
+    // Expert: > 1.5 hours
+
+    if (timeScore < 0.5) {
+      return { class: "easy", label: "Easy" };
+    } else if (timeScore < 1.0) {
+      return { class: "medium", label: "Medium" };
+    } else if (timeScore < 1.5) {
+      return { class: "hard", label: "Hard" };
+    } else {
+      return { class: "expert", label: "Expert" };
+    }
+  }
+
+  /**
    * Normalize a category string
    */
   function normalizeCategory(rawCategory) {
@@ -318,9 +345,17 @@ const BacklogRenderer = (function () {
       const normalizedCat = normalizeCategory(category);
       const categoryDisplay = normalizedCat.replace(/_/g, " ").toUpperCase();
 
+      // Get difficulty based on estimate
+      const difficulty = getDifficulty(estimate);
+
       const html = `
         <div class="flex items-start justify-between mb-2">
-          <span class="category-badge ${normalizedCat}">${categoryDisplay}</span>
+          <div class="flex items-center gap-2">
+            <span class="category-badge ${normalizedCat}">${categoryDisplay}</span>
+            <span class="difficulty-badge ${difficulty.class}">${
+        difficulty.label
+      }</span>
+          </div>
         </div>
         <h4 class="font-bold text-sm ${
           state.completed ? "text-gray-500 line-through" : "text-gray-100"
@@ -353,6 +388,7 @@ const BacklogRenderer = (function () {
     getValidScenarios,
     updateProgressDisplay,
     createScenarioCard,
+    getDifficulty,
     render,
     CATEGORY_MAP,
   };

@@ -39,7 +39,26 @@ window.ScenarioManager = {
       ? Object.values(scenarioState).every((s) => s.completed)
       : false;
 
-    if (allComplete && onComplete) {
+    // Get scenario details for the celebration modal
+    const scenario = window.SCENARIOS?.[scenarioId];
+    const scenarioTitle = scenario?.meta?.title || scenarioId;
+    const estimatedTime = scenario?.meta?.estimateHours || 0;
+    const timeSpent = state?.loggedTime || 0;
+
+    // Show celebration modal (if CompletionModal is available)
+    if (window.CompletionModal && !allComplete) {
+      window.CompletionModal.show({
+        scenarioId,
+        scenarioTitle,
+        timeSpent,
+        estimatedTime,
+        onContinue: () => {
+          if (renderConclusion) {
+            renderConclusion();
+          }
+        },
+      });
+    } else if (allComplete && onComplete) {
       onComplete();
     } else if (renderConclusion) {
       renderConclusion();

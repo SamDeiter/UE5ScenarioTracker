@@ -76,11 +76,20 @@ console.log("[Config] Application configuration loaded");
 
       console.log(`[Config] Force-starting scenario: ${scenarioId}`);
 
-      // Hide backlog and show game view
-      const backlogView = document.getElementById("backlog-view");
-      const gameView = document.getElementById("game-view");
-      if (backlogView) backlogView.classList.add("hidden");
-      if (gameView) gameView.classList.remove("hidden");
+      // Hide placeholder and show ticket content
+      const placeholder = document.getElementById("ticket-placeholder");
+      const ticketContent = document.getElementById("ticket-content");
+      if (placeholder) placeholder.classList.add("hidden");
+      if (ticketContent) {
+        ticketContent.classList.remove("hidden");
+        ticketContent.classList.add("flex");
+      }
+
+      // Set ticket title and description
+      const titleEl = document.getElementById("ticket-title");
+      const descEl = document.getElementById("ticket-description");
+      if (titleEl) titleEl.textContent = scenario.meta?.title || scenarioId;
+      if (descEl) descEl.textContent = scenario.meta?.description || "";
 
       // Start the scenario
       window.ScenarioEngine.load(scenarioId, scenario);
@@ -89,8 +98,9 @@ console.log("[Config] Application configuration loaded");
       if (window.StepRenderer) {
         const step = window.ScenarioEngine.getCurrentStep();
         if (step) {
-          const container = document.getElementById("step-container");
-          if (container) window.StepRenderer.render(step, container);
+          const container = document.getElementById("ticket-step-content");
+          if (container)
+            window.StepRenderer.render(step, container, scenarioId);
         }
       }
       return true;

@@ -196,3 +196,136 @@ describe("ChoiceEnhancer Integration", () => {
     expect(arr).toEqual(original);
   });
 });
+
+// Note: localization.js uses const/let at module scope - cannot test via loadSourceFile
+// Coverage for localization is handled by the unit tests in localization.test.js
+
+// ActionRegistry Integration Tests
+describe("ActionRegistry Integration", () => {
+  beforeAll(() => {
+    global.window = global;
+    loadSourceFile("js/ActionRegistry.js");
+  });
+
+  it("window.ActionRegistry is defined", () => {
+    expect(global.ActionRegistry).toBeDefined();
+  });
+
+  it("has register() method", () => {
+    expect(typeof global.ActionRegistry.register).toBe("function");
+  });
+
+  it("has validate() method", () => {
+    expect(typeof global.ActionRegistry.validate).toBe("function");
+  });
+
+  it("has execute() method", () => {
+    expect(typeof global.ActionRegistry.execute).toBe("function");
+  });
+
+  it("can register and execute a custom action", async () => {
+    const mockHandler = {
+      execute: vi.fn().mockResolvedValue("test_result"),
+    };
+
+    global.ActionRegistry.register("test_action", mockHandler);
+
+    const result = await global.ActionRegistry.execute({
+      action: "test_action",
+    });
+    expect(mockHandler.execute).toHaveBeenCalled();
+    expect(result).toBe("test_result");
+  });
+
+  it("validate returns error for missing action key", () => {
+    const result = global.ActionRegistry.validate({});
+    expect(result).toBeTruthy(); // Should return error string
+  });
+
+  it("validate returns null for registered action", () => {
+    global.ActionRegistry.register("valid_action", { execute: async () => {} });
+    const result = global.ActionRegistry.validate({ action: "valid_action" });
+    expect(result).toBeNull();
+  });
+});
+
+// SCORM Helper Integration Tests
+// Note: scorm12-helper.js only exports reportScoreAndGUIDToLMS12 to window
+describe("SCORM Helper Integration", () => {
+  beforeAll(() => {
+    global.window = global;
+    loadSourceFile("js/scorm12-helper.js");
+  });
+
+  it("reportScoreAndGUIDToLMS12 is defined", () => {
+    expect(typeof global.reportScoreAndGUIDToLMS12).toBe("function");
+  });
+
+  it("reportScoreAndGUIDToLMS12 returns false when API not found", () => {
+    // Mock console.warn to suppress warning
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation();
+
+    const result = global.reportScoreAndGUIDToLMS12(85, "test-guid");
+    expect(result).toBe(false);
+
+    warnSpy.mockRestore();
+  });
+});
+
+// BacklogRenderer Integration Tests
+describe("BacklogRenderer Integration", () => {
+  beforeAll(() => {
+    global.window = global;
+    global.SCENARIOS = {};
+    global.ScoringManager = {
+      getTimeColorClass: () => "text-green-400",
+    };
+    loadSourceFile("js/ui/backlog.js");
+  });
+
+  it("window.BacklogRenderer is defined", () => {
+    expect(global.BacklogRenderer).toBeDefined();
+  });
+
+  it("has getDifficulty() method", () => {
+    expect(typeof global.BacklogRenderer.getDifficulty).toBe("function");
+  });
+
+  it("getDifficulty returns correct levels", () => {
+    expect(global.BacklogRenderer.getDifficulty(0.25).label).toBe("Easy");
+    expect(global.BacklogRenderer.getDifficulty(0.75).label).toBe("Medium");
+    expect(global.BacklogRenderer.getDifficulty(1.25).label).toBe("Hard");
+    expect(global.BacklogRenderer.getDifficulty(2.0).label).toBe("Expert");
+  });
+
+  it("has normalizeCategory() method", () => {
+    expect(typeof global.BacklogRenderer.normalizeCategory).toBe("function");
+  });
+
+  it("normalizeCategory maps categories correctly", () => {
+    expect(global.BacklogRenderer.normalizeCategory("lighting")).toBe(
+      "look_dev",
+    );
+    expect(global.BacklogRenderer.normalizeCategory("physics")).toBe(
+      "game_dev",
+    );
+    expect(global.BacklogRenderer.normalizeCategory("cinematics")).toBe("vfx");
+  });
+
+  it("has filterByCategory() method", () => {
+    expect(typeof global.BacklogRenderer.filterByCategory).toBe("function");
+  });
+
+  it("filterByCategory returns all for 'all' filter", () => {
+    const scenarios = [
+      { id: "a", data: { meta: { category: "lighting" } } },
+      { id: "b", data: { meta: { category: "physics" } } },
+    ];
+    const result = global.BacklogRenderer.filterByCategory(scenarios, "all");
+    expect(result).toHaveLength(2);
+  });
+
+  it("has getValidScenarios() method", () => {
+    expect(typeof global.BacklogRenderer.getValidScenarios).toBe("function");
+  });
+});

@@ -90,8 +90,18 @@
     <div class="header">
       <h1 id="current-scenario">Select a Scenario</h1>
       <div class="header-actions">
-        <button class="btn btn-secondary" id="play-btn" onclick="playScenario()" style="display:none;">▶ Play Scenario</button>
-        <button class="btn btn-primary" onclick="exportFeedback()">Export Feedback</button>
+        <button class="btn btn-secondary" id="play-btn" onclick="playScenario()" style="display:none;">▶ Play in Tracker</button>
+        <select id="export-category" class="btn btn-secondary" style="padding: 8px 12px;">
+          <option value="">-- Export Category --</option>
+          <option value="game_dev">🎮 Game Dev</option>
+          <option value="look_dev">🎨 Look Dev</option>
+          <option value="tech_art">⚙️ Tech Art</option>
+          <option value="vfx">✨ VFX</option>
+          <option value="worldbuilding">🌍 Worldbuilding</option>
+          <option value="all">📦 All Scenarios</option>
+        </select>
+        <button class="btn btn-primary" onclick="exportLMSPackage()">📤 Export LMS Package</button>
+        <button class="btn btn-secondary" onclick="exportFeedback()">💾 Export Feedback</button>
       </div>
     </div>
     
@@ -345,6 +355,49 @@
       if (!currentScenarioId) return;
       // Open the main app with the scenario pre-selected
       window.open(`../../index.html?scenario=${currentScenarioId}`, '_blank');
+    }
+    
+    function exportLMSPackage() {
+      const category = document.getElementById('export-category').value;
+      if (!category) {
+        alert('Please select a category to export');
+        return;
+      }
+      
+      // Get scenarios for selected category
+      const scenarioIds = Object.keys(scenarios).filter(id => {
+        if (category === 'all') return true;
+        return getCategory(id) === category;
+      });
+      
+      if (scenarioIds.length === 0) {
+        alert('No scenarios found for this category');
+        return;
+      }
+      
+      // Create export manifest
+      const manifest = {
+        exportDate: new Date().toISOString(),
+        category: category,
+        scenarioCount: scenarioIds.length,
+        scenarios: scenarioIds.map(id => ({
+          id: id,
+          title: scenarios[id]?.meta?.title || id,
+          category: scenarios[id]?.meta?.category || 'Unknown',
+          stepCount: Object.keys(scenarios[id]?.steps || {}).filter(s => s !== 'conclusion').length
+        }))
+      };
+      
+      // Download manifest
+      const blob = new Blob([JSON.stringify(manifest, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `lms_export_${category}_${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      alert(`Exported ${scenarioIds.length} scenarios to LMS manifest.\n\nRun: python build-lms.py --manifest lms_export_${category}_${Date.now()}.json`);
     }
     
     function exportFeedback() {

@@ -71,6 +71,13 @@
     .stats-bar { padding: 12px 24px; background: #0a0a14; display: flex; gap: 24px; font-size: 13px; }
     .stat { display: flex; align-items: center; gap: 6px; }
     .stat-value { font-weight: 600; color: #4ade80; }
+    
+    /* Scenario info bar */
+    .scenario-info { padding: 12px 24px; background: #1f4068; display: none; gap: 20px; font-size: 13px; border-bottom: 1px solid #0f3460; }
+    .scenario-info.visible { display: flex; }
+    .scenario-info .info-item { display: flex; align-items: center; gap: 6px; }
+    .scenario-info .info-label { color: #888; }
+    .scenario-info .info-value { font-weight: 600; color: #e0e0e0; }
   </style>
 </head>
 <body>
@@ -93,6 +100,12 @@
       <div class="stat">Total: <span class="stat-value" id="stat-total">0</span></div>
       <div class="stat">Reviewed: <span class="stat-value" id="stat-reviewed">0</span></div>
       <div class="stat">Issues: <span class="stat-value" id="stat-issues">0</span></div>
+    </div>
+    
+    <div class="scenario-info" id="scenario-info">
+      <div class="info-item"><span class="info-label">Steps:</span> <span class="info-value" id="info-steps">0</span></div>
+      <div class="info-item"><span class="info-label">Category:</span> <span class="info-value" id="info-category">-</span></div>
+      <div class="info-item"><span class="info-label">Est. Time:</span> <span class="info-value" id="info-time">-</span></div>
     </div>
     
     <div class="step-viewer" id="step-viewer">
@@ -224,10 +237,18 @@
       
       document.getElementById('current-scenario').textContent = scenario.meta?.title || id;
       
-      const viewer = document.getElementById('step-viewer');
-      const steps = scenario.steps || {};
+      // Update info bar
+      const stepKeys = Object.keys(scenario.steps || {});
+      const stepCount = stepKeys.filter(s => s !== 'conclusion').length;
+      document.getElementById('info-steps').textContent = stepCount;
+      document.getElementById('info-category').textContent = scenario.meta?.category || 'Unknown';
+      document.getElementById('info-time').textContent = scenario.meta?.estimateHours ? `${scenario.meta.estimateHours}h` : '-';
+      document.getElementById('scenario-info').classList.add('visible');
       
-      viewer.innerHTML = Object.entries(steps).map(([stepId, step]) => {
+      const viewer = document.getElementById('step-viewer');
+      const stepsObj = scenario.steps || {};
+      
+      viewer.innerHTML = Object.entries(stepsObj).map(([stepId, step]) => {
         const imagePath = `../../assets/generated/${id}/${stepId}.jpg`;
         const pngPath = `../../assets/generated/${id}/${stepId}.png`;
         const fb = feedback[id]?.[stepId] || {};

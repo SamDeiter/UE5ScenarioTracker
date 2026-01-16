@@ -97,10 +97,34 @@ console.log("[Config] Application configuration loaded");
       // Render first step if StepRenderer exists
       if (window.StepRenderer) {
         const step = window.ScenarioEngine.getCurrentStep();
-        if (step) {
+        if (step && step.id) {
           const container = document.getElementById("ticket-step-content");
-          if (container)
-            window.StepRenderer.render(step, container, scenarioId);
+          if (container) {
+            // StepRenderer.render(scenarioId, stepId, options)
+            window.StepRenderer.render(scenarioId, step.id, {
+              container: container,
+              onChoiceClick: (btn) => {
+                // Handle choice click by going to next step
+                const nextStepId = btn.dataset.choiceNext;
+                if (nextStepId === "end") {
+                  console.log("[Config] Scenario completed");
+                  return;
+                }
+                if (nextStepId && window.ScenarioEngine.getCurrentStep) {
+                  window.ScenarioEngine.makeChoice(
+                    parseInt(btn.dataset.originalIndex) || 0,
+                  );
+                  const newStep = window.ScenarioEngine.getCurrentStep();
+                  if (newStep && newStep.id) {
+                    window.StepRenderer.render(scenarioId, newStep.id, {
+                      container: container,
+                      onChoiceClick: arguments.callee,
+                    });
+                  }
+                }
+              },
+            });
+          }
         }
       }
       return true;

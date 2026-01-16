@@ -12,7 +12,13 @@
     .sidebar { width: 280px; background: #16213e; border-right: 1px solid #0f3460; overflow-y: auto; flex-shrink: 0; }
     .sidebar h2 { padding: 16px; background: #0f3460; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
     .scenario-list { list-style: none; }
-    .scenario-item { padding: 12px 16px; border-bottom: 1px solid #0f3460; cursor: pointer; font-size: 13px; transition: background 0.2s; }
+    .category-group { border-bottom: 1px solid #0f3460; }
+    .category-header { padding: 10px 16px; background: #1f4068; cursor: pointer; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center; }
+    .category-header:hover { background: #2a5082; }
+    .category-header .count { font-size: 11px; background: #0f3460; padding: 2px 8px; border-radius: 10px; }
+    .category-items { display: block; }
+    .category-items.collapsed { display: none; }
+    .scenario-item { padding: 10px 16px 10px 24px; border-bottom: 1px solid #0f3460; cursor: pointer; font-size: 12px; transition: background 0.2s; }
     .scenario-item:hover { background: #1f4068; }
     .scenario-item.active { background: #e94560; color: white; }
     .scenario-item.reviewed { border-left: 3px solid #4ade80; }
@@ -135,24 +141,75 @@
       updateStats();
     }
     
+    // Category mappings
+    const CATEGORIES = {
+      'game_dev': { name: '🎮 Game Dev', color: '#4ade80' },
+      'look_dev': { name: '🎨 Look Dev', color: '#60a5fa' },
+      'tech_art': { name: '⚙️ Tech Art', color: '#f59e0b' },
+      'vfx': { name: '✨ VFX', color: '#a855f7' },
+      'worldbuilding': { name: '🌍 Worldbuilding', color: '#14b8a6' },
+      'other': { name: '📁 Other', color: '#6b7280' }
+    };
+    
+    function getCategory(id) {
+      const meta = scenarios[id]?.meta;
+      if (meta?.category) {
+        const cat = meta.category.toLowerCase().replace(/[\s&]+/g, '_');
+        if (cat.includes('game') || cat.includes('blueprint') || cat.includes('logic')) return 'game_dev';
+        if (cat.includes('look') || cat.includes('light') || cat.includes('material') || cat.includes('render')) return 'look_dev';
+        if (cat.includes('tech') || cat.includes('asset') || cat.includes('animation')) return 'tech_art';
+        if (cat.includes('vfx') || cat.includes('niagara') || cat.includes('sequencer') || cat.includes('cinematic')) return 'vfx';
+        if (cat.includes('world') || cat.includes('partition') || cat.includes('streaming')) return 'worldbuilding';
+      }
+      return 'other';
+    }
+    
     function renderScenarioList() {
       const list = document.getElementById('scenario-list');
       const scenarioIds = Object.keys(scenarios).sort();
       
       document.getElementById('scenario-count').textContent = scenarioIds.length;
       
-      list.innerHTML = scenarioIds.map(id => {
-        const fb = feedback[id] || {};
-        const hasIssues = Object.values(fb).some(s => s.textIssue || s.imageIssue);
-        const reviewed = Object.keys(fb).length > 0;
+      // Group by category
+      const groups = {};
+      scenarioIds.forEach(id => {
+        const cat = getCategory(id);
+        if (!groups[cat]) groups[cat] = [];
+        groups[cat].push(id);
+      });
+      
+      // Render grouped list
+      list.innerHTML = Object.entries(CATEGORIES).map(([catKey, catInfo]) => {
+        const items = groups[catKey] || [];
+        if (items.length === 0) return '';
         
         return `
-          <li class="scenario-item ${currentScenarioId === id ? 'active' : ''} ${reviewed ? 'reviewed' : ''} ${hasIssues ? 'has-issues' : ''}"
-              onclick="selectScenario('${id}')">
-            ${scenarios[id]?.meta?.title || id}
-          </li>
+          <div class="category-group">
+            <div class="category-header" onclick="toggleCategory('${catKey}')">
+              <span>${catInfo.name}</span>
+              <span class="count">${items.length}</span>
+            </div>
+            <div class="category-items" id="cat-${catKey}">
+              ${items.map(id => {
+                const fb = feedback[id] || {};
+                const hasIssues = Object.values(fb).some(s => s.textIssue || s.imageIssue);
+                const reviewed = Object.keys(fb).length > 0;
+                return `
+                  <li class="scenario-item ${currentScenarioId === id ? 'active' : ''} ${reviewed ? 'reviewed' : ''} ${hasIssues ? 'has-issues' : ''}"
+                      onclick="selectScenario('${id}')">
+                    ${scenarios[id]?.meta?.title || id}
+                  </li>
+                `;
+              }).join('')}
+            </div>
+          </div>
         `;
       }).join('');
+    }
+    
+    function toggleCategory(catKey) {
+      const el = document.getElementById('cat-' + catKey);
+      if (el) el.classList.toggle('collapsed');
     }
     
     function selectScenario(id) {

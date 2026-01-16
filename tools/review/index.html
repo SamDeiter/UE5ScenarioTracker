@@ -90,16 +90,15 @@
     <div class="header">
       <h1 id="current-scenario">Select a Scenario</h1>
       <div class="header-actions">
-        <button class="btn btn-secondary" onclick="prevScenario()">← Prev</button>
-        <button class="btn btn-secondary" onclick="nextScenario()">Next →</button>
+        <button class="btn btn-secondary" id="play-btn" onclick="playScenario()" style="display:none;">▶ Play Scenario</button>
         <button class="btn btn-primary" onclick="exportFeedback()">Export Feedback</button>
       </div>
     </div>
     
     <div class="stats-bar">
-      <div class="stat">Total: <span class="stat-value" id="stat-total">0</span></div>
-      <div class="stat">Reviewed: <span class="stat-value" id="stat-reviewed">0</span></div>
-      <div class="stat">Issues: <span class="stat-value" id="stat-issues">0</span></div>
+      <div class="stat" title="Total scenarios loaded">📋 Scenarios: <span class="stat-value" id="stat-total">0</span></div>
+      <div class="stat" title="Scenarios you've reviewed">✅ Reviewed: <span class="stat-value" id="stat-reviewed">0</span></div>
+      <div class="stat" title="Steps flagged with issues">⚠️ Flagged Steps: <span class="stat-value" id="stat-issues">0</span></div>
     </div>
     
     <div class="scenario-info" id="scenario-info">
@@ -244,6 +243,7 @@
       document.getElementById('info-category').textContent = scenario.meta?.category || 'Unknown';
       document.getElementById('info-time').textContent = scenario.meta?.estimateHours ? `${scenario.meta.estimateHours}h` : '-';
       document.getElementById('scenario-info').classList.add('visible');
+      document.getElementById('play-btn').style.display = 'inline-block';
       
       const viewer = document.getElementById('step-viewer');
       const stepsObj = scenario.steps || {};
@@ -341,16 +341,10 @@
       document.getElementById('stat-issues').textContent = issues;
     }
     
-    function prevScenario() {
-      const ids = Object.keys(scenarios).sort();
-      const idx = ids.indexOf(currentScenarioId);
-      if (idx > 0) selectScenario(ids[idx - 1]);
-    }
-    
-    function nextScenario() {
-      const ids = Object.keys(scenarios).sort();
-      const idx = ids.indexOf(currentScenarioId);
-      if (idx < ids.length - 1) selectScenario(ids[idx + 1]);
+    function playScenario() {
+      if (!currentScenarioId) return;
+      // Open the main app with the scenario pre-selected
+      window.open(`../../index.html?scenario=${currentScenarioId}`, '_blank');
     }
     
     function exportFeedback() {

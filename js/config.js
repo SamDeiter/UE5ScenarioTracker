@@ -234,3 +234,98 @@ console.log("[Config] Application configuration loaded");
     }, 1000); // Wait for app to fully initialize
   });
 })();
+
+// Review Mode Integration
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const isReviewMode = params.get("mode") === "review";
+
+  if (isReviewMode) {
+    window.addEventListener("load", function () {
+      setTimeout(async function () {
+        if (!window.ReviewCore || !window.MANIFEST) return;
+
+        console.log("[Config] Review Mode enabled. Initializing SDK...");
+
+        // 1. Map Manifest Scenarios to Review SDK Items
+        const reviewItems = [];
+        const categories = window.MANIFEST.categories || {};
+
+        Object.keys(categories).forEach((catKey) => {
+          const category = categories[catKey];
+          category.scenarios.forEach((scenarioId) => {
+            const scenario = window.SCENARIOS?.[scenarioId];
+            reviewItems.push({
+              id: scenarioId,
+              title: scenario?.meta?.title || scenarioId,
+              category: category.name,
+            });
+          });
+        });
+
+        // 2. Initialize Core with host-specific overrides
+        const reviewCore = new window.ReviewCore({
+          appId: "ue5-scenario-tracker",
+          items: reviewItems,
+          storage: new window.ReviewStorage.LocalStorage(),
+
+          // Mapper: Bridge SDK item selection to Scenario Tracker engine
+          onShowItem: (item) => {
+            console.log(`[Config] SDK requested item: ${item.id}`);
+
+            // Re-use existing scenario loading logic
+            const scenario = window.SCENARIOS?.[item.id];
+            if (scenario) {
+              const placeholder = document.getElementById("ticket-placeholder");
+              const ticketContent = document.getElementById("ticket-content");
+              if (placeholder) placeholder.classList.add("hidden");
+              if (ticketContent) {
+                ticketContent.classList.remove("hidden");
+                ticketContent.classList.add("flex");
+              }
+
+              const titleEl = document.getElementById("ticket-title");
+              const descEl = document.getElementById("ticket-description");
+              if (titleEl)
+                titleEl.textContent = scenario.meta?.title || item.id;
+              if (descEl) descEl.textContent = scenario.meta?.description || "";
+
+              window.ScenarioEngine.load(item.id, scenario);
+              const step = window.ScenarioEngine.getCurrentStep();
+              if (step && window.StepRenderer) {
+                const container = document.getElementById(
+                  "ticket-step-content",
+                );
+                window.StepRenderer.render(item.id, step.id, {
+                  container: container,
+                  onChoiceClick: function handleReviewChoice(btn) {
+                    // Logic same as standard auto-start for navigation
+                    const nextStepId = btn.dataset.choiceNext;
+                    if (nextStepId === "end") return;
+                    window.ScenarioEngine.makeChoice(
+                      parseInt(btn.dataset.originalIndex) || 0,
+                    );
+                    const newStep = window.ScenarioEngine.getCurrentStep();
+                    if (newStep && newStep.id) {
+                      window.StepRenderer.render(item.id, newStep.id, {
+                        container: container,
+                        onChoiceClick: handleReviewChoice,
+                      });
+                    }
+                  },
+                });
+              }
+            }
+          },
+        });
+
+        // 3. Setup UI
+        const ui = window.ReviewUI.createBar(reviewCore);
+        reviewCore.setUI(ui);
+
+        // 4. Start SDK
+        await reviewCore.init();
+      }, 1500); // Delay to let Manifest/Scenarios be ready
+    });
+  }
+})();

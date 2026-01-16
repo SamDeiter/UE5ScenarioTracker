@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tincan xmlns="http://projecttincan.com/tincan.xsd">
+  <activities>
+    <activity id="https://ue5scenariotracker.local/course" type="http://adlnet.gov/expapi/activities/course">
+      <name>UE5 Scenario Tracker</name>
+      <description lang="en-US">Unreal Engine 5 training scenarios for technical assessment</description>
+      <launch lang="en-US">index.html</launch>
+    </activity>
+  </activities>
+</tincan>

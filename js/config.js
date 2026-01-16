@@ -140,3 +140,97 @@ console.log("[Config] Application configuration loaded");
     });
   }
 })();
+
+// Resume/Bookmark feature - check for saved progress on load
+(function () {
+  // Skip if URL param is forcing a specific scenario
+  if (window.APP_CONFIG?.AUTO_START_SCENARIO) return;
+
+  window.addEventListener("load", function () {
+    setTimeout(function () {
+      // Check if StateManager is available
+      if (!window.StateManager) return;
+
+      const active = window.StateManager.getActiveScenario();
+      if (active.scenarioId && active.stepId) {
+        const scenario = window.SCENARIOS?.[active.scenarioId];
+        if (!scenario) return;
+
+        const scenarioTitle = scenario.meta?.title || active.scenarioId;
+
+        // Show resume prompt
+        const resume = confirm(
+          `Welcome back!\n\nYou were working on:\n"${scenarioTitle}"\n\nWould you like to continue where you left off?\n\nClick OK to resume, or Cancel to start fresh.`,
+        );
+
+        if (resume) {
+          console.log(
+            `[Config] Resuming scenario: ${active.scenarioId} at step ${active.stepId}`,
+          );
+
+          // Hide placeholder and show ticket content
+          const placeholder = document.getElementById("ticket-placeholder");
+          const ticketContent = document.getElementById("ticket-content");
+          if (placeholder) placeholder.classList.add("hidden");
+          if (ticketContent) {
+            ticketContent.classList.remove("hidden");
+            ticketContent.classList.add("flex");
+          }
+
+          // Set ticket title and description
+          const titleEl = document.getElementById("ticket-title");
+          const descEl = document.getElementById("ticket-description");
+          if (titleEl)
+            titleEl.textContent = scenario.meta?.title || active.scenarioId;
+          if (descEl) descEl.textContent = scenario.meta?.description || "";
+
+          // Load scenario and go to the saved step
+          window.ScenarioEngine.load(active.scenarioId, scenario);
+          window.ScenarioEngine._currentStepId = active.stepId;
+
+          // Render the saved step
+          if (window.StepRenderer) {
+            const container = document.getElementById("ticket-step-content");
+            if (container) {
+              window.StepRenderer.render(active.scenarioId, active.stepId, {
+                container: container,
+                onChoiceClick: function handleChoice(btn) {
+                  const nextStepId = btn.dataset.choiceNext;
+                  if (nextStepId === "end") {
+                    console.log("[Config] Scenario completed");
+                    window.StateManager.clearCurrentScenario();
+                    return;
+                  }
+                  if (nextStepId) {
+                    window.ScenarioEngine.makeChoice(
+                      parseInt(btn.dataset.originalIndex) || 0,
+                    );
+                    const newStep = window.ScenarioEngine.getCurrentStep();
+                    if (newStep && newStep.id) {
+                      window.StateManager.setCurrentScenario(
+                        active.scenarioId,
+                        newStep.id,
+                      );
+                      window.StepRenderer.render(
+                        active.scenarioId,
+                        newStep.id,
+                        {
+                          container: container,
+                          onChoiceClick: handleChoice,
+                        },
+                      );
+                    }
+                  }
+                },
+              });
+            }
+          }
+        } else {
+          // User wants to start fresh - clear saved state
+          console.log("[Config] User chose to start fresh");
+          window.StateManager.clearCurrentScenario();
+        }
+      }
+    }, 1000); // Wait for app to fully initialize
+  });
+})();

@@ -199,7 +199,27 @@
             </div>
 
             <!-- Hard Reset -->
-            <div class="pt-2 border-t border-neutral-700">
+            <div class="pt-2 border-t border-neutral-700 space-y-2">
+              <p class="text-xs text-neutral-400 uppercase tracking-wide">
+                Progress Management
+              </p>
+              <div class="flex gap-2">
+                <button
+                  id="export-progress-btn"
+                  class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 rounded-lg text-sm"
+                  onclick="exportProgress()"
+                >
+                  📤 Export
+                </button>
+                <button
+                  id="import-progress-btn"
+                  class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-1.5 rounded-lg text-sm"
+                  onclick="document.getElementById('import-file').click()"
+                >
+                  📥 Import
+                </button>
+                <input type="file" id="import-file" accept=".json" onchange="importProgress(event)" style="display:none;">
+              </div>
               <button
                 id="hard-reset-btn"
                 class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 rounded-lg text-sm shadow-md transition-all duration-200"

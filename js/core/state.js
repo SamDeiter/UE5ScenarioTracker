@@ -91,7 +91,7 @@ const StateManager = (function () {
     console.log(
       "[StateManager] State loaded for",
       Object.keys(scenarioState).length,
-      "scenarios"
+      "scenarios",
     );
     return scenarioState;
   }
@@ -159,7 +159,7 @@ const StateManager = (function () {
     try {
       localStorage.setItem(
         STORAGE_KEYS.INTERRUPTED,
-        JSON.stringify(interruptedSteps)
+        JSON.stringify(interruptedSteps),
       );
     } catch (e) {
       console.error("[StateManager] Failed to save interrupted steps:", e);
@@ -246,7 +246,7 @@ const StateManager = (function () {
   function getTotalLoggedTime() {
     return Object.values(scenarioState).reduce(
       (acc, s) => acc + (s.loggedTime || 0),
-      0
+      0,
     );
   }
 
@@ -283,6 +283,58 @@ const StateManager = (function () {
     return interruptedSteps[scenarioId] || null;
   }
 
+  /**
+   * Export current progress to a JSON file for source control
+   */
+  function exportProgress() {
+    const exportData = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      scenarioState: getAllState(),
+      activeScenario: getActiveScenario(),
+      interruptedSteps: { ...interruptedSteps },
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ue5_progress_${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    console.log("[StateManager] Progress exported");
+    return exportData;
+  }
+
+  /**
+   * Import progress from a JSON file
+   */
+  function importProgress(data) {
+    if (!data || !data.scenarioState) {
+      console.error("[StateManager] Invalid import data");
+      return false;
+    }
+
+    // Restore state
+    scenarioState = data.scenarioState;
+    interruptedSteps = data.interruptedSteps || {};
+
+    if (data.activeScenario) {
+      currentScenarioId = data.activeScenario.scenarioId;
+      currentStepId = data.activeScenario.stepId;
+    }
+
+    // Save to localStorage
+    saveState();
+    saveActiveTicket();
+
+    console.log("[StateManager] Progress imported");
+    return true;
+  }
+
   // Public API
   return {
     loadState,
@@ -303,9 +355,42 @@ const StateManager = (function () {
     getAllState,
     getInterruptedStep,
     getTimeCost,
+    exportProgress,
+    importProgress,
     STORAGE_KEYS,
   };
 })();
 
 // Export for use in other modules
 window.StateManager = StateManager;
+
+// Global helper functions for HTML onclick handlers
+window.exportProgress = function () {
+  if (window.StateManager) {
+    window.StateManager.exportProgress();
+    alert(
+      'Progress exported! Save the file to the "progress/" folder for source control.',
+    );
+  }
+};
+
+window.importProgress = function (event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (window.StateManager.importProgress(data)) {
+        alert("Progress imported successfully! Refreshing page...");
+        location.reload();
+      } else {
+        alert("Failed to import progress: Invalid file format");
+      }
+    } catch (err) {
+      alert("Failed to import progress: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+};

@@ -66,34 +66,43 @@ console.log("[Config] Application configuration loaded");
     console.log(`[Config] Auto-start scenario requested: ${scenarioId}`);
     window.APP_CONFIG.AUTO_START_SCENARIO = scenarioId;
 
-    // Wait for DOM and scenarios to load, then auto-start
-    window.addEventListener("load", function () {
-      setTimeout(function () {
-        const scenario = window.SCENARIOS?.[scenarioId];
-        if (scenario && window.ScenarioEngine) {
-          console.log(`[Config] Auto-starting scenario: ${scenarioId}`);
+    // Function to force-start the scenario
+    function forceStartScenario() {
+      const scenario = window.SCENARIOS?.[scenarioId];
+      if (!scenario || !window.ScenarioEngine) {
+        console.warn(`[Config] Scenario or engine not ready, retrying...`);
+        return false;
+      }
 
-          // Hide backlog and show game view
-          const backlogView = document.getElementById("backlog-view");
-          const gameView = document.getElementById("game-view");
-          if (backlogView) backlogView.classList.add("hidden");
-          if (gameView) gameView.classList.remove("hidden");
+      console.log(`[Config] Force-starting scenario: ${scenarioId}`);
 
-          // Start the scenario
-          window.ScenarioEngine.load(scenarioId, scenario);
+      // Hide backlog and show game view
+      const backlogView = document.getElementById("backlog-view");
+      const gameView = document.getElementById("game-view");
+      if (backlogView) backlogView.classList.add("hidden");
+      if (gameView) gameView.classList.remove("hidden");
 
-          // Render first step if StepRenderer exists
-          if (window.StepRenderer) {
-            const step = window.ScenarioEngine.getCurrentStep();
-            if (step) {
-              const container = document.getElementById("step-container");
-              if (container) window.StepRenderer.render(step, container);
-            }
-          }
-        } else {
-          console.warn(`[Config] Scenario not found: ${scenarioId}`);
+      // Start the scenario
+      window.ScenarioEngine.load(scenarioId, scenario);
+
+      // Render first step if StepRenderer exists
+      if (window.StepRenderer) {
+        const step = window.ScenarioEngine.getCurrentStep();
+        if (step) {
+          const container = document.getElementById("step-container");
+          if (container) window.StepRenderer.render(step, container);
         }
-      }, 500); // Give time for scripts to initialize
+      }
+      return true;
+    }
+
+    // Wait for app to fully initialize, then override with our scenario
+    window.addEventListener("load", function () {
+      // Try multiple times with increasing delay to beat the app's init
+      setTimeout(forceStartScenario, 100);
+      setTimeout(forceStartScenario, 500);
+      setTimeout(forceStartScenario, 1500);
+      setTimeout(forceStartScenario, 3000);
     });
   }
 })();

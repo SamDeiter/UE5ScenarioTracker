@@ -1,0 +1,31 @@
+{
+  "scenarios": {
+    "smoke_test": {
+      "steps": {
+        "setup-step": {
+          "actions": [
+            {
+              "type": "SPAWN_ACTOR",
+              "class": "/Engine/BasicShapes/Cube.Cube",
+              "name": "SmokeTestCube",
+              "location": [0, 0, 100]
+            }
+          ]
+        },
+        "step-1": {
+          "actions": [
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "SmokeTestCube",
+              "property": "bHidden",
+              "value": false
+            },
+            {
+              "type": "FRAME_VIEWPORT"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

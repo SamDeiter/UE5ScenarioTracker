@@ -1,0 +1,73 @@
+{
+  "meta": {
+    "description": "UE5.6 Editor panel bounds for training simulator",
+    "resolution": { "width": 1024, "height": 768 },
+    "scaleFactor": 1.0
+  },
+  "panels": {
+    "toolbar": {
+      "x": 0,
+      "y": 60,
+      "w": 1024,
+      "h": 48,
+      "interactive": false
+    },
+    "outliner": {
+      "x": 700,
+      "y": 160,
+      "w": 220,
+      "h": 210,
+      "interactive": false
+    },
+    "viewport": {
+      "x": 0,
+      "y": 108,
+      "w": 700,
+      "h": 400,
+      "interactive": false
+    },
+    "details": {
+      "x": 700,
+      "y": 500,
+      "w": 220,
+      "h": 200,
+      "interactive": true,
+      "scrollable": true
+    },
+    "output_log": {
+      "x": 0,
+      "y": 520,
+      "w": 700,
+      "h": 130,
+      "interactive": false
+    }
+  },
+  "hotspots": {
+    "directional_light": [
+      {
+        "id": "dynamic-shadow-distance",
+        "panelId": "details",
+        "localBounds": { "x": 100, "y": 80, "w": 100, "h": 22 },
+        "type": "number-input",
+        "property": "DynamicShadowDistanceMovableLight",
+        "label": "Dynamic Shadow Distance Movable Light",
+        "defaultValue": 5000,
+        "expectedValue": 50000,
+        "step": 1000
+      },
+      {
+        "id": "num-shadow-cascades",
+        "panelId": "details",
+        "localBounds": { "x": 100, "y": 105, "w": 100, "h": 22 },
+        "type": "number-input",
+        "property": "NumDynamicShadowCascades",
+        "label": "Num Dynamic Shadow Cascades",
+        "defaultValue": 4,
+        "expectedValue": 8,
+        "min": 1,
+        "max": 10,
+        "step": 1
+      }
+    ]
+  }
+}

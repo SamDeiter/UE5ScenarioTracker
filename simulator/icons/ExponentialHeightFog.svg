@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none">
+  <!-- UE5 ExponentialHeightFog icon - cloud/fog -->
+  <ellipse cx="8" cy="10" rx="6" ry="3" fill="#808080" opacity="0.7"/>
+  <ellipse cx="6" cy="7" rx="3" ry="2.5" fill="#A0A0A0" opacity="0.8"/>
+  <ellipse cx="10" cy="7.5" rx="2.5" ry="2" fill="#909090" opacity="0.8"/>
+</svg>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none">
+  <!-- UE5 World icon - globe -->
+  <circle cx="8" cy="8" r="6" fill="none" stroke="#4CAF50" stroke-width="1"/>
+  <ellipse cx="8" cy="8" rx="6" ry="3" fill="none" stroke="#4CAF50" stroke-width="0.7"/>
+  <line x1="8" y1="2" x2="8" y2="14" stroke="#4CAF50" stroke-width="0.7"/>
+</svg>

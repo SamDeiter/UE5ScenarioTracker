@@ -1,0 +1,222 @@
+/**
+ * UE5 Icon Sprite Sheet CSS
+ * 
+ * Performance-optimized sprite system for UE5 icons.
+ * Uses CSS background-position for efficient loading.
+ * 
+ * For 16x16 icons, each icon is positioned in a grid.
+ * Current implementation uses individual files but provides
+ * sprite-ready CSS classes for future optimization.
+ */
+
+/* Sprite base class */
+.ue5-sprite {
+  display: inline-block;
+  background-image: url('../icons/ue5/sprite-16x.png');
+  background-repeat: no-repeat;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+}
+
+/* 40px sprite for toolbar */
+.ue5-sprite-40 {
+  display: inline-block;
+  background-image: url('../icons/ue5/sprite-40x.png');
+  background-repeat: no-repeat;
+  width: 40px;
+  height: 40px;
+  vertical-align: middle;
+}
+
+/* Individual icon fallbacks (until sprite is generated) */
+/* These use individual images but maintain sprite-ready class naming */
+
+/* Actor Icons - Individual file fallbacks */
+.sprite-light {
+  background-image: url('../icons/ue5/LightActor_16x.png');
+  background-position: center;
+  background-size: contain;
+}
+
+.sprite-static-mesh {
+  background-image: url('../icons/ue5/box_16px.png');
+  background-position: center;
+  background-size: contain;
+}
+
+.sprite-landscape {
+  background-image: url('../icons/ue5/Landscape_16x.png');
+  background-position: center;
+  background-size: contain;
+}
+
+.sprite-volume {
+  background-image: url('../icons/ue5/Volume_16x.png');
+  background-position: center;
+  background-size: contain;
+}
+
+.sprite-sound {
+  background-image: url('../icons/ue5/SoundActor_16x.png');
+  background-position: center;
+  background-size: contain;
+}
+
+.sprite-emitter {
+  background-image: url('../icons/ue5/Emitter_16x.png');
+  background-position: center;
+  background-size: contain;
+}
+
+.sprite-group {
+  background-image: url('../icons/ue5/GroupActor_16x.png');
+  background-position: center;
+  background-size: contain;
+}
+
+.sprite-brush {
+  background-image: url('../icons/ue5/Brush_16x.png');
+  background-position: center;
+  background-size: contain;
+}
+
+/* Mobility Icons */
+.sprite-mobility-static {
+  background-image: url('../icons/ue5/Static_16x.png');
+  background-position: center;
+  background-size: contain;
+}
+
+.sprite-mobility-movable {
+  background-image: url('../icons/ue5/Movable_16x.png');
+  background-position: center;
+  background-size: contain;
+}
+
+.sprite-mobility-stationary {
+  background-image: url('../icons/ue5/Adjustable_16x.png');
+  background-position: center;
+  background-size: contain;
+}
+
+/* Tab Icons */
+.sprite-tab-outliner {
+  background-image: url('../icons/ue5/icon_tab_SceneOutliner_16x.png');
+  background-position: center;
+  background-size: contain;
+}
+
+.sprite-tab-details {
+  background-image: url('../icons/ue5/icon_tab_SelectionDetails_16x.png');
+  background-position: center;
+  background-size: contain;
+}
+
+.sprite-tab-content {
+  background-image: url('../icons/ue5/icon_tab_ContentBrowser_16x.png');
+  background-position: center;
+  background-size: contain;
+}
+
+.sprite-tab-levels {
+  background-image: url('../icons/ue5/icon_tab_Levels_16x.png');
+  background-position: center;
+  background-size: contain;
+}
+
+.sprite-tab-layers {
+  background-image: url('../icons/ue5/icon_tab_Layers_16x.png');
+  background-position: center;
+  background-size: contain;
+}
+
+.sprite-tab-viewport {
+  background-image: url('../icons/ue5/icon_tab_Viewports_16x.png');
+  background-position: center;
+  background-size: contain;
+}
+
+/* Toolbar Icons - 40px */
+.sprite-play {
+  background-image: url('../icons/ue5/icon_play_40x.png');
+  background-position: center;
+  background-size: contain;
+  width: 40px;
+  height: 40px;
+}
+
+.sprite-stop {
+  background-image: url('../icons/ue5/icon_stop_40x.png');
+  background-position: center;
+  background-size: contain;
+  width: 40px;
+  height: 40px;
+}
+
+.sprite-simulate {
+  background-image: url('../icons/ue5/icon_simulate_40x.png');
+  background-position: center;
+  background-size: contain;
+  width: 40px;
+  height: 40px;
+}
+
+/* Component replacement classes */
+/* Use these to replace Font Awesome icons with UE5 icons */
+.use-ue5-icons .fa-sun::before,
+.use-ue5-icons .fa-cloud-sun::before,
+.use-ue5-icons .fa-lightbulb::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-image: url('../icons/ue5/LightActor_16x.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.use-ue5-icons .fa-cube::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-image: url('../icons/ue5/box_16px.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.use-ue5-icons .fa-mountain::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-image: url('../icons/ue5/Landscape_16x.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.use-ue5-icons .fa-list::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-image: url('../icons/ue5/icon_tab_SceneOutliner_16x.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* Preload sprite - add to body for performance */
+body::after {
+  content: '';
+  display: none;
+  background-image: 
+    url('../icons/ue5/LightActor_16x.png'),
+    url('../icons/ue5/box_16px.png'),
+    url('../icons/ue5/Landscape_16x.png'),
+    url('../icons/ue5/Static_16x.png'),
+    url('../icons/ue5/Movable_16x.png'),
+    url('../icons/ue5/Adjustable_16x.png'),
+    url('../icons/ue5/icon_tab_SceneOutliner_16x.png'),
+    url('../icons/ue5/icon_tab_SelectionDetails_16x.png');
+}

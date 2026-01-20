@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none">
+  <!-- UE5 PlayerStart icon - flag/spawn -->
+  <path d="M4 2V14" stroke="#00BCD4" stroke-width="1.5"/>
+  <path d="M4 2L12 5L4 8Z" fill="#00BCD4"/>
+</svg>

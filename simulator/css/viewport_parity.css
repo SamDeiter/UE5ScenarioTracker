@@ -1,0 +1,211 @@
+
+/* =====================================================
+   UE5 HIGH-FIDELITY VIEWPORT UI (Forensic)
+   ===================================================== */
+
+/* UE5 COLOR LOCK (Viewport Context) */
+:root {
+    --ue-v-bg: rgba(20, 20, 20, 0.85);
+    --ue-v-bg-hover: rgba(255, 255, 255, 0.1);
+    --ue-v-bg-active: rgba(52, 152, 219, 0.2);
+    --ue-v-accent: #3498db;
+    --ue-v-text: #ccc;
+    --ue-v-text-dim: #888;
+    --ue-v-border: rgba(255, 255, 255, 0.05);
+}
+
+#viewport-panel {
+    position: relative;
+    background-color: #111;
+    display: flex;
+    flex-direction: column;
+}
+
+/* UE5 FIX: Hide the native docking tab for Viewport to prevent double labels */
+#viewport-panel .ue5-tab-bar {
+    display: none !important;
+}
+
+/* Viewport Tab Bar (Topmost) */
+.viewport-tab-bar {
+    background-color: #212121;
+    display: flex;
+    align-items: center;
+    height: 26px;
+    border-bottom: 1px solid #111;
+    padding-left: 8px;
+}
+
+.viewport-tab {
+    background-color: #2d2d2d;
+    padding: 0 12px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-right: 1px solid #111;
+    border-top: 2px solid var(--ue-v-accent);
+    font-size: 11px;
+    color: #eee;
+    cursor: default;
+}
+
+.viewport-tab .tab-icon {
+    width: 14px;
+    height: 14px;
+    filter: brightness(0.8);
+}
+
+.viewport-tab .close-btn {
+    font-size: 10px;
+    color: #666;
+    margin-left: 6px;
+    cursor: pointer;
+}
+
+.viewport-tab .close-btn:hover {
+    color: #fff;
+}
+
+/* Viewport Toolbar Overlay */
+#viewport-toolbar {
+    position: absolute;
+    top: 0; /* UE5 FIX: Move to top to reclaim dead space */
+    left: 0;
+    right: 0;
+    z-index: 10;
+    pointer-events: none; /* Allow clicking through background if needed */
+}
+
+#viewport-toolbar-main {
+    background-color: var(--ue-v-bg);
+    backdrop-filter: blur(4px);
+    height: 32px;
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
+    gap: 0;
+    margin: 4px;
+    border-radius: 4px;
+    border: 1px solid var(--ue-v-border);
+    pointer-events: auto;
+}
+
+/* Groups and Separators */
+.v-toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0 4px;
+}
+
+.v-toolbar-separator {
+    width: 1px;
+    height: 18px;
+    background-color: rgba(255, 255, 255, 0.1);
+    margin: 0 4px;
+}
+
+/* Base Button Style */
+.v-toolbar-item {
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    height: 24px;
+    border-radius: 3px;
+    color: var(--ue-v-text);
+    font-size: 11px;
+    cursor: pointer;
+    gap: 6px;
+    border: 1px solid transparent;
+    transition: background 0.1s;
+}
+
+.v-toolbar-item:hover {
+    background-color: var(--ue-v-bg-hover);
+}
+
+.v-toolbar-item.active {
+    background-color: var(--ue-v-bg-active);
+    color: #fff;
+    border-color: rgba(52, 152, 219, 0.4);
+}
+
+.v-toolbar-item i {
+    font-size: 10px;
+    opacity: 0.8;
+}
+
+/* Icons */
+.v-toolbar-icon {
+    width: 14px;
+    height: 14px;
+    filter: brightness(0.9);
+}
+
+/* Specific Capsule Buttons (UE5 Style) */
+.v-toolbar-capsule {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding: 1px;
+}
+
+.v-toolbar-capsule .v-toolbar-item {
+    border-radius: 2px;
+}
+
+/* Snapping Triggers */
+.v-toolbar-snapping {
+    display: flex;
+    align-items: center;
+    padding-left: 4px;
+}
+
+.v-toolbar-item.dropdown-arrow {
+    padding: 0 2px;
+    gap: 0;
+}
+
+.v-toolbar-item.dropdown-arrow i {
+    font-size: 8px;
+    color: var(--ue-v-text-dim);
+}
+
+/* Text values (e.g., "10", "10°") */
+.v-toolbar-val {
+    font-size: 10px;
+    color: var(--ue-v-text-dim);
+    margin-left: -2px;
+}
+
+/* Right Aligned Area */
+.v-toolbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    padding-right: 8px;
+}
+
+.v-toolbar-right .v-toolbar-capsule {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    height: 26px;
+}
+
+.v-toolbar-right .v-toolbar-item {
+    height: 24px;
+    padding: 0 6px;
+}
+
+.v-toolbar-right i.fas.fa-ellipsis-v {
+    font-size: 8px;
+    margin-right: 2px;
+}
+
+.v-toolbar-right .v-toolbar-separator {
+    background-color: rgba(255, 255, 255, 0.15);
+    height: 20px;
+}

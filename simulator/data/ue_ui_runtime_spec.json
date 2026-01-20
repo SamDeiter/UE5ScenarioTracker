@@ -1,0 +1,34 @@
+{
+  "version": "5.6.0-mock",
+  "icons": {
+    "Save": "icons/ue5/icon_tab_SaveLayout_40x.png",
+    "SelectionMode": "icons/ue5/icon_tab_SelectionDetails_40x.png",
+    "Blueprint": "icons/ue5/icon_tab_BlueprintDebugger_40x.png",
+    "Cinematics": "icons/ue5/icon_tab_Cinematics_16x.png",
+    "Play": "icons/ue5/icon_play_40x.png",
+    "Stop": "icons/ue5/icon_stop_40x.png",
+    "Platforms": "icons/ue5/icon_tab_BuildSubmit_40x.png",
+    "Settings": "icons/ue5/icon_tab_Toolbars_40x.png",
+    "Location": "icons/ue5/Static_16x.png",
+    "Rotation": "icons/ue5/RotatingMovementComponent_16px.png",
+    "Scale": "icons/ue5/Movable_16x.png",
+    "DirectionalLight": "icons/ue5/LightActor_16x.png",
+    "PointLight": "icons/ue5/Light_Movable_16x.png",
+    "StaticMeshActor": "icons/StaticMesh.png"
+  },
+  "layout": {
+    "outliner": {
+      "min": 150,
+      "max_pct": 0.4
+    },
+    "details": {
+      "min": 200,
+      "max_pct": 0.6
+    },
+    "splitter_width": 4
+  },
+  "colors": {
+    "modified": "#ffd700",
+    "default_hover": "#444"
+  }
+}

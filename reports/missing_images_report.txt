@@ -1,0 +1,22 @@
+=== SCENARIOS NEEDING IMAGES ===
+BlackMaterialDueToEmissiveMiswiring: 9/16 images
+BlackMetallicObject: 5/16 images
+ComponentMobilityBlock: 3/14 images
+ConstraintDoorFail: MISSING DIRECTORY (needs 13 images)
+DanglingAssetRedirectors: 2/16 images
+DestroyActorStopsExecutionFlow: 5/16 images
+EmissiveGILightingFix: MISSING DIRECTORY (needs 23 images)
+ForcedDataLayerUnload: 11/15 images
+LockedCinematicCleanup: 3/13 images
+MaterialParameterAndAnimJitter: 3/21 images
+MismatchedSkeletonReference: 3/20 images
+NaniteVSMInstabilityOnMovement: MISSING DIRECTORY (needs 13 images)
+PhysicsLeverFailure: MISSING DIRECTORY (needs 15 images)
+RedirectorAndBulkLoadConflict: 0/16 images
+SecurityDoorLogicGap: 4/13 images
+SequencerLightRestoreStateIssue: 0/16 images
+VaultSequenceLockup: 4/19 images
+VolumetricShadowingPerformance: 3/18 images
+WorldPartitionDeepDive: 4/19 images
+
+Total scenarios needing work: 19

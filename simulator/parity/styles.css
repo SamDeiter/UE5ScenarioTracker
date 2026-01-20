@@ -1,0 +1,305 @@
+
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #000;
+    font-family: 'Roboto', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* UE5 COLOR LOCK */
+:root {
+    --ue-bg-menu: #1f1f1f;
+    --ue-bg-toolbar: #252526;
+    --ue-bg-hover: #333333;
+    --ue-border-light: #3a3a3a;
+    --ue-border-dark: #1a1a1a;
+    --ue-text-primary: #d6d6d6;
+    --ue-text-muted: #9e9e9e;
+    --ue-play-green: #2ea043;
+    --ue-play-green-hover: #3fb950;
+    --ue-warning-yellow: #f2c94c;
+}
+
+#ue-header {
+    width: 1920px;
+    height: 72px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* TOP MENU BAR */
+#ue-menu-bar {
+    height: 28px;
+    background-color: var(--ue-bg-menu);
+    border-bottom: 1px solid #2a2a2a;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+}
+
+.menu-left {
+    display: flex;
+    align-items: center;
+}
+
+.ue-logo-main {
+    height: 16px;
+    margin-right: 10px;
+}
+
+.menu-nav {
+    display: flex;
+}
+
+.menu-item {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    color: var(--ue-text-primary);
+    padding: 6px 10px;
+    line-height: 16px;
+    cursor: pointer;
+}
+
+.menu-item:hover {
+    background-color: #2a2a2a;
+}
+
+.menu-center {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 450px;
+}
+
+.warning-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.warning-icon {
+    width: 14px;
+    height: 14px;
+}
+
+.warning-text {
+    font-size: 12px;
+    color: var(--ue-warning-yellow);
+}
+
+.menu-right {
+    display: flex;
+    align-items: center;
+}
+
+.project-title {
+    font-size: 12px;
+    color: var(--ue-text-muted);
+    margin-right: 8px;
+}
+
+.window-controls {
+    display: flex;
+}
+
+.win-btn {
+    width: 32px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ue-text-primary);
+    cursor: pointer;
+}
+
+.win-btn:hover {
+    background-color: var(--ue-bg-hover);
+}
+
+.win-close:hover {
+    background-color: #e81123;
+}
+
+/* MAIN TOOLBAR */
+#ue-main-toolbar {
+    height: 44px;
+    background-color: var(--ue-bg-toolbar);
+    border-bottom: 1px solid var(--ue-border-dark);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+}
+
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.group-separator {
+    width: 1px;
+    height: 24px;
+    background-color: var(--ue-border-light);
+    margin: 0 8px;
+}
+
+.icon-btn {
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    padding: 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn:hover {
+    background-color: var(--ue-bg-hover);
+}
+
+.icon-btn img {
+    width: 16px;
+    height: 16px;
+}
+
+/* DROPDOWNS */
+.toolbar-dropdown {
+    height: 28px;
+    padding: 0 10px;
+    background-color: #2d2d30;
+    border: 1px solid var(--ue-border-light);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.toolbar-dropdown:hover {
+    background-color: #3e3e42;
+}
+
+.dd-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+}
+
+.dd-text {
+    font-size: 12px;
+    color: var(--ue-text-primary);
+}
+
+.dd-caret {
+    width: 8px;
+    height: 8px;
+    margin-left: 6px;
+    opacity: 0.6;
+}
+
+/* ICON DROPDOWN BUTTONS (Add, Blueprints, Cine) */
+.icon-dropdown {
+    height: 32px;
+    padding: 4px 8px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.icon-dropdown:hover {
+    background-color: var(--ue-bg-hover);
+}
+
+.icon-dropdown img:not(.btn-caret) {
+    width: 16px;
+    height: 16px;
+}
+
+.btn-caret {
+    width: 8px;
+    height: 8px;
+    margin-left: 4px;
+    opacity: 0.6;
+}
+
+/* PLAY CONTROLS */
+.play-group {
+    padding: 2px;
+    border-radius: 4px;
+}
+
+.play-btn-main {
+    width: 36px;
+    height: 36px;
+    background-color: var(--ue-play-green);
+    border: none;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-right: 2px;
+}
+
+.play-btn-main:hover {
+    background-color: var(--ue-play-green-hover);
+}
+
+.play-btn-main img {
+    width: 14px;
+    height: 14px;
+}
+
+.icon-btn.sm {
+    width: 32px;
+    height: 32px;
+}
+
+.icon-btn.sm img {
+    width: 14px;
+    height: 14px;
+}
+
+.pause-symbol {
+    font-style: normal;
+    font-size: 12px;
+    color: var(--ue-text-primary);
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.toolbar-ellipsis {
+    width: 16px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.toolbar-ellipsis:hover circle {
+    fill: #999;
+}
+
+.toolbar-spacer {
+    flex: 1;
+}
+
+.settings-cog {
+    color: var(--ue-text-muted);
+}
+
+.settings-cog:hover {
+    color: white;
+}

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none">
+  <!-- UE5 SkyLight icon - lightbulb with rays -->
+  <circle cx="8" cy="7" r="4" fill="#87CEEB" stroke="#ADD8E6" stroke-width="0.5"/>
+  <path d="M6 11V12C6 13 6.5 14 8 14C9.5 14 10 13 10 12V11" stroke="#ADD8E6" stroke-width="1"/>
+</svg>

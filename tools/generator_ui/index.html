@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UE5 Scenario Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <!-- UE5 Logo -->
+                <img src="../../assets/icons/UE-Secondary-Logo-2023-Horizontal-White.svg" alt="Unreal Engine"
+                    class="ue-logo">
+                <span class="divider">|</span>
+                <h1>Scenario Generator <span class="app-version" id="app-version">v1.1.0</span></h1>
+                <span id="api-status" class="status-badge">Checking...</span>
+            </div>
+            <div class="header-right">
+                <a href="/launcher" class="btn btn-small btn-secondary" title="Back to Launcher">🏠
+                    Launcher</a>
+                <a href="/quiz" class="btn btn-small btn-secondary" title="Open Quiz App">📚 Quiz App</a>
+                <select id="model-select" class="model-select" title="Select AI Model">
+                    <option value="">Loading from API...</option>
+                </select>
+                <button id="test-model-btn" class="btn btn-small btn-secondary" title="Test if model works">🧪
+                    Test</button>
+                <button id="refresh-btn" class="btn btn-secondary">🔄 Refresh</button>
+            </div>
+        </header>
+
+        <!-- Full-Width Status Bar -->
+        <div id="status-bar" class="status-bar hidden">
+            <div class="status-bar-content">
+                <div class="status-indicator">
+                    <span id="status-icon" class="status-icon pulse">⚡</span>
+                    <span id="status-text" class="status-text">Ready</span>
+                </div>
+                <div class="status-progress">
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                    <span id="progress-count" class="progress-count">0/0</span>
+                </div>
+                <div class="status-stats">
+                    <div class="stat">
+                        <span class="stat-label">Current:</span>
+                        <span id="current-scenario" class="stat-value">-</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Tokens:</span>
+                        <span id="tokens-used" class="stat-value">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Cost:</span>
+                        <span id="estimated-cost" class="stat-value">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Scenario List -->
+            <section class="panel scenario-list-panel">
+                <div class="panel-header">
+                    <h2>📦 Scenarios</h2>
+                    <span id="scenario-count" class="count-badge">0 / 0</span>
+                </div>
+                <!-- Filter & Sort Controls -->
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="search-input" placeholder="Search scenarios..." />
+                    </div>
+                    <div class="filter-controls">
+                        <select id="filter-status" class="filter-select" title="Filter by status">
+                            <option value="all">All Status</option>
+                            <option value="generated">✅ Generated</option>
+                            <option value="not-generated">⏳ Not Generated</option>
+                        </select>
+                        <select id="filter-category" class="filter-select" title="Filter by category">
+                            <option value="all">All Categories</option>
+                        </select>
+                        <select id="sort-by" class="filter-select" title="Sort by">
+                            <option value="name">Sort: Name</option>
+                            <option value="steps">Sort: Steps</option>
+                            <option value="time">Sort: Time</option>
+                            <option value="cost">Sort: Cost</option>
+                            <option value="size">Sort: File Size</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <div id="scenario-list" class="scenario-list">
+                        <div class="loading">Loading scenarios...</div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <button id="create-new-btn" class="btn btn-secondary" title="Create a new scenario from scratch">
+                        ➕ Create New
+                    </button>
+                    <button id="generate-selected-btn" class="btn btn-primary" disabled>
+                        ⚡ Generate Selected
+                    </button>
+                    <button id="generate-all-btn" class="btn btn-accent">
+                        🚀 Generate All Missing
+                    </button>
+                </div>
+            </section>
+
+            <!-- Preview Panel -->
+            <section class="panel preview-panel">
+                <div class="panel-header">
+                    <h2>👁️ Preview</h2>
+                </div>
+                <div class="panel-content">
+                    <!-- Preview Section -->
+                    <div id="preview-section" class="preview-section">
+                        <div class="preview-placeholder">
+                            <p>👈 Select a scenario to preview</p>
+                            <p class="sub">or generate new scenarios</p>
+                        </div>
+                        <div id="preview-content" class="preview-content hidden">
+                            <div class="scenario-card">
+                                <div class="card-header">
+                                    <h2 id="preview-title">-</h2>
+                                    <span id="preview-category" class="category-badge">-</span>
+                                </div>
+                                <p id="preview-description" class="card-description">-</p>
+                                <div class="card-metadata">
+                                    <div class="metadata-item">
+                                        <span class="metadata-label">⏱️ Problem Time:</span>
+                                        <span id="preview-time" class="metadata-value"
+                                            title="Estimated time for a user to complete this debugging scenario">-</span>
+                                    </div>
+                                    <div class="metadata-item">
+                                        <span class="metadata-label">💰 Gen. Cost:</span>
+                                        <span id="preview-cost" class="metadata-value">-</span>
+                                    </div>
+                                </div>
+                                <div class="card-steps">
+                                    <h4>Steps:</h4>
+                                    <div id="preview-steps-list" class="steps-timeline"></div>
+                                </div>
+                                <details class="debug-toggle">
+                                    <summary>Show Debug JSON</summary>
+                                    <div class="debug-meta">
+                                        <span>📊 <span id="preview-steps">0</span> steps</span>
+                                        <span>📦 <span id="preview-size">0</span> KB</span>
+                                    </div>
+                                    <pre id="preview-json" class="preview-json"></pre>
+                                </details>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Collapsible Log -->
+        <footer id="log-panel" class="log-panel collapsed">
+            <div class="log-bar" onclick="toggleLog()">
+                <span id="log-last-message">📝 Ready to generate scenarios...</span>
+                <button id="clear-log-btn" class="btn btn-small" onclick="event.stopPropagation()">Clear</button>
+            </div>
+            <div id="log-content" class="log-content">
+                <div class="log-entry info">Ready to generate scenarios...</div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Step Detail Modal -->
+    <div id="step-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="step-modal-title">Step Details</h3>
+                <button class="modal-close" onclick="closeStepModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="step-detail">
+                    <h4>Prompt:</h4>
+                    <div id="step-modal-prompt" class="step-prompt-text"></div>
+                </div>
+                <div class="step-detail">
+                    <h4>Choices:</h4>
+                    <div id="step-modal-choices" class="step-choices-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create New Scenario Modal -->
+    <div id="create-modal" class="modal hidden">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>➕ Create New Scenario</h3>
+                <button class="modal-close" onclick="closeCreateModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="create-scenario-form" class="create-form">
+                    <div class="form-group">
+                        <label for="new-title">Scenario Title *</label>
+                        <input type="text" id="new-title" placeholder="e.g., Nanite LOD Popping Issue" required />
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="new-category">Category *</label>
+                            <select id="new-category" required>
+                                <option value="">Select category...</option>
+                                <option value="Lighting & Rendering">Lighting & Rendering</option>
+                                <option value="Blueprints & Logic">Blueprints & Logic</option>
+                                <option value="Materials & Shaders">Materials & Shaders</option>
+                                <option value="World Partition & Streaming">World Partition & Streaming</option>
+                                <option value="Physics & Collisions">Physics & Collisions</option>
+                                <option value="Performance & Optimization">Performance & Optimization</option>
+                                <option value="Animation & Rigging">Animation & Rigging</option>
+                                <option value="Audio & Sound">Audio & Sound</option>
+                                <option value="UI & UMG">UI & UMG</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-hours">Estimated Hours *</label>
+                            <input type="number" id="new-hours" step="0.25" min="0.25" max="4" value="1.0" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-description">Problem Description * <span class="hint">(What the user
+                                observes)</span></label>
+                        <textarea id="new-description" rows="3"
+                            placeholder="Describe the visual symptom or error the user encounters..."
+                            required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-solution">Correct Solution Steps <span class="hint">(One per
+                                line)</span></label>
+                        <textarea id="new-solution" rows="4"
+                            placeholder="1. Open the Details panel for the affected Actor&#10;2. Check the Mobility setting..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-wrong">Common Wrong Approaches <span class="hint">(One per line)</span></label>
+                        <textarea id="new-wrong" rows="3"
+                            placeholder="- Restart the editor without investigating&#10;- Change unrelated settings..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeCreateModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create & Generate</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

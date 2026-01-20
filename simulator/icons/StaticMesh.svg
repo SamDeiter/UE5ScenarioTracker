@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none">
+  <!-- UE5 StaticMesh icon - cube outline -->
+  <path d="M8 1.5L14 4.5V11.5L8 14.5L2 11.5V4.5L8 1.5Z" stroke="#00BFFF" stroke-width="1.2" fill="none"/>
+  <path d="M8 1.5V14.5M2 4.5L8 7.5L14 4.5" stroke="#00BFFF" stroke-width="1"/>
+</svg>

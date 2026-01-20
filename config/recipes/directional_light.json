@@ -1,0 +1,73 @@
+{
+  "scenarios": {
+    "directional_light": {
+      "steps": {
+        "step-0": {
+          "actions": [
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "DirectionalLight",
+              "component": "DirectionalLightComponent",
+              "property": "dynamic_shadow_distance_movable_light",
+              "value": 5000
+            },
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "DirectionalLight",
+              "component": "DirectionalLightComponent",
+              "property": "dynamic_shadow_cascades",
+              "value": 4
+            }
+          ]
+        },
+        "step-1": {
+          "actions": [
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "DirectionalLight",
+              "component": "DirectionalLightComponent",
+              "property": "dynamic_shadow_distance_movable_light",
+              "value": 5000
+            }
+          ]
+        },
+        "step-2": {
+          "actions": [
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "DirectionalLight",
+              "component": "DirectionalLightComponent",
+              "property": "dynamic_shadow_distance_movable_light",
+              "value": 50000
+            },
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "DirectionalLight",
+              "component": "DirectionalLightComponent",
+              "property": "dynamic_shadow_cascades",
+              "value": 4
+            }
+          ]
+        },
+        "step-3": {
+          "actions": [
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "DirectionalLight",
+              "component": "DirectionalLightComponent",
+              "property": "dynamic_shadow_distance_movable_light",
+              "value": 50000
+            },
+            {
+              "type": "SET_PROPERTY",
+              "target_actor_class": "DirectionalLight",
+              "component": "DirectionalLightComponent",
+              "property": "dynamic_shadow_cascades",
+              "value": 8
+            }
+          ]
+        }
+      }
+    }
+  }
+}

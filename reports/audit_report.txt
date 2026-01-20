@@ -1,0 +1,75 @@
+Traceback (most recent call last):
+
+================================================================================
+SCENARIO STEP COUNT AUDIT REPORT
+================================================================================
+
+
+### GAME_DEV (9 scenarios)
+----------------------------------------------------------------------
+Scenario                                 Steps  Target  Difficulty   Status
+----------------------------------------------------------------------
+DestroyActorStopsExecutionFlow           23     12      Unknown      OK
+SequencerLightRestoreStateIssue          20     12      Unknown      OK
+VaultSequenceLockup                      18     12      Unknown      OK
+ComponentMobilityBlock                   14     12      Unknown      OK
+LockedCinematicCleanup                   12     12      Unknown      OK
+SecurityDoorLogicGap                     12     12      Unknown      OK
+ReplicationVariableNotSyncing            6      15      Advanced     X
+  File "C:\Users\Sam Deiter\Documents\GitHub\UE5ScenarioTracker\tools\python\audit_step_counts.py", line 125, in <module>
+AIBehaviorTreeBlackboardIssue            5      12      Intermediate X
+InputActionNotResponding                 4      10      Beginner     X
+
+### LOOK_DEV (7 scenarios)
+----------------------------------------------------------------------
+Scenario                                 Steps  Target  Difficulty   Status
+----------------------------------------------------------------------
+BlackMetallicObject                      18     12      Unknown      OK
+BlackMaterialDueToEmissiveMiswiring      17     12      Unknown      OK
+DecalTextureAlphaMaskFailure             14     12      Unknown      OK
+SubstrateMaterialLayerConflict           10     15      Advanced     X
+LumenReflectionIncorrectColor            5      12      Intermediate X
+MaterialNotRenderingInPIE                4      10      Beginner     X
+TextureBlurryDespiteHighRes              4      10      Beginner     X
+
+### TECH_ART (5 scenarios)
+----------------------------------------------------------------------
+Scenario                                 Steps  Target  Difficulty   Status
+----------------------------------------------------------------------
+DanglingAssetRedirectors                 20     12      Unknown      OK
+MaterialParameterAndAnimJitter           20     12      Unknown      OK
+MismatchedSkeletonReference              19     12      Unknown      OK
+RedirectorAndBulkLoadConflict            15     12      Unknown      OK
+AnimationRetargetBoneNaming              8      12      Intermediate X
+
+### VFX (5 scenarios)
+----------------------------------------------------------------------
+Scenario                                 Steps  Target  Difficulty   Status
+----------------------------------------------------------------------
+nanite_wpo_failure                       18     12      Intermediate OK
+VolumetricShadowingPerformance           17     12      Unknown      OK
+NiagaraDataInterfaceBindingError         6      15      Advanced     X
+SequencerCameraCutNotPlaying             5      12      Intermediate X
+NiagaraEmitterNotSpawning                4      10      Beginner     X
+
+### WORLDBUILDING (4 scenarios)
+----------------------------------------------------------------------
+Scenario                                 Steps  Target  Difficulty   Status
+----------------------------------------------------------------------
+WorldPartitionDeepDive                   18     12      Unknown      OK
+ForcedDataLayerUnload                    14     12      Unknown      OK
+WorldPartitionCellBoundaryPopIn          5      12      Intermediate X
+WorldPartitionActorNotLoading            4      10      Beginner     X
+
+================================================================================
+SUMMARY: 17 OK, 13 need expansion
+================================================================================
+
+### SCENARIOS NEEDING EXPANSION:
+    print_report(results)
+  File "C:\Users\Sam Deiter\Documents\GitHub\UE5ScenarioTracker\tools\python\audit_step_counts.py", line 121, in print_report
+    print(f"  - {r['category']}/{r['filename']}: {r['steps']} steps \u2192 need {needed} more")
+  File "C:\Users\Sam Deiter\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2192' in position 52: character maps to <undefined>

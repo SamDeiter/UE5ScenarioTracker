@@ -22,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/SamDeiter/UE5ScenarioTracker/issues"
   },
-  "homepage": "https://github.com/SamDeiter/UE5ScenarioTracker#readme",
+  "homepage": "https://samdeiter.github.io/UE5ScenarioTracker/",
   "devDependencies": {
     "@vitest/coverage-v8": "^4.0.16",
     "jsdom": "^27.4.0",

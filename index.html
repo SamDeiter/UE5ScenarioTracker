@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>UE5 Scenario Tracker</title>
+    <!-- Hub Gatekeeper (Auth & Access Check) -->
+    <script src="https://samdeiter.github.io/Reviewport/gatekeeper.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script>
       tailwind.config = {
@@ -558,9 +560,9 @@
     <script src="js/game/ChoiceHandler.js" defer></script>
 
     <!-- ReviewCore SDK -->
-    <script src="tools/review-sdk/ReviewCore.js" defer></script>
-    <script src="tools/review-sdk/ReviewStorage.js" defer></script>
-    <script src="tools/review-sdk/ReviewUI.js" defer></script>
+    <script src="review-sdk/ReviewCore.js" defer></script>
+    <script src="review-sdk/ReviewStorage.js" defer></script>
+    <script src="review-sdk/ReviewUI.js" defer></script>
 
     <!-- Load Game Logic LAST (using defer, ensuring it runs after all modules) -->
     <script src="game.js?v=4" defer></script>

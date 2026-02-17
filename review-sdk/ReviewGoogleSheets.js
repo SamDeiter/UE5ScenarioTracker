@@ -36,13 +36,38 @@ class GoogleSheetsAdapter extends window.ReviewStorage.Base {
 
     try {
       const user = this.getUser();
-      const url = `${this.scriptUrl}?toolId=${encodeURIComponent(this.toolId)}&email=${encodeURIComponent(user.email)}`;
+      const url = `${this.scriptUrl}?toolId=${encodeURIComponent(this.toolId)}&email=${encodeURIComponent(user.email)}&callback=__reviewCallback`;
 
-      const response = await fetch(url);
-      const result = await response.json();
+      // Use JSONP to bypass CORS on Google Workspace Apps Script
+      const result = await new Promise((resolve, reject) => {
+        const callbackName = "__reviewCallback_" + Date.now();
+        const timeoutId = setTimeout(() => {
+          delete window[callbackName];
+          reject(new Error("JSONP timeout"));
+        }, 10000);
 
-      if (!result.success || !result.reviews) {
-        return null;
+        window[callbackName] = (data) => {
+          clearTimeout(timeoutId);
+          delete window[callbackName];
+          resolve(data);
+        };
+
+        // Use the callback parameter
+        const jsonpUrl = url.replace("callback=__reviewCallback", `callback=${callbackName}`);
+        const script = document.createElement("script");
+        script.src = jsonpUrl;
+        script.onerror = () => {
+          clearTimeout(timeoutId);
+          delete window[callbackName];
+          reject(new Error("JSONP script load failed"));
+        };
+        document.head.appendChild(script);
+        script.onload = () => script.remove();
+      });
+
+      if (!result || !result.success || !result.reviews) {
+        // Fallback: try regular fetch (works if not a Workspace account)
+        return await this._fetchLoad(appId);
       }
 
       // Convert flat rows back into ReviewCore's itemStatuses format
@@ -62,7 +87,33 @@ class GoogleSheetsAdapter extends window.ReviewStorage.Base {
       );
       return this._cache;
     } catch (error) {
-      console.error("[ReviewGoogleSheets] Load error:", error);
+      console.warn("[ReviewGoogleSheets] JSONP load failed, trying fetch:", error.message);
+      return await this._fetchLoad(appId);
+    }
+  }
+
+  // Fallback fetch-based load (works for non-Workspace Apps Script)
+  async _fetchLoad(appId) {
+    try {
+      const user = this.getUser();
+      const url = `${this.scriptUrl}?toolId=${encodeURIComponent(this.toolId)}&email=${encodeURIComponent(user.email)}`;
+      const response = await fetch(url, { redirect: "follow" });
+      const result = await response.json();
+      if (!result.success || !result.reviews) return null;
+
+      const itemStatuses = {};
+      for (const review of result.reviews) {
+        itemStatuses[review.itemId] = {
+          status: review.status,
+          note: review.note || "",
+          highlights: review.highlights || [],
+          updatedAt: review.timestamp,
+        };
+      }
+      this._cache = { currentIndex: 0, itemStatuses };
+      return this._cache;
+    } catch (error) {
+      console.error("[ReviewGoogleSheets] Fetch load also failed:", error);
       return null;
     }
   }
@@ -89,22 +140,33 @@ class GoogleSheetsAdapter extends window.ReviewStorage.Base {
         return true; // Nothing to save
       }
 
-      // POST each changed item
+      // POST each changed item using no-cors to bypass CORS preflight
+      // (Google Workspace Apps Script redirects don't support CORS headers)
       const promises = changedItems.map((itemId) => {
         const status = itemStatuses[itemId];
+        const payload = JSON.stringify({
+          toolId: this.toolId,
+          itemId: itemId,
+          itemTitle: status.title || itemId,
+          status: status.status,
+          note: status.note || "",
+          highlights: status.highlights || [],
+          reviewerEmail: user.email,
+          reviewerName: user.displayName,
+        });
+
+        // Use navigator.sendBeacon for fire-and-forget reliability,
+        // falling back to no-cors fetch
+        if (navigator.sendBeacon) {
+          const blob = new Blob([payload], { type: "application/json" });
+          navigator.sendBeacon(this.scriptUrl, blob);
+          return Promise.resolve();
+        }
+
         return fetch(this.scriptUrl, {
           method: "POST",
-          headers: { "Content-Type": "text/plain" }, // Apps Script requires text/plain for CORS
-          body: JSON.stringify({
-            toolId: this.toolId,
-            itemId: itemId,
-            itemTitle: status.title || itemId,
-            status: status.status,
-            note: status.note || "",
-            highlights: status.highlights || [],
-            reviewerEmail: user.email,
-            reviewerName: user.displayName,
-          }),
+          mode: "no-cors",
+          body: payload,
         });
       });
 

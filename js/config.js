@@ -317,6 +317,19 @@ console.log("[Config] Application configuration loaded");
               });
               return true;
             },
+            // Pass through OAuth methods from sheetsStorage for screenshot uploads
+            async requestDriveAccess() {
+              if (sheetsStorage && sheetsStorage.requestDriveAccess) {
+                return await sheetsStorage.requestDriveAccess();
+              }
+              throw new Error("requestDriveAccess not available");
+            },
+            getOAuthAccessToken() {
+              if (sheetsStorage && sheetsStorage.getOAuthAccessToken) {
+                return sheetsStorage.getOAuthAccessToken();
+              }
+              return null;
+            },
           };
           console.log("[Config] Review storage: LocalStorage + Google Sheets");
         } else {

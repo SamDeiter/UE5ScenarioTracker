@@ -662,6 +662,16 @@ window.ReviewUI = {
           accessToken = core.storage.getOAuthAccessToken();
         }
 
+        // If no token, request Drive API access
+        if (!accessToken && core.storage && core.storage.requestDriveAccess) {
+          console.log("[ReviewUI] No OAuth token found, requesting Drive API access...");
+          try {
+            accessToken = await core.storage.requestDriveAccess();
+          } catch (authError) {
+            throw new Error("Failed to get Drive API access. Please try again or contact support.");
+          }
+        }
+
         if (!accessToken) {
           throw new Error(
             "No OAuth access token available. Please sign out and sign back in to grant Drive API access."

@@ -11,6 +11,18 @@ class FirestoreAdapter extends window.ReviewStorage.Base {
     this.db = null;
     this.auth = null;
     this.userId = null;
+    this._oauthAccessToken = null;
+    
+    // Try to load OAuth token from localStorage
+    try {
+      const stored = localStorage.getItem('review_oauth_token');
+      if (stored) {
+        this._oauthAccessToken = stored;
+        console.log('[ReviewFirebase] Loaded OAuth token from localStorage');
+      }
+    } catch (e) {
+      console.warn('[ReviewFirebase] Could not load OAuth token from localStorage');
+    }
   }
 
   async init() {
@@ -91,7 +103,13 @@ class FirestoreAdapter extends window.ReviewStorage.Base {
     const credential = window.firebase.auth.GoogleAuthProvider.credentialFromResult(result);
     if (credential && credential.accessToken) {
       this._oauthAccessToken = credential.accessToken;
-      console.log("[ReviewFirebase] OAuth access token captured for Drive API");
+      // Persist to localStorage
+      try {
+        localStorage.setItem('review_oauth_token', credential.accessToken);
+        console.log("[ReviewFirebase] OAuth access token captured and stored");
+      } catch (e) {
+        console.warn('[ReviewFirebase] Could not store OAuth token:', e);
+      }
     }
 
     return result;
@@ -99,7 +117,44 @@ class FirestoreAdapter extends window.ReviewStorage.Base {
 
   async logout() {
     this._oauthAccessToken = null;
+    // Clear from localStorage
+    try {
+      localStorage.removeItem('review_oauth_token');
+    } catch (e) {
+      // Ignore
+    }
     return this.auth.signOut();
+  }
+
+  // Request Drive API access for already-signed-in users
+  async requestDriveAccess() {
+    if (!this.auth.currentUser) {
+      throw new Error("User must be signed in first");
+    }
+    
+    console.log("[ReviewFirebase] Requesting Drive API access...");
+    const provider = new window.firebase.auth.GoogleAuthProvider();
+    provider.addScope("https://www.googleapis.com/auth/drive.file");
+    
+    try {
+      // Re-authenticate to get Drive scope
+      const result = await this.auth.currentUser.reauthenticateWithPopup(provider);
+      const credential = window.firebase.auth.GoogleAuthProvider.credentialFromResult(result);
+      
+      if (credential && credential.accessToken) {
+        this._oauthAccessToken = credential.accessToken;
+        try {
+          localStorage.setItem('review_oauth_token', credential.accessToken);
+          console.log("[ReviewFirebase] Drive API access granted and token stored");
+        } catch (e) {
+          console.warn('[ReviewFirebase] Could not store OAuth token:', e);
+        }
+        return credential.accessToken;
+      }
+    } catch (error) {
+      console.error("[ReviewFirebase] Failed to get Drive access:", error);
+      throw error;
+    }
   }
 
   // Get OAuth access token for Google APIs (e.g., Drive)

@@ -644,11 +644,7 @@ window.ReviewUI = {
         return;
       }
       const currentItem = core.config.items[core.state.currentIndex];
-      const scriptUrl = window.REVIEW_SHEET_URL;
-      if (!scriptUrl) {
-        console.warn("[ReviewUI] No REVIEW_SHEET_URL configured");
-        return;
-      }
+      const folderId = "1QUjAnB8HxcsKsLDewC9kzdcJQtsezJCH"; // ReviewImages folder
 
       // Show loading state
       bar._screenshotLoading = true;
@@ -656,13 +652,27 @@ window.ReviewUI = {
 
       try {
         const user = firebase.auth().currentUser;
-        await window.ReviewScreenshot.captureAndUpload({
-          scriptUrl: scriptUrl,
+        if (!user) {
+          throw new Error("User not authenticated");
+        }
+
+        // Get Firebase Auth access token
+        const accessToken = await user.getIdToken();
+
+        const result = await window.ReviewScreenshot.captureAndUpload({
+          folderId: folderId,
           toolId: "scenario-tracker",
           itemId: currentItem?.id || "unknown",
-          reviewerEmail: user?.email || "anonymous",
+          accessToken: accessToken,
         });
-        console.log("[ReviewUI] Screenshot captured and uploaded");
+
+        console.log("[ReviewUI] Screenshot uploaded:", result.viewUrl);
+
+        // Optionally save the screenshot URL to the review data
+        if (core.state.itemStatuses[currentItem.id]) {
+          core.state.itemStatuses[currentItem.id].screenshotUrl = result.viewUrl;
+        }
+
         // Brief success flash
         bar._screenshotLoading = false;
         bar.render();

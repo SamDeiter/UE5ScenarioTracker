@@ -91,68 +91,111 @@
   }
 
   /**
-   * Upload a screenshot to Google Drive via Apps Script.
+   * Upload a screenshot to Google Drive via REST API.
    *
    * @param {Object} config
-   * @param {string} config.scriptUrl  - Apps Script web app URL
-   * @param {string} config.base64     - Base64 PNG data (with or without data: prefix)
-   * @param {string} config.toolId     - Tool identifier
-   * @param {string} config.itemId     - Item identifier
-   * @param {string} config.reviewerEmail - Reviewer email
-   * @returns {Promise<{viewUrl, thumbnailUrl}>}
+   * @param {string} config.folderId  - Google Drive folder ID
+   * @param {string} config.base64    - Base64 PNG data (with or without data: prefix)
+   * @param {string} config.toolId    - Tool identifier
+   * @param {string} config.itemId    - Item identifier
+   * @param {string} config.accessToken - Google OAuth access token from Firebase Auth
+   * @returns {Promise<{fileId, viewUrl, thumbnailUrl}>}
    */
-  function upload(config) {
-    return new Promise(function (resolve, reject) {
-      var iframe = document.createElement("iframe");
-      iframe.name = "screenshot-upload-frame-" + Date.now();
-      iframe.style.display = "none";
-      document.body.appendChild(iframe);
+  async function upload(config) {
+    // Remove data URL prefix if present
+    var base64Data = config.base64;
+    if (base64Data.indexOf(",") > -1) {
+      base64Data = base64Data.split(",")[1];
+    }
 
-      var form = document.createElement("form");
-      form.method = "POST";
-      form.action = config.scriptUrl;
-      form.target = iframe.name;
-      form.style.display = "none";
+    // Convert base64 to blob
+    var byteString = atob(base64Data);
+    var ab = new ArrayBuffer(byteString.length);
+    var ia = new Uint8Array(ab);
+    for (var i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    var blob = new Blob([ab], { type: "image/png" });
 
-      var fields = {
-        action: "screenshot",
-        imageData: config.base64,
-        toolId: config.toolId || "",
-        itemId: config.itemId || "",
-        reviewerEmail: config.reviewerEmail || "",
-      };
+    // Build filename
+    var timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    var fileName =
+      (config.toolId || "unknown") +
+      "_" +
+      (config.itemId || "unknown") +
+      "_" +
+      timestamp +
+      ".png";
 
-      for (var key in fields) {
-        var input = document.createElement("input");
-        input.type = "hidden";
-        input.name = key;
-        input.value = fields[key];
-        form.appendChild(input);
+    // Create metadata
+    var metadata = {
+      name: fileName,
+      parents: [config.folderId],
+      mimeType: "image/png",
+    };
+
+    // Multipart upload to Drive API
+    var boundary = "-------314159265358979323846";
+    var delimiter = "\r\n--" + boundary + "\r\n";
+    var close_delim = "\r\n--" + boundary + "--";
+
+    var multipartRequestBody =
+      delimiter +
+      "Content-Type: application/json\r\n\r\n" +
+      JSON.stringify(metadata) +
+      delimiter +
+      "Content-Type: image/png\r\n" +
+      "Content-Transfer-Encoding: base64\r\n\r\n" +
+      base64Data +
+      close_delim;
+
+    console.log("[ReviewScreenshot] Uploading to Drive...");
+
+    var response = await fetch(
+      "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + config.accessToken,
+          "Content-Type": 'multipart/related; boundary="' + boundary + '"',
+        },
+        body: multipartRequestBody,
       }
+    );
 
-      document.body.appendChild(form);
+    if (!response.ok) {
+      throw new Error("Drive upload failed: " + response.statusText);
+    }
 
-      // We can't read the iframe response cross-origin,
-      // so we resolve after a timeout
-      iframe.onload = function () {
-        console.log("[ReviewScreenshot] Upload complete");
-        resolve({ success: true });
-        setTimeout(function () {
-          form.remove();
-          iframe.remove();
-        }, 1000);
-      };
+    var file = await response.json();
+    var fileId = file.id;
 
-      // Timeout fallback
-      setTimeout(function () {
-        resolve({ success: true });
-        if (form.parentNode) form.remove();
-        if (iframe.parentNode) iframe.remove();
-      }, 15000); // Screenshots may take longer
+    // Make file publicly viewable
+    await fetch(
+      "https://www.googleapis.com/drive/v3/files/" +
+        fileId +
+        "/permissions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + config.accessToken,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          role: "reader",
+          type: "anyone",
+        }),
+      }
+    );
 
-      console.log("[ReviewScreenshot] Uploading screenshot...");
-      form.submit();
-    });
+    console.log("[ReviewScreenshot] Upload complete:", fileId);
+
+    return {
+      fileId: fileId,
+      viewUrl: "https://drive.google.com/file/d/" + fileId + "/view",
+      thumbnailUrl:
+        "https://drive.google.com/thumbnail?id=" + fileId + "&sz=w400",
+    };
   }
 
   /**

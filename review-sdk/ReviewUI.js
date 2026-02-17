@@ -644,7 +644,14 @@ window.ReviewUI = {
         return;
       }
       const currentItem = core.config.items[core.state.currentIndex];
-      const folderId = "1QUjAnB8HxcsKsLDewC9kzdcJQtsezJCH"; // ReviewImages folder
+      
+      // Get the Apps Script URL from config (same URL used for review storage)
+      const scriptUrl = window.REVIEW_SHEET_URL || "";
+      if (!scriptUrl) {
+        console.error("[ReviewUI] REVIEW_SHEET_URL not configured");
+        alert("Screenshot upload is not configured. Please contact support.");
+        return;
+      }
 
       // Show loading state
       bar._screenshotLoading = true;
@@ -656,33 +663,11 @@ window.ReviewUI = {
           throw new Error("User not authenticated");
         }
 
-        // Get OAuth2 access token from Firebase storage adapter
-        let accessToken = null;
-        if (core.storage && core.storage.getOAuthAccessToken) {
-          accessToken = core.storage.getOAuthAccessToken();
-        }
-
-        // If no token, request Drive API access
-        if (!accessToken && core.storage && core.storage.requestDriveAccess) {
-          console.log("[ReviewUI] No OAuth token found, requesting Drive API access...");
-          try {
-            accessToken = await core.storage.requestDriveAccess();
-          } catch (authError) {
-            throw new Error("Failed to get Drive API access. Please try again or contact support.");
-          }
-        }
-
-        if (!accessToken) {
-          throw new Error(
-            "No OAuth access token available. Please sign out and sign back in to grant Drive API access."
-          );
-        }
-
         const result = await window.ReviewScreenshot.captureAndUpload({
-          folderId: folderId,
+          scriptUrl: scriptUrl,
           toolId: "scenario-tracker",
           itemId: currentItem?.id || "unknown",
-          accessToken: accessToken,
+          reviewerEmail: user.email || "unknown",
         });
 
         console.log("[ReviewUI] Screenshot uploaded:", result.viewUrl);

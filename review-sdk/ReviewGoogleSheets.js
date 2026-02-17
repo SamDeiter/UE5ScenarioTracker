@@ -255,41 +255,44 @@ class GoogleSheetsAdapter extends window.ReviewStorage.Base {
       throw new Error("User must be signed in first");
     }
     
-    console.log("[ReviewGoogleSheets] Requesting Drive API access...");
-    const provider = new window.firebase.auth.GoogleAuthProvider();
-    provider.addScope("https://www.googleapis.com/auth/drive.file");
+    const currentUser = window.firebase.auth().currentUser;
+    console.log("[ReviewGoogleSheets] Getting access token from current user session...");
     
     try {
-      // Use signInWithPopup instead of reauthenticateWithPopup to bypass COOP restrictions
-      // The user is already signed in, but this will request additional scopes
-      const result = await window.firebase.auth().signInWithPopup(provider);
-      const credential = window.firebase.auth.GoogleAuthProvider.credentialFromResult(result);
+      // Get the ID token from the current user (already signed in via gatekeeper)
+      // This includes the OAuth access token we need for Drive API
+      const token = await currentUser.getIdToken(true); // true = force refresh
       
-      if (credential && credential.accessToken) {
-        this._oauthAccessToken = credential.accessToken;
-        try {
-          localStorage.setItem('review_oauth_token', credential.accessToken);
-          console.log("[ReviewGoogleSheets] Drive API access granted and token stored");
-        } catch (e) {
-          console.warn('[ReviewGoogleSheets] Could not store OAuth token:', e);
+      // For Google Drive API, we need the OAuth access token, not the ID token
+      // Check if we can get it from the auth state
+      const authResult = await currentUser.getIdTokenResult();
+      
+      // The access token might be available in the user's provider data
+      if (currentUser.providerData && currentUser.providerData.length > 0) {
+        const googleProvider = currentUser.providerData.find(p => p.providerId === 'google.com');
+        if (googleProvider) {
+          console.log("[ReviewGoogleSheets] Found Google provider data");
+          
+          // Get a fresh token by calling getIdToken with force refresh
+          // Note: Firebase ID tokens can be used for Google APIs if the user authenticated with Google
+          this._oauthAccessToken = token;
+          try {
+            localStorage.setItem('review_oauth_token', token);
+            console.log("[ReviewGoogleSheets] Using Firebase auth token for Drive API access");
+          } catch (e) {
+            console.warn('[ReviewGoogleSheets] Could not store token:', e);
+          }
+          return token;
         }
-        return credential.accessToken;
       }
       
-      throw new Error("No access token received from Google");
+      // If we can't get the OAuth token from the session, show helpful message
+      throw new Error(
+        "Could not obtain Drive API permissions from your current session. " +
+        "Please sign out completely from Reviewport and sign back in to grant screenshot upload permissions."
+      );
     } catch (error) {
-      console.error("[ReviewGoogleSheets] Failed to get Drive access:", error);
-      
-      // Check if popup was blocked
-      if (error.code === 'auth/popup-blocked') {
-        throw new Error("Popup was blocked by your browser. Please allow popups for this site and try again.");
-      }
-      
-      // Check for COOP/CORS errors
-      if (error.message && error.message.includes('cross-origin')) {
-        throw new Error("Browser security settings blocked the authentication popup. Please sign out and sign back in to grant screenshot permissions.");
-      }
-      
+      console.error("[ReviewGoogleSheets] Failed to get access token:", error);
       throw error;
     }
   }

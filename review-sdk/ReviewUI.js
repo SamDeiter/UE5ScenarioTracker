@@ -339,8 +339,10 @@ class ReviewBar extends HTMLElement {
     this.onNext = null;
     this.onVerify = null;
     this.onIssue = null;
+    this.onScreenshot = null;
     this.onExport = null;
     this.onJumpTo = null; // New: callback for dropdown selection
+    this._screenshotLoading = false;
   }
 
   connectedCallback() {
@@ -567,6 +569,7 @@ class ReviewBar extends HTMLElement {
             
             <button class="btn ${status === "VERIFIED" ? "btn-success" : ""}" id="verify-btn">✓ Verify</button>
             <button class="btn ${status === "ISSUE" ? "btn-danger" : ""}" id="issue-btn">⚠️ Issue</button>
+            <button class="btn" id="screenshot-btn" ${this._screenshotLoading ? "disabled" : ""}>${this._screenshotLoading ? "⏳ Capturing..." : "📸 Screenshot"}</button>
             
             <div style="width: 1px; height: 24px; background: #333; margin: 0 4px;"></div>
             
@@ -590,6 +593,8 @@ class ReviewBar extends HTMLElement {
       this.onVerify?.();
     this.shadowRoot.getElementById("issue-btn").onclick = () =>
       this.onIssue?.();
+    this.shadowRoot.getElementById("screenshot-btn").onclick = () =>
+      this.onScreenshot?.();
     this.shadowRoot.getElementById("export-sdk-btn").onclick = () =>
       this.onExport?.();
 
@@ -633,6 +638,40 @@ window.ReviewUI = {
       dialog.show(currentStatus?.note || "", currentStatus?.highlights || []);
     };
     bar.onExport = () => core.storage.save("report", core.exportData());
+    bar.onScreenshot = async () => {
+      if (!window.ReviewScreenshot) {
+        console.warn("[ReviewUI] ReviewScreenshot module not loaded");
+        return;
+      }
+      const currentItem = core.config.items[core.state.currentIndex];
+      const scriptUrl = window.REVIEW_SHEET_URL;
+      if (!scriptUrl) {
+        console.warn("[ReviewUI] No REVIEW_SHEET_URL configured");
+        return;
+      }
+
+      // Show loading state
+      bar._screenshotLoading = true;
+      bar.render();
+
+      try {
+        const user = firebase.auth().currentUser;
+        await window.ReviewScreenshot.captureAndUpload({
+          scriptUrl: scriptUrl,
+          toolId: "scenario-tracker",
+          itemId: currentItem?.id || "unknown",
+          reviewerEmail: user?.email || "anonymous",
+        });
+        console.log("[ReviewUI] Screenshot captured and uploaded");
+        // Brief success flash
+        bar._screenshotLoading = false;
+        bar.render();
+      } catch (err) {
+        console.error("[ReviewUI] Screenshot failed:", err);
+        bar._screenshotLoading = false;
+        bar.render();
+      }
+    };
 
     // Wire up Dialog
     dialog.onCancel = () => dialog.hide();

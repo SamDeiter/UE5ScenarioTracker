@@ -60,53 +60,29 @@ class GoogleSheetsAdapter extends window.ReviewStorage.Base {
    * This survives the 302 redirect that Apps Script does,
    * which breaks fetch and sendBeacon (they convert POST→GET on redirect).
    */
-  _postViaForm(data) {
-    return new Promise((resolve) => {
-      const iframe = this._getIframe();
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.action = this.scriptUrl;
-      form.target = "review-storage-frame";
-      form.style.display = "none";
-
-      // Apps Script doPost receives e.parameter for form fields
-      // and e.postData.contents for the raw body.
-      // We send each field as a hidden input for reliable delivery.
-      const fields = {
-        toolId: data.toolId || "",
-        itemId: data.itemId || "",
-        itemTitle: data.itemTitle || "",
-        status: data.status || "",
-        note: data.note || "",
-        highlights: JSON.stringify(data.highlights || []),
-        reviewerEmail: data.reviewerEmail || "",
-        reviewerName: data.reviewerName || "",
-      };
-
-      for (const [key, value] of Object.entries(fields)) {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = key;
-        input.value = value;
-        form.appendChild(input);
-      }
-
-      document.body.appendChild(form);
-
-      // Resolve after a short delay (we can't read the iframe response cross-origin)
-      iframe.onload = () => {
-        resolve(true);
-        form.remove();
-      };
-
-      // Timeout fallback in case onload doesn't fire
-      setTimeout(() => {
-        resolve(true);
-        if (form.parentNode) form.remove();
-      }, 5000);
-
-      form.submit();
-    });
+  async _postJSON(data) {
+    try {
+      const resp = await fetch(this.scriptUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          toolId: data.toolId || "",
+          itemId: data.itemId || "",
+          itemTitle: data.itemTitle || "",
+          status: data.status || "",
+          note: data.note || "",
+          highlights: data.highlights || [],
+          screenshotUrl: data.screenshotUrl || "",
+          reviewerEmail: data.reviewerEmail || "",
+          reviewerName: data.reviewerName || "",
+        }),
+      });
+      const result = await resp.json();
+      return result.success;
+    } catch (err) {
+      console.error("[ReviewGoogleSheets] POST error:", err);
+      return false;
+    }
   }
 
   /**
@@ -122,35 +98,12 @@ class GoogleSheetsAdapter extends window.ReviewStorage.Base {
 
     try {
       const user = this.getUser();
-      const callbackName = "__reviewCb_" + Date.now();
+      const url =
+        `${this.scriptUrl}?toolId=${encodeURIComponent(this.toolId)}` +
+        `&email=${encodeURIComponent(user.email)}`;
 
-      const result = await new Promise((resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-          delete window[callbackName];
-          reject(new Error("JSONP timeout"));
-        }, 10000);
-
-        window[callbackName] = (data) => {
-          clearTimeout(timeoutId);
-          delete window[callbackName];
-          resolve(data);
-        };
-
-        const url =
-          `${this.scriptUrl}?toolId=${encodeURIComponent(this.toolId)}` +
-          `&email=${encodeURIComponent(user.email)}` +
-          `&callback=${callbackName}`;
-
-        const script = document.createElement("script");
-        script.src = url;
-        script.onerror = () => {
-          clearTimeout(timeoutId);
-          delete window[callbackName];
-          reject(new Error("JSONP script load failed"));
-        };
-        document.head.appendChild(script);
-        script.onload = () => script.remove();
-      });
+      const resp = await fetch(url);
+      const result = await resp.json();
 
       if (!result || !result.success || !result.reviews) {
         return null;
@@ -162,6 +115,7 @@ class GoogleSheetsAdapter extends window.ReviewStorage.Base {
           status: review.status,
           note: review.note || "",
           highlights: review.highlights || [],
+          screenshotUrl: review.screenshotUrl || "",
           updatedAt: review.timestamp,
         };
       }
@@ -197,16 +151,17 @@ class GoogleSheetsAdapter extends window.ReviewStorage.Base {
         return true;
       }
 
-      // Submit each changed item via hidden form
+      // Submit each changed item via JSON POST
       for (const itemId of changedItems) {
         const status = itemStatuses[itemId];
-        await this._postViaForm({
+        await this._postJSON({
           toolId: this.toolId,
           itemId: itemId,
           itemTitle: status.title || itemId,
           status: status.status,
           note: status.note || "",
           highlights: status.highlights || [],
+          screenshotUrl: status.screenshotUrl || "",
           reviewerEmail: user.email,
           reviewerName: user.displayName,
         });

@@ -65,7 +65,7 @@
 
     // Temporarily hide review UI elements so they don't appear in screenshot
     var reviewElements = document.querySelectorAll(
-      "review-bar, review-issue-dialog, review-highlight-overlay",
+      "review-bar, review-issue-dialog",
     );
     var originalDisplay = [];
     reviewElements.forEach(function (el) {

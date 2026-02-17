@@ -1,11 +1,15 @@
 /**
- * ReviewGoogleSheets Module
+ * ReviewGoogleSheets Module v2
  * Extends ReviewStorage with Google Sheets cloud support via Apps Script.
  * Generic — works with any Reviewport tool.
  *
+ * Handles Google Workspace CORS restrictions by using:
+ * - Hidden form + iframe for POST (writes) — survives 302 redirects
+ * - JSONP for GET (reads) — bypasses CORS entirely
+ *
  * Usage:
  *   const sheetsAdapter = new window.ReviewStorage.GoogleSheets({
- *     scriptUrl: 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec',
+ *     scriptUrl: 'https://script.google.com/.../exec',
  *     toolId: 'scenario-tracker',
  *     getUser: () => ({
  *       email: firebase.auth().currentUser?.email || 'anonymous',
@@ -19,28 +23,96 @@ class GoogleSheetsAdapter extends window.ReviewStorage.Base {
     super();
     this.scriptUrl = config.scriptUrl;
     this.toolId = config.toolId || "unknown-tool";
-    this.getUser = config.getUser || (() => ({ email: "anonymous", displayName: "Unknown" }));
-    this._cache = null; // In-memory cache of loaded reviews
+    this.getUser =
+      config.getUser ||
+      (() => ({ email: "anonymous", displayName: "Unknown" }));
+    this._cache = null;
+    this._iframe = null;
   }
 
   /**
-   * Load all review statuses for this tool + reviewer from the Sheet.
-   * Returns an object compatible with ReviewCore state:
-   * { currentIndex, itemStatuses: { itemId: { status, note, highlights } } }
+   * Create or reuse a hidden iframe for form submissions.
+   */
+  _getIframe() {
+    if (!this._iframe) {
+      this._iframe = document.createElement("iframe");
+      this._iframe.name = "review-storage-frame";
+      this._iframe.style.display = "none";
+      document.body.appendChild(this._iframe);
+    }
+    return this._iframe;
+  }
+
+  /**
+   * POST data via hidden form + iframe.
+   * This survives the 302 redirect that Apps Script does,
+   * which breaks fetch and sendBeacon (they convert POST→GET on redirect).
+   */
+  _postViaForm(data) {
+    return new Promise((resolve) => {
+      const iframe = this._getIframe();
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = this.scriptUrl;
+      form.target = "review-storage-frame";
+      form.style.display = "none";
+
+      // Apps Script doPost receives e.parameter for form fields
+      // and e.postData.contents for the raw body.
+      // We send each field as a hidden input for reliable delivery.
+      const fields = {
+        toolId: data.toolId || "",
+        itemId: data.itemId || "",
+        itemTitle: data.itemTitle || "",
+        status: data.status || "",
+        note: data.note || "",
+        highlights: JSON.stringify(data.highlights || []),
+        reviewerEmail: data.reviewerEmail || "",
+        reviewerName: data.reviewerName || "",
+      };
+
+      for (const [key, value] of Object.entries(fields)) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = value;
+        form.appendChild(input);
+      }
+
+      document.body.appendChild(form);
+
+      // Resolve after a short delay (we can't read the iframe response cross-origin)
+      iframe.onload = () => {
+        resolve(true);
+        form.remove();
+      };
+
+      // Timeout fallback in case onload doesn't fire
+      setTimeout(() => {
+        resolve(true);
+        if (form.parentNode) form.remove();
+      }, 5000);
+
+      form.submit();
+    });
+  }
+
+  /**
+   * Load reviews using JSONP (bypasses CORS on Workspace Apps Script).
    */
   async load(appId) {
     if (!this.scriptUrl) {
-      console.warn("[ReviewGoogleSheets] No scriptUrl configured, skipping load");
+      console.warn(
+        "[ReviewGoogleSheets] No scriptUrl configured, skipping load"
+      );
       return null;
     }
 
     try {
       const user = this.getUser();
-      const url = `${this.scriptUrl}?toolId=${encodeURIComponent(this.toolId)}&email=${encodeURIComponent(user.email)}&callback=__reviewCallback`;
+      const callbackName = "__reviewCb_" + Date.now();
 
-      // Use JSONP to bypass CORS on Google Workspace Apps Script
       const result = await new Promise((resolve, reject) => {
-        const callbackName = "__reviewCallback_" + Date.now();
         const timeoutId = setTimeout(() => {
           delete window[callbackName];
           reject(new Error("JSONP timeout"));
@@ -52,10 +124,13 @@ class GoogleSheetsAdapter extends window.ReviewStorage.Base {
           resolve(data);
         };
 
-        // Use the callback parameter
-        const jsonpUrl = url.replace("callback=__reviewCallback", `callback=${callbackName}`);
+        const url =
+          `${this.scriptUrl}?toolId=${encodeURIComponent(this.toolId)}` +
+          `&email=${encodeURIComponent(user.email)}` +
+          `&callback=${callbackName}`;
+
         const script = document.createElement("script");
-        script.src = jsonpUrl;
+        script.src = url;
         script.onerror = () => {
           clearTimeout(timeoutId);
           delete window[callbackName];
@@ -66,11 +141,9 @@ class GoogleSheetsAdapter extends window.ReviewStorage.Base {
       });
 
       if (!result || !result.success || !result.reviews) {
-        // Fallback: try regular fetch (works if not a Workspace account)
-        return await this._fetchLoad(appId);
+        return null;
       }
 
-      // Convert flat rows back into ReviewCore's itemStatuses format
       const itemStatuses = {};
       for (const review of result.reviews) {
         itemStatuses[review.itemId] = {
@@ -87,64 +160,35 @@ class GoogleSheetsAdapter extends window.ReviewStorage.Base {
       );
       return this._cache;
     } catch (error) {
-      console.warn("[ReviewGoogleSheets] JSONP load failed, trying fetch:", error.message);
-      return await this._fetchLoad(appId);
-    }
-  }
-
-  // Fallback fetch-based load (works for non-Workspace Apps Script)
-  async _fetchLoad(appId) {
-    try {
-      const user = this.getUser();
-      const url = `${this.scriptUrl}?toolId=${encodeURIComponent(this.toolId)}&email=${encodeURIComponent(user.email)}`;
-      const response = await fetch(url, { redirect: "follow" });
-      const result = await response.json();
-      if (!result.success || !result.reviews) return null;
-
-      const itemStatuses = {};
-      for (const review of result.reviews) {
-        itemStatuses[review.itemId] = {
-          status: review.status,
-          note: review.note || "",
-          highlights: review.highlights || [],
-          updatedAt: review.timestamp,
-        };
-      }
-      this._cache = { currentIndex: 0, itemStatuses };
-      return this._cache;
-    } catch (error) {
-      console.error("[ReviewGoogleSheets] Fetch load also failed:", error);
+      console.warn("[ReviewGoogleSheets] Load failed:", error.message);
       return null;
     }
   }
 
   /**
-   * Save a single review item to the Sheet.
-   * Called by ReviewCore.saveState() which sends the full state,
-   * but we only POST the items that have changed.
+   * Save changed review items to the Sheet via hidden form POST.
    */
   async save(appId, data) {
     if (!this.scriptUrl) {
-      console.warn("[ReviewGoogleSheets] No scriptUrl configured, skipping save");
+      console.warn(
+        "[ReviewGoogleSheets] No scriptUrl configured, skipping save"
+      );
       return false;
     }
 
     try {
       const user = this.getUser();
       const itemStatuses = data.itemStatuses || {};
-
-      // Find items that have changed since last cache
       const changedItems = this._getChangedItems(itemStatuses);
 
       if (changedItems.length === 0) {
-        return true; // Nothing to save
+        return true;
       }
 
-      // POST each changed item using no-cors to bypass CORS preflight
-      // (Google Workspace Apps Script redirects don't support CORS headers)
-      const promises = changedItems.map((itemId) => {
+      // Submit each changed item via hidden form
+      for (const itemId of changedItems) {
         const status = itemStatuses[itemId];
-        const payload = JSON.stringify({
+        await this._postViaForm({
           toolId: this.toolId,
           itemId: itemId,
           itemTitle: status.title || itemId,
@@ -154,23 +198,7 @@ class GoogleSheetsAdapter extends window.ReviewStorage.Base {
           reviewerEmail: user.email,
           reviewerName: user.displayName,
         });
-
-        // Use navigator.sendBeacon for fire-and-forget reliability,
-        // falling back to no-cors fetch
-        if (navigator.sendBeacon) {
-          const blob = new Blob([payload], { type: "application/json" });
-          navigator.sendBeacon(this.scriptUrl, blob);
-          return Promise.resolve();
-        }
-
-        return fetch(this.scriptUrl, {
-          method: "POST",
-          mode: "no-cors",
-          body: payload,
-        });
-      });
-
-      await Promise.all(promises);
+      }
 
       // Update cache
       this._cache = { ...data };

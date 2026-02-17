@@ -28,6 +28,18 @@ class GoogleSheetsAdapter extends window.ReviewStorage.Base {
       (() => ({ email: "anonymous", displayName: "Unknown" }));
     this._cache = null;
     this._iframe = null;
+    this._oauthAccessToken = null;
+    
+    // Try to load OAuth token from localStorage
+    try {
+      const stored = localStorage.getItem('review_oauth_token');
+      if (stored) {
+        this._oauthAccessToken = stored;
+        console.log('[ReviewGoogleSheets] Loaded OAuth token from localStorage');
+      }
+    } catch (e) {
+      console.warn('[ReviewGoogleSheets] Could not load OAuth token from localStorage');
+    }
   }
 
   /**
@@ -235,6 +247,42 @@ class GoogleSheetsAdapter extends window.ReviewStorage.Base {
     }
 
     return changed;
+  }
+
+  // Request Drive API access for already-signed-in users
+  async requestDriveAccess() {
+    if (!window.firebase || !window.firebase.auth || !window.firebase.auth().currentUser) {
+      throw new Error("User must be signed in first");
+    }
+    
+    console.log("[ReviewGoogleSheets] Requesting Drive API access...");
+    const provider = new window.firebase.auth.GoogleAuthProvider();
+    provider.addScope("https://www.googleapis.com/auth/drive.file");
+    
+    try {
+      // Re-authenticate to get Drive scope
+      const result = await window.firebase.auth().currentUser.reauthenticateWithPopup(provider);
+      const credential = window.firebase.auth.GoogleAuthProvider.credentialFromResult(result);
+      
+      if (credential && credential.accessToken) {
+        this._oauthAccessToken = credential.accessToken;
+        try {
+          localStorage.setItem('review_oauth_token', credential.accessToken);
+          console.log("[ReviewGoogleSheets] Drive API access granted and token stored");
+        } catch (e) {
+          console.warn('[ReviewGoogleSheets] Could not store OAuth token:', e);
+        }
+        return credential.accessToken;
+      }
+    } catch (error) {
+      console.error("[ReviewGoogleSheets] Failed to get Drive access:", error);
+      throw error;
+    }
+  }
+
+  // Get OAuth access token for Google APIs (e.g., Drive)
+  getOAuthAccessToken() {
+    return this._oauthAccessToken;
   }
 }
 

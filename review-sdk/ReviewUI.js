@@ -656,8 +656,17 @@ window.ReviewUI = {
           throw new Error("User not authenticated");
         }
 
-        // Get Firebase Auth access token
-        const accessToken = await user.getIdToken();
+        // Get OAuth2 access token from Firebase storage adapter
+        let accessToken = null;
+        if (core.storage && core.storage.getOAuthAccessToken) {
+          accessToken = core.storage.getOAuthAccessToken();
+        }
+
+        if (!accessToken) {
+          throw new Error(
+            "No OAuth access token available. Please sign out and sign back in to grant Drive API access."
+          );
+        }
 
         const result = await window.ReviewScreenshot.captureAndUpload({
           folderId: folderId,

@@ -82,11 +82,29 @@ class FirestoreAdapter extends window.ReviewStorage.Base {
   // Auth Helpers
   async login() {
     const provider = new window.firebase.auth.GoogleAuthProvider();
-    return this.auth.signInWithPopup(provider);
+    // Request Drive API scope for screenshot uploads
+    provider.addScope("https://www.googleapis.com/auth/drive.file");
+
+    const result = await this.auth.signInWithPopup(provider);
+
+    // Extract and store the OAuth access token
+    const credential = window.firebase.auth.GoogleAuthProvider.credentialFromResult(result);
+    if (credential && credential.accessToken) {
+      this._oauthAccessToken = credential.accessToken;
+      console.log("[ReviewFirebase] OAuth access token captured for Drive API");
+    }
+
+    return result;
   }
 
   async logout() {
+    this._oauthAccessToken = null;
     return this.auth.signOut();
+  }
+
+  // Get OAuth access token for Google APIs (e.g., Drive)
+  getOAuthAccessToken() {
+    return this._oauthAccessToken;
   }
 }
 

@@ -263,11 +263,72 @@ console.log("[Config] Application configuration loaded");
           });
         });
 
+        // --- Google Sheets Review Storage ---
+        // Replace REVIEW_SHEET_URL with your deployed Apps Script URL
+        const REVIEW_SHEET_URL = window.REVIEW_SHEET_URL || "";
+
+        // Build storage: dual-write (local + cloud) when configured, local-only otherwise
+        let reviewStorage;
+        if (REVIEW_SHEET_URL && window.ReviewStorage.GoogleSheets) {
+          const localStorage = new window.ReviewStorage.LocalStorage();
+          const sheetsStorage = new window.ReviewStorage.GoogleSheets({
+            scriptUrl: REVIEW_SHEET_URL,
+            toolId: "scenario-tracker",
+            getUser: () => {
+              const user = typeof firebase !== "undefined" && firebase.auth().currentUser;
+              return {
+                email: user?.email || "anonymous",
+                displayName: user?.displayName || "Unknown",
+              };
+            },
+          });
+
+          // Dual adapter: reads merge cloud+local, writes go to both
+          reviewStorage = {
+            async load(appId) {
+              // Load from both, prefer cloud data
+              const [localData, cloudData] = await Promise.all([
+                localStorage.load(appId),
+                sheetsStorage.load(appId).catch(() => null),
+              ]);
+
+              if (cloudData && cloudData.itemStatuses) {
+                // Merge: cloud wins on conflicts
+                const merged = {
+                  currentIndex: localData?.currentIndex || 0,
+                  itemStatuses: {
+                    ...(localData?.itemStatuses || {}),
+                    ...cloudData.itemStatuses,
+                  },
+                };
+                // Sync merged state back to localStorage
+                await localStorage.save(appId, merged);
+                console.log("[ReviewStorage] Merged cloud + local data");
+                return merged;
+              }
+              return localData;
+            },
+            async save(appId, data) {
+              // Write to both — local is fast, sheets is persistent
+              await localStorage.save(appId, data);
+              // Fire-and-forget to avoid blocking UI
+              sheetsStorage.save(appId, data).catch((err) => {
+                console.warn("[ReviewStorage] Cloud save failed:", err);
+              });
+              return true;
+            },
+          };
+          console.log("[Config] Review storage: LocalStorage + Google Sheets");
+        } else {
+          reviewStorage = new window.ReviewStorage.LocalStorage();
+          console.log("[Config] Review storage: LocalStorage only (no REVIEW_SHEET_URL set)");
+        }
+
         // 2. Initialize Core with host-specific overrides
         const reviewCore = new window.ReviewCore({
           appId: "ue5-scenario-tracker",
           items: reviewItems,
-          storage: new window.ReviewStorage.LocalStorage(),
+          storage: reviewStorage,
 
           // Mapper: Bridge SDK item selection to Scenario Tracker engine
           onShowItem: (item) => {

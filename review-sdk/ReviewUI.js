@@ -644,14 +644,6 @@ window.ReviewUI = {
         return;
       }
       const currentItem = core.config.items[core.state.currentIndex];
-      
-      // Get the Apps Script URL from config (same URL used for review storage)
-      const scriptUrl = window.REVIEW_SHEET_URL || "";
-      if (!scriptUrl) {
-        console.error("[ReviewUI] REVIEW_SHEET_URL not configured");
-        alert("Screenshot upload is not configured. Please contact support.");
-        return;
-      }
 
       // Show loading state
       bar._screenshotLoading = true;
@@ -664,7 +656,6 @@ window.ReviewUI = {
         }
 
         const result = await window.ReviewScreenshot.captureAndUpload({
-          scriptUrl: scriptUrl,
           toolId: "scenario-tracker",
           itemId: currentItem?.id || "unknown",
           reviewerEmail: user.email || "unknown",
@@ -672,7 +663,7 @@ window.ReviewUI = {
 
         console.log("[ReviewUI] Screenshot uploaded:", result.viewUrl);
 
-        // Optionally save the screenshot URL to the review data
+        // Save the screenshot URL to the review data
         if (core.state.itemStatuses[currentItem.id]) {
           core.state.itemStatuses[currentItem.id].screenshotUrl = result.viewUrl;
         }
@@ -682,6 +673,7 @@ window.ReviewUI = {
         bar.render();
       } catch (err) {
         console.error("[ReviewUI] Screenshot failed:", err);
+        alert("Screenshot failed: " + err.message);
         bar._screenshotLoading = false;
         bar.render();
       }

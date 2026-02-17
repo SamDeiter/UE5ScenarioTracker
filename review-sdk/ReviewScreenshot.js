@@ -1,7 +1,7 @@
 /**
  * ReviewScreenshot Module
  * Captures the visible page using html2canvas and uploads
- * the screenshot to Google Drive via the Apps Script API.
+ * the screenshot to Google Drive via a Firebase Cloud Function.
  *
  * Depends on: html2canvas (loaded from CDN)
  *
@@ -16,6 +16,10 @@
   // CDN URL for html2canvas
   var HTML2CANVAS_CDN =
     "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+
+  // Cloud Function URL for screenshot uploads
+  var UPLOAD_FUNCTION_URL =
+    "https://uploadscreenshot-l42ahadwua-uc.a.run.app";
 
   var _loaded = false;
 
@@ -91,10 +95,9 @@
   }
 
   /**
-   * Upload a screenshot to Google Drive via Apps Script.
+   * Upload a screenshot to Google Drive via Cloud Function.
    *
    * @param {Object} config
-   * @param {string} config.scriptUrl - Apps Script web app URL
    * @param {string} config.base64    - Base64 PNG data (with or without data: prefix)
    * @param {string} config.toolId    - Tool identifier
    * @param {string} config.itemId    - Item identifier
@@ -102,90 +105,39 @@
    * @returns {Promise<{fileId, viewUrl, thumbnailUrl}>}
    */
   async function upload(config) {
-    if (!config.scriptUrl) {
-      throw new Error("scriptUrl is required for screenshot upload");
-    }
+    console.log("[ReviewScreenshot] Uploading via Cloud Function...");
 
-    console.log("[ReviewScreenshot] Uploading to Apps Script...");
-
-    // Use hidden iframe POST to bypass CORS (same pattern as ReviewGoogleSheets)
-    return new Promise(function (resolve, reject) {
-      var iframe = document.createElement("iframe");
-      iframe.style.display = "none";
-      iframe.name = "screenshot-upload-frame";
-      document.body.appendChild(iframe);
-
-      var form = document.createElement("form");
-      form.method = "POST";
-      form.action = config.scriptUrl;
-      form.target = "screenshot-upload-frame";
-
-      // Add form fields
-      var fields = {
-        action: "screenshot",
+    var response = await fetch(UPLOAD_FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
         imageData: config.base64,
         toolId: config.toolId || "",
         itemId: config.itemId || "",
         reviewerEmail: config.reviewerEmail || "",
-      };
-
-      for (var key in fields) {
-        var input = document.createElement("input");
-        input.type = "hidden";
-        input.name = key;
-        input.value = fields[key];
-        form.appendChild(input);
-      }
-
-      document.body.appendChild(form);
-
-      // Listen for iframe load to get response
-      var timeout = setTimeout(function () {
-        cleanup();
-        reject(new Error("Screenshot upload timed out"));
-      }, 30000); // 30s timeout
-
-      iframe.onload = function () {
-        clearTimeout(timeout);
-        try {
-          // Try to read response from iframe (may fail due to CORS)
-          var response = iframe.contentWindow.document.body.textContent;
-          var data = JSON.parse(response);
-
-          cleanup();
-
-          if (data.success) {
-            console.log("[ReviewScreenshot] Upload complete:", data.fileId);
-            resolve({
-              fileId: data.fileId,
-              viewUrl: data.viewUrl,
-              thumbnailUrl: data.thumbnailUrl,
-            });
-          } else {
-            reject(new Error(data.error || "Screenshot upload failed"));
-          }
-        } catch (e) {
-          // CORS blocked the response, but the POST still succeeded
-          // Apps Script will handle it server-side
-          cleanup();
-          console.log(
-            "[ReviewScreenshot] Upload submitted (response blocked by CORS)"
-          );
-          resolve({
-            fileId: "unknown",
-            viewUrl: "Check Google Sheet",
-            thumbnailUrl: null,
-          });
-        }
-      };
-
-      function cleanup() {
-        if (form.parentNode) form.parentNode.removeChild(form);
-        if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-      }
-
-      form.submit();
+      }),
     });
+
+    if (!response.ok) {
+      var errorText = await response.text();
+      throw new Error("Screenshot upload failed: " + errorText);
+    }
+
+    var data = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.error || "Screenshot upload failed");
+    }
+
+    console.log("[ReviewScreenshot] Upload complete:", data.fileId);
+
+    return {
+      fileId: data.fileId,
+      viewUrl: data.viewUrl,
+      thumbnailUrl: data.thumbnailUrl,
+    };
   }
 
   /**

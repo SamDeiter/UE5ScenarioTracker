@@ -260,8 +260,9 @@ class GoogleSheetsAdapter extends window.ReviewStorage.Base {
     provider.addScope("https://www.googleapis.com/auth/drive.file");
     
     try {
-      // Re-authenticate to get Drive scope
-      const result = await window.firebase.auth().currentUser.reauthenticateWithPopup(provider);
+      // Use signInWithPopup instead of reauthenticateWithPopup to bypass COOP restrictions
+      // The user is already signed in, but this will request additional scopes
+      const result = await window.firebase.auth().signInWithPopup(provider);
       const credential = window.firebase.auth.GoogleAuthProvider.credentialFromResult(result);
       
       if (credential && credential.accessToken) {
@@ -274,8 +275,21 @@ class GoogleSheetsAdapter extends window.ReviewStorage.Base {
         }
         return credential.accessToken;
       }
+      
+      throw new Error("No access token received from Google");
     } catch (error) {
       console.error("[ReviewGoogleSheets] Failed to get Drive access:", error);
+      
+      // Check if popup was blocked
+      if (error.code === 'auth/popup-blocked') {
+        throw new Error("Popup was blocked by your browser. Please allow popups for this site and try again.");
+      }
+      
+      // Check for COOP/CORS errors
+      if (error.message && error.message.includes('cross-origin')) {
+        throw new Error("Browser security settings blocked the authentication popup. Please sign out and sign back in to grant screenshot permissions.");
+      }
+      
       throw error;
     }
   }
